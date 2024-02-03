@@ -16,6 +16,8 @@ The REST API documentation can be found [on www.braintrustdata.com](https://www
 
 #### Gradle
 
+<!-- x-release-please-start-version -->
+
 ```kotlin
 implementation("com.braintrust.api:braintrust-kotlin:0.0.1")
 ```
@@ -29,6 +31,8 @@ implementation("com.braintrust.api:braintrust-kotlin:0.0.1")
     <version>0.0.1</version>
 </dependency>
 ```
+
+<!-- x-release-please-end -->
 
 ### Configure the client
 
