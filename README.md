@@ -19,7 +19,7 @@ The REST API documentation can be found [on www.braintrustdata.com](https://www
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.braintrustdata.api:braintrust-kotlin:0.0.1")
+implementation("com.braintrustdata.api:braintrust-kotlin:0.1.0")
 ```
 
 #### Maven
@@ -28,7 +28,7 @@ implementation("com.braintrustdata.api:braintrust-kotlin:0.0.1")
 <dependency>
     <groupId>com.braintrustdata.api</groupId>
     <artifactId>braintrust-kotlin</artifactId>
-    <version>0.0.1</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
