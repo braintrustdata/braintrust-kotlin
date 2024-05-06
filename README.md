@@ -4,9 +4,11 @@ The Braintrust Kotlin SDK provides convenient access to the Braintrust REST API 
 
 The Braintrust Kotlin SDK is similar to the Braintrust Java SDK but with minor differences that make it more ergonomic for use in Kotlin, such as nullable values instead of `Optional`, `Sequence` instead of `Stream`, and suspend functions instead of `CompletableFuture`.
 
+It is generated with [Stainless](https://www.stainlessapi.com/).
+
 ## Documentation
 
-The REST API documentation can be found [on www.braintrustdata.com](https://www.braintrustdata.com/docs/api/spec). The full API of this library can be found in [api.md](api.md).
+The REST API documentation can be found [on www.braintrustdata.com](https://www.braintrustdata.com/docs/api/spec).
 
 ---
 
@@ -19,14 +21,14 @@ The REST API documentation can be found [on www.braintrustdata.com](https://www
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.braintrustdata.api:braintrust-kotlin:0.1.0")
+implementation("com.braintrust.api:braintrust-kotlin:0.1.0")
 ```
 
 #### Maven
 
 ```xml
 <dependency>
-    <groupId>com.braintrustdata.api</groupId>
+    <groupId>com.braintrust.api</groupId>
     <artifactId>braintrust-kotlin</artifactId>
     <version>0.1.0</version>
 </dependency>
@@ -39,8 +41,8 @@ implementation("com.braintrustdata.api:braintrust-kotlin:0.1.0")
 Use `BraintrustOkHttpClient.builder()` to configure the client. At a minimum you need to set `.apiKey()`:
 
 ```kotlin
-import com.braintrustdata.api.client.BraintrustOkHttpClient
-import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
+import com.braintrust.api.client.BraintrustClient
+import com.braintrust.api.client.okhttp.BraintrustOkHttpClient
 
 val client = BraintrustOkHttpClient.builder()
     .apiKey("My API Key")
@@ -73,8 +75,8 @@ To create a new project, first use the `ProjectCreateParams` builder to specify 
 then pass that to the `create` method of the `project` service.
 
 ```kotlin
-import com.braintrustdata.api.models.Project
-import com.braintrustdata.api.models.ProjectCreateParams
+import com.braintrust.api.models.Project
+import com.braintrust.api.models.ProjectCreateParams
 
 val params = ProjectCreateParams.builder()
     .bodyparam(true)
@@ -88,8 +90,8 @@ The Braintrust API provides a `list` method to get a paginated list of project.
 You can retrieve the first page by:
 
 ```kotlin
-import com.braintrustdata.api.models.Page
-import com.braintrustdata.api.models.Project
+import com.braintrust.api.models.Page
+import com.braintrust.api.models.Project
 
 val page = client.project().list()
 for (project: Project in page.objects()) {
@@ -272,7 +274,7 @@ val client = BraintrustOkHttpClient.builder()
     .build()
 ```
 
-## Semantic Versioning
+## Semantic versioning
 
 This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) conventions, though certain backwards-incompatible changes may be released as minor versions:
 
