@@ -1,7 +1,7 @@
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.get
 
 plugins {
@@ -11,12 +11,12 @@ plugins {
 
 configure<PublishingExtension> {
     publications {
-        create<MavenPublication>("maven") {
+        register<MavenPublication>("maven") {
             from(components["java"])
 
             pom {
                 name.set("Braintrust Data API")
-                description.set("API specification for the backend data server. The API is hosted globally at\nhttps://api.braintrustdata.com or in your own environment. The v1 API is\ncurrently in preview mode and unstable until March 1, 2024. We may make\nbackwards incompatible changes before then, as we learn from our users.")
+                description.set("API specification for the backend data server. The API is hosted globally at\nhttps://api.braintrustdata.com or in your own environment. The v1 API is\ncurrently in preview mode and unstable until June 1, 2024. We may make backwards\nincompatible changes before then, as we learn from our users.")
                 url.set("https://www.braintrustdata.com/docs/api/spec")
 
                 licenses {
@@ -62,6 +62,6 @@ signing {
     }
 }
 
-tasks.publish {
+tasks.named("publish") {
     dependsOn(":closeAndReleaseSonatypeStagingRepository")
 }
