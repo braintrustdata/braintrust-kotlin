@@ -138,6 +138,10 @@ constructor(
         fun limit(limit: Long) = apply { this.limit = limit }
 
         /**
+         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
+         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
+         * argument going forwards.
+         *
          * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
          *
          * Since a paginated fetch query returns results in order from latest to earliest, the
@@ -148,6 +152,10 @@ constructor(
         fun maxRootSpanId(maxRootSpanId: String) = apply { this.maxRootSpanId = maxRootSpanId }
 
         /**
+         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
+         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
+         * argument going forwards.
+         *
          * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
          *
          * Since a paginated fetch query returns results in order from latest to earliest, the
