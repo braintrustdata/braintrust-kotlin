@@ -23,6 +23,7 @@ import java.util.Objects
 class ProjectLogFetchPostResponse
 private constructor(
     private val events: JsonField<List<Event>>,
+    private val cursor: JsonField<String>,
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
@@ -33,8 +34,24 @@ private constructor(
     /** A list of fetched events */
     fun events(): List<Event> = events.getRequired("events")
 
+    /**
+     * Pagination cursor
+     *
+     * Pass this string directly as the `cursor` param to your next fetch request to get the next
+     * page of results. Not provided if the returned result set is empty.
+     */
+    fun cursor(): String? = cursor.getNullable("cursor")
+
     /** A list of fetched events */
     @JsonProperty("events") @ExcludeMissing fun _events() = events
+
+    /**
+     * Pagination cursor
+     *
+     * Pass this string directly as the `cursor` param to your next fetch request to get the next
+     * page of results. Not provided if the returned result set is empty.
+     */
+    @JsonProperty("cursor") @ExcludeMissing fun _cursor() = cursor
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -43,6 +60,7 @@ private constructor(
     fun validate(): ProjectLogFetchPostResponse = apply {
         if (!validated) {
             events().forEach { it.validate() }
+            cursor()
             validated = true
         }
     }
@@ -56,18 +74,24 @@ private constructor(
 
         return other is ProjectLogFetchPostResponse &&
             this.events == other.events &&
+            this.cursor == other.cursor &&
             this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
         if (hashCode == 0) {
-            hashCode = Objects.hash(events, additionalProperties)
+            hashCode =
+                Objects.hash(
+                    events,
+                    cursor,
+                    additionalProperties,
+                )
         }
         return hashCode
     }
 
     override fun toString() =
-        "ProjectLogFetchPostResponse{events=$events, additionalProperties=$additionalProperties}"
+        "ProjectLogFetchPostResponse{events=$events, cursor=$cursor, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -77,10 +101,12 @@ private constructor(
     class Builder {
 
         private var events: JsonField<List<Event>> = JsonMissing.of()
+        private var cursor: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(projectLogFetchPostResponse: ProjectLogFetchPostResponse) = apply {
             this.events = projectLogFetchPostResponse.events
+            this.cursor = projectLogFetchPostResponse.cursor
             additionalProperties(projectLogFetchPostResponse.additionalProperties)
         }
 
@@ -91,6 +117,24 @@ private constructor(
         @JsonProperty("events")
         @ExcludeMissing
         fun events(events: JsonField<List<Event>>) = apply { this.events = events }
+
+        /**
+         * Pagination cursor
+         *
+         * Pass this string directly as the `cursor` param to your next fetch request to get the
+         * next page of results. Not provided if the returned result set is empty.
+         */
+        fun cursor(cursor: String) = cursor(JsonField.of(cursor))
+
+        /**
+         * Pagination cursor
+         *
+         * Pass this string directly as the `cursor` param to your next fetch request to get the
+         * next page of results. Not provided if the returned result set is empty.
+         */
+        @JsonProperty("cursor")
+        @ExcludeMissing
+        fun cursor(cursor: JsonField<String>) = apply { this.cursor = cursor }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -109,7 +153,8 @@ private constructor(
         fun build(): ProjectLogFetchPostResponse =
             ProjectLogFetchPostResponse(
                 events.map { it.toUnmodifiable() },
-                additionalProperties.toUnmodifiable()
+                cursor,
+                additionalProperties.toUnmodifiable(),
             )
     }
 

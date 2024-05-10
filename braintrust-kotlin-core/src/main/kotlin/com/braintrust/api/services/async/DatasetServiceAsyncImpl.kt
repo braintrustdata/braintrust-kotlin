@@ -22,6 +22,8 @@ import com.braintrust.api.models.DatasetListPageAsync
 import com.braintrust.api.models.DatasetListParams
 import com.braintrust.api.models.DatasetReplaceParams
 import com.braintrust.api.models.DatasetRetrieveParams
+import com.braintrust.api.models.DatasetSummarizeParams
+import com.braintrust.api.models.DatasetSummarizeResponse
 import com.braintrust.api.models.DatasetUpdateParams
 import com.braintrust.api.services.emptyHandler
 import com.braintrust.api.services.errorHandler
@@ -319,6 +321,34 @@ constructor(
         return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
             response
                 .use { replaceHandler.handle(it) }
+                .apply {
+                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                        validate()
+                    }
+                }
+        }
+    }
+
+    private val summarizeHandler: Handler<DatasetSummarizeResponse> =
+        jsonHandler<DatasetSummarizeResponse>(clientOptions.jsonMapper)
+            .withErrorHandler(errorHandler)
+
+    /** Summarize dataset */
+    override suspend fun summarize(
+        params: DatasetSummarizeParams,
+        requestOptions: RequestOptions
+    ): DatasetSummarizeResponse {
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .addPathSegments("v1", "dataset", params.getPathParam(0), "summarize")
+                .putAllQueryParams(params.getQueryParams())
+                .putAllHeaders(clientOptions.headers)
+                .putAllHeaders(params.getHeaders())
+                .build()
+        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
+            response
+                .use { summarizeHandler.handle(it) }
                 .apply {
                     if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
                         validate()
