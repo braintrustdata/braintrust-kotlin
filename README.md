@@ -38,7 +38,7 @@ implementation("com.braintrust.api:braintrust-kotlin:0.1.0")
 
 ### Configure the client
 
-Use `BraintrustOkHttpClient.builder()` to configure the client. At a minimum you need to set `.apiKey()`:
+Use `BraintrustOkHttpClient.builder()` to configure the client. At a minimum you need to set `.apiKey()` and `.baseUrl()`:
 
 ```kotlin
 import com.braintrust.api.client.BraintrustClient
@@ -46,10 +46,11 @@ import com.braintrust.api.client.okhttp.BraintrustOkHttpClient
 
 val client = BraintrustOkHttpClient.builder()
     .apiKey("My API Key")
+    .baseUrl("My Base URL")
     .build()
 ```
 
-Alternately, set the environment with `BRAINTRUST_API_KEY`, and use `BraintrustOkHttpClient.fromEnv()` to read from the environment.
+Alternately, set the environment with `BRAINTRUST_API_KEY` or `BRAINTRUST_APP_URL`, and use `BraintrustOkHttpClient.fromEnv()` to read from the environment.
 
 ```kotlin
 val client = BraintrustOkHttpClient.fromEnv()
@@ -64,6 +65,7 @@ val client = BraintrustOkHttpClient.builder()
 | Property | Environment variable | Required | Default value |
 | -------- | -------------------- | -------- | ------------- |
 | apiKey   | `BRAINTRUST_API_KEY` | true     | —             |
+| baseUrl  | `BRAINTRUST_APP_URL` | true     | —             |
 
 Read the documentation for more configuration options.
 
