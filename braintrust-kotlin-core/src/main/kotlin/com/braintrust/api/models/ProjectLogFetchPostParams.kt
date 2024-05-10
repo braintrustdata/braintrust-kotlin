@@ -20,6 +20,7 @@ import java.util.Objects
 class ProjectLogFetchPostParams
 constructor(
     private val projectId: String,
+    private val cursor: String?,
     private val filters: List<Filter>?,
     private val limit: Long?,
     private val maxRootSpanId: String?,
@@ -31,6 +32,8 @@ constructor(
 ) {
 
     fun projectId(): String = projectId
+
+    fun cursor(): String? = cursor
 
     fun filters(): List<Filter>? = filters
 
@@ -44,6 +47,7 @@ constructor(
 
     internal fun getBody(): ProjectLogFetchPostBody {
         return ProjectLogFetchPostBody(
+            cursor,
             filters,
             limit,
             maxRootSpanId,
@@ -68,6 +72,7 @@ constructor(
     @NoAutoDetect
     class ProjectLogFetchPostBody
     internal constructor(
+        private val cursor: String?,
         private val filters: List<Filter>?,
         private val limit: Long?,
         private val maxRootSpanId: String?,
@@ -77,6 +82,15 @@ constructor(
     ) {
 
         private var hashCode: Int = 0
+
+        /**
+         * An opaque string to be used as a cursor for the next page of results, in order from
+         * latest to earliest.
+         *
+         * The string can be obtained directly from the `cursor` property of the previous fetch
+         * query
+         */
+        @JsonProperty("cursor") fun cursor(): String? = cursor
 
         /**
          * A list of filters on the events to fetch. Currently, only path-lookup type filters are
@@ -102,6 +116,10 @@ constructor(
         @JsonProperty("limit") fun limit(): Long? = limit
 
         /**
+         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
+         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
+         * argument going forwards.
+         *
          * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
          *
          * Since a paginated fetch query returns results in order from latest to earliest, the
@@ -112,6 +130,10 @@ constructor(
         @JsonProperty("max_root_span_id") fun maxRootSpanId(): String? = maxRootSpanId
 
         /**
+         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
+         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
+         * argument going forwards.
+         *
          * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
          *
          * Since a paginated fetch query returns results in order from latest to earliest, the
@@ -141,6 +163,7 @@ constructor(
             }
 
             return other is ProjectLogFetchPostBody &&
+                this.cursor == other.cursor &&
                 this.filters == other.filters &&
                 this.limit == other.limit &&
                 this.maxRootSpanId == other.maxRootSpanId &&
@@ -153,6 +176,7 @@ constructor(
             if (hashCode == 0) {
                 hashCode =
                     Objects.hash(
+                        cursor,
                         filters,
                         limit,
                         maxRootSpanId,
@@ -165,7 +189,7 @@ constructor(
         }
 
         override fun toString() =
-            "ProjectLogFetchPostBody{filters=$filters, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalProperties=$additionalProperties}"
+            "ProjectLogFetchPostBody{cursor=$cursor, filters=$filters, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -174,6 +198,7 @@ constructor(
 
         class Builder {
 
+            private var cursor: String? = null
             private var filters: List<Filter>? = null
             private var limit: Long? = null
             private var maxRootSpanId: String? = null
@@ -182,6 +207,7 @@ constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(projectLogFetchPostBody: ProjectLogFetchPostBody) = apply {
+                this.cursor = projectLogFetchPostBody.cursor
                 this.filters = projectLogFetchPostBody.filters
                 this.limit = projectLogFetchPostBody.limit
                 this.maxRootSpanId = projectLogFetchPostBody.maxRootSpanId
@@ -189,6 +215,15 @@ constructor(
                 this.version = projectLogFetchPostBody.version
                 additionalProperties(projectLogFetchPostBody.additionalProperties)
             }
+
+            /**
+             * An opaque string to be used as a cursor for the next page of results, in order from
+             * latest to earliest.
+             *
+             * The string can be obtained directly from the `cursor` property of the previous fetch
+             * query
+             */
+            @JsonProperty("cursor") fun cursor(cursor: String) = apply { this.cursor = cursor }
 
             /**
              * A list of filters on the events to fetch. Currently, only path-lookup type filters
@@ -215,6 +250,10 @@ constructor(
             @JsonProperty("limit") fun limit(limit: Long) = apply { this.limit = limit }
 
             /**
+             * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor
+             * of the explicit 'cursor' returned by object fetch requests. Please prefer the
+             * 'cursor' argument going forwards.
+             *
              * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
              *
              * Since a paginated fetch query returns results in order from latest to earliest, the
@@ -226,6 +265,10 @@ constructor(
             fun maxRootSpanId(maxRootSpanId: String) = apply { this.maxRootSpanId = maxRootSpanId }
 
             /**
+             * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor
+             * of the explicit 'cursor' returned by object fetch requests. Please prefer the
+             * 'cursor' argument going forwards.
+             *
              * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
              *
              * Since a paginated fetch query returns results in order from latest to earliest, the
@@ -261,6 +304,7 @@ constructor(
 
             fun build(): ProjectLogFetchPostBody =
                 ProjectLogFetchPostBody(
+                    cursor,
                     filters?.toUnmodifiable(),
                     limit,
                     maxRootSpanId,
@@ -284,6 +328,7 @@ constructor(
 
         return other is ProjectLogFetchPostParams &&
             this.projectId == other.projectId &&
+            this.cursor == other.cursor &&
             this.filters == other.filters &&
             this.limit == other.limit &&
             this.maxRootSpanId == other.maxRootSpanId &&
@@ -297,6 +342,7 @@ constructor(
     override fun hashCode(): Int {
         return Objects.hash(
             projectId,
+            cursor,
             filters,
             limit,
             maxRootSpanId,
@@ -309,7 +355,7 @@ constructor(
     }
 
     override fun toString() =
-        "ProjectLogFetchPostParams{projectId=$projectId, filters=$filters, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+        "ProjectLogFetchPostParams{projectId=$projectId, cursor=$cursor, filters=$filters, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -322,6 +368,7 @@ constructor(
     class Builder {
 
         private var projectId: String? = null
+        private var cursor: String? = null
         private var filters: MutableList<Filter> = mutableListOf()
         private var limit: Long? = null
         private var maxRootSpanId: String? = null
@@ -333,6 +380,7 @@ constructor(
 
         internal fun from(projectLogFetchPostParams: ProjectLogFetchPostParams) = apply {
             this.projectId = projectLogFetchPostParams.projectId
+            this.cursor = projectLogFetchPostParams.cursor
             this.filters(projectLogFetchPostParams.filters ?: listOf())
             this.limit = projectLogFetchPostParams.limit
             this.maxRootSpanId = projectLogFetchPostParams.maxRootSpanId
@@ -345,6 +393,15 @@ constructor(
 
         /** Project id */
         fun projectId(projectId: String) = apply { this.projectId = projectId }
+
+        /**
+         * An opaque string to be used as a cursor for the next page of results, in order from
+         * latest to earliest.
+         *
+         * The string can be obtained directly from the `cursor` property of the previous fetch
+         * query
+         */
+        fun cursor(cursor: String) = apply { this.cursor = cursor }
 
         /**
          * A list of filters on the events to fetch. Currently, only path-lookup type filters are
@@ -379,6 +436,10 @@ constructor(
         fun limit(limit: Long) = apply { this.limit = limit }
 
         /**
+         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
+         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
+         * argument going forwards.
+         *
          * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
          *
          * Since a paginated fetch query returns results in order from latest to earliest, the
@@ -389,6 +450,10 @@ constructor(
         fun maxRootSpanId(maxRootSpanId: String) = apply { this.maxRootSpanId = maxRootSpanId }
 
         /**
+         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
+         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
+         * argument going forwards.
+         *
          * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
          *
          * Since a paginated fetch query returns results in order from latest to earliest, the
@@ -463,6 +528,7 @@ constructor(
         fun build(): ProjectLogFetchPostParams =
             ProjectLogFetchPostParams(
                 checkNotNull(projectId) { "`projectId` is required but was not set" },
+                cursor,
                 if (filters.size == 0) null else filters.toUnmodifiable(),
                 limit,
                 maxRootSpanId,

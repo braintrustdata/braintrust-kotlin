@@ -19,6 +19,8 @@ import com.braintrust.api.models.DatasetListPageAsync
 import com.braintrust.api.models.DatasetListParams
 import com.braintrust.api.models.DatasetReplaceParams
 import com.braintrust.api.models.DatasetRetrieveParams
+import com.braintrust.api.models.DatasetSummarizeParams
+import com.braintrust.api.models.DatasetSummarizeResponse
 import com.braintrust.api.models.DatasetUpdateParams
 
 interface DatasetServiceAsync {
@@ -103,4 +105,10 @@ interface DatasetServiceAsync {
         params: DatasetReplaceParams,
         requestOptions: RequestOptions = RequestOptions.none()
     ): Dataset
+
+    /** Summarize dataset */
+    suspend fun summarize(
+        params: DatasetSummarizeParams,
+        requestOptions: RequestOptions = RequestOptions.none()
+    ): DatasetSummarizeResponse
 }
