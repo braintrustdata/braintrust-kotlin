@@ -34,7 +34,7 @@ private constructor(
     private val name: JsonField<String>,
     private val description: JsonField<String>,
     private val deletedAt: JsonField<OffsetDateTime>,
-    private val memberPermissions: JsonField<List<MemberPermission>>,
+    private val memberPermissions: JsonField<List<MemberPermission?>>,
     private val memberRoles: JsonField<List<String>>,
     private val additionalProperties: Map<String, JsonValue>,
 ) {
@@ -72,7 +72,7 @@ private constructor(
     fun deletedAt(): OffsetDateTime? = deletedAt.getNullable("deleted_at")
 
     /** Permissions which belong to this role */
-    fun memberPermissions(): List<MemberPermission>? =
+    fun memberPermissions(): List<MemberPermission?>? =
         memberPermissions.getNullable("member_permissions")
 
     /**
@@ -197,7 +197,7 @@ private constructor(
         private var name: JsonField<String> = JsonMissing.of()
         private var description: JsonField<String> = JsonMissing.of()
         private var deletedAt: JsonField<OffsetDateTime> = JsonMissing.of()
-        private var memberPermissions: JsonField<List<MemberPermission>> = JsonMissing.of()
+        private var memberPermissions: JsonField<List<MemberPermission?>> = JsonMissing.of()
         private var memberRoles: JsonField<List<String>> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -283,13 +283,13 @@ private constructor(
         fun deletedAt(deletedAt: JsonField<OffsetDateTime>) = apply { this.deletedAt = deletedAt }
 
         /** Permissions which belong to this role */
-        fun memberPermissions(memberPermissions: List<MemberPermission>) =
+        fun memberPermissions(memberPermissions: List<MemberPermission?>) =
             memberPermissions(JsonField.of(memberPermissions))
 
         /** Permissions which belong to this role */
         @JsonProperty("member_permissions")
         @ExcludeMissing
-        fun memberPermissions(memberPermissions: JsonField<List<MemberPermission>>) = apply {
+        fun memberPermissions(memberPermissions: JsonField<List<MemberPermission?>>) = apply {
             this.memberPermissions = memberPermissions
         }
 

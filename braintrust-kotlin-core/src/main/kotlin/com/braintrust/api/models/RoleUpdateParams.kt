@@ -21,7 +21,7 @@ class RoleUpdateParams
 constructor(
     private val roleId: String,
     private val description: String?,
-    private val memberPermissions: List<MemberPermission>?,
+    private val memberPermissions: List<MemberPermission?>?,
     private val memberRoles: List<String>?,
     private val name: String?,
     private val additionalQueryParams: Map<String, List<String>>,
@@ -33,7 +33,7 @@ constructor(
 
     fun description(): String? = description
 
-    fun memberPermissions(): List<MemberPermission>? = memberPermissions
+    fun memberPermissions(): List<MemberPermission?>? = memberPermissions
 
     fun memberRoles(): List<String>? = memberRoles
 
@@ -65,7 +65,7 @@ constructor(
     class RoleUpdateBody
     internal constructor(
         private val description: String?,
-        private val memberPermissions: List<MemberPermission>?,
+        private val memberPermissions: List<MemberPermission?>?,
         private val memberRoles: List<String>?,
         private val name: String?,
         private val additionalProperties: Map<String, JsonValue>,
@@ -78,7 +78,7 @@ constructor(
 
         /** Permissions which belong to this role */
         @JsonProperty("member_permissions")
-        fun memberPermissions(): List<MemberPermission>? = memberPermissions
+        fun memberPermissions(): List<MemberPermission?>? = memberPermissions
 
         /**
          * Ids of the roles this role inherits from
@@ -135,7 +135,7 @@ constructor(
         class Builder {
 
             private var description: String? = null
-            private var memberPermissions: List<MemberPermission>? = null
+            private var memberPermissions: List<MemberPermission?>? = null
             private var memberRoles: List<String>? = null
             private var name: String? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -154,7 +154,7 @@ constructor(
 
             /** Permissions which belong to this role */
             @JsonProperty("member_permissions")
-            fun memberPermissions(memberPermissions: List<MemberPermission>) = apply {
+            fun memberPermissions(memberPermissions: List<MemberPermission?>) = apply {
                 this.memberPermissions = memberPermissions
             }
 
@@ -245,7 +245,7 @@ constructor(
 
         private var roleId: String? = null
         private var description: String? = null
-        private var memberPermissions: MutableList<MemberPermission> = mutableListOf()
+        private var memberPermissions: MutableList<MemberPermission?> = mutableListOf()
         private var memberRoles: MutableList<String> = mutableListOf()
         private var name: String? = null
         private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
@@ -270,7 +270,7 @@ constructor(
         fun description(description: String) = apply { this.description = description }
 
         /** Permissions which belong to this role */
-        fun memberPermissions(memberPermissions: List<MemberPermission>) = apply {
+        fun memberPermissions(memberPermissions: List<MemberPermission?>) = apply {
             this.memberPermissions.clear()
             this.memberPermissions.addAll(memberPermissions)
         }
