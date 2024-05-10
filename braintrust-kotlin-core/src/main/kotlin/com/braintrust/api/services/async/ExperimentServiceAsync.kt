@@ -19,6 +19,8 @@ import com.braintrust.api.models.ExperimentListPageAsync
 import com.braintrust.api.models.ExperimentListParams
 import com.braintrust.api.models.ExperimentReplaceParams
 import com.braintrust.api.models.ExperimentRetrieveParams
+import com.braintrust.api.models.ExperimentSummarizeParams
+import com.braintrust.api.models.ExperimentSummarizeResponse
 import com.braintrust.api.models.ExperimentUpdateParams
 
 interface ExperimentServiceAsync {
@@ -103,4 +105,10 @@ interface ExperimentServiceAsync {
         params: ExperimentReplaceParams,
         requestOptions: RequestOptions = RequestOptions.none()
     ): Experiment
+
+    /** Summarize experiment */
+    suspend fun summarize(
+        params: ExperimentSummarizeParams,
+        requestOptions: RequestOptions = RequestOptions.none()
+    ): ExperimentSummarizeResponse
 }

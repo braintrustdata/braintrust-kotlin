@@ -8,13 +8,11 @@ import com.braintrust.api.core.toUnmodifiable
 import com.braintrust.api.models.*
 import java.util.Objects
 
-class ExperimentFetchParams
+class ExperimentSummarizeParams
 constructor(
     private val experimentId: String,
-    private val limit: Long?,
-    private val maxRootSpanId: String?,
-    private val maxXactId: String?,
-    private val version: String?,
+    private val comparisonExperimentId: String?,
+    private val summarizeScores: Boolean?,
     private val additionalQueryParams: Map<String, List<String>>,
     private val additionalHeaders: Map<String, List<String>>,
     private val additionalBodyProperties: Map<String, JsonValue>,
@@ -22,20 +20,16 @@ constructor(
 
     fun experimentId(): String = experimentId
 
-    fun limit(): Long? = limit
+    fun comparisonExperimentId(): String? = comparisonExperimentId
 
-    fun maxRootSpanId(): String? = maxRootSpanId
-
-    fun maxXactId(): String? = maxXactId
-
-    fun version(): String? = version
+    fun summarizeScores(): Boolean? = summarizeScores
 
     internal fun getQueryParams(): Map<String, List<String>> {
         val params = mutableMapOf<String, List<String>>()
-        this.limit?.let { params.put("limit", listOf(it.toString())) }
-        this.maxRootSpanId?.let { params.put("max_root_span_id", listOf(it.toString())) }
-        this.maxXactId?.let { params.put("max_xact_id", listOf(it.toString())) }
-        this.version?.let { params.put("version", listOf(it.toString())) }
+        this.comparisonExperimentId?.let {
+            params.put("comparison_experiment_id", listOf(it.toString()))
+        }
+        this.summarizeScores?.let { params.put("summarize_scores", listOf(it.toString())) }
         params.putAll(additionalQueryParams)
         return params.toUnmodifiable()
     }
@@ -60,12 +54,10 @@ constructor(
             return true
         }
 
-        return other is ExperimentFetchParams &&
+        return other is ExperimentSummarizeParams &&
             this.experimentId == other.experimentId &&
-            this.limit == other.limit &&
-            this.maxRootSpanId == other.maxRootSpanId &&
-            this.maxXactId == other.maxXactId &&
-            this.version == other.version &&
+            this.comparisonExperimentId == other.comparisonExperimentId &&
+            this.summarizeScores == other.summarizeScores &&
             this.additionalQueryParams == other.additionalQueryParams &&
             this.additionalHeaders == other.additionalHeaders &&
             this.additionalBodyProperties == other.additionalBodyProperties
@@ -74,10 +66,8 @@ constructor(
     override fun hashCode(): Int {
         return Objects.hash(
             experimentId,
-            limit,
-            maxRootSpanId,
-            maxXactId,
-            version,
+            comparisonExperimentId,
+            summarizeScores,
             additionalQueryParams,
             additionalHeaders,
             additionalBodyProperties,
@@ -85,7 +75,7 @@ constructor(
     }
 
     override fun toString() =
-        "ExperimentFetchParams{experimentId=$experimentId, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+        "ExperimentSummarizeParams{experimentId=$experimentId, comparisonExperimentId=$comparisonExperimentId, summarizeScores=$summarizeScores, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -98,80 +88,41 @@ constructor(
     class Builder {
 
         private var experimentId: String? = null
-        private var limit: Long? = null
-        private var maxRootSpanId: String? = null
-        private var maxXactId: String? = null
-        private var version: String? = null
+        private var comparisonExperimentId: String? = null
+        private var summarizeScores: Boolean? = null
         private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
         private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        internal fun from(experimentFetchParams: ExperimentFetchParams) = apply {
-            this.experimentId = experimentFetchParams.experimentId
-            this.limit = experimentFetchParams.limit
-            this.maxRootSpanId = experimentFetchParams.maxRootSpanId
-            this.maxXactId = experimentFetchParams.maxXactId
-            this.version = experimentFetchParams.version
-            additionalQueryParams(experimentFetchParams.additionalQueryParams)
-            additionalHeaders(experimentFetchParams.additionalHeaders)
-            additionalBodyProperties(experimentFetchParams.additionalBodyProperties)
+        internal fun from(experimentSummarizeParams: ExperimentSummarizeParams) = apply {
+            this.experimentId = experimentSummarizeParams.experimentId
+            this.comparisonExperimentId = experimentSummarizeParams.comparisonExperimentId
+            this.summarizeScores = experimentSummarizeParams.summarizeScores
+            additionalQueryParams(experimentSummarizeParams.additionalQueryParams)
+            additionalHeaders(experimentSummarizeParams.additionalHeaders)
+            additionalBodyProperties(experimentSummarizeParams.additionalBodyProperties)
         }
 
         /** Experiment id */
         fun experimentId(experimentId: String) = apply { this.experimentId = experimentId }
 
         /**
-         * limit the number of traces fetched
-         *
-         * Fetch queries may be paginated if the total result size is expected to be large (e.g.
-         * project_logs which accumulate over a long time). Note that fetch queries only support
-         * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore,
-         * later pages may return rows which showed up in earlier pages, except with an earlier
-         * `_xact_id`. This happens because pagination occurs over the whole version history of the
-         * event log. You will most likely want to exclude any such duplicate, outdated rows (by
-         * `id`) from your combined result set.
-         *
-         * The `limit` parameter controls the number of full traces to return. So you may end up
-         * with more individual rows than the specified limit if you are fetching events containing
-         * traces.
+         * The experiment to compare against, if summarizing scores and metrics. If omitted, will
+         * fall back to the `base_exp_id` stored in the experiment metadata, and then to the most
+         * recent experiment run in the same project. Must pass `summarize_scores=true` for this id
+         * to be used
          */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun comparisonExperimentId(comparisonExperimentId: String) = apply {
+            this.comparisonExperimentId = comparisonExperimentId
+        }
 
         /**
-         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
-         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
-         * argument going forwards.
-         *
-         * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
-         *
-         * Since a paginated fetch query returns results in order from latest to earliest, the
-         * cursor for the next page can be found as the row with the minimum (earliest) value of the
-         * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
-         * paginating fetch queries.
+         * Whether to summarize the scores and metrics. If false (or omitted), only the metadata
+         * will be returned.
          */
-        fun maxRootSpanId(maxRootSpanId: String) = apply { this.maxRootSpanId = maxRootSpanId }
-
-        /**
-         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
-         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
-         * argument going forwards.
-         *
-         * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
-         *
-         * Since a paginated fetch query returns results in order from latest to earliest, the
-         * cursor for the next page can be found as the row with the minimum (earliest) value of the
-         * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
-         * paginating fetch queries.
-         */
-        fun maxXactId(maxXactId: String) = apply { this.maxXactId = maxXactId }
-
-        /**
-         * Retrieve a snapshot of events from a past time
-         *
-         * The version id is essentially a filter on the latest event transaction id. You can use
-         * the `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
-         */
-        fun version(version: String) = apply { this.version = version }
+        fun summarizeScores(summarizeScores: Boolean) = apply {
+            this.summarizeScores = summarizeScores
+        }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -227,13 +178,11 @@ constructor(
                 this.additionalBodyProperties.putAll(additionalBodyProperties)
             }
 
-        fun build(): ExperimentFetchParams =
-            ExperimentFetchParams(
+        fun build(): ExperimentSummarizeParams =
+            ExperimentSummarizeParams(
                 checkNotNull(experimentId) { "`experimentId` is required but was not set" },
-                limit,
-                maxRootSpanId,
-                maxXactId,
-                version,
+                comparisonExperimentId,
+                summarizeScores,
                 additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
                 additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
                 additionalBodyProperties.toUnmodifiable(),
