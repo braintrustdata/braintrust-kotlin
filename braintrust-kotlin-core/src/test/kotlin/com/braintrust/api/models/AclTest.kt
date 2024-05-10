@@ -18,12 +18,8 @@ class AclTest {
                 .objectType(Acl.ObjectType.ORGANIZATION)
                 .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .permission(Acl.Permission.ofUnionMember0(Acl.Permission.UnionMember0.CREATE))
-                .restrictObjectType(
-                    Acl.RestrictObjectType.ofUnionMember0(
-                        Acl.RestrictObjectType.UnionMember0.ORGANIZATION
-                    )
-                )
+                .permission(Acl.Permission.CREATE)
+                .restrictObjectType(Acl.RestrictObjectType.ORGANIZATION)
                 .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
@@ -34,14 +30,8 @@ class AclTest {
         assertThat(acl.objectType()).isEqualTo(Acl.ObjectType.ORGANIZATION)
         assertThat(acl.created()).isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(acl.groupId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        assertThat(acl.permission())
-            .isEqualTo(Acl.Permission.ofUnionMember0(Acl.Permission.UnionMember0.CREATE))
-        assertThat(acl.restrictObjectType())
-            .isEqualTo(
-                Acl.RestrictObjectType.ofUnionMember0(
-                    Acl.RestrictObjectType.UnionMember0.ORGANIZATION
-                )
-            )
+        assertThat(acl.permission()).isEqualTo(Acl.Permission.CREATE)
+        assertThat(acl.restrictObjectType()).isEqualTo(Acl.RestrictObjectType.ORGANIZATION)
         assertThat(acl.roleId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(acl.userId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
     }
