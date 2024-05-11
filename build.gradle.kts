@@ -3,7 +3,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.braintrustdata.api"
+    group = "com.braintrust.api"
     version = "0.1.0" // x-release-please-version
 }
 
