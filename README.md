@@ -21,14 +21,14 @@ The REST API documentation can be found [on www.braintrustdata.com](https://www
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.braintrustdata.api:braintrust-kotlin:0.1.0")
+implementation("com.braintrust.api:braintrust-kotlin:0.1.0")
 ```
 
 #### Maven
 
 ```xml
 <dependency>
-    <groupId>com.braintrustdata.api</groupId>
+    <groupId>com.braintrust.api</groupId>
     <artifactId>braintrust-kotlin</artifactId>
     <version>0.1.0</version>
 </dependency>
@@ -41,8 +41,8 @@ implementation("com.braintrustdata.api:braintrust-kotlin:0.1.0")
 Use `BraintrustOkHttpClient.builder()` to configure the client. At a minimum you need to set `.apiKey()`:
 
 ```kotlin
-import com.braintrustdata.api.client.BraintrustClient
-import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
+import com.braintrust.api.client.BraintrustClient
+import com.braintrust.api.client.okhttp.BraintrustOkHttpClient
 
 val client = BraintrustOkHttpClient.builder()
     .apiKey("My API Key")
@@ -75,8 +75,8 @@ To create a new project, first use the `ProjectCreateParams` builder to specify 
 then pass that to the `create` method of the `project` service.
 
 ```kotlin
-import com.braintrustdata.api.models.Project
-import com.braintrustdata.api.models.ProjectCreateParams
+import com.braintrust.api.models.Project
+import com.braintrust.api.models.ProjectCreateParams
 
 val params = ProjectCreateParams.builder()
     .bodyparam(true)
@@ -90,8 +90,8 @@ The Braintrust API provides a `list` method to get a paginated list of project.
 You can retrieve the first page by:
 
 ```kotlin
-import com.braintrustdata.api.models.Page
-import com.braintrustdata.api.models.Project
+import com.braintrust.api.models.Page
+import com.braintrust.api.models.Project
 
 val page = client.project().list()
 for (project: Project in page.objects()) {
