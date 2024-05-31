@@ -78,9 +78,7 @@ then pass that to the `create` method of the `project` service.
 import com.braintrustdata.api.models.Project
 import com.braintrustdata.api.models.ProjectCreateParams
 
-val params = ProjectCreateParams.builder()
-    .bodyparam(true)
-    .build()
+val params = ProjectCreateParams.builder().build()
 val project = client.project().create(params)
 ```
 
