@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.Experiment
 import com.braintrustdata.api.services.blocking.ExperimentService
 
-class ExperimentListPage private constructor(private val experimentService: ExperimentService, private val params: ExperimentListParams, private val response: Response, ) {
+class ExperimentListPage private constructor(private val experimentsService: ExperimentService, private val params: ExperimentListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class ExperimentListPage private constructor(private val experimentService: Expe
       }
 
       return other is ExperimentListPage &&
-          this.experimentService == other.experimentService &&
+          this.experimentsService == other.experimentsService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          experimentService,
+          experimentsService,
           params,
           response,
       )
     }
 
-    override fun toString() = "ExperimentListPage{experimentService=$experimentService, params=$params, response=$response}"
+    override fun toString() = "ExperimentListPage{experimentsService=$experimentsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class ExperimentListPage private constructor(private val experimentService: Expe
 
     fun getNextPage(): ExperimentListPage? {
       return getNextPageParams()?.let {
-          experimentService.list(it)
+          experimentsService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class ExperimentListPage private constructor(private val experimentService: Expe
 
     companion object {
 
-        fun of(experimentService: ExperimentService, params: ExperimentListParams, response: Response) = ExperimentListPage(
-            experimentService,
+        fun of(experimentsService: ExperimentService, params: ExperimentListParams, response: Response) = ExperimentListPage(
+            experimentsService,
             params,
             response,
         )

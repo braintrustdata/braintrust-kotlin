@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.ProjectScore
 import com.braintrustdata.api.services.async.ProjectScoreServiceAsync
 
-class ProjectScoreListPageAsync private constructor(private val projectScoreService: ProjectScoreServiceAsync, private val params: ProjectScoreListParams, private val response: Response, ) {
+class ProjectScoreListPageAsync private constructor(private val projectScoresService: ProjectScoreServiceAsync, private val params: ProjectScoreListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class ProjectScoreListPageAsync private constructor(private val projectScoreServ
       }
 
       return other is ProjectScoreListPageAsync &&
-          this.projectScoreService == other.projectScoreService &&
+          this.projectScoresService == other.projectScoresService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          projectScoreService,
+          projectScoresService,
           params,
           response,
       )
     }
 
-    override fun toString() = "ProjectScoreListPageAsync{projectScoreService=$projectScoreService, params=$params, response=$response}"
+    override fun toString() = "ProjectScoreListPageAsync{projectScoresService=$projectScoresService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class ProjectScoreListPageAsync private constructor(private val projectScoreServ
 
     suspend fun getNextPage(): ProjectScoreListPageAsync? {
       return getNextPageParams()?.let {
-          projectScoreService.list(it)
+          projectScoresService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class ProjectScoreListPageAsync private constructor(private val projectScoreServ
 
     companion object {
 
-        fun of(projectScoreService: ProjectScoreServiceAsync, params: ProjectScoreListParams, response: Response) = ProjectScoreListPageAsync(
-            projectScoreService,
+        fun of(projectScoresService: ProjectScoreServiceAsync, params: ProjectScoreListParams, response: Response) = ProjectScoreListPageAsync(
+            projectScoresService,
             params,
             response,
         )

@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.ProjectScore
 import com.braintrustdata.api.services.blocking.ProjectScoreService
 
-class ProjectScoreListPage private constructor(private val projectScoreService: ProjectScoreService, private val params: ProjectScoreListParams, private val response: Response, ) {
+class ProjectScoreListPage private constructor(private val projectScoresService: ProjectScoreService, private val params: ProjectScoreListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class ProjectScoreListPage private constructor(private val projectScoreService: 
       }
 
       return other is ProjectScoreListPage &&
-          this.projectScoreService == other.projectScoreService &&
+          this.projectScoresService == other.projectScoresService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          projectScoreService,
+          projectScoresService,
           params,
           response,
       )
     }
 
-    override fun toString() = "ProjectScoreListPage{projectScoreService=$projectScoreService, params=$params, response=$response}"
+    override fun toString() = "ProjectScoreListPage{projectScoresService=$projectScoresService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class ProjectScoreListPage private constructor(private val projectScoreService: 
 
     fun getNextPage(): ProjectScoreListPage? {
       return getNextPageParams()?.let {
-          projectScoreService.list(it)
+          projectScoresService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class ProjectScoreListPage private constructor(private val projectScoreService: 
 
     companion object {
 
-        fun of(projectScoreService: ProjectScoreService, params: ProjectScoreListParams, response: Response) = ProjectScoreListPage(
-            projectScoreService,
+        fun of(projectScoresService: ProjectScoreService, params: ProjectScoreListParams, response: Response) = ProjectScoreListPage(
+            projectScoresService,
             params,
             response,
         )

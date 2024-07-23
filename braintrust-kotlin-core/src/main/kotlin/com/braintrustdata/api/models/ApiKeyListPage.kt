@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.ApiKey
 import com.braintrustdata.api.services.blocking.ApiKeyService
 
-class ApiKeyListPage private constructor(private val apiKeyService: ApiKeyService, private val params: ApiKeyListParams, private val response: Response, ) {
+class ApiKeyListPage private constructor(private val apiKeysService: ApiKeyService, private val params: ApiKeyListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class ApiKeyListPage private constructor(private val apiKeyService: ApiKeyServic
       }
 
       return other is ApiKeyListPage &&
-          this.apiKeyService == other.apiKeyService &&
+          this.apiKeysService == other.apiKeysService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          apiKeyService,
+          apiKeysService,
           params,
           response,
       )
     }
 
-    override fun toString() = "ApiKeyListPage{apiKeyService=$apiKeyService, params=$params, response=$response}"
+    override fun toString() = "ApiKeyListPage{apiKeysService=$apiKeysService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class ApiKeyListPage private constructor(private val apiKeyService: ApiKeyServic
 
     fun getNextPage(): ApiKeyListPage? {
       return getNextPageParams()?.let {
-          apiKeyService.list(it)
+          apiKeysService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class ApiKeyListPage private constructor(private val apiKeyService: ApiKeyServic
 
     companion object {
 
-        fun of(apiKeyService: ApiKeyService, params: ApiKeyListParams, response: Response) = ApiKeyListPage(
-            apiKeyService,
+        fun of(apiKeysService: ApiKeyService, params: ApiKeyListParams, response: Response) = ApiKeyListPage(
+            apiKeysService,
             params,
             response,
         )

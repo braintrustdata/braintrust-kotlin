@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.View
 import com.braintrustdata.api.services.blocking.ViewService
 
-class ViewListPage private constructor(private val viewService: ViewService, private val params: ViewListParams, private val response: Response, ) {
+class ViewListPage private constructor(private val viewsService: ViewService, private val params: ViewListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class ViewListPage private constructor(private val viewService: ViewService, pri
       }
 
       return other is ViewListPage &&
-          this.viewService == other.viewService &&
+          this.viewsService == other.viewsService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          viewService,
+          viewsService,
           params,
           response,
       )
     }
 
-    override fun toString() = "ViewListPage{viewService=$viewService, params=$params, response=$response}"
+    override fun toString() = "ViewListPage{viewsService=$viewsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class ViewListPage private constructor(private val viewService: ViewService, pri
 
     fun getNextPage(): ViewListPage? {
       return getNextPageParams()?.let {
-          viewService.list(it)
+          viewsService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class ViewListPage private constructor(private val viewService: ViewService, pri
 
     companion object {
 
-        fun of(viewService: ViewService, params: ViewListParams, response: Response) = ViewListPage(
-            viewService,
+        fun of(viewsService: ViewService, params: ViewListParams, response: Response) = ViewListPage(
+            viewsService,
             params,
             response,
         )

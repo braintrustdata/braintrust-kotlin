@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.Role
 import com.braintrustdata.api.services.async.RoleServiceAsync
 
-class RoleListPageAsync private constructor(private val roleService: RoleServiceAsync, private val params: RoleListParams, private val response: Response, ) {
+class RoleListPageAsync private constructor(private val rolesService: RoleServiceAsync, private val params: RoleListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class RoleListPageAsync private constructor(private val roleService: RoleService
       }
 
       return other is RoleListPageAsync &&
-          this.roleService == other.roleService &&
+          this.rolesService == other.rolesService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          roleService,
+          rolesService,
           params,
           response,
       )
     }
 
-    override fun toString() = "RoleListPageAsync{roleService=$roleService, params=$params, response=$response}"
+    override fun toString() = "RoleListPageAsync{rolesService=$rolesService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class RoleListPageAsync private constructor(private val roleService: RoleService
 
     suspend fun getNextPage(): RoleListPageAsync? {
       return getNextPageParams()?.let {
-          roleService.list(it)
+          rolesService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class RoleListPageAsync private constructor(private val roleService: RoleService
 
     companion object {
 
-        fun of(roleService: RoleServiceAsync, params: RoleListParams, response: Response) = RoleListPageAsync(
-            roleService,
+        fun of(rolesService: RoleServiceAsync, params: RoleListParams, response: Response) = RoleListPageAsync(
+            rolesService,
             params,
             response,
         )

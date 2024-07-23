@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.ProjectTag
 import com.braintrustdata.api.services.blocking.ProjectTagService
 
-class ProjectTagListPage private constructor(private val projectTagService: ProjectTagService, private val params: ProjectTagListParams, private val response: Response, ) {
+class ProjectTagListPage private constructor(private val projectTagsService: ProjectTagService, private val params: ProjectTagListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class ProjectTagListPage private constructor(private val projectTagService: Proj
       }
 
       return other is ProjectTagListPage &&
-          this.projectTagService == other.projectTagService &&
+          this.projectTagsService == other.projectTagsService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          projectTagService,
+          projectTagsService,
           params,
           response,
       )
     }
 
-    override fun toString() = "ProjectTagListPage{projectTagService=$projectTagService, params=$params, response=$response}"
+    override fun toString() = "ProjectTagListPage{projectTagsService=$projectTagsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class ProjectTagListPage private constructor(private val projectTagService: Proj
 
     fun getNextPage(): ProjectTagListPage? {
       return getNextPageParams()?.let {
-          projectTagService.list(it)
+          projectTagsService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class ProjectTagListPage private constructor(private val projectTagService: Proj
 
     companion object {
 
-        fun of(projectTagService: ProjectTagService, params: ProjectTagListParams, response: Response) = ProjectTagListPage(
-            projectTagService,
+        fun of(projectTagsService: ProjectTagService, params: ProjectTagListParams, response: Response) = ProjectTagListPage(
+            projectTagsService,
             params,
             response,
         )

@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.Project
 import com.braintrustdata.api.services.blocking.ProjectService
 
-class ProjectListPage private constructor(private val projectService: ProjectService, private val params: ProjectListParams, private val response: Response, ) {
+class ProjectListPage private constructor(private val projectsService: ProjectService, private val params: ProjectListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class ProjectListPage private constructor(private val projectService: ProjectSer
       }
 
       return other is ProjectListPage &&
-          this.projectService == other.projectService &&
+          this.projectsService == other.projectsService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          projectService,
+          projectsService,
           params,
           response,
       )
     }
 
-    override fun toString() = "ProjectListPage{projectService=$projectService, params=$params, response=$response}"
+    override fun toString() = "ProjectListPage{projectsService=$projectsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class ProjectListPage private constructor(private val projectService: ProjectSer
 
     fun getNextPage(): ProjectListPage? {
       return getNextPageParams()?.let {
-          projectService.list(it)
+          projectsService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class ProjectListPage private constructor(private val projectService: ProjectSer
 
     companion object {
 
-        fun of(projectService: ProjectService, params: ProjectListParams, response: Response) = ProjectListPage(
-            projectService,
+        fun of(projectsService: ProjectService, params: ProjectListParams, response: Response) = ProjectListPage(
+            projectsService,
             params,
             response,
         )
