@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.Dataset
 import com.braintrustdata.api.services.blocking.DatasetService
 
-class DatasetListPage private constructor(private val datasetService: DatasetService, private val params: DatasetListParams, private val response: Response, ) {
+class DatasetListPage private constructor(private val datasetsService: DatasetService, private val params: DatasetListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class DatasetListPage private constructor(private val datasetService: DatasetSer
       }
 
       return other is DatasetListPage &&
-          this.datasetService == other.datasetService &&
+          this.datasetsService == other.datasetsService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          datasetService,
+          datasetsService,
           params,
           response,
       )
     }
 
-    override fun toString() = "DatasetListPage{datasetService=$datasetService, params=$params, response=$response}"
+    override fun toString() = "DatasetListPage{datasetsService=$datasetsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class DatasetListPage private constructor(private val datasetService: DatasetSer
 
     fun getNextPage(): DatasetListPage? {
       return getNextPageParams()?.let {
-          datasetService.list(it)
+          datasetsService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class DatasetListPage private constructor(private val datasetService: DatasetSer
 
     companion object {
 
-        fun of(datasetService: DatasetService, params: DatasetListParams, response: Response) = DatasetListPage(
-            datasetService,
+        fun of(datasetsService: DatasetService, params: DatasetListParams, response: Response) = DatasetListPage(
+            datasetsService,
             params,
             response,
         )
