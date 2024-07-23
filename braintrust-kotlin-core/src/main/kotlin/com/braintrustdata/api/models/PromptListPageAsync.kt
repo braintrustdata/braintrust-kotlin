@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.Prompt
 import com.braintrustdata.api.services.async.PromptServiceAsync
 
-class PromptListPageAsync private constructor(private val promptService: PromptServiceAsync, private val params: PromptListParams, private val response: Response, ) {
+class PromptListPageAsync private constructor(private val promptsService: PromptServiceAsync, private val params: PromptListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class PromptListPageAsync private constructor(private val promptService: PromptS
       }
 
       return other is PromptListPageAsync &&
-          this.promptService == other.promptService &&
+          this.promptsService == other.promptsService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          promptService,
+          promptsService,
           params,
           response,
       )
     }
 
-    override fun toString() = "PromptListPageAsync{promptService=$promptService, params=$params, response=$response}"
+    override fun toString() = "PromptListPageAsync{promptsService=$promptsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class PromptListPageAsync private constructor(private val promptService: PromptS
 
     suspend fun getNextPage(): PromptListPageAsync? {
       return getNextPageParams()?.let {
-          promptService.list(it)
+          promptsService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class PromptListPageAsync private constructor(private val promptService: PromptS
 
     companion object {
 
-        fun of(promptService: PromptServiceAsync, params: PromptListParams, response: Response) = PromptListPageAsync(
-            promptService,
+        fun of(promptsService: PromptServiceAsync, params: PromptListParams, response: Response) = PromptListPageAsync(
+            promptsService,
             params,
             response,
         )

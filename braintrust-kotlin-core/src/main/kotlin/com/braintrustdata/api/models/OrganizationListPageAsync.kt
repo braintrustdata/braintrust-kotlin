@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.Organization
 import com.braintrustdata.api.services.async.OrganizationServiceAsync
 
-class OrganizationListPageAsync private constructor(private val organizationService: OrganizationServiceAsync, private val params: OrganizationListParams, private val response: Response, ) {
+class OrganizationListPageAsync private constructor(private val organizationsService: OrganizationServiceAsync, private val params: OrganizationListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class OrganizationListPageAsync private constructor(private val organizationServ
       }
 
       return other is OrganizationListPageAsync &&
-          this.organizationService == other.organizationService &&
+          this.organizationsService == other.organizationsService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          organizationService,
+          organizationsService,
           params,
           response,
       )
     }
 
-    override fun toString() = "OrganizationListPageAsync{organizationService=$organizationService, params=$params, response=$response}"
+    override fun toString() = "OrganizationListPageAsync{organizationsService=$organizationsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class OrganizationListPageAsync private constructor(private val organizationServ
 
     suspend fun getNextPage(): OrganizationListPageAsync? {
       return getNextPageParams()?.let {
-          organizationService.list(it)
+          organizationsService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class OrganizationListPageAsync private constructor(private val organizationServ
 
     companion object {
 
-        fun of(organizationService: OrganizationServiceAsync, params: OrganizationListParams, response: Response) = OrganizationListPageAsync(
-            organizationService,
+        fun of(organizationsService: OrganizationServiceAsync, params: OrganizationListParams, response: Response) = OrganizationListPageAsync(
+            organizationsService,
             params,
             response,
         )

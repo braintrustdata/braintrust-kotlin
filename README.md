@@ -72,26 +72,26 @@ Read the documentation for more configuration options.
 ### Example: creating a resource
 
 To create a new project, first use the `ProjectCreateParams` builder to specify attributes,
-then pass that to the `create` method of the `project` service.
+then pass that to the `create` method of the `projects` service.
 
 ```kotlin
 import com.braintrustdata.api.models.Project
 import com.braintrustdata.api.models.ProjectCreateParams
 
 val params = ProjectCreateParams.builder().build()
-val project = client.project().create(params)
+val project = client.projects().create(params)
 ```
 
 ### Example: listing resources
 
-The Braintrust API provides a `list` method to get a paginated list of project.
+The Braintrust API provides a `list` method to get a paginated list of projects.
 You can retrieve the first page by:
 
 ```kotlin
 import com.braintrustdata.api.models.Page
 import com.braintrustdata.api.models.Project
 
-val page = client.project().list()
+val page = client.projects().list()
 for (project: Project in page.objects()) {
     print(project)
 }
@@ -108,7 +108,7 @@ See [Pagination](#pagination) below for more information on transparently workin
 To make a request to the Braintrust API, you generally build an instance of the appropriate `Params` class.
 
 In [Example: creating a resource](#example-creating-a-resource) above, we used the `ProjectCreateParams.builder()` to pass to
-the `create` method of the `project` service.
+the `create` method of the `projects` service.
 
 Sometimes, the API may support other properties that are not yet supported in the Kotlin SDK types. In that case,
 you can attach them using the `putAdditionalProperty` method.
@@ -127,7 +127,7 @@ val params = ProjectCreateParams.builder()
 When receiving a response, the Braintrust Kotlin SDK will deserialize it into instances of the typed model classes. In rare cases, the API may return a response property that doesn't match the expected Kotlin type. If you directly access the mistaken property, the SDK will throw an unchecked `BraintrustInvalidDataException` at runtime. If you would prefer to check in advance that that response is completely well-typed, call `.validate()` on the returned model.
 
 ```kotlin
-val project = client.project().create().validate()
+val project = client.projects().create().validate()
 ```
 
 ### Response properties as JSON
@@ -176,7 +176,7 @@ which automatically handles fetching more pages for you:
 
 ```kotlin
 // As a Sequence:
-client.project().list(params).autoPager()
+client.projects().list(params).autoPager()
     .take(50)
     .forEach { project -> print(project) }
 ```
@@ -185,7 +185,7 @@ client.project().list(params).autoPager()
 
 ```kotlin
 // As a Flow:
-asyncClient.project().list(params).autoPager()
+asyncClient.projects().list(params).autoPager()
     .take(50)
     .collect { project -> print(project) }
 ```
@@ -198,7 +198,7 @@ A page of results has a `data()` method to fetch the list of objects, as well as
 `hasNextPage`, `getNextPage`, and `getNextPageParams` methods to help with pagination.
 
 ```kotlin
-val page = client.project().list(params)
+val page = client.projects().list(params)
 while (page != null) {
     for (project in page.objects) {
         print(project)

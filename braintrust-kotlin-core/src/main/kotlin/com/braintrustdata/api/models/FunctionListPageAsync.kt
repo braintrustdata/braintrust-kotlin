@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.Function
 import com.braintrustdata.api.services.async.FunctionServiceAsync
 
-class FunctionListPageAsync private constructor(private val functionService: FunctionServiceAsync, private val params: FunctionListParams, private val response: Response, ) {
+class FunctionListPageAsync private constructor(private val functionsService: FunctionServiceAsync, private val params: FunctionListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class FunctionListPageAsync private constructor(private val functionService: Fun
       }
 
       return other is FunctionListPageAsync &&
-          this.functionService == other.functionService &&
+          this.functionsService == other.functionsService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          functionService,
+          functionsService,
           params,
           response,
       )
     }
 
-    override fun toString() = "FunctionListPageAsync{functionService=$functionService, params=$params, response=$response}"
+    override fun toString() = "FunctionListPageAsync{functionsService=$functionsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class FunctionListPageAsync private constructor(private val functionService: Fun
 
     suspend fun getNextPage(): FunctionListPageAsync? {
       return getNextPageParams()?.let {
-          functionService.list(it)
+          functionsService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class FunctionListPageAsync private constructor(private val functionService: Fun
 
     companion object {
 
-        fun of(functionService: FunctionServiceAsync, params: FunctionListParams, response: Response) = FunctionListPageAsync(
-            functionService,
+        fun of(functionsService: FunctionServiceAsync, params: FunctionListParams, response: Response) = FunctionListPageAsync(
+            functionsService,
             params,
             response,
         )

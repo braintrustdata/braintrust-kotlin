@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.ProjectTag
 import com.braintrustdata.api.services.async.ProjectTagServiceAsync
 
-class ProjectTagListPageAsync private constructor(private val projectTagService: ProjectTagServiceAsync, private val params: ProjectTagListParams, private val response: Response, ) {
+class ProjectTagListPageAsync private constructor(private val projectTagsService: ProjectTagServiceAsync, private val params: ProjectTagListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class ProjectTagListPageAsync private constructor(private val projectTagService:
       }
 
       return other is ProjectTagListPageAsync &&
-          this.projectTagService == other.projectTagService &&
+          this.projectTagsService == other.projectTagsService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          projectTagService,
+          projectTagsService,
           params,
           response,
       )
     }
 
-    override fun toString() = "ProjectTagListPageAsync{projectTagService=$projectTagService, params=$params, response=$response}"
+    override fun toString() = "ProjectTagListPageAsync{projectTagsService=$projectTagsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class ProjectTagListPageAsync private constructor(private val projectTagService:
 
     suspend fun getNextPage(): ProjectTagListPageAsync? {
       return getNextPageParams()?.let {
-          projectTagService.list(it)
+          projectTagsService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class ProjectTagListPageAsync private constructor(private val projectTagService:
 
     companion object {
 
-        fun of(projectTagService: ProjectTagServiceAsync, params: ProjectTagListParams, response: Response) = ProjectTagListPageAsync(
-            projectTagService,
+        fun of(projectTagsService: ProjectTagServiceAsync, params: ProjectTagListParams, response: Response) = ProjectTagListPageAsync(
+            projectTagsService,
             params,
             response,
         )

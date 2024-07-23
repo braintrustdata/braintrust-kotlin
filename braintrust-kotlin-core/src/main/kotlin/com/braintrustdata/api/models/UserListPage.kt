@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.User
 import com.braintrustdata.api.services.blocking.UserService
 
-class UserListPage private constructor(private val userService: UserService, private val params: UserListParams, private val response: Response, ) {
+class UserListPage private constructor(private val usersService: UserService, private val params: UserListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class UserListPage private constructor(private val userService: UserService, pri
       }
 
       return other is UserListPage &&
-          this.userService == other.userService &&
+          this.usersService == other.usersService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          userService,
+          usersService,
           params,
           response,
       )
     }
 
-    override fun toString() = "UserListPage{userService=$userService, params=$params, response=$response}"
+    override fun toString() = "UserListPage{usersService=$usersService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class UserListPage private constructor(private val userService: UserService, pri
 
     fun getNextPage(): UserListPage? {
       return getNextPageParams()?.let {
-          userService.list(it)
+          usersService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class UserListPage private constructor(private val userService: UserService, pri
 
     companion object {
 
-        fun of(userService: UserService, params: UserListParams, response: Response) = UserListPage(
-            userService,
+        fun of(usersService: UserService, params: UserListParams, response: Response) = UserListPage(
+            usersService,
             params,
             response,
         )
