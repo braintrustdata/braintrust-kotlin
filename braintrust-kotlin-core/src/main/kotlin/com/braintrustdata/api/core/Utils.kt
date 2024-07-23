@@ -2,10 +2,10 @@
 
 package com.braintrustdata.api.core
 
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.google.common.collect.ImmutableListMultimap
 import com.google.common.collect.ListMultimap
 import com.google.common.collect.Multimaps
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import java.util.Collections
 
 internal fun <T : Any> T?.getOrThrow(name: String): T {
@@ -43,10 +43,10 @@ internal fun <K, V> ListMultimap<K, V>.toUnmodifiable(): ListMultimap<K, V> {
 internal fun ListMultimap<String, String>.getRequiredHeader(header: String): String {
     val value =
         entries()
-            .stream()
-            .filter { entry -> entry.key.equals(header, ignoreCase = true) }
-            .map { entry -> entry.value }
-            .findFirst()
+        .stream()
+        .filter { entry -> entry.key.equals(header, ignoreCase = true) }
+        .map { entry -> entry.value }
+        .findFirst()
     if (!value.isPresent) {
         throw BraintrustInvalidDataException("Could not find $header header")
     }
