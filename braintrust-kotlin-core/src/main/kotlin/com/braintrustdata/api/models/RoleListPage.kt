@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.Role
 import com.braintrustdata.api.services.blocking.RoleService
 
-class RoleListPage private constructor(private val roleService: RoleService, private val params: RoleListParams, private val response: Response, ) {
+class RoleListPage private constructor(private val rolesService: RoleService, private val params: RoleListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class RoleListPage private constructor(private val roleService: RoleService, pri
       }
 
       return other is RoleListPage &&
-          this.roleService == other.roleService &&
+          this.rolesService == other.rolesService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          roleService,
+          rolesService,
           params,
           response,
       )
     }
 
-    override fun toString() = "RoleListPage{roleService=$roleService, params=$params, response=$response}"
+    override fun toString() = "RoleListPage{rolesService=$rolesService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class RoleListPage private constructor(private val roleService: RoleService, pri
 
     fun getNextPage(): RoleListPage? {
       return getNextPageParams()?.let {
-          roleService.list(it)
+          rolesService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class RoleListPage private constructor(private val roleService: RoleService, pri
 
     companion object {
 
-        fun of(roleService: RoleService, params: RoleListParams, response: Response) = RoleListPage(
-            roleService,
+        fun of(rolesService: RoleService, params: RoleListParams, response: Response) = RoleListPage(
+            rolesService,
             params,
             response,
         )

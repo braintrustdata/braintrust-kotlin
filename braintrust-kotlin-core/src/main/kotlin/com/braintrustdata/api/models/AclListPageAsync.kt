@@ -30,7 +30,7 @@ import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.Acl
 import com.braintrustdata.api.services.async.AclServiceAsync
 
-class AclListPageAsync private constructor(private val aclService: AclServiceAsync, private val params: AclListParams, private val response: Response, ) {
+class AclListPageAsync private constructor(private val aclsService: AclServiceAsync, private val params: AclListParams, private val response: Response, ) {
 
     fun response(): Response = response
 
@@ -42,20 +42,20 @@ class AclListPageAsync private constructor(private val aclService: AclServiceAsy
       }
 
       return other is AclListPageAsync &&
-          this.aclService == other.aclService &&
+          this.aclsService == other.aclsService &&
           this.params == other.params &&
           this.response == other.response
     }
 
     override fun hashCode(): Int {
       return Objects.hash(
-          aclService,
+          aclsService,
           params,
           response,
       )
     }
 
-    override fun toString() = "AclListPageAsync{aclService=$aclService, params=$params, response=$response}"
+    override fun toString() = "AclListPageAsync{aclsService=$aclsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
       return !objects().isEmpty()
@@ -75,7 +75,7 @@ class AclListPageAsync private constructor(private val aclService: AclServiceAsy
 
     suspend fun getNextPage(): AclListPageAsync? {
       return getNextPageParams()?.let {
-          aclService.list(it)
+          aclsService.list(it)
       }
     }
 
@@ -83,8 +83,8 @@ class AclListPageAsync private constructor(private val aclService: AclServiceAsy
 
     companion object {
 
-        fun of(aclService: AclServiceAsync, params: AclListParams, response: Response) = AclListPageAsync(
-            aclService,
+        fun of(aclsService: AclServiceAsync, params: AclListParams, response: Response) = AclListPageAsync(
+            aclsService,
             params,
             response,
         )
