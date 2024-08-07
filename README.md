@@ -8,7 +8,7 @@ It is generated with [Stainless](https://www.stainlessapi.com/).
 
 ## Documentation
 
-The REST API documentation can be found [on www.braintrustdata.com](https://www.braintrustdata.com/docs/api/spec).
+The REST API documentation can be found on [www.braintrustdata.com](https://www.braintrustdata.com/docs/api/spec).
 
 ---
 
@@ -78,7 +78,9 @@ then pass that to the `create` method of the `projects` service.
 import com.braintrustdata.api.models.Project
 import com.braintrustdata.api.models.ProjectCreateParams
 
-val params = ProjectCreateParams.builder().build()
+val params = ProjectCreateParams.builder()
+    .name("foobar")
+    .build()
 val project = client.projects().create(params)
 ```
 

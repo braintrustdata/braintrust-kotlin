@@ -1,9 +1,9 @@
 package com.braintrustdata.api.core.http
 
-import java.io.Closeable
 import com.braintrustdata.api.core.RequestOptions
+import java.lang.AutoCloseable
 
-interface HttpClient : Closeable {
+interface HttpClient : AutoCloseable {
 
     fun execute(
         request: HttpRequest,
