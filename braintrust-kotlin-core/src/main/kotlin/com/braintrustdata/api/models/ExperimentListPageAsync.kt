@@ -2,104 +2,103 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.services.async.ExperimentServiceAsync
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Objects
-import java.util.Optional
-import java.util.Spliterator
-import java.util.Spliterators
-import java.util.UUID
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Executor
-import java.util.function.Predicate
-import java.util.stream.Stream
-import java.util.stream.StreamSupport
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.Experiment
-import com.braintrustdata.api.services.async.ExperimentServiceAsync
 
-class ExperimentListPageAsync private constructor(private val experimentsService: ExperimentServiceAsync, private val params: ExperimentListParams, private val response: Response, ) {
+class ExperimentListPageAsync
+private constructor(
+    private val experimentsService: ExperimentServiceAsync,
+    private val params: ExperimentListParams,
+    private val response: Response,
+) {
 
     fun response(): Response = response
 
     fun objects(): List<Experiment> = response().objects()
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return other is ExperimentListPageAsync &&
-          this.experimentsService == other.experimentsService &&
-          this.params == other.params &&
-          this.response == other.response
+        return other is ExperimentListPageAsync &&
+            this.experimentsService == other.experimentsService &&
+            this.params == other.params &&
+            this.response == other.response
     }
 
     override fun hashCode(): Int {
-      return Objects.hash(
-          experimentsService,
-          params,
-          response,
-      )
-    }
-
-    override fun toString() = "ExperimentListPageAsync{experimentsService=$experimentsService, params=$params, response=$response}"
-
-    fun hasNextPage(): Boolean {
-      return !objects().isEmpty()
-    }
-
-    fun getNextPageParams(): ExperimentListParams? {
-      if (!hasNextPage()) {
-        return null
-      }
-
-      return if (params.endingBefore() != null) {
-        ExperimentListParams.builder().from(params).endingBefore(objects().first().id()).build();
-      } else {
-        ExperimentListParams.builder().from(params).startingAfter(objects().last().id()).build();
-      }
-    }
-
-    suspend fun getNextPage(): ExperimentListPageAsync? {
-      return getNextPageParams()?.let {
-          experimentsService.list(it)
-      }
-    }
-
-    fun autoPager(): AutoPager = AutoPager(this)
-
-    companion object {
-
-        fun of(experimentsService: ExperimentServiceAsync, params: ExperimentListParams, response: Response) = ExperimentListPageAsync(
+        return Objects.hash(
             experimentsService,
             params,
             response,
         )
     }
 
+    override fun toString() =
+        "ExperimentListPageAsync{experimentsService=$experimentsService, params=$params, response=$response}"
+
+    fun hasNextPage(): Boolean {
+        return !objects().isEmpty()
+    }
+
+    fun getNextPageParams(): ExperimentListParams? {
+        if (!hasNextPage()) {
+            return null
+        }
+
+        return if (params.endingBefore() != null) {
+            ExperimentListParams.builder().from(params).endingBefore(objects().first().id()).build()
+        } else {
+            ExperimentListParams.builder().from(params).startingAfter(objects().last().id()).build()
+        }
+    }
+
+    suspend fun getNextPage(): ExperimentListPageAsync? {
+        return getNextPageParams()?.let { experimentsService.list(it) }
+    }
+
+    fun autoPager(): AutoPager = AutoPager(this)
+
+    companion object {
+
+        fun of(
+            experimentsService: ExperimentServiceAsync,
+            params: ExperimentListParams,
+            response: Response
+        ) =
+            ExperimentListPageAsync(
+                experimentsService,
+                params,
+                response,
+            )
+    }
+
     @JsonDeserialize(builder = Response.Builder::class)
     @NoAutoDetect
-    class Response constructor(private val objects: JsonField<List<Experiment>>, private val additionalProperties: Map<String, JsonValue>, ) {
+    class Response
+    constructor(
+        private val objects: JsonField<List<Experiment>>,
+        private val additionalProperties: Map<String, JsonValue>,
+    ) {
 
         private var validated: Boolean = false
 
         fun objects(): List<Experiment> = objects.getNullable("objects") ?: listOf()
 
-        @JsonProperty("objects")
-        fun _objects(): JsonField<List<Experiment>>? = objects
+        @JsonProperty("objects") fun _objects(): JsonField<List<Experiment>>? = objects
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -107,28 +106,29 @@ class ExperimentListPageAsync private constructor(private val experimentsService
 
         fun validate(): Response = apply {
             if (!validated) {
-              objects().map { it.validate() }
-              validated = true
+                objects().map { it.validate() }
+                validated = true
             }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is Response &&
-              this.objects == other.objects &&
-              this.additionalProperties == other.additionalProperties
+            return other is Response &&
+                this.objects == other.objects &&
+                this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-          return Objects.hash(objects, additionalProperties)
+            return Objects.hash(objects, additionalProperties)
         }
 
-        override fun toString() = "ExperimentListPageAsync.Response{objects=$objects, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "ExperimentListPageAsync.Response{objects=$objects, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -159,18 +159,21 @@ class ExperimentListPageAsync private constructor(private val experimentsService
         }
     }
 
-    class AutoPager constructor(private val firstPage: ExperimentListPageAsync, ) : Flow<Experiment> {
+    class AutoPager
+    constructor(
+        private val firstPage: ExperimentListPageAsync,
+    ) : Flow<Experiment> {
 
         override suspend fun collect(collector: FlowCollector<Experiment>) {
-          var page = firstPage
-          var index = 0
-          while (true) {
-            while (index < page.objects().size) {
-              collector.emit(page.objects()[index++])
+            var page = firstPage
+            var index = 0
+            while (true) {
+                while (index < page.objects().size) {
+                    collector.emit(page.objects()[index++])
+                }
+                page = page.getNextPage() ?: break
+                index = 0
             }
-            page = page.getNextPage() ?: break
-            index = 0
-          }
         }
     }
 }
