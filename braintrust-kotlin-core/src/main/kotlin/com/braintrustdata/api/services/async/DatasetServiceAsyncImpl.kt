@@ -14,16 +14,15 @@ import com.braintrustdata.api.models.DatasetDeleteParams
 import com.braintrustdata.api.models.DatasetFeedbackParams
 import com.braintrustdata.api.models.DatasetFetchParams
 import com.braintrustdata.api.models.DatasetFetchPostParams
-import com.braintrustdata.api.models.DatasetFetchPostResponse
-import com.braintrustdata.api.models.DatasetFetchResponse
 import com.braintrustdata.api.models.DatasetInsertParams
-import com.braintrustdata.api.models.DatasetInsertResponse
 import com.braintrustdata.api.models.DatasetListPageAsync
 import com.braintrustdata.api.models.DatasetListParams
 import com.braintrustdata.api.models.DatasetRetrieveParams
 import com.braintrustdata.api.models.DatasetSummarizeParams
-import com.braintrustdata.api.models.DatasetSummarizeResponse
 import com.braintrustdata.api.models.DatasetUpdateParams
+import com.braintrustdata.api.models.FetchDatasetEventsResponse
+import com.braintrustdata.api.models.InsertEventsResponse
+import com.braintrustdata.api.models.SummarizeDatasetResponse
 import com.braintrustdata.api.services.emptyHandler
 import com.braintrustdata.api.services.errorHandler
 import com.braintrustdata.api.services.json
@@ -211,8 +210,9 @@ constructor(
         }
     }
 
-    private val fetchHandler: Handler<DatasetFetchResponse> =
-        jsonHandler<DatasetFetchResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    private val fetchHandler: Handler<FetchDatasetEventsResponse> =
+        jsonHandler<FetchDatasetEventsResponse>(clientOptions.jsonMapper)
+            .withErrorHandler(errorHandler)
 
     /**
      * Fetch the events in a dataset. Equivalent to the POST form of the same path, but with the
@@ -221,7 +221,7 @@ constructor(
     override suspend fun fetch(
         params: DatasetFetchParams,
         requestOptions: RequestOptions
-    ): DatasetFetchResponse {
+    ): FetchDatasetEventsResponse {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.GET)
@@ -242,8 +242,8 @@ constructor(
         }
     }
 
-    private val fetchPostHandler: Handler<DatasetFetchPostResponse> =
-        jsonHandler<DatasetFetchPostResponse>(clientOptions.jsonMapper)
+    private val fetchPostHandler: Handler<FetchDatasetEventsResponse> =
+        jsonHandler<FetchDatasetEventsResponse>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
     /**
@@ -253,7 +253,7 @@ constructor(
     override suspend fun fetchPost(
         params: DatasetFetchPostParams,
         requestOptions: RequestOptions
-    ): DatasetFetchPostResponse {
+    ): FetchDatasetEventsResponse {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
@@ -275,14 +275,14 @@ constructor(
         }
     }
 
-    private val insertHandler: Handler<DatasetInsertResponse> =
-        jsonHandler<DatasetInsertResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    private val insertHandler: Handler<InsertEventsResponse> =
+        jsonHandler<InsertEventsResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
     /** Insert a set of events into the dataset */
     override suspend fun insert(
         params: DatasetInsertParams,
         requestOptions: RequestOptions
-    ): DatasetInsertResponse {
+    ): InsertEventsResponse {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
@@ -304,15 +304,15 @@ constructor(
         }
     }
 
-    private val summarizeHandler: Handler<DatasetSummarizeResponse> =
-        jsonHandler<DatasetSummarizeResponse>(clientOptions.jsonMapper)
+    private val summarizeHandler: Handler<SummarizeDatasetResponse> =
+        jsonHandler<SummarizeDatasetResponse>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
     /** Summarize dataset */
     override suspend fun summarize(
         params: DatasetSummarizeParams,
         requestOptions: RequestOptions
-    ): DatasetSummarizeResponse {
+    ): SummarizeDatasetResponse {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.GET)
