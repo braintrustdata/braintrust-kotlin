@@ -11,16 +11,15 @@ import com.braintrustdata.api.models.ExperimentDeleteParams
 import com.braintrustdata.api.models.ExperimentFeedbackParams
 import com.braintrustdata.api.models.ExperimentFetchParams
 import com.braintrustdata.api.models.ExperimentFetchPostParams
-import com.braintrustdata.api.models.ExperimentFetchPostResponse
-import com.braintrustdata.api.models.ExperimentFetchResponse
 import com.braintrustdata.api.models.ExperimentInsertParams
-import com.braintrustdata.api.models.ExperimentInsertResponse
 import com.braintrustdata.api.models.ExperimentListPage
 import com.braintrustdata.api.models.ExperimentListParams
 import com.braintrustdata.api.models.ExperimentRetrieveParams
 import com.braintrustdata.api.models.ExperimentSummarizeParams
-import com.braintrustdata.api.models.ExperimentSummarizeResponse
 import com.braintrustdata.api.models.ExperimentUpdateParams
+import com.braintrustdata.api.models.FetchExperimentEventsResponse
+import com.braintrustdata.api.models.InsertEventsResponse
+import com.braintrustdata.api.models.SummarizeExperimentResponse
 
 interface ExperimentService {
 
@@ -77,7 +76,7 @@ interface ExperimentService {
     fun fetch(
         params: ExperimentFetchParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): ExperimentFetchResponse
+    ): FetchExperimentEventsResponse
 
     /**
      * Fetch the events in an experiment. Equivalent to the GET form of the same path, but with the
@@ -86,17 +85,17 @@ interface ExperimentService {
     fun fetchPost(
         params: ExperimentFetchPostParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): ExperimentFetchPostResponse
+    ): FetchExperimentEventsResponse
 
     /** Insert a set of events into the experiment */
     fun insert(
         params: ExperimentInsertParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): ExperimentInsertResponse
+    ): InsertEventsResponse
 
     /** Summarize experiment */
     fun summarize(
         params: ExperimentSummarizeParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): ExperimentSummarizeResponse
+    ): SummarizeExperimentResponse
 }

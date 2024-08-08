@@ -5,13 +5,12 @@
 package com.braintrustdata.api.services.blocking.projects
 
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.models.FetchProjectLogsEventsResponse
+import com.braintrustdata.api.models.InsertEventsResponse
 import com.braintrustdata.api.models.ProjectLogFeedbackParams
 import com.braintrustdata.api.models.ProjectLogFetchParams
 import com.braintrustdata.api.models.ProjectLogFetchPostParams
-import com.braintrustdata.api.models.ProjectLogFetchPostResponse
-import com.braintrustdata.api.models.ProjectLogFetchResponse
 import com.braintrustdata.api.models.ProjectLogInsertParams
-import com.braintrustdata.api.models.ProjectLogInsertResponse
 
 interface LogService {
 
@@ -28,7 +27,7 @@ interface LogService {
     fun fetch(
         params: ProjectLogFetchParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): ProjectLogFetchResponse
+    ): FetchProjectLogsEventsResponse
 
     /**
      * Fetch the events in a project logs. Equivalent to the GET form of the same path, but with the
@@ -37,11 +36,11 @@ interface LogService {
     fun fetchPost(
         params: ProjectLogFetchPostParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): ProjectLogFetchPostResponse
+    ): FetchProjectLogsEventsResponse
 
     /** Insert a set of events into the project logs */
     fun insert(
         params: ProjectLogInsertParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): ProjectLogInsertResponse
+    ): InsertEventsResponse
 }
