@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.FlowCollector
 
 class ProjectListPageAsync
 private constructor(
-    private val projectsService: ProjectServiceAsync,
+    private val projectService: ProjectServiceAsync,
     private val params: ProjectListParams,
     private val response: Response,
 ) {
@@ -34,21 +34,21 @@ private constructor(
         }
 
         return other is ProjectListPageAsync &&
-            this.projectsService == other.projectsService &&
+            this.projectService == other.projectService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            projectsService,
+            projectService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "ProjectListPageAsync{projectsService=$projectsService, params=$params, response=$response}"
+        "ProjectListPageAsync{projectService=$projectService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -67,20 +67,16 @@ private constructor(
     }
 
     suspend fun getNextPage(): ProjectListPageAsync? {
-        return getNextPageParams()?.let { projectsService.list(it) }
+        return getNextPageParams()?.let { projectService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
     companion object {
 
-        fun of(
-            projectsService: ProjectServiceAsync,
-            params: ProjectListParams,
-            response: Response
-        ) =
+        fun of(projectService: ProjectServiceAsync, params: ProjectListParams, response: Response) =
             ProjectListPageAsync(
-                projectsService,
+                projectService,
                 params,
                 response,
             )

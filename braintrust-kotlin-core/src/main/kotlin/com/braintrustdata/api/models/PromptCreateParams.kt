@@ -2,13 +2,17 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
@@ -19,6 +23,7 @@ constructor(
     private val projectId: String,
     private val slug: String,
     private val description: String?,
+    private val functionType: FunctionType?,
     private val promptData: PromptData?,
     private val tags: List<String>?,
     private val additionalQueryParams: Map<String, List<String>>,
@@ -34,6 +39,8 @@ constructor(
 
     fun description(): String? = description
 
+    fun functionType(): FunctionType? = functionType
+
     fun promptData(): PromptData? = promptData
 
     fun tags(): List<String>? = tags
@@ -44,6 +51,7 @@ constructor(
             projectId,
             slug,
             description,
+            functionType,
             promptData,
             tags,
             additionalBodyProperties,
@@ -62,6 +70,7 @@ constructor(
         private val projectId: String?,
         private val slug: String?,
         private val description: String?,
+        private val functionType: FunctionType?,
         private val promptData: PromptData?,
         private val tags: List<String>?,
         private val additionalProperties: Map<String, JsonValue>,
@@ -80,6 +89,8 @@ constructor(
 
         /** Textual description of the prompt */
         @JsonProperty("description") fun description(): String? = description
+
+        @JsonProperty("function_type") fun functionType(): FunctionType? = functionType
 
         /** The prompt, model, and its parameters */
         @JsonProperty("prompt_data") fun promptData(): PromptData? = promptData
@@ -103,6 +114,7 @@ constructor(
                 this.projectId == other.projectId &&
                 this.slug == other.slug &&
                 this.description == other.description &&
+                this.functionType == other.functionType &&
                 this.promptData == other.promptData &&
                 this.tags == other.tags &&
                 this.additionalProperties == other.additionalProperties
@@ -116,6 +128,7 @@ constructor(
                         projectId,
                         slug,
                         description,
+                        functionType,
                         promptData,
                         tags,
                         additionalProperties,
@@ -125,7 +138,7 @@ constructor(
         }
 
         override fun toString() =
-            "PromptCreateBody{name=$name, projectId=$projectId, slug=$slug, description=$description, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
+            "PromptCreateBody{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -138,6 +151,7 @@ constructor(
             private var projectId: String? = null
             private var slug: String? = null
             private var description: String? = null
+            private var functionType: FunctionType? = null
             private var promptData: PromptData? = null
             private var tags: List<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -147,6 +161,7 @@ constructor(
                 this.projectId = promptCreateBody.projectId
                 this.slug = promptCreateBody.slug
                 this.description = promptCreateBody.description
+                this.functionType = promptCreateBody.functionType
                 this.promptData = promptCreateBody.promptData
                 this.tags = promptCreateBody.tags
                 additionalProperties(promptCreateBody.additionalProperties)
@@ -165,6 +180,11 @@ constructor(
             /** Textual description of the prompt */
             @JsonProperty("description")
             fun description(description: String) = apply { this.description = description }
+
+            @JsonProperty("function_type")
+            fun functionType(functionType: FunctionType) = apply {
+                this.functionType = functionType
+            }
 
             /** The prompt, model, and its parameters */
             @JsonProperty("prompt_data")
@@ -193,6 +213,7 @@ constructor(
                     checkNotNull(projectId) { "`projectId` is required but was not set" },
                     checkNotNull(slug) { "`slug` is required but was not set" },
                     description,
+                    functionType,
                     promptData,
                     tags?.toUnmodifiable(),
                     additionalProperties.toUnmodifiable(),
@@ -216,6 +237,7 @@ constructor(
             this.projectId == other.projectId &&
             this.slug == other.slug &&
             this.description == other.description &&
+            this.functionType == other.functionType &&
             this.promptData == other.promptData &&
             this.tags == other.tags &&
             this.additionalQueryParams == other.additionalQueryParams &&
@@ -229,6 +251,7 @@ constructor(
             projectId,
             slug,
             description,
+            functionType,
             promptData,
             tags,
             additionalQueryParams,
@@ -238,7 +261,7 @@ constructor(
     }
 
     override fun toString() =
-        "PromptCreateParams{name=$name, projectId=$projectId, slug=$slug, description=$description, promptData=$promptData, tags=$tags, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+        "PromptCreateParams{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -254,6 +277,7 @@ constructor(
         private var projectId: String? = null
         private var slug: String? = null
         private var description: String? = null
+        private var functionType: FunctionType? = null
         private var promptData: PromptData? = null
         private var tags: MutableList<String> = mutableListOf()
         private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
@@ -265,6 +289,7 @@ constructor(
             this.projectId = promptCreateParams.projectId
             this.slug = promptCreateParams.slug
             this.description = promptCreateParams.description
+            this.functionType = promptCreateParams.functionType
             this.promptData = promptCreateParams.promptData
             this.tags(promptCreateParams.tags ?: listOf())
             additionalQueryParams(promptCreateParams.additionalQueryParams)
@@ -283,6 +308,8 @@ constructor(
 
         /** Textual description of the prompt */
         fun description(description: String) = apply { this.description = description }
+
+        fun functionType(functionType: FunctionType) = apply { this.functionType = functionType }
 
         /** The prompt, model, and its parameters */
         fun promptData(promptData: PromptData) = apply { this.promptData = promptData }
@@ -356,11 +383,75 @@ constructor(
                 checkNotNull(projectId) { "`projectId` is required but was not set" },
                 checkNotNull(slug) { "`slug` is required but was not set" },
                 description,
+                functionType,
                 promptData,
                 if (tags.size == 0) null else tags.toUnmodifiable(),
                 additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
                 additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
                 additionalBodyProperties.toUnmodifiable(),
             )
+    }
+
+    class FunctionType
+    @JsonCreator
+    private constructor(
+        private val value: JsonField<String>,
+    ) : Enum {
+
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is FunctionType && this.value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+
+        companion object {
+
+            val TASK = FunctionType(JsonField.of("task"))
+
+            val LLM = FunctionType(JsonField.of("llm"))
+
+            val SCORER = FunctionType(JsonField.of("scorer"))
+
+            fun of(value: String) = FunctionType(JsonField.of(value))
+        }
+
+        enum class Known {
+            TASK,
+            LLM,
+            SCORER,
+        }
+
+        enum class Value {
+            TASK,
+            LLM,
+            SCORER,
+            _UNKNOWN,
+        }
+
+        fun value(): Value =
+            when (this) {
+                TASK -> Value.TASK
+                LLM -> Value.LLM
+                SCORER -> Value.SCORER
+                else -> Value._UNKNOWN
+            }
+
+        fun known(): Known =
+            when (this) {
+                TASK -> Known.TASK
+                LLM -> Known.LLM
+                SCORER -> Known.SCORER
+                else -> throw BraintrustInvalidDataException("Unknown FunctionType: $value")
+            }
+
+        fun asString(): String = _value().asStringOrThrow()
     }
 }
