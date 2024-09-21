@@ -17,7 +17,7 @@ import java.util.Objects
 
 class ExperimentListPage
 private constructor(
-    private val experimentsService: ExperimentService,
+    private val experimentService: ExperimentService,
     private val params: ExperimentListParams,
     private val response: Response,
 ) {
@@ -32,21 +32,21 @@ private constructor(
         }
 
         return other is ExperimentListPage &&
-            this.experimentsService == other.experimentsService &&
+            this.experimentService == other.experimentService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            experimentsService,
+            experimentService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "ExperimentListPage{experimentsService=$experimentsService, params=$params, response=$response}"
+        "ExperimentListPage{experimentService=$experimentService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -65,7 +65,7 @@ private constructor(
     }
 
     fun getNextPage(): ExperimentListPage? {
-        return getNextPageParams()?.let { experimentsService.list(it) }
+        return getNextPageParams()?.let { experimentService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
@@ -73,12 +73,12 @@ private constructor(
     companion object {
 
         fun of(
-            experimentsService: ExperimentService,
+            experimentService: ExperimentService,
             params: ExperimentListParams,
             response: Response
         ) =
             ExperimentListPage(
-                experimentsService,
+                experimentService,
                 params,
                 response,
             )

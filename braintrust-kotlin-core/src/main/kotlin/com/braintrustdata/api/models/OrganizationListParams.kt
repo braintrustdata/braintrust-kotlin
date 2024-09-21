@@ -25,7 +25,6 @@ constructor(
     private val ids: Ids?,
     private val limit: Long?,
     private val orgName: String?,
-    private val organizationName: String?,
     private val startingAfter: String?,
     private val additionalQueryParams: Map<String, List<String>>,
     private val additionalHeaders: Map<String, List<String>>,
@@ -40,8 +39,6 @@ constructor(
 
     fun orgName(): String? = orgName
 
-    fun organizationName(): String? = organizationName
-
     fun startingAfter(): String? = startingAfter
 
     internal fun getQueryParams(): Map<String, List<String>> {
@@ -50,7 +47,6 @@ constructor(
         this.ids?.let { params.put("ids", listOf(it.toString())) }
         this.limit?.let { params.put("limit", listOf(it.toString())) }
         this.orgName?.let { params.put("org_name", listOf(it.toString())) }
-        this.organizationName?.let { params.put("organization_name", listOf(it.toString())) }
         this.startingAfter?.let { params.put("starting_after", listOf(it.toString())) }
         params.putAll(additionalQueryParams)
         return params.toUnmodifiable()
@@ -74,7 +70,6 @@ constructor(
             this.ids == other.ids &&
             this.limit == other.limit &&
             this.orgName == other.orgName &&
-            this.organizationName == other.organizationName &&
             this.startingAfter == other.startingAfter &&
             this.additionalQueryParams == other.additionalQueryParams &&
             this.additionalHeaders == other.additionalHeaders &&
@@ -87,7 +82,6 @@ constructor(
             ids,
             limit,
             orgName,
-            organizationName,
             startingAfter,
             additionalQueryParams,
             additionalHeaders,
@@ -96,7 +90,7 @@ constructor(
     }
 
     override fun toString() =
-        "OrganizationListParams{endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, organizationName=$organizationName, startingAfter=$startingAfter, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+        "OrganizationListParams{endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, startingAfter=$startingAfter, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -112,7 +106,6 @@ constructor(
         private var ids: Ids? = null
         private var limit: Long? = null
         private var orgName: String? = null
-        private var organizationName: String? = null
         private var startingAfter: String? = null
         private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
         private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
@@ -123,7 +116,6 @@ constructor(
             this.ids = organizationListParams.ids
             this.limit = organizationListParams.limit
             this.orgName = organizationListParams.orgName
-            this.organizationName = organizationListParams.organizationName
             this.startingAfter = organizationListParams.startingAfter
             additionalQueryParams(organizationListParams.additionalQueryParams)
             additionalHeaders(organizationListParams.additionalHeaders)
@@ -162,11 +154,6 @@ constructor(
 
         /** Filter search results to within a particular organization */
         fun orgName(orgName: String) = apply { this.orgName = orgName }
-
-        /** Name of the organization to search for */
-        fun organizationName(organizationName: String) = apply {
-            this.organizationName = organizationName
-        }
 
         /**
          * Pagination cursor id.
@@ -237,7 +224,6 @@ constructor(
                 ids,
                 limit,
                 orgName,
-                organizationName,
                 startingAfter,
                 additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
                 additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
