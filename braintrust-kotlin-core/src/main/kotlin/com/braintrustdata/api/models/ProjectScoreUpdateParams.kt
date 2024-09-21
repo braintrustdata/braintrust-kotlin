@@ -712,6 +712,8 @@ constructor(
 
             val MINIMUM = ScoreType(JsonField.of("minimum"))
 
+            val ONLINE = ScoreType(JsonField.of("online"))
+
             fun of(value: String) = ScoreType(JsonField.of(value))
         }
 
@@ -720,6 +722,7 @@ constructor(
             CATEGORICAL,
             WEIGHTED,
             MINIMUM,
+            ONLINE,
         }
 
         enum class Value {
@@ -727,6 +730,7 @@ constructor(
             CATEGORICAL,
             WEIGHTED,
             MINIMUM,
+            ONLINE,
             _UNKNOWN,
         }
 
@@ -736,6 +740,7 @@ constructor(
                 CATEGORICAL -> Value.CATEGORICAL
                 WEIGHTED -> Value.WEIGHTED
                 MINIMUM -> Value.MINIMUM
+                ONLINE -> Value.ONLINE
                 else -> Value._UNKNOWN
             }
 
@@ -745,6 +750,7 @@ constructor(
                 CATEGORICAL -> Known.CATEGORICAL
                 WEIGHTED -> Known.WEIGHTED
                 MINIMUM -> Known.MINIMUM
+                ONLINE -> Known.ONLINE
                 else -> throw BraintrustInvalidDataException("Unknown ScoreType: $value")
             }
 

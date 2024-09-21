@@ -344,6 +344,8 @@ constructor(
         private val ids: List<String>?,
         private val emails: List<String>?,
         private val sendInviteEmails: Boolean?,
+        private val groupIds: List<String>?,
+        private val groupNames: List<String>?,
         private val groupId: String?,
         private val groupName: String?,
         private val additionalProperties: Map<String, JsonValue>,
@@ -360,16 +362,16 @@ constructor(
         /** If true, send invite emails to the users who wore actually added */
         @JsonProperty("send_invite_emails") fun sendInviteEmails(): Boolean? = sendInviteEmails
 
-        /**
-         * Optional id of a group to add newly-invited users to. Cannot specify both a group id and
-         * a group name.
-         */
+        /** Optional list of group ids to add newly-invited users to. */
+        @JsonProperty("group_ids") fun groupIds(): List<String>? = groupIds
+
+        /** Optional list of group names to add newly-invited users to. */
+        @JsonProperty("group_names") fun groupNames(): List<String>? = groupNames
+
+        /** Singular form of group_ids */
         @JsonProperty("group_id") fun groupId(): String? = groupId
 
-        /**
-         * Optional name of a group to add newly-invited users to. Cannot specify both a group id
-         * and a group name.
-         */
+        /** Singular form of group_names */
         @JsonProperty("group_name") fun groupName(): String? = groupName
 
         @JsonAnyGetter
@@ -387,6 +389,8 @@ constructor(
                 this.ids == other.ids &&
                 this.emails == other.emails &&
                 this.sendInviteEmails == other.sendInviteEmails &&
+                this.groupIds == other.groupIds &&
+                this.groupNames == other.groupNames &&
                 this.groupId == other.groupId &&
                 this.groupName == other.groupName &&
                 this.additionalProperties == other.additionalProperties
@@ -399,6 +403,8 @@ constructor(
                         ids,
                         emails,
                         sendInviteEmails,
+                        groupIds,
+                        groupNames,
                         groupId,
                         groupName,
                         additionalProperties,
@@ -408,7 +414,7 @@ constructor(
         }
 
         override fun toString() =
-            "InviteUsers{ids=$ids, emails=$emails, sendInviteEmails=$sendInviteEmails, groupId=$groupId, groupName=$groupName, additionalProperties=$additionalProperties}"
+            "InviteUsers{ids=$ids, emails=$emails, sendInviteEmails=$sendInviteEmails, groupIds=$groupIds, groupNames=$groupNames, groupId=$groupId, groupName=$groupName, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -420,6 +426,8 @@ constructor(
             private var ids: List<String>? = null
             private var emails: List<String>? = null
             private var sendInviteEmails: Boolean? = null
+            private var groupIds: List<String>? = null
+            private var groupNames: List<String>? = null
             private var groupId: String? = null
             private var groupName: String? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -428,6 +436,8 @@ constructor(
                 this.ids = inviteUsers.ids
                 this.emails = inviteUsers.emails
                 this.sendInviteEmails = inviteUsers.sendInviteEmails
+                this.groupIds = inviteUsers.groupIds
+                this.groupNames = inviteUsers.groupNames
                 this.groupId = inviteUsers.groupId
                 this.groupName = inviteUsers.groupName
                 additionalProperties(inviteUsers.additionalProperties)
@@ -446,17 +456,19 @@ constructor(
                 this.sendInviteEmails = sendInviteEmails
             }
 
-            /**
-             * Optional id of a group to add newly-invited users to. Cannot specify both a group id
-             * and a group name.
-             */
+            /** Optional list of group ids to add newly-invited users to. */
+            @JsonProperty("group_ids")
+            fun groupIds(groupIds: List<String>) = apply { this.groupIds = groupIds }
+
+            /** Optional list of group names to add newly-invited users to. */
+            @JsonProperty("group_names")
+            fun groupNames(groupNames: List<String>) = apply { this.groupNames = groupNames }
+
+            /** Singular form of group_ids */
             @JsonProperty("group_id")
             fun groupId(groupId: String) = apply { this.groupId = groupId }
 
-            /**
-             * Optional name of a group to add newly-invited users to. Cannot specify both a group
-             * id and a group name.
-             */
+            /** Singular form of group_names */
             @JsonProperty("group_name")
             fun groupName(groupName: String) = apply { this.groupName = groupName }
 
@@ -479,6 +491,8 @@ constructor(
                     ids?.toUnmodifiable(),
                     emails?.toUnmodifiable(),
                     sendInviteEmails,
+                    groupIds?.toUnmodifiable(),
+                    groupNames?.toUnmodifiable(),
                     groupId,
                     groupName,
                     additionalProperties.toUnmodifiable(),

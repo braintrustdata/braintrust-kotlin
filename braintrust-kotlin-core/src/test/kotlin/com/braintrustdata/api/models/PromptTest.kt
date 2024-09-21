@@ -21,6 +21,7 @@ class PromptTest {
                 .slug("slug")
                 .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .description("description")
+                .functionType(Prompt.FunctionType.TASK)
                 .metadata(Prompt.Metadata.builder().build())
                 .promptData(
                     PromptData.builder()
@@ -83,6 +84,13 @@ class PromptTest {
                                 .promptVersion("prompt_version")
                                 .build()
                         )
+                        .parser(
+                            PromptData.Parser.builder()
+                                .choiceScores(PromptData.Parser.ChoiceScores.builder().build())
+                                .type(PromptData.Parser.Type.LLM_CLASSIFIER)
+                                .useCot(true)
+                                .build()
+                        )
                         .prompt(
                             PromptData.Prompt.ofCompletion(
                                 PromptData.Prompt.Completion.builder()
@@ -105,6 +113,7 @@ class PromptTest {
         assertThat(prompt.slug()).isEqualTo("slug")
         assertThat(prompt.created()).isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(prompt.description()).isEqualTo("description")
+        assertThat(prompt.functionType()).isEqualTo(Prompt.FunctionType.TASK)
         assertThat(prompt.metadata()).isEqualTo(Prompt.Metadata.builder().build())
         assertThat(prompt.promptData())
             .isEqualTo(
@@ -164,6 +173,13 @@ class PromptTest {
                             .projectId("project_id")
                             .promptId("prompt_id")
                             .promptVersion("prompt_version")
+                            .build()
+                    )
+                    .parser(
+                        PromptData.Parser.builder()
+                            .choiceScores(PromptData.Parser.ChoiceScores.builder().build())
+                            .type(PromptData.Parser.Type.LLM_CLASSIFIER)
+                            .useCot(true)
                             .build()
                     )
                     .prompt(
