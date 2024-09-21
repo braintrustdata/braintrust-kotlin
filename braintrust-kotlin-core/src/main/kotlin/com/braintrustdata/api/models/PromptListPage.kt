@@ -17,7 +17,7 @@ import java.util.Objects
 
 class PromptListPage
 private constructor(
-    private val promptsService: PromptService,
+    private val promptService: PromptService,
     private val params: PromptListParams,
     private val response: Response,
 ) {
@@ -32,21 +32,21 @@ private constructor(
         }
 
         return other is PromptListPage &&
-            this.promptsService == other.promptsService &&
+            this.promptService == other.promptService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            promptsService,
+            promptService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "PromptListPage{promptsService=$promptsService, params=$params, response=$response}"
+        "PromptListPage{promptService=$promptService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -65,16 +65,16 @@ private constructor(
     }
 
     fun getNextPage(): PromptListPage? {
-        return getNextPageParams()?.let { promptsService.list(it) }
+        return getNextPageParams()?.let { promptService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
     companion object {
 
-        fun of(promptsService: PromptService, params: PromptListParams, response: Response) =
+        fun of(promptService: PromptService, params: PromptListParams, response: Response) =
             PromptListPage(
-                promptsService,
+                promptService,
                 params,
                 response,
             )

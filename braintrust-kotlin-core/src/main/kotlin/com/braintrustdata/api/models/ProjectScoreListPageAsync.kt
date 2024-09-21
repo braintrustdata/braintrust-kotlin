@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.FlowCollector
 
 class ProjectScoreListPageAsync
 private constructor(
-    private val projectScoresService: ProjectScoreServiceAsync,
+    private val projectScoreService: ProjectScoreServiceAsync,
     private val params: ProjectScoreListParams,
     private val response: Response,
 ) {
@@ -34,21 +34,21 @@ private constructor(
         }
 
         return other is ProjectScoreListPageAsync &&
-            this.projectScoresService == other.projectScoresService &&
+            this.projectScoreService == other.projectScoreService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            projectScoresService,
+            projectScoreService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "ProjectScoreListPageAsync{projectScoresService=$projectScoresService, params=$params, response=$response}"
+        "ProjectScoreListPageAsync{projectScoreService=$projectScoreService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -73,7 +73,7 @@ private constructor(
     }
 
     suspend fun getNextPage(): ProjectScoreListPageAsync? {
-        return getNextPageParams()?.let { projectScoresService.list(it) }
+        return getNextPageParams()?.let { projectScoreService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
@@ -81,12 +81,12 @@ private constructor(
     companion object {
 
         fun of(
-            projectScoresService: ProjectScoreServiceAsync,
+            projectScoreService: ProjectScoreServiceAsync,
             params: ProjectScoreListParams,
             response: Response
         ) =
             ProjectScoreListPageAsync(
-                projectScoresService,
+                projectScoreService,
                 params,
                 response,
             )

@@ -17,7 +17,7 @@ import java.util.Objects
 
 class FunctionListPage
 private constructor(
-    private val functionsService: FunctionService,
+    private val functionService: FunctionService,
     private val params: FunctionListParams,
     private val response: Response,
 ) {
@@ -32,21 +32,21 @@ private constructor(
         }
 
         return other is FunctionListPage &&
-            this.functionsService == other.functionsService &&
+            this.functionService == other.functionService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            functionsService,
+            functionService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "FunctionListPage{functionsService=$functionsService, params=$params, response=$response}"
+        "FunctionListPage{functionService=$functionService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -65,16 +65,16 @@ private constructor(
     }
 
     fun getNextPage(): FunctionListPage? {
-        return getNextPageParams()?.let { functionsService.list(it) }
+        return getNextPageParams()?.let { functionService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
     companion object {
 
-        fun of(functionsService: FunctionService, params: FunctionListParams, response: Response) =
+        fun of(functionService: FunctionService, params: FunctionListParams, response: Response) =
             FunctionListPage(
-                functionsService,
+                functionService,
                 params,
                 response,
             )

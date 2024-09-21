@@ -17,7 +17,7 @@ import java.util.Objects
 
 class DatasetListPage
 private constructor(
-    private val datasetsService: DatasetService,
+    private val datasetService: DatasetService,
     private val params: DatasetListParams,
     private val response: Response,
 ) {
@@ -32,21 +32,21 @@ private constructor(
         }
 
         return other is DatasetListPage &&
-            this.datasetsService == other.datasetsService &&
+            this.datasetService == other.datasetService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            datasetsService,
+            datasetService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "DatasetListPage{datasetsService=$datasetsService, params=$params, response=$response}"
+        "DatasetListPage{datasetService=$datasetService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -65,16 +65,16 @@ private constructor(
     }
 
     fun getNextPage(): DatasetListPage? {
-        return getNextPageParams()?.let { datasetsService.list(it) }
+        return getNextPageParams()?.let { datasetService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
     companion object {
 
-        fun of(datasetsService: DatasetService, params: DatasetListParams, response: Response) =
+        fun of(datasetService: DatasetService, params: DatasetListParams, response: Response) =
             DatasetListPage(
-                datasetsService,
+                datasetService,
                 params,
                 response,
             )

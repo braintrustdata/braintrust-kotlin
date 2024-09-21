@@ -17,7 +17,7 @@ import java.util.Objects
 
 class RoleListPage
 private constructor(
-    private val rolesService: RoleService,
+    private val roleService: RoleService,
     private val params: RoleListParams,
     private val response: Response,
 ) {
@@ -32,21 +32,21 @@ private constructor(
         }
 
         return other is RoleListPage &&
-            this.rolesService == other.rolesService &&
+            this.roleService == other.roleService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            rolesService,
+            roleService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "RoleListPage{rolesService=$rolesService, params=$params, response=$response}"
+        "RoleListPage{roleService=$roleService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -65,16 +65,16 @@ private constructor(
     }
 
     fun getNextPage(): RoleListPage? {
-        return getNextPageParams()?.let { rolesService.list(it) }
+        return getNextPageParams()?.let { roleService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
     companion object {
 
-        fun of(rolesService: RoleService, params: RoleListParams, response: Response) =
+        fun of(roleService: RoleService, params: RoleListParams, response: Response) =
             RoleListPage(
-                rolesService,
+                roleService,
                 params,
                 response,
             )

@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.FlowCollector
 
 class PromptListPageAsync
 private constructor(
-    private val promptsService: PromptServiceAsync,
+    private val promptService: PromptServiceAsync,
     private val params: PromptListParams,
     private val response: Response,
 ) {
@@ -34,21 +34,21 @@ private constructor(
         }
 
         return other is PromptListPageAsync &&
-            this.promptsService == other.promptsService &&
+            this.promptService == other.promptService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            promptsService,
+            promptService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "PromptListPageAsync{promptsService=$promptsService, params=$params, response=$response}"
+        "PromptListPageAsync{promptService=$promptService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -67,16 +67,16 @@ private constructor(
     }
 
     suspend fun getNextPage(): PromptListPageAsync? {
-        return getNextPageParams()?.let { promptsService.list(it) }
+        return getNextPageParams()?.let { promptService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
     companion object {
 
-        fun of(promptsService: PromptServiceAsync, params: PromptListParams, response: Response) =
+        fun of(promptService: PromptServiceAsync, params: PromptListParams, response: Response) =
             PromptListPageAsync(
-                promptsService,
+                promptService,
                 params,
                 response,
             )

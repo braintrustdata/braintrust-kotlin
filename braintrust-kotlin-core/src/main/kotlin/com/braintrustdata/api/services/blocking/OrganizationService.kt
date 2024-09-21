@@ -11,20 +11,20 @@ import com.braintrustdata.api.models.OrganizationListPage
 import com.braintrustdata.api.models.OrganizationListParams
 import com.braintrustdata.api.models.OrganizationRetrieveParams
 import com.braintrustdata.api.models.OrganizationUpdateParams
-import com.braintrustdata.api.services.blocking.organizations.MemberService
+import com.braintrustdata.api.services.blocking.organization.MemberService
 
 interface OrganizationService {
 
     fun members(): MemberService
 
-    /** Get a organization object by its id */
+    /** Get an organization object by its id */
     fun retrieve(
         params: OrganizationRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none()
     ): Organization
 
     /**
-     * Partially update a organization object. Specify the fields to update in the payload. Any
+     * Partially update an organization object. Specify the fields to update in the payload. Any
      * object-type fields will be deep-merged with existing content. Currently we do not support
      * removing fields or setting them to null.
      */
@@ -42,7 +42,7 @@ interface OrganizationService {
         requestOptions: RequestOptions = RequestOptions.none()
     ): OrganizationListPage
 
-    /** Delete a organization object by its id */
+    /** Delete an organization object by its id */
     fun delete(
         params: OrganizationDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none()
