@@ -107,9 +107,10 @@ Sometimes, the API may support other properties that are not yet supported in th
 you can attach them using the `putAdditionalProperty` method.
 
 ```kotlin
+import com.braintrustdata.api.models.core.JsonValue
 val params = ProjectCreateParams.builder()
     // ... normal properties
-    .putAdditionalProperty("secret_param", "4242")
+    .putAdditionalProperty("secret_param", JsonValue.from("4242"))
     .build()
 ```
 
@@ -150,7 +151,7 @@ if (field.isMissing()) {
 Sometimes, the server response may include additional properties that are not yet available in this library's types. You can access them using the model's `_additionalProperties` method:
 
 ```kotlin
-val secret = project._additionalProperties().get("secret_field")
+val secret = acl._additionalProperties().get("secret_field")
 ```
 
 ---
