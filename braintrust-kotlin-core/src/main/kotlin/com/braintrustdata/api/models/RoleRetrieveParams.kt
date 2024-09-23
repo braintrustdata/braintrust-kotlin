@@ -2,17 +2,41 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.*
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import org.apache.hc.core5.http.ContentType
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.MultipartFormValue
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.ContentTypes
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
+import com.braintrustdata.api.models.*
 
-class RoleRetrieveParams
-constructor(
-    private val roleId: String,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-) {
+class RoleRetrieveParams constructor(private val roleId: String, private val additionalQueryParams: Map<String, List<String>>, private val additionalHeaders: Map<String, List<String>>, ) {
 
     fun roleId(): String = roleId
 
@@ -21,10 +45,10 @@ constructor(
     internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
 
     fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> roleId
-            else -> ""
-        }
+      return when (index) {
+          0 -> roleId
+          else -> ""
+      }
     }
 
     fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -32,26 +56,25 @@ constructor(
     fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is RoleRetrieveParams &&
-            this.roleId == other.roleId &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders
+      return other is RoleRetrieveParams &&
+          this.roleId == other.roleId &&
+          this.additionalQueryParams == other.additionalQueryParams &&
+          this.additionalHeaders == other.additionalHeaders
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            roleId,
-            additionalQueryParams,
-            additionalHeaders,
-        )
+      return Objects.hash(
+          roleId,
+          additionalQueryParams,
+          additionalHeaders,
+      )
     }
 
-    override fun toString() =
-        "RoleRetrieveParams{roleId=$roleId, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
+    override fun toString() = "RoleRetrieveParams{roleId=$roleId, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -74,7 +97,9 @@ constructor(
         }
 
         /** Role id */
-        fun roleId(roleId: String) = apply { this.roleId = roleId }
+        fun roleId(roleId: String) = apply {
+            this.roleId = roleId
+        }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -114,13 +139,16 @@ constructor(
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun removeHeader(name: String) = apply {
+            this.additionalHeaders.put(name, mutableListOf())
+        }
 
-        fun build(): RoleRetrieveParams =
-            RoleRetrieveParams(
-                checkNotNull(roleId) { "`roleId` is required but was not set" },
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-            )
+        fun build(): RoleRetrieveParams = RoleRetrieveParams(
+            checkNotNull(roleId) {
+                "`roleId` is required but was not set"
+            },
+            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+        )
     }
 }

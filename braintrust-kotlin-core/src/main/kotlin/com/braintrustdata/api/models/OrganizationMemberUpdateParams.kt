@@ -2,26 +2,49 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import org.apache.hc.core5.http.ContentType
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.MultipartFormValue
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.ContentTypes
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
+import com.braintrustdata.api.models.*
 
-class OrganizationMemberUpdateParams
-constructor(
-    private val inviteUsers: InviteUsers?,
-    private val orgId: String?,
-    private val orgName: String?,
-    private val removeUsers: RemoveUsers?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
+class OrganizationMemberUpdateParams constructor(
+  private val inviteUsers: InviteUsers?,
+  private val orgId: String?,
+  private val orgName: String?,
+  private val removeUsers: RemoveUsers?,
+  private val additionalQueryParams: Map<String, List<String>>,
+  private val additionalHeaders: Map<String, List<String>>,
+  private val additionalBodyProperties: Map<String, JsonValue>,
+
 ) {
 
     fun inviteUsers(): InviteUsers? = inviteUsers
@@ -33,13 +56,13 @@ constructor(
     fun removeUsers(): RemoveUsers? = removeUsers
 
     internal fun getBody(): OrganizationMemberUpdateBody {
-        return OrganizationMemberUpdateBody(
-            inviteUsers,
-            orgId,
-            orgName,
-            removeUsers,
-            additionalBodyProperties,
-        )
+      return OrganizationMemberUpdateBody(
+          inviteUsers,
+          orgId,
+          orgName,
+          removeUsers,
+          additionalBodyProperties,
+      )
     }
 
     internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -48,36 +71,42 @@ constructor(
 
     @JsonDeserialize(builder = OrganizationMemberUpdateBody.Builder::class)
     @NoAutoDetect
-    class OrganizationMemberUpdateBody
-    internal constructor(
-        private val inviteUsers: InviteUsers?,
-        private val orgId: String?,
-        private val orgName: String?,
-        private val removeUsers: RemoveUsers?,
-        private val additionalProperties: Map<String, JsonValue>,
+    class OrganizationMemberUpdateBody internal constructor(
+      private val inviteUsers: InviteUsers?,
+      private val orgId: String?,
+      private val orgName: String?,
+      private val removeUsers: RemoveUsers?,
+      private val additionalProperties: Map<String, JsonValue>,
+
     ) {
 
         private var hashCode: Int = 0
 
         /** Users to invite to the organization */
-        @JsonProperty("invite_users") fun inviteUsers(): InviteUsers? = inviteUsers
+        @JsonProperty("invite_users")
+        fun inviteUsers(): InviteUsers? = inviteUsers
 
         /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, or in case you want to explicitly assert
-         * the organization you are modifying, you may specify the id of the organization.
+         * For nearly all users, this parameter should be unnecessary. But in the rare case
+         * that your API key belongs to multiple organizations, or in case you want to
+         * explicitly assert the organization you are modifying, you may specify the id of
+         * the organization.
          */
-        @JsonProperty("org_id") fun orgId(): String? = orgId
+        @JsonProperty("org_id")
+        fun orgId(): String? = orgId
 
         /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, or in case you want to explicitly assert
-         * the organization you are modifying, you may specify the name of the organization.
+         * For nearly all users, this parameter should be unnecessary. But in the rare case
+         * that your API key belongs to multiple organizations, or in case you want to
+         * explicitly assert the organization you are modifying, you may specify the name
+         * of the organization.
          */
-        @JsonProperty("org_name") fun orgName(): String? = orgName
+        @JsonProperty("org_name")
+        fun orgName(): String? = orgName
 
         /** Users to remove from the organization */
-        @JsonProperty("remove_users") fun removeUsers(): RemoveUsers? = removeUsers
+        @JsonProperty("remove_users")
+        fun removeUsers(): RemoveUsers? = removeUsers
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -86,34 +115,32 @@ constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is OrganizationMemberUpdateBody &&
-                this.inviteUsers == other.inviteUsers &&
-                this.orgId == other.orgId &&
-                this.orgName == other.orgName &&
-                this.removeUsers == other.removeUsers &&
-                this.additionalProperties == other.additionalProperties
+          return other is OrganizationMemberUpdateBody &&
+              this.inviteUsers == other.inviteUsers &&
+              this.orgId == other.orgId &&
+              this.orgName == other.orgName &&
+              this.removeUsers == other.removeUsers &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        inviteUsers,
-                        orgId,
-                        orgName,
-                        removeUsers,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(
+                inviteUsers,
+                orgId,
+                orgName,
+                removeUsers,
+                additionalProperties,
+            )
+          }
+          return hashCode
         }
 
-        override fun toString() =
-            "OrganizationMemberUpdateBody{inviteUsers=$inviteUsers, orgId=$orgId, orgName=$orgName, removeUsers=$removeUsers, additionalProperties=$additionalProperties}"
+        override fun toString() = "OrganizationMemberUpdateBody{inviteUsers=$inviteUsers, orgId=$orgId, orgName=$orgName, removeUsers=$removeUsers, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -138,28 +165,37 @@ constructor(
 
             /** Users to invite to the organization */
             @JsonProperty("invite_users")
-            fun inviteUsers(inviteUsers: InviteUsers) = apply { this.inviteUsers = inviteUsers }
+            fun inviteUsers(inviteUsers: InviteUsers) = apply {
+                this.inviteUsers = inviteUsers
+            }
 
             /**
-             * For nearly all users, this parameter should be unnecessary. But in the rare case that
-             * your API key belongs to multiple organizations, or in case you want to explicitly
-             * assert the organization you are modifying, you may specify the id of the
-             * organization.
+             * For nearly all users, this parameter should be unnecessary. But in the rare case
+             * that your API key belongs to multiple organizations, or in case you want to
+             * explicitly assert the organization you are modifying, you may specify the id of
+             * the organization.
              */
-            @JsonProperty("org_id") fun orgId(orgId: String) = apply { this.orgId = orgId }
+            @JsonProperty("org_id")
+            fun orgId(orgId: String) = apply {
+                this.orgId = orgId
+            }
 
             /**
-             * For nearly all users, this parameter should be unnecessary. But in the rare case that
-             * your API key belongs to multiple organizations, or in case you want to explicitly
-             * assert the organization you are modifying, you may specify the name of the
-             * organization.
+             * For nearly all users, this parameter should be unnecessary. But in the rare case
+             * that your API key belongs to multiple organizations, or in case you want to
+             * explicitly assert the organization you are modifying, you may specify the name
+             * of the organization.
              */
             @JsonProperty("org_name")
-            fun orgName(orgName: String) = apply { this.orgName = orgName }
+            fun orgName(orgName: String) = apply {
+                this.orgName = orgName
+            }
 
             /** Users to remove from the organization */
             @JsonProperty("remove_users")
-            fun removeUsers(removeUsers: RemoveUsers) = apply { this.removeUsers = removeUsers }
+            fun removeUsers(removeUsers: RemoveUsers) = apply {
+                this.removeUsers = removeUsers
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -175,14 +211,13 @@ constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): OrganizationMemberUpdateBody =
-                OrganizationMemberUpdateBody(
-                    inviteUsers,
-                    orgId,
-                    orgName,
-                    removeUsers,
-                    additionalProperties.toUnmodifiable(),
-                )
+            fun build(): OrganizationMemberUpdateBody = OrganizationMemberUpdateBody(
+                inviteUsers,
+                orgId,
+                orgName,
+                removeUsers,
+                additionalProperties.toUnmodifiable(),
+            )
         }
     }
 
@@ -193,34 +228,33 @@ constructor(
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is OrganizationMemberUpdateParams &&
-            this.inviteUsers == other.inviteUsers &&
-            this.orgId == other.orgId &&
-            this.orgName == other.orgName &&
-            this.removeUsers == other.removeUsers &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+      return other is OrganizationMemberUpdateParams &&
+          this.inviteUsers == other.inviteUsers &&
+          this.orgId == other.orgId &&
+          this.orgName == other.orgName &&
+          this.removeUsers == other.removeUsers &&
+          this.additionalQueryParams == other.additionalQueryParams &&
+          this.additionalHeaders == other.additionalHeaders &&
+          this.additionalBodyProperties == other.additionalBodyProperties
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            inviteUsers,
-            orgId,
-            orgName,
-            removeUsers,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
+      return Objects.hash(
+          inviteUsers,
+          orgId,
+          orgName,
+          removeUsers,
+          additionalQueryParams,
+          additionalHeaders,
+          additionalBodyProperties,
+      )
     }
 
-    override fun toString() =
-        "OrganizationMemberUpdateParams{inviteUsers=$inviteUsers, orgId=$orgId, orgName=$orgName, removeUsers=$removeUsers, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+    override fun toString() = "OrganizationMemberUpdateParams{inviteUsers=$inviteUsers, orgId=$orgId, orgName=$orgName, removeUsers=$removeUsers, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -251,24 +285,34 @@ constructor(
         }
 
         /** Users to invite to the organization */
-        fun inviteUsers(inviteUsers: InviteUsers) = apply { this.inviteUsers = inviteUsers }
+        fun inviteUsers(inviteUsers: InviteUsers) = apply {
+            this.inviteUsers = inviteUsers
+        }
 
         /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, or in case you want to explicitly assert
-         * the organization you are modifying, you may specify the id of the organization.
+         * For nearly all users, this parameter should be unnecessary. But in the rare case
+         * that your API key belongs to multiple organizations, or in case you want to
+         * explicitly assert the organization you are modifying, you may specify the id of
+         * the organization.
          */
-        fun orgId(orgId: String) = apply { this.orgId = orgId }
+        fun orgId(orgId: String) = apply {
+            this.orgId = orgId
+        }
 
         /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, or in case you want to explicitly assert
-         * the organization you are modifying, you may specify the name of the organization.
+         * For nearly all users, this parameter should be unnecessary. But in the rare case
+         * that your API key belongs to multiple organizations, or in case you want to
+         * explicitly assert the organization you are modifying, you may specify the name
+         * of the organization.
          */
-        fun orgName(orgName: String) = apply { this.orgName = orgName }
+        fun orgName(orgName: String) = apply {
+            this.orgName = orgName
+        }
 
         /** Users to remove from the organization */
-        fun removeUsers(removeUsers: RemoveUsers) = apply { this.removeUsers = removeUsers }
+        fun removeUsers(removeUsers: RemoveUsers) = apply {
+            this.removeUsers = removeUsers
+        }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -308,7 +352,9 @@ constructor(
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun removeHeader(name: String) = apply {
+            this.additionalHeaders.put(name, mutableListOf())
+        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             this.additionalBodyProperties.clear()
@@ -319,60 +365,65 @@ constructor(
             this.additionalBodyProperties.put(key, value)
         }
 
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            this.additionalBodyProperties.putAll(additionalBodyProperties)
+        }
 
-        fun build(): OrganizationMemberUpdateParams =
-            OrganizationMemberUpdateParams(
-                inviteUsers,
-                orgId,
-                orgName,
-                removeUsers,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
+        fun build(): OrganizationMemberUpdateParams = OrganizationMemberUpdateParams(
+            inviteUsers,
+            orgId,
+            orgName,
+            removeUsers,
+            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalBodyProperties.toUnmodifiable(),
+        )
     }
 
     /** Users to invite to the organization */
     @JsonDeserialize(builder = InviteUsers.Builder::class)
     @NoAutoDetect
-    class InviteUsers
-    private constructor(
-        private val ids: List<String>?,
-        private val emails: List<String>?,
-        private val sendInviteEmails: Boolean?,
-        private val groupIds: List<String>?,
-        private val groupNames: List<String>?,
-        private val groupId: String?,
-        private val groupName: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+    class InviteUsers private constructor(
+      private val ids: List<String>?,
+      private val emails: List<String>?,
+      private val sendInviteEmails: Boolean?,
+      private val groupIds: List<String>?,
+      private val groupNames: List<String>?,
+      private val groupId: String?,
+      private val groupName: String?,
+      private val additionalProperties: Map<String, JsonValue>,
+
     ) {
 
         private var hashCode: Int = 0
 
         /** Ids of existing users to invite */
-        @JsonProperty("ids") fun ids(): List<String>? = ids
+        @JsonProperty("ids")
+        fun ids(): List<String>? = ids
 
         /** Emails of users to invite */
-        @JsonProperty("emails") fun emails(): List<String>? = emails
+        @JsonProperty("emails")
+        fun emails(): List<String>? = emails
 
         /** If true, send invite emails to the users who wore actually added */
-        @JsonProperty("send_invite_emails") fun sendInviteEmails(): Boolean? = sendInviteEmails
+        @JsonProperty("send_invite_emails")
+        fun sendInviteEmails(): Boolean? = sendInviteEmails
 
         /** Optional list of group ids to add newly-invited users to. */
-        @JsonProperty("group_ids") fun groupIds(): List<String>? = groupIds
+        @JsonProperty("group_ids")
+        fun groupIds(): List<String>? = groupIds
 
         /** Optional list of group names to add newly-invited users to. */
-        @JsonProperty("group_names") fun groupNames(): List<String>? = groupNames
+        @JsonProperty("group_names")
+        fun groupNames(): List<String>? = groupNames
 
         /** Singular form of group_ids */
-        @JsonProperty("group_id") fun groupId(): String? = groupId
+        @JsonProperty("group_id")
+        fun groupId(): String? = groupId
 
         /** Singular form of group_names */
-        @JsonProperty("group_name") fun groupName(): String? = groupName
+        @JsonProperty("group_name")
+        fun groupName(): String? = groupName
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -381,40 +432,38 @@ constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is InviteUsers &&
-                this.ids == other.ids &&
-                this.emails == other.emails &&
-                this.sendInviteEmails == other.sendInviteEmails &&
-                this.groupIds == other.groupIds &&
-                this.groupNames == other.groupNames &&
-                this.groupId == other.groupId &&
-                this.groupName == other.groupName &&
-                this.additionalProperties == other.additionalProperties
+          return other is InviteUsers &&
+              this.ids == other.ids &&
+              this.emails == other.emails &&
+              this.sendInviteEmails == other.sendInviteEmails &&
+              this.groupIds == other.groupIds &&
+              this.groupNames == other.groupNames &&
+              this.groupId == other.groupId &&
+              this.groupName == other.groupName &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        ids,
-                        emails,
-                        sendInviteEmails,
-                        groupIds,
-                        groupNames,
-                        groupId,
-                        groupName,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(
+                ids,
+                emails,
+                sendInviteEmails,
+                groupIds,
+                groupNames,
+                groupId,
+                groupName,
+                additionalProperties,
+            )
+          }
+          return hashCode
         }
 
-        override fun toString() =
-            "InviteUsers{ids=$ids, emails=$emails, sendInviteEmails=$sendInviteEmails, groupIds=$groupIds, groupNames=$groupNames, groupId=$groupId, groupName=$groupName, additionalProperties=$additionalProperties}"
+        override fun toString() = "InviteUsers{ids=$ids, emails=$emails, sendInviteEmails=$sendInviteEmails, groupIds=$groupIds, groupNames=$groupNames, groupId=$groupId, groupName=$groupName, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -444,11 +493,16 @@ constructor(
             }
 
             /** Ids of existing users to invite */
-            @JsonProperty("ids") fun ids(ids: List<String>) = apply { this.ids = ids }
+            @JsonProperty("ids")
+            fun ids(ids: List<String>) = apply {
+                this.ids = ids
+            }
 
             /** Emails of users to invite */
             @JsonProperty("emails")
-            fun emails(emails: List<String>) = apply { this.emails = emails }
+            fun emails(emails: List<String>) = apply {
+                this.emails = emails
+            }
 
             /** If true, send invite emails to the users who wore actually added */
             @JsonProperty("send_invite_emails")
@@ -458,19 +512,27 @@ constructor(
 
             /** Optional list of group ids to add newly-invited users to. */
             @JsonProperty("group_ids")
-            fun groupIds(groupIds: List<String>) = apply { this.groupIds = groupIds }
+            fun groupIds(groupIds: List<String>) = apply {
+                this.groupIds = groupIds
+            }
 
             /** Optional list of group names to add newly-invited users to. */
             @JsonProperty("group_names")
-            fun groupNames(groupNames: List<String>) = apply { this.groupNames = groupNames }
+            fun groupNames(groupNames: List<String>) = apply {
+                this.groupNames = groupNames
+            }
 
             /** Singular form of group_ids */
             @JsonProperty("group_id")
-            fun groupId(groupId: String) = apply { this.groupId = groupId }
+            fun groupId(groupId: String) = apply {
+                this.groupId = groupId
+            }
 
             /** Singular form of group_names */
             @JsonProperty("group_name")
-            fun groupName(groupName: String) = apply { this.groupName = groupName }
+            fun groupName(groupName: String) = apply {
+                this.groupName = groupName
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -486,37 +548,33 @@ constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): InviteUsers =
-                InviteUsers(
-                    ids?.toUnmodifiable(),
-                    emails?.toUnmodifiable(),
-                    sendInviteEmails,
-                    groupIds?.toUnmodifiable(),
-                    groupNames?.toUnmodifiable(),
-                    groupId,
-                    groupName,
-                    additionalProperties.toUnmodifiable(),
-                )
+            fun build(): InviteUsers = InviteUsers(
+                ids?.toUnmodifiable(),
+                emails?.toUnmodifiable(),
+                sendInviteEmails,
+                groupIds?.toUnmodifiable(),
+                groupNames?.toUnmodifiable(),
+                groupId,
+                groupName,
+                additionalProperties.toUnmodifiable(),
+            )
         }
     }
 
     /** Users to remove from the organization */
     @JsonDeserialize(builder = RemoveUsers.Builder::class)
     @NoAutoDetect
-    class RemoveUsers
-    private constructor(
-        private val ids: List<String>?,
-        private val emails: List<String>?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+    class RemoveUsers private constructor(private val ids: List<String>?, private val emails: List<String>?, private val additionalProperties: Map<String, JsonValue>, ) {
 
         private var hashCode: Int = 0
 
         /** Ids of users to remove */
-        @JsonProperty("ids") fun ids(): List<String>? = ids
+        @JsonProperty("ids")
+        fun ids(): List<String>? = ids
 
         /** Emails of users to remove */
-        @JsonProperty("emails") fun emails(): List<String>? = emails
+        @JsonProperty("emails")
+        fun emails(): List<String>? = emails
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -525,30 +583,28 @@ constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is RemoveUsers &&
-                this.ids == other.ids &&
-                this.emails == other.emails &&
-                this.additionalProperties == other.additionalProperties
+          return other is RemoveUsers &&
+              this.ids == other.ids &&
+              this.emails == other.emails &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        ids,
-                        emails,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(
+                ids,
+                emails,
+                additionalProperties,
+            )
+          }
+          return hashCode
         }
 
-        override fun toString() =
-            "RemoveUsers{ids=$ids, emails=$emails, additionalProperties=$additionalProperties}"
+        override fun toString() = "RemoveUsers{ids=$ids, emails=$emails, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -568,11 +624,16 @@ constructor(
             }
 
             /** Ids of users to remove */
-            @JsonProperty("ids") fun ids(ids: List<String>) = apply { this.ids = ids }
+            @JsonProperty("ids")
+            fun ids(ids: List<String>) = apply {
+                this.ids = ids
+            }
 
             /** Emails of users to remove */
             @JsonProperty("emails")
-            fun emails(emails: List<String>) = apply { this.emails = emails }
+            fun emails(emails: List<String>) = apply {
+                this.emails = emails
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -588,12 +649,11 @@ constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): RemoveUsers =
-                RemoveUsers(
-                    ids?.toUnmodifiable(),
-                    emails?.toUnmodifiable(),
-                    additionalProperties.toUnmodifiable(),
-                )
+            fun build(): RemoveUsers = RemoveUsers(
+                ids?.toUnmodifiable(),
+                emails?.toUnmodifiable(),
+                additionalProperties.toUnmodifiable(),
+            )
         }
     }
 }

@@ -2,31 +2,49 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 
 @JsonDeserialize(builder = OrgSecret.Builder::class)
 @NoAutoDetect
-class OrgSecret
-private constructor(
-    private val id: JsonField<String>,
-    private val created: JsonField<OffsetDateTime>,
-    private val orgId: JsonField<String>,
-    private val name: JsonField<String>,
-    private val type: JsonField<String>,
-    private val metadata: JsonField<Metadata>,
-    private val previewSecret: JsonField<String>,
-    private val additionalProperties: Map<String, JsonValue>,
+class OrgSecret private constructor(
+  private val id: JsonField<String>,
+  private val created: JsonField<OffsetDateTime>,
+  private val orgId: JsonField<String>,
+  private val name: JsonField<String>,
+  private val type: JsonField<String>,
+  private val metadata: JsonField<Metadata>,
+  private val previewSecret: JsonField<String>,
+  private val additionalProperties: Map<String, JsonValue>,
+
 ) {
 
     private var validated: Boolean = false
@@ -52,22 +70,36 @@ private constructor(
     fun previewSecret(): String? = previewSecret.getNullable("preview_secret")
 
     /** Unique identifier for the org secret */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id")
+    @ExcludeMissing
+    fun _id() = id
 
     /** Date of org secret creation */
-    @JsonProperty("created") @ExcludeMissing fun _created() = created
+    @JsonProperty("created")
+    @ExcludeMissing
+    fun _created() = created
 
     /** Unique identifier for the organization */
-    @JsonProperty("org_id") @ExcludeMissing fun _orgId() = orgId
+    @JsonProperty("org_id")
+    @ExcludeMissing
+    fun _orgId() = orgId
 
     /** Name of the org secret */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name")
+    @ExcludeMissing
+    fun _name() = name
 
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type")
+    @ExcludeMissing
+    fun _type() = type
 
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+    @JsonProperty("metadata")
+    @ExcludeMissing
+    fun _metadata() = metadata
 
-    @JsonProperty("preview_secret") @ExcludeMissing fun _previewSecret() = previewSecret
+    @JsonProperty("preview_secret")
+    @ExcludeMissing
+    fun _previewSecret() = previewSecret
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -75,54 +107,52 @@ private constructor(
 
     fun validate(): OrgSecret = apply {
         if (!validated) {
-            id()
-            created()
-            orgId()
-            name()
-            type()
-            metadata()?.validate()
-            previewSecret()
-            validated = true
+          id()
+          created()
+          orgId()
+          name()
+          type()
+          metadata()?.validate()
+          previewSecret()
+          validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is OrgSecret &&
-            this.id == other.id &&
-            this.created == other.created &&
-            this.orgId == other.orgId &&
-            this.name == other.name &&
-            this.type == other.type &&
-            this.metadata == other.metadata &&
-            this.previewSecret == other.previewSecret &&
-            this.additionalProperties == other.additionalProperties
+      return other is OrgSecret &&
+          this.id == other.id &&
+          this.created == other.created &&
+          this.orgId == other.orgId &&
+          this.name == other.name &&
+          this.type == other.type &&
+          this.metadata == other.metadata &&
+          this.previewSecret == other.previewSecret &&
+          this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    id,
-                    created,
-                    orgId,
-                    name,
-                    type,
-                    metadata,
-                    previewSecret,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+      if (hashCode == 0) {
+        hashCode = Objects.hash(
+            id,
+            created,
+            orgId,
+            name,
+            type,
+            metadata,
+            previewSecret,
+            additionalProperties,
+        )
+      }
+      return hashCode
     }
 
-    override fun toString() =
-        "OrgSecret{id=$id, created=$created, orgId=$orgId, name=$name, type=$type, metadata=$metadata, previewSecret=$previewSecret, additionalProperties=$additionalProperties}"
+    override fun toString() = "OrgSecret{id=$id, created=$created, orgId=$orgId, name=$name, type=$type, metadata=$metadata, previewSecret=$previewSecret, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -155,7 +185,11 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** Unique identifier for the org secret */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        @JsonProperty("id")
+        @ExcludeMissing
+        fun id(id: JsonField<String>) = apply {
+            this.id = id
+        }
 
         /** Date of org secret creation */
         fun created(created: OffsetDateTime) = created(JsonField.of(created))
@@ -163,7 +197,9 @@ private constructor(
         /** Date of org secret creation */
         @JsonProperty("created")
         @ExcludeMissing
-        fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
+        fun created(created: JsonField<OffsetDateTime>) = apply {
+            this.created = created
+        }
 
         /** Unique identifier for the organization */
         fun orgId(orgId: String) = orgId(JsonField.of(orgId))
@@ -171,7 +207,9 @@ private constructor(
         /** Unique identifier for the organization */
         @JsonProperty("org_id")
         @ExcludeMissing
-        fun orgId(orgId: JsonField<String>) = apply { this.orgId = orgId }
+        fun orgId(orgId: JsonField<String>) = apply {
+            this.orgId = orgId
+        }
 
         /** Name of the org secret */
         fun name(name: String) = name(JsonField.of(name))
@@ -179,19 +217,25 @@ private constructor(
         /** Name of the org secret */
         @JsonProperty("name")
         @ExcludeMissing
-        fun name(name: JsonField<String>) = apply { this.name = name }
+        fun name(name: JsonField<String>) = apply {
+            this.name = name
+        }
 
         fun type(type: String) = type(JsonField.of(type))
 
         @JsonProperty("type")
         @ExcludeMissing
-        fun type(type: JsonField<String>) = apply { this.type = type }
+        fun type(type: JsonField<String>) = apply {
+            this.type = type
+        }
 
         fun metadata(metadata: Metadata) = metadata(JsonField.of(metadata))
 
         @JsonProperty("metadata")
         @ExcludeMissing
-        fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+        fun metadata(metadata: JsonField<Metadata>) = apply {
+            this.metadata = metadata
+        }
 
         fun previewSecret(previewSecret: String) = previewSecret(JsonField.of(previewSecret))
 
@@ -215,25 +259,21 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): OrgSecret =
-            OrgSecret(
-                id,
-                created,
-                orgId,
-                name,
-                type,
-                metadata,
-                previewSecret,
-                additionalProperties.toUnmodifiable(),
-            )
+        fun build(): OrgSecret = OrgSecret(
+            id,
+            created,
+            orgId,
+            name,
+            type,
+            metadata,
+            previewSecret,
+            additionalProperties.toUnmodifiable(),
+        )
     }
 
     @JsonDeserialize(builder = Metadata.Builder::class)
     @NoAutoDetect
-    class Metadata
-    private constructor(
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+    class Metadata private constructor(private val additionalProperties: Map<String, JsonValue>, ) {
 
         private var validated: Boolean = false
 
@@ -245,25 +285,26 @@ private constructor(
 
         fun validate(): Metadata = apply {
             if (!validated) {
-                validated = true
+              validated = true
             }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is Metadata && this.additionalProperties == other.additionalProperties
+          return other is Metadata &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(additionalProperties)
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(additionalProperties)
+          }
+          return hashCode
         }
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"

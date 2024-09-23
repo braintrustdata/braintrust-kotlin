@@ -2,30 +2,48 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 
 @JsonDeserialize(builder = ApiKey.Builder::class)
 @NoAutoDetect
-class ApiKey
-private constructor(
-    private val id: JsonField<String>,
-    private val created: JsonField<OffsetDateTime>,
-    private val name: JsonField<String>,
-    private val previewName: JsonField<String>,
-    private val userId: JsonField<String>,
-    private val orgId: JsonField<String>,
-    private val additionalProperties: Map<String, JsonValue>,
+class ApiKey private constructor(
+  private val id: JsonField<String>,
+  private val created: JsonField<OffsetDateTime>,
+  private val name: JsonField<String>,
+  private val previewName: JsonField<String>,
+  private val userId: JsonField<String>,
+  private val orgId: JsonField<String>,
+  private val additionalProperties: Map<String, JsonValue>,
+
 ) {
 
     private var validated: Boolean = false
@@ -50,21 +68,33 @@ private constructor(
     fun orgId(): String? = orgId.getNullable("org_id")
 
     /** Unique identifier for the api key */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id")
+    @ExcludeMissing
+    fun _id() = id
 
     /** Date of api key creation */
-    @JsonProperty("created") @ExcludeMissing fun _created() = created
+    @JsonProperty("created")
+    @ExcludeMissing
+    fun _created() = created
 
     /** Name of the api key */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name")
+    @ExcludeMissing
+    fun _name() = name
 
-    @JsonProperty("preview_name") @ExcludeMissing fun _previewName() = previewName
+    @JsonProperty("preview_name")
+    @ExcludeMissing
+    fun _previewName() = previewName
 
     /** Unique identifier for the user */
-    @JsonProperty("user_id") @ExcludeMissing fun _userId() = userId
+    @JsonProperty("user_id")
+    @ExcludeMissing
+    fun _userId() = userId
 
     /** Unique identifier for the organization */
-    @JsonProperty("org_id") @ExcludeMissing fun _orgId() = orgId
+    @JsonProperty("org_id")
+    @ExcludeMissing
+    fun _orgId() = orgId
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -72,51 +102,49 @@ private constructor(
 
     fun validate(): ApiKey = apply {
         if (!validated) {
-            id()
-            created()
-            name()
-            previewName()
-            userId()
-            orgId()
-            validated = true
+          id()
+          created()
+          name()
+          previewName()
+          userId()
+          orgId()
+          validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is ApiKey &&
-            this.id == other.id &&
-            this.created == other.created &&
-            this.name == other.name &&
-            this.previewName == other.previewName &&
-            this.userId == other.userId &&
-            this.orgId == other.orgId &&
-            this.additionalProperties == other.additionalProperties
+      return other is ApiKey &&
+          this.id == other.id &&
+          this.created == other.created &&
+          this.name == other.name &&
+          this.previewName == other.previewName &&
+          this.userId == other.userId &&
+          this.orgId == other.orgId &&
+          this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    id,
-                    created,
-                    name,
-                    previewName,
-                    userId,
-                    orgId,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+      if (hashCode == 0) {
+        hashCode = Objects.hash(
+            id,
+            created,
+            name,
+            previewName,
+            userId,
+            orgId,
+            additionalProperties,
+        )
+      }
+      return hashCode
     }
 
-    override fun toString() =
-        "ApiKey{id=$id, created=$created, name=$name, previewName=$previewName, userId=$userId, orgId=$orgId, additionalProperties=$additionalProperties}"
+    override fun toString() = "ApiKey{id=$id, created=$created, name=$name, previewName=$previewName, userId=$userId, orgId=$orgId, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -147,7 +175,11 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** Unique identifier for the api key */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        @JsonProperty("id")
+        @ExcludeMissing
+        fun id(id: JsonField<String>) = apply {
+            this.id = id
+        }
 
         /** Date of api key creation */
         fun created(created: OffsetDateTime) = created(JsonField.of(created))
@@ -155,7 +187,9 @@ private constructor(
         /** Date of api key creation */
         @JsonProperty("created")
         @ExcludeMissing
-        fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
+        fun created(created: JsonField<OffsetDateTime>) = apply {
+            this.created = created
+        }
 
         /** Name of the api key */
         fun name(name: String) = name(JsonField.of(name))
@@ -163,13 +197,17 @@ private constructor(
         /** Name of the api key */
         @JsonProperty("name")
         @ExcludeMissing
-        fun name(name: JsonField<String>) = apply { this.name = name }
+        fun name(name: JsonField<String>) = apply {
+            this.name = name
+        }
 
         fun previewName(previewName: String) = previewName(JsonField.of(previewName))
 
         @JsonProperty("preview_name")
         @ExcludeMissing
-        fun previewName(previewName: JsonField<String>) = apply { this.previewName = previewName }
+        fun previewName(previewName: JsonField<String>) = apply {
+            this.previewName = previewName
+        }
 
         /** Unique identifier for the user */
         fun userId(userId: String) = userId(JsonField.of(userId))
@@ -177,7 +215,9 @@ private constructor(
         /** Unique identifier for the user */
         @JsonProperty("user_id")
         @ExcludeMissing
-        fun userId(userId: JsonField<String>) = apply { this.userId = userId }
+        fun userId(userId: JsonField<String>) = apply {
+            this.userId = userId
+        }
 
         /** Unique identifier for the organization */
         fun orgId(orgId: String) = orgId(JsonField.of(orgId))
@@ -185,7 +225,9 @@ private constructor(
         /** Unique identifier for the organization */
         @JsonProperty("org_id")
         @ExcludeMissing
-        fun orgId(orgId: JsonField<String>) = apply { this.orgId = orgId }
+        fun orgId(orgId: JsonField<String>) = apply {
+            this.orgId = orgId
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -201,15 +243,14 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): ApiKey =
-            ApiKey(
-                id,
-                created,
-                name,
-                previewName,
-                userId,
-                orgId,
-                additionalProperties.toUnmodifiable(),
-            )
+        fun build(): ApiKey = ApiKey(
+            id,
+            created,
+            name,
+            previewName,
+            userId,
+            orgId,
+            additionalProperties.toUnmodifiable(),
+        )
     }
 }

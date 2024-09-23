@@ -2,28 +2,51 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import org.apache.hc.core5.http.ContentType
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.MultipartFormValue
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.ContentTypes
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
+import com.braintrustdata.api.models.*
 
-class OrganizationUpdateParams
-constructor(
-    private val organizationId: String,
-    private val apiUrl: String?,
-    private val isUniversalApi: Boolean?,
-    private val name: String?,
-    private val proxyUrl: String?,
-    private val realtimeUrl: String?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
+class OrganizationUpdateParams constructor(
+  private val organizationId: String,
+  private val apiUrl: String?,
+  private val isUniversalApi: Boolean?,
+  private val name: String?,
+  private val proxyUrl: String?,
+  private val realtimeUrl: String?,
+  private val additionalQueryParams: Map<String, List<String>>,
+  private val additionalHeaders: Map<String, List<String>>,
+  private val additionalBodyProperties: Map<String, JsonValue>,
+
 ) {
 
     fun organizationId(): String = organizationId
@@ -39,14 +62,14 @@ constructor(
     fun realtimeUrl(): String? = realtimeUrl
 
     internal fun getBody(): OrganizationUpdateBody {
-        return OrganizationUpdateBody(
-            apiUrl,
-            isUniversalApi,
-            name,
-            proxyUrl,
-            realtimeUrl,
-            additionalBodyProperties,
-        )
+      return OrganizationUpdateBody(
+          apiUrl,
+          isUniversalApi,
+          name,
+          proxyUrl,
+          realtimeUrl,
+          additionalBodyProperties,
+      )
     }
 
     internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -54,36 +77,41 @@ constructor(
     internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
 
     fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> organizationId
-            else -> ""
-        }
+      return when (index) {
+          0 -> organizationId
+          else -> ""
+      }
     }
 
     @JsonDeserialize(builder = OrganizationUpdateBody.Builder::class)
     @NoAutoDetect
-    class OrganizationUpdateBody
-    internal constructor(
-        private val apiUrl: String?,
-        private val isUniversalApi: Boolean?,
-        private val name: String?,
-        private val proxyUrl: String?,
-        private val realtimeUrl: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+    class OrganizationUpdateBody internal constructor(
+      private val apiUrl: String?,
+      private val isUniversalApi: Boolean?,
+      private val name: String?,
+      private val proxyUrl: String?,
+      private val realtimeUrl: String?,
+      private val additionalProperties: Map<String, JsonValue>,
+
     ) {
 
         private var hashCode: Int = 0
 
-        @JsonProperty("api_url") fun apiUrl(): String? = apiUrl
+        @JsonProperty("api_url")
+        fun apiUrl(): String? = apiUrl
 
-        @JsonProperty("is_universal_api") fun isUniversalApi(): Boolean? = isUniversalApi
+        @JsonProperty("is_universal_api")
+        fun isUniversalApi(): Boolean? = isUniversalApi
 
         /** Name of the organization */
-        @JsonProperty("name") fun name(): String? = name
+        @JsonProperty("name")
+        fun name(): String? = name
 
-        @JsonProperty("proxy_url") fun proxyUrl(): String? = proxyUrl
+        @JsonProperty("proxy_url")
+        fun proxyUrl(): String? = proxyUrl
 
-        @JsonProperty("realtime_url") fun realtimeUrl(): String? = realtimeUrl
+        @JsonProperty("realtime_url")
+        fun realtimeUrl(): String? = realtimeUrl
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -92,36 +120,34 @@ constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is OrganizationUpdateBody &&
-                this.apiUrl == other.apiUrl &&
-                this.isUniversalApi == other.isUniversalApi &&
-                this.name == other.name &&
-                this.proxyUrl == other.proxyUrl &&
-                this.realtimeUrl == other.realtimeUrl &&
-                this.additionalProperties == other.additionalProperties
+          return other is OrganizationUpdateBody &&
+              this.apiUrl == other.apiUrl &&
+              this.isUniversalApi == other.isUniversalApi &&
+              this.name == other.name &&
+              this.proxyUrl == other.proxyUrl &&
+              this.realtimeUrl == other.realtimeUrl &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        apiUrl,
-                        isUniversalApi,
-                        name,
-                        proxyUrl,
-                        realtimeUrl,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(
+                apiUrl,
+                isUniversalApi,
+                name,
+                proxyUrl,
+                realtimeUrl,
+                additionalProperties,
+            )
+          }
+          return hashCode
         }
 
-        override fun toString() =
-            "OrganizationUpdateBody{apiUrl=$apiUrl, isUniversalApi=$isUniversalApi, name=$name, proxyUrl=$proxyUrl, realtimeUrl=$realtimeUrl, additionalProperties=$additionalProperties}"
+        override fun toString() = "OrganizationUpdateBody{apiUrl=$apiUrl, isUniversalApi=$isUniversalApi, name=$name, proxyUrl=$proxyUrl, realtimeUrl=$realtimeUrl, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -146,7 +172,10 @@ constructor(
                 additionalProperties(organizationUpdateBody.additionalProperties)
             }
 
-            @JsonProperty("api_url") fun apiUrl(apiUrl: String) = apply { this.apiUrl = apiUrl }
+            @JsonProperty("api_url")
+            fun apiUrl(apiUrl: String) = apply {
+                this.apiUrl = apiUrl
+            }
 
             @JsonProperty("is_universal_api")
             fun isUniversalApi(isUniversalApi: Boolean) = apply {
@@ -154,13 +183,20 @@ constructor(
             }
 
             /** Name of the organization */
-            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+            @JsonProperty("name")
+            fun name(name: String) = apply {
+                this.name = name
+            }
 
             @JsonProperty("proxy_url")
-            fun proxyUrl(proxyUrl: String) = apply { this.proxyUrl = proxyUrl }
+            fun proxyUrl(proxyUrl: String) = apply {
+                this.proxyUrl = proxyUrl
+            }
 
             @JsonProperty("realtime_url")
-            fun realtimeUrl(realtimeUrl: String) = apply { this.realtimeUrl = realtimeUrl }
+            fun realtimeUrl(realtimeUrl: String) = apply {
+                this.realtimeUrl = realtimeUrl
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -176,15 +212,14 @@ constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): OrganizationUpdateBody =
-                OrganizationUpdateBody(
-                    apiUrl,
-                    isUniversalApi,
-                    name,
-                    proxyUrl,
-                    realtimeUrl,
-                    additionalProperties.toUnmodifiable(),
-                )
+            fun build(): OrganizationUpdateBody = OrganizationUpdateBody(
+                apiUrl,
+                isUniversalApi,
+                name,
+                proxyUrl,
+                realtimeUrl,
+                additionalProperties.toUnmodifiable(),
+            )
         }
     }
 
@@ -195,38 +230,37 @@ constructor(
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is OrganizationUpdateParams &&
-            this.organizationId == other.organizationId &&
-            this.apiUrl == other.apiUrl &&
-            this.isUniversalApi == other.isUniversalApi &&
-            this.name == other.name &&
-            this.proxyUrl == other.proxyUrl &&
-            this.realtimeUrl == other.realtimeUrl &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+      return other is OrganizationUpdateParams &&
+          this.organizationId == other.organizationId &&
+          this.apiUrl == other.apiUrl &&
+          this.isUniversalApi == other.isUniversalApi &&
+          this.name == other.name &&
+          this.proxyUrl == other.proxyUrl &&
+          this.realtimeUrl == other.realtimeUrl &&
+          this.additionalQueryParams == other.additionalQueryParams &&
+          this.additionalHeaders == other.additionalHeaders &&
+          this.additionalBodyProperties == other.additionalBodyProperties
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            organizationId,
-            apiUrl,
-            isUniversalApi,
-            name,
-            proxyUrl,
-            realtimeUrl,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
+      return Objects.hash(
+          organizationId,
+          apiUrl,
+          isUniversalApi,
+          name,
+          proxyUrl,
+          realtimeUrl,
+          additionalQueryParams,
+          additionalHeaders,
+          additionalBodyProperties,
+      )
     }
 
-    override fun toString() =
-        "OrganizationUpdateParams{organizationId=$organizationId, apiUrl=$apiUrl, isUniversalApi=$isUniversalApi, name=$name, proxyUrl=$proxyUrl, realtimeUrl=$realtimeUrl, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+    override fun toString() = "OrganizationUpdateParams{organizationId=$organizationId, apiUrl=$apiUrl, isUniversalApi=$isUniversalApi, name=$name, proxyUrl=$proxyUrl, realtimeUrl=$realtimeUrl, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -261,18 +295,30 @@ constructor(
         }
 
         /** Organization id */
-        fun organizationId(organizationId: String) = apply { this.organizationId = organizationId }
+        fun organizationId(organizationId: String) = apply {
+            this.organizationId = organizationId
+        }
 
-        fun apiUrl(apiUrl: String) = apply { this.apiUrl = apiUrl }
+        fun apiUrl(apiUrl: String) = apply {
+            this.apiUrl = apiUrl
+        }
 
-        fun isUniversalApi(isUniversalApi: Boolean) = apply { this.isUniversalApi = isUniversalApi }
+        fun isUniversalApi(isUniversalApi: Boolean) = apply {
+            this.isUniversalApi = isUniversalApi
+        }
 
         /** Name of the organization */
-        fun name(name: String) = apply { this.name = name }
+        fun name(name: String) = apply {
+            this.name = name
+        }
 
-        fun proxyUrl(proxyUrl: String) = apply { this.proxyUrl = proxyUrl }
+        fun proxyUrl(proxyUrl: String) = apply {
+            this.proxyUrl = proxyUrl
+        }
 
-        fun realtimeUrl(realtimeUrl: String) = apply { this.realtimeUrl = realtimeUrl }
+        fun realtimeUrl(realtimeUrl: String) = apply {
+            this.realtimeUrl = realtimeUrl
+        }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -312,7 +358,9 @@ constructor(
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun removeHeader(name: String) = apply {
+            this.additionalHeaders.put(name, mutableListOf())
+        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             this.additionalBodyProperties.clear()
@@ -323,22 +371,22 @@ constructor(
             this.additionalBodyProperties.put(key, value)
         }
 
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            this.additionalBodyProperties.putAll(additionalBodyProperties)
+        }
 
-        fun build(): OrganizationUpdateParams =
-            OrganizationUpdateParams(
-                checkNotNull(organizationId) { "`organizationId` is required but was not set" },
-                apiUrl,
-                isUniversalApi,
-                name,
-                proxyUrl,
-                realtimeUrl,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
+        fun build(): OrganizationUpdateParams = OrganizationUpdateParams(
+            checkNotNull(organizationId) {
+                "`organizationId` is required but was not set"
+            },
+            apiUrl,
+            isUniversalApi,
+            name,
+            proxyUrl,
+            realtimeUrl,
+            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalBodyProperties.toUnmodifiable(),
+        )
     }
 }
