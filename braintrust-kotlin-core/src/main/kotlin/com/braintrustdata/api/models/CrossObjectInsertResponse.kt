@@ -2,26 +2,45 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 
 @JsonDeserialize(builder = CrossObjectInsertResponse.Builder::class)
 @NoAutoDetect
-class CrossObjectInsertResponse
-private constructor(
-    private val experiment: JsonField<Experiment>,
-    private val dataset: JsonField<Dataset>,
-    private val projectLogs: JsonField<ProjectLogs>,
-    private val additionalProperties: Map<String, JsonValue>,
+class CrossObjectInsertResponse private constructor(
+  private val experiment: JsonField<Experiment>,
+  private val dataset: JsonField<Dataset>,
+  private val projectLogs: JsonField<ProjectLogs>,
+  private val additionalProperties: Map<String, JsonValue>,
+
 ) {
 
     private var validated: Boolean = false
@@ -38,13 +57,19 @@ private constructor(
     fun projectLogs(): ProjectLogs? = projectLogs.getNullable("project_logs")
 
     /** A mapping from experiment id to row ids for inserted `events` */
-    @JsonProperty("experiment") @ExcludeMissing fun _experiment() = experiment
+    @JsonProperty("experiment")
+    @ExcludeMissing
+    fun _experiment() = experiment
 
     /** A mapping from dataset id to row ids for inserted `events` */
-    @JsonProperty("dataset") @ExcludeMissing fun _dataset() = dataset
+    @JsonProperty("dataset")
+    @ExcludeMissing
+    fun _dataset() = dataset
 
     /** A mapping from project id to row ids for inserted `events` */
-    @JsonProperty("project_logs") @ExcludeMissing fun _projectLogs() = projectLogs
+    @JsonProperty("project_logs")
+    @ExcludeMissing
+    fun _projectLogs() = projectLogs
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -52,42 +77,40 @@ private constructor(
 
     fun validate(): CrossObjectInsertResponse = apply {
         if (!validated) {
-            experiment()?.validate()
-            dataset()?.validate()
-            projectLogs()?.validate()
-            validated = true
+          experiment()?.validate()
+          dataset()?.validate()
+          projectLogs()?.validate()
+          validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is CrossObjectInsertResponse &&
-            this.experiment == other.experiment &&
-            this.dataset == other.dataset &&
-            this.projectLogs == other.projectLogs &&
-            this.additionalProperties == other.additionalProperties
+      return other is CrossObjectInsertResponse &&
+          this.experiment == other.experiment &&
+          this.dataset == other.dataset &&
+          this.projectLogs == other.projectLogs &&
+          this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    experiment,
-                    dataset,
-                    projectLogs,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+      if (hashCode == 0) {
+        hashCode = Objects.hash(
+            experiment,
+            dataset,
+            projectLogs,
+            additionalProperties,
+        )
+      }
+      return hashCode
     }
 
-    override fun toString() =
-        "CrossObjectInsertResponse{experiment=$experiment, dataset=$dataset, projectLogs=$projectLogs, additionalProperties=$additionalProperties}"
+    override fun toString() = "CrossObjectInsertResponse{experiment=$experiment, dataset=$dataset, projectLogs=$projectLogs, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -114,7 +137,9 @@ private constructor(
         /** A mapping from experiment id to row ids for inserted `events` */
         @JsonProperty("experiment")
         @ExcludeMissing
-        fun experiment(experiment: JsonField<Experiment>) = apply { this.experiment = experiment }
+        fun experiment(experiment: JsonField<Experiment>) = apply {
+            this.experiment = experiment
+        }
 
         /** A mapping from dataset id to row ids for inserted `events` */
         fun dataset(dataset: Dataset) = dataset(JsonField.of(dataset))
@@ -122,7 +147,9 @@ private constructor(
         /** A mapping from dataset id to row ids for inserted `events` */
         @JsonProperty("dataset")
         @ExcludeMissing
-        fun dataset(dataset: JsonField<Dataset>) = apply { this.dataset = dataset }
+        fun dataset(dataset: JsonField<Dataset>) = apply {
+            this.dataset = dataset
+        }
 
         /** A mapping from project id to row ids for inserted `events` */
         fun projectLogs(projectLogs: ProjectLogs) = projectLogs(JsonField.of(projectLogs))
@@ -148,22 +175,18 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): CrossObjectInsertResponse =
-            CrossObjectInsertResponse(
-                experiment,
-                dataset,
-                projectLogs,
-                additionalProperties.toUnmodifiable(),
-            )
+        fun build(): CrossObjectInsertResponse = CrossObjectInsertResponse(
+            experiment,
+            dataset,
+            projectLogs,
+            additionalProperties.toUnmodifiable(),
+        )
     }
 
     /** A mapping from dataset id to row ids for inserted `events` */
     @JsonDeserialize(builder = Dataset.Builder::class)
     @NoAutoDetect
-    class Dataset
-    private constructor(
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+    class Dataset private constructor(private val additionalProperties: Map<String, JsonValue>, ) {
 
         private var validated: Boolean = false
 
@@ -175,25 +198,26 @@ private constructor(
 
         fun validate(): Dataset = apply {
             if (!validated) {
-                validated = true
+              validated = true
             }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is Dataset && this.additionalProperties == other.additionalProperties
+          return other is Dataset &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(additionalProperties)
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(additionalProperties)
+          }
+          return hashCode
         }
 
         override fun toString() = "Dataset{additionalProperties=$additionalProperties}"
@@ -232,10 +256,7 @@ private constructor(
     /** A mapping from experiment id to row ids for inserted `events` */
     @JsonDeserialize(builder = Experiment.Builder::class)
     @NoAutoDetect
-    class Experiment
-    private constructor(
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+    class Experiment private constructor(private val additionalProperties: Map<String, JsonValue>, ) {
 
         private var validated: Boolean = false
 
@@ -247,25 +268,26 @@ private constructor(
 
         fun validate(): Experiment = apply {
             if (!validated) {
-                validated = true
+              validated = true
             }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is Experiment && this.additionalProperties == other.additionalProperties
+          return other is Experiment &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(additionalProperties)
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(additionalProperties)
+          }
+          return hashCode
         }
 
         override fun toString() = "Experiment{additionalProperties=$additionalProperties}"
@@ -304,10 +326,7 @@ private constructor(
     /** A mapping from project id to row ids for inserted `events` */
     @JsonDeserialize(builder = ProjectLogs.Builder::class)
     @NoAutoDetect
-    class ProjectLogs
-    private constructor(
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+    class ProjectLogs private constructor(private val additionalProperties: Map<String, JsonValue>, ) {
 
         private var validated: Boolean = false
 
@@ -319,25 +338,26 @@ private constructor(
 
         fun validate(): ProjectLogs = apply {
             if (!validated) {
-                validated = true
+              validated = true
             }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is ProjectLogs && this.additionalProperties == other.additionalProperties
+          return other is ProjectLogs &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(additionalProperties)
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(additionalProperties)
+          }
+          return hashCode
         }
 
         override fun toString() = "ProjectLogs{additionalProperties=$additionalProperties}"

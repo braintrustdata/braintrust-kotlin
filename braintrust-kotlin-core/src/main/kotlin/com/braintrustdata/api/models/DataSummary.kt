@@ -2,26 +2,41 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 
 /** Summary of a dataset's data */
 @JsonDeserialize(builder = DataSummary.Builder::class)
 @NoAutoDetect
-class DataSummary
-private constructor(
-    private val totalRecords: JsonField<Long>,
-    private val additionalProperties: Map<String, JsonValue>,
-) {
+class DataSummary private constructor(private val totalRecords: JsonField<Long>, private val additionalProperties: Map<String, JsonValue>, ) {
 
     private var validated: Boolean = false
 
@@ -31,7 +46,9 @@ private constructor(
     fun totalRecords(): Long = totalRecords.getRequired("total_records")
 
     /** Total number of records in the dataset */
-    @JsonProperty("total_records") @ExcludeMissing fun _totalRecords() = totalRecords
+    @JsonProperty("total_records")
+    @ExcludeMissing
+    fun _totalRecords() = totalRecords
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -39,32 +56,31 @@ private constructor(
 
     fun validate(): DataSummary = apply {
         if (!validated) {
-            totalRecords()
-            validated = true
+          totalRecords()
+          validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is DataSummary &&
-            this.totalRecords == other.totalRecords &&
-            this.additionalProperties == other.additionalProperties
+      return other is DataSummary &&
+          this.totalRecords == other.totalRecords &&
+          this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = Objects.hash(totalRecords, additionalProperties)
-        }
-        return hashCode
+      if (hashCode == 0) {
+        hashCode = Objects.hash(totalRecords, additionalProperties)
+      }
+      return hashCode
     }
 
-    override fun toString() =
-        "DataSummary{totalRecords=$totalRecords, additionalProperties=$additionalProperties}"
+    override fun toString() = "DataSummary{totalRecords=$totalRecords, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -87,7 +103,9 @@ private constructor(
         /** Total number of records in the dataset */
         @JsonProperty("total_records")
         @ExcludeMissing
-        fun totalRecords(totalRecords: JsonField<Long>) = apply { this.totalRecords = totalRecords }
+        fun totalRecords(totalRecords: JsonField<Long>) = apply {
+            this.totalRecords = totalRecords
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()

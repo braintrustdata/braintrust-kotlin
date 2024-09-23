@@ -2,29 +2,48 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 
 /** Summary of a score's performance */
 @JsonDeserialize(builder = ScoreSummary.Builder::class)
 @NoAutoDetect
-class ScoreSummary
-private constructor(
-    private val name: JsonField<String>,
-    private val score: JsonField<Double>,
-    private val diff: JsonField<Double>,
-    private val improvements: JsonField<Long>,
-    private val regressions: JsonField<Long>,
-    private val additionalProperties: Map<String, JsonValue>,
+class ScoreSummary private constructor(
+  private val name: JsonField<String>,
+  private val score: JsonField<Double>,
+  private val diff: JsonField<Double>,
+  private val improvements: JsonField<Long>,
+  private val regressions: JsonField<Long>,
+  private val additionalProperties: Map<String, JsonValue>,
+
 ) {
 
     private var validated: Boolean = false
@@ -47,19 +66,29 @@ private constructor(
     fun regressions(): Long = regressions.getRequired("regressions")
 
     /** Name of the score */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name")
+    @ExcludeMissing
+    fun _name() = name
 
     /** Average score across all examples */
-    @JsonProperty("score") @ExcludeMissing fun _score() = score
+    @JsonProperty("score")
+    @ExcludeMissing
+    fun _score() = score
 
     /** Difference in score between the current and comparison experiment */
-    @JsonProperty("diff") @ExcludeMissing fun _diff() = diff
+    @JsonProperty("diff")
+    @ExcludeMissing
+    fun _diff() = diff
 
     /** Number of improvements in the score */
-    @JsonProperty("improvements") @ExcludeMissing fun _improvements() = improvements
+    @JsonProperty("improvements")
+    @ExcludeMissing
+    fun _improvements() = improvements
 
     /** Number of regressions in the score */
-    @JsonProperty("regressions") @ExcludeMissing fun _regressions() = regressions
+    @JsonProperty("regressions")
+    @ExcludeMissing
+    fun _regressions() = regressions
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -67,48 +96,46 @@ private constructor(
 
     fun validate(): ScoreSummary = apply {
         if (!validated) {
-            name()
-            score()
-            diff()
-            improvements()
-            regressions()
-            validated = true
+          name()
+          score()
+          diff()
+          improvements()
+          regressions()
+          validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is ScoreSummary &&
-            this.name == other.name &&
-            this.score == other.score &&
-            this.diff == other.diff &&
-            this.improvements == other.improvements &&
-            this.regressions == other.regressions &&
-            this.additionalProperties == other.additionalProperties
+      return other is ScoreSummary &&
+          this.name == other.name &&
+          this.score == other.score &&
+          this.diff == other.diff &&
+          this.improvements == other.improvements &&
+          this.regressions == other.regressions &&
+          this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    name,
-                    score,
-                    diff,
-                    improvements,
-                    regressions,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+      if (hashCode == 0) {
+        hashCode = Objects.hash(
+            name,
+            score,
+            diff,
+            improvements,
+            regressions,
+            additionalProperties,
+        )
+      }
+      return hashCode
     }
 
-    override fun toString() =
-        "ScoreSummary{name=$name, score=$score, diff=$diff, improvements=$improvements, regressions=$regressions, additionalProperties=$additionalProperties}"
+    override fun toString() = "ScoreSummary{name=$name, score=$score, diff=$diff, improvements=$improvements, regressions=$regressions, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -139,7 +166,9 @@ private constructor(
         /** Name of the score */
         @JsonProperty("name")
         @ExcludeMissing
-        fun name(name: JsonField<String>) = apply { this.name = name }
+        fun name(name: JsonField<String>) = apply {
+            this.name = name
+        }
 
         /** Average score across all examples */
         fun score(score: Double) = score(JsonField.of(score))
@@ -147,7 +176,9 @@ private constructor(
         /** Average score across all examples */
         @JsonProperty("score")
         @ExcludeMissing
-        fun score(score: JsonField<Double>) = apply { this.score = score }
+        fun score(score: JsonField<Double>) = apply {
+            this.score = score
+        }
 
         /** Difference in score between the current and comparison experiment */
         fun diff(diff: Double) = diff(JsonField.of(diff))
@@ -155,7 +186,9 @@ private constructor(
         /** Difference in score between the current and comparison experiment */
         @JsonProperty("diff")
         @ExcludeMissing
-        fun diff(diff: JsonField<Double>) = apply { this.diff = diff }
+        fun diff(diff: JsonField<Double>) = apply {
+            this.diff = diff
+        }
 
         /** Number of improvements in the score */
         fun improvements(improvements: Long) = improvements(JsonField.of(improvements))
@@ -163,7 +196,9 @@ private constructor(
         /** Number of improvements in the score */
         @JsonProperty("improvements")
         @ExcludeMissing
-        fun improvements(improvements: JsonField<Long>) = apply { this.improvements = improvements }
+        fun improvements(improvements: JsonField<Long>) = apply {
+            this.improvements = improvements
+        }
 
         /** Number of regressions in the score */
         fun regressions(regressions: Long) = regressions(JsonField.of(regressions))
@@ -171,7 +206,9 @@ private constructor(
         /** Number of regressions in the score */
         @JsonProperty("regressions")
         @ExcludeMissing
-        fun regressions(regressions: JsonField<Long>) = apply { this.regressions = regressions }
+        fun regressions(regressions: JsonField<Long>) = apply {
+            this.regressions = regressions
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -187,14 +224,13 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): ScoreSummary =
-            ScoreSummary(
-                name,
-                score,
-                diff,
-                improvements,
-                regressions,
-                additionalProperties.toUnmodifiable(),
-            )
+        fun build(): ScoreSummary = ScoreSummary(
+            name,
+            score,
+            diff,
+            improvements,
+            regressions,
+            additionalProperties.toUnmodifiable(),
+        )
     }
 }
