@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.braintrustdata.api.services.async
+package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.RequestOptions
@@ -8,49 +8,46 @@ import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
 import com.braintrustdata.api.core.http.HttpResponse.Handler
 import com.braintrustdata.api.errors.BraintrustError
-import com.braintrustdata.api.models.OrgSecret
-import com.braintrustdata.api.models.OrgSecretCreateParams
-import com.braintrustdata.api.models.OrgSecretDeleteParams
-import com.braintrustdata.api.models.OrgSecretFindAndDeleteParams
-import com.braintrustdata.api.models.OrgSecretListPageAsync
-import com.braintrustdata.api.models.OrgSecretListParams
-import com.braintrustdata.api.models.OrgSecretReplaceParams
-import com.braintrustdata.api.models.OrgSecretRetrieveParams
-import com.braintrustdata.api.models.OrgSecretUpdateParams
+import com.braintrustdata.api.models.AISecret
+import com.braintrustdata.api.models.AiSecretCreateParams
+import com.braintrustdata.api.models.AiSecretDeleteParams
+import com.braintrustdata.api.models.AiSecretFindAndDeleteParams
+import com.braintrustdata.api.models.AiSecretListPage
+import com.braintrustdata.api.models.AiSecretListParams
+import com.braintrustdata.api.models.AiSecretReplaceParams
+import com.braintrustdata.api.models.AiSecretRetrieveParams
+import com.braintrustdata.api.models.AiSecretUpdateParams
 import com.braintrustdata.api.services.errorHandler
 import com.braintrustdata.api.services.json
 import com.braintrustdata.api.services.jsonHandler
 import com.braintrustdata.api.services.withErrorHandler
 
-class OrgSecretServiceAsyncImpl
+class AiSecretServiceImpl
 constructor(
     private val clientOptions: ClientOptions,
-) : OrgSecretServiceAsync {
+) : AiSecretService {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
-    private val createHandler: Handler<OrgSecret> =
-        jsonHandler<OrgSecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    private val createHandler: Handler<AISecret> =
+        jsonHandler<AISecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
     /**
-     * Create a new org_secret. If there is an existing org_secret with the same name as the one
-     * specified in the request, will return the existing org_secret unmodified
+     * Create a new ai_secret. If there is an existing ai_secret with the same name as the one
+     * specified in the request, will return the existing ai_secret unmodified
      */
-    override suspend fun create(
-        params: OrgSecretCreateParams,
-        requestOptions: RequestOptions
-    ): OrgSecret {
+    override fun create(params: AiSecretCreateParams, requestOptions: RequestOptions): AISecret {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
-                .addPathSegments("v1", "org_secret")
+                .addPathSegments("v1", "ai_secret")
                 .putAllQueryParams(clientOptions.queryParams)
                 .putAllQueryParams(params.getQueryParams())
                 .putAllHeaders(clientOptions.headers)
                 .putAllHeaders(params.getHeaders())
                 .body(json(clientOptions.jsonMapper, params.getBody()))
                 .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
+        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { createHandler.handle(it) }
                 .apply {
@@ -61,24 +58,24 @@ constructor(
         }
     }
 
-    private val retrieveHandler: Handler<OrgSecret> =
-        jsonHandler<OrgSecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    private val retrieveHandler: Handler<AISecret> =
+        jsonHandler<AISecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
-    /** Get an org_secret object by its id */
-    override suspend fun retrieve(
-        params: OrgSecretRetrieveParams,
+    /** Get an ai_secret object by its id */
+    override fun retrieve(
+        params: AiSecretRetrieveParams,
         requestOptions: RequestOptions
-    ): OrgSecret {
+    ): AISecret {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.GET)
-                .addPathSegments("v1", "org_secret", params.getPathParam(0))
+                .addPathSegments("v1", "ai_secret", params.getPathParam(0))
                 .putAllQueryParams(clientOptions.queryParams)
                 .putAllQueryParams(params.getQueryParams())
                 .putAllHeaders(clientOptions.headers)
                 .putAllHeaders(params.getHeaders())
                 .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
+        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { retrieveHandler.handle(it) }
                 .apply {
@@ -89,29 +86,26 @@ constructor(
         }
     }
 
-    private val updateHandler: Handler<OrgSecret> =
-        jsonHandler<OrgSecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    private val updateHandler: Handler<AISecret> =
+        jsonHandler<AISecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
     /**
-     * Partially update an org_secret object. Specify the fields to update in the payload. Any
+     * Partially update an ai_secret object. Specify the fields to update in the payload. Any
      * object-type fields will be deep-merged with existing content. Currently we do not support
      * removing fields or setting them to null.
      */
-    override suspend fun update(
-        params: OrgSecretUpdateParams,
-        requestOptions: RequestOptions
-    ): OrgSecret {
+    override fun update(params: AiSecretUpdateParams, requestOptions: RequestOptions): AISecret {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.PATCH)
-                .addPathSegments("v1", "org_secret", params.getPathParam(0))
+                .addPathSegments("v1", "ai_secret", params.getPathParam(0))
                 .putAllQueryParams(clientOptions.queryParams)
                 .putAllQueryParams(params.getQueryParams())
                 .putAllHeaders(clientOptions.headers)
                 .putAllHeaders(params.getHeaders())
                 .body(json(clientOptions.jsonMapper, params.getBody()))
                 .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
+        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { updateHandler.handle(it) }
                 .apply {
@@ -122,28 +116,28 @@ constructor(
         }
     }
 
-    private val listHandler: Handler<OrgSecretListPageAsync.Response> =
-        jsonHandler<OrgSecretListPageAsync.Response>(clientOptions.jsonMapper)
+    private val listHandler: Handler<AiSecretListPage.Response> =
+        jsonHandler<AiSecretListPage.Response>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
     /**
-     * List out all org_secrets. The org_secrets are sorted by creation date, with the most
-     * recently-created org_secrets coming first
+     * List out all ai_secrets. The ai_secrets are sorted by creation date, with the most
+     * recently-created ai_secrets coming first
      */
-    override suspend fun list(
-        params: OrgSecretListParams,
+    override fun list(
+        params: AiSecretListParams,
         requestOptions: RequestOptions
-    ): OrgSecretListPageAsync {
+    ): AiSecretListPage {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.GET)
-                .addPathSegments("v1", "org_secret")
+                .addPathSegments("v1", "ai_secret")
                 .putAllQueryParams(clientOptions.queryParams)
                 .putAllQueryParams(params.getQueryParams())
                 .putAllHeaders(clientOptions.headers)
                 .putAllHeaders(params.getHeaders())
                 .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
+        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { listHandler.handle(it) }
                 .apply {
@@ -151,29 +145,26 @@ constructor(
                         validate()
                     }
                 }
-                .let { OrgSecretListPageAsync.of(this, params, it) }
+                .let { AiSecretListPage.of(this, params, it) }
         }
     }
 
-    private val deleteHandler: Handler<OrgSecret> =
-        jsonHandler<OrgSecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    private val deleteHandler: Handler<AISecret> =
+        jsonHandler<AISecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
-    /** Delete an org_secret object by its id */
-    override suspend fun delete(
-        params: OrgSecretDeleteParams,
-        requestOptions: RequestOptions
-    ): OrgSecret {
+    /** Delete an ai_secret object by its id */
+    override fun delete(params: AiSecretDeleteParams, requestOptions: RequestOptions): AISecret {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.DELETE)
-                .addPathSegments("v1", "org_secret", params.getPathParam(0))
+                .addPathSegments("v1", "ai_secret", params.getPathParam(0))
                 .putAllQueryParams(clientOptions.queryParams)
                 .putAllQueryParams(params.getQueryParams())
                 .putAllHeaders(clientOptions.headers)
                 .putAllHeaders(params.getHeaders())
                 .apply { params.getBody()?.also { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
+        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { deleteHandler.handle(it) }
                 .apply {
@@ -184,25 +175,25 @@ constructor(
         }
     }
 
-    private val findAndDeleteHandler: Handler<OrgSecret> =
-        jsonHandler<OrgSecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    private val findAndDeleteHandler: Handler<AISecret> =
+        jsonHandler<AISecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
-    /** Delete a single org_secret */
-    override suspend fun findAndDelete(
-        params: OrgSecretFindAndDeleteParams,
+    /** Delete a single ai_secret */
+    override fun findAndDelete(
+        params: AiSecretFindAndDeleteParams,
         requestOptions: RequestOptions
-    ): OrgSecret {
+    ): AISecret {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.DELETE)
-                .addPathSegments("v1", "org_secret")
+                .addPathSegments("v1", "ai_secret")
                 .putAllQueryParams(clientOptions.queryParams)
                 .putAllQueryParams(params.getQueryParams())
                 .putAllHeaders(clientOptions.headers)
                 .putAllHeaders(params.getHeaders())
                 .body(json(clientOptions.jsonMapper, params.getBody()))
                 .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
+        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { findAndDeleteHandler.handle(it) }
                 .apply {
@@ -213,28 +204,25 @@ constructor(
         }
     }
 
-    private val replaceHandler: Handler<OrgSecret> =
-        jsonHandler<OrgSecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    private val replaceHandler: Handler<AISecret> =
+        jsonHandler<AISecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
     /**
-     * Create or replace org_secret. If there is an existing org_secret with the same name as the
-     * one specified in the request, will replace the existing org_secret with the provided fields
+     * Create or replace ai_secret. If there is an existing ai_secret with the same name as the one
+     * specified in the request, will replace the existing ai_secret with the provided fields
      */
-    override suspend fun replace(
-        params: OrgSecretReplaceParams,
-        requestOptions: RequestOptions
-    ): OrgSecret {
+    override fun replace(params: AiSecretReplaceParams, requestOptions: RequestOptions): AISecret {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.PUT)
-                .addPathSegments("v1", "org_secret")
+                .addPathSegments("v1", "ai_secret")
                 .putAllQueryParams(clientOptions.queryParams)
                 .putAllQueryParams(params.getQueryParams())
                 .putAllHeaders(clientOptions.headers)
                 .putAllHeaders(params.getHeaders())
                 .body(json(clientOptions.jsonMapper, params.getBody()))
                 .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
+        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { replaceHandler.handle(it) }
                 .apply {
