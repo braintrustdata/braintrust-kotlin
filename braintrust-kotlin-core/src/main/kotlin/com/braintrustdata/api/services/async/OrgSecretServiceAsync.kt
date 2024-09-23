@@ -8,6 +8,7 @@ import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.models.OrgSecret
 import com.braintrustdata.api.models.OrgSecretCreateParams
 import com.braintrustdata.api.models.OrgSecretDeleteParams
+import com.braintrustdata.api.models.OrgSecretFindAndDeleteParams
 import com.braintrustdata.api.models.OrgSecretListPageAsync
 import com.braintrustdata.api.models.OrgSecretListParams
 import com.braintrustdata.api.models.OrgSecretReplaceParams
@@ -53,6 +54,12 @@ interface OrgSecretServiceAsync {
     /** Delete an org_secret object by its id */
     suspend fun delete(
         params: OrgSecretDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none()
+    ): OrgSecret
+
+    /** Delete a single org_secret */
+    suspend fun findAndDelete(
+        params: OrgSecretFindAndDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none()
     ): OrgSecret
 
