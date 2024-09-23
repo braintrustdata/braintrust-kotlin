@@ -66,13 +66,13 @@ To create a new project, first use the `ProjectCreateParams` builder to specify 
 then pass that to the `create` method of the `project` service.
 
 ```kotlin
-import com.braintrustdata.api.models.Project
 import com.braintrustdata.api.models.ProjectCreateParams
+import com.braintrustdata.api.models.ProjectModel
 
 val params = ProjectCreateParams.builder()
     .name("foobar")
     .build()
-val project = client.project().create(params)
+val projectModel = client.project().create(params)
 ```
 
 ### Example: listing resources
@@ -82,10 +82,10 @@ You can retrieve the first page by:
 
 ```kotlin
 import com.braintrustdata.api.models.Page
-import com.braintrustdata.api.models.Project
+import com.braintrustdata.api.models.ProjectModel
 
 val page = client.project().list()
-for (project: Project in page.objects()) {
+for (project: ProjectModel in page.objects()) {
     print(project)
 }
 ```
@@ -121,7 +121,7 @@ val params = ProjectCreateParams.builder()
 When receiving a response, the Braintrust Kotlin SDK will deserialize it into instances of the typed model classes. In rare cases, the API may return a response property that doesn't match the expected Kotlin type. If you directly access the mistaken property, the SDK will throw an unchecked `BraintrustInvalidDataException` at runtime. If you would prefer to check in advance that that response is completely well-typed, call `.validate()` on the returned model.
 
 ```kotlin
-val project = client.project().create().validate()
+val projectModel = client.project().create().validate()
 ```
 
 ### Response properties as JSON
