@@ -2,27 +2,41 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 
 /** For categorical-type project scores, defines a single category */
 @JsonDeserialize(builder = ProjectScoreCategory.Builder::class)
 @NoAutoDetect
-class ProjectScoreCategory
-private constructor(
-    private val name: JsonField<String>,
-    private val value: JsonField<Double>,
-    private val additionalProperties: Map<String, JsonValue>,
-) {
+class ProjectScoreCategory private constructor(private val name: JsonField<String>, private val value: JsonField<Double>, private val additionalProperties: Map<String, JsonValue>, ) {
 
     private var validated: Boolean = false
 
@@ -35,10 +49,14 @@ private constructor(
     fun value(): Double = value.getRequired("value")
 
     /** Name of the category */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name")
+    @ExcludeMissing
+    fun _name() = name
 
     /** Numerical value of the category. Must be between 0 and 1, inclusive */
-    @JsonProperty("value") @ExcludeMissing fun _value() = value
+    @JsonProperty("value")
+    @ExcludeMissing
+    fun _value() = value
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -46,39 +64,37 @@ private constructor(
 
     fun validate(): ProjectScoreCategory = apply {
         if (!validated) {
-            name()
-            value()
-            validated = true
+          name()
+          value()
+          validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is ProjectScoreCategory &&
-            this.name == other.name &&
-            this.value == other.value &&
-            this.additionalProperties == other.additionalProperties
+      return other is ProjectScoreCategory &&
+          this.name == other.name &&
+          this.value == other.value &&
+          this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    name,
-                    value,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+      if (hashCode == 0) {
+        hashCode = Objects.hash(
+            name,
+            value,
+            additionalProperties,
+        )
+      }
+      return hashCode
     }
 
-    override fun toString() =
-        "ProjectScoreCategory{name=$name, value=$value, additionalProperties=$additionalProperties}"
+    override fun toString() = "ProjectScoreCategory{name=$name, value=$value, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -103,7 +119,9 @@ private constructor(
         /** Name of the category */
         @JsonProperty("name")
         @ExcludeMissing
-        fun name(name: JsonField<String>) = apply { this.name = name }
+        fun name(name: JsonField<String>) = apply {
+            this.name = name
+        }
 
         /** Numerical value of the category. Must be between 0 and 1, inclusive */
         fun value(value: Double) = value(JsonField.of(value))
@@ -111,7 +129,9 @@ private constructor(
         /** Numerical value of the category. Must be between 0 and 1, inclusive */
         @JsonProperty("value")
         @ExcludeMissing
-        fun value(value: JsonField<Double>) = apply { this.value = value }
+        fun value(value: JsonField<Double>) = apply {
+            this.value = value
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -127,11 +147,10 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): ProjectScoreCategory =
-            ProjectScoreCategory(
-                name,
-                value,
-                additionalProperties.toUnmodifiable(),
-            )
+        fun build(): ProjectScoreCategory = ProjectScoreCategory(
+            name,
+            value,
+            additionalProperties.toUnmodifiable(),
+        )
     }
 }

@@ -2,35 +2,53 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 
 /**
- * A project tag is a user-configured tag for tracking and filtering your experiments, logs, and
- * other data
+ * A project tag is a user-configured tag for tracking and filtering your
+ * experiments, logs, and other data
  */
 @JsonDeserialize(builder = ProjectTag.Builder::class)
 @NoAutoDetect
-class ProjectTag
-private constructor(
-    private val id: JsonField<String>,
-    private val projectId: JsonField<String>,
-    private val userId: JsonField<String>,
-    private val created: JsonField<OffsetDateTime>,
-    private val name: JsonField<String>,
-    private val description: JsonField<String>,
-    private val color: JsonField<String>,
-    private val additionalProperties: Map<String, JsonValue>,
+class ProjectTag private constructor(
+  private val id: JsonField<String>,
+  private val projectId: JsonField<String>,
+  private val userId: JsonField<String>,
+  private val created: JsonField<OffsetDateTime>,
+  private val name: JsonField<String>,
+  private val description: JsonField<String>,
+  private val color: JsonField<String>,
+  private val additionalProperties: Map<String, JsonValue>,
+
 ) {
 
     private var validated: Boolean = false
@@ -58,24 +76,38 @@ private constructor(
     fun color(): String? = color.getNullable("color")
 
     /** Unique identifier for the project tag */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id")
+    @ExcludeMissing
+    fun _id() = id
 
     /** Unique identifier for the project that the project tag belongs under */
-    @JsonProperty("project_id") @ExcludeMissing fun _projectId() = projectId
+    @JsonProperty("project_id")
+    @ExcludeMissing
+    fun _projectId() = projectId
 
-    @JsonProperty("user_id") @ExcludeMissing fun _userId() = userId
+    @JsonProperty("user_id")
+    @ExcludeMissing
+    fun _userId() = userId
 
     /** Date of project tag creation */
-    @JsonProperty("created") @ExcludeMissing fun _created() = created
+    @JsonProperty("created")
+    @ExcludeMissing
+    fun _created() = created
 
     /** Name of the project tag */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name")
+    @ExcludeMissing
+    fun _name() = name
 
     /** Textual description of the project tag */
-    @JsonProperty("description") @ExcludeMissing fun _description() = description
+    @JsonProperty("description")
+    @ExcludeMissing
+    fun _description() = description
 
     /** Color of the tag for the UI */
-    @JsonProperty("color") @ExcludeMissing fun _color() = color
+    @JsonProperty("color")
+    @ExcludeMissing
+    fun _color() = color
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -83,54 +115,52 @@ private constructor(
 
     fun validate(): ProjectTag = apply {
         if (!validated) {
-            id()
-            projectId()
-            userId()
-            created()
-            name()
-            description()
-            color()
-            validated = true
+          id()
+          projectId()
+          userId()
+          created()
+          name()
+          description()
+          color()
+          validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is ProjectTag &&
-            this.id == other.id &&
-            this.projectId == other.projectId &&
-            this.userId == other.userId &&
-            this.created == other.created &&
-            this.name == other.name &&
-            this.description == other.description &&
-            this.color == other.color &&
-            this.additionalProperties == other.additionalProperties
+      return other is ProjectTag &&
+          this.id == other.id &&
+          this.projectId == other.projectId &&
+          this.userId == other.userId &&
+          this.created == other.created &&
+          this.name == other.name &&
+          this.description == other.description &&
+          this.color == other.color &&
+          this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    id,
-                    projectId,
-                    userId,
-                    created,
-                    name,
-                    description,
-                    color,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+      if (hashCode == 0) {
+        hashCode = Objects.hash(
+            id,
+            projectId,
+            userId,
+            created,
+            name,
+            description,
+            color,
+            additionalProperties,
+        )
+      }
+      return hashCode
     }
 
-    override fun toString() =
-        "ProjectTag{id=$id, projectId=$projectId, userId=$userId, created=$created, name=$name, description=$description, color=$color, additionalProperties=$additionalProperties}"
+    override fun toString() = "ProjectTag{id=$id, projectId=$projectId, userId=$userId, created=$created, name=$name, description=$description, color=$color, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -163,7 +193,11 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** Unique identifier for the project tag */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        @JsonProperty("id")
+        @ExcludeMissing
+        fun id(id: JsonField<String>) = apply {
+            this.id = id
+        }
 
         /** Unique identifier for the project that the project tag belongs under */
         fun projectId(projectId: String) = projectId(JsonField.of(projectId))
@@ -171,13 +205,17 @@ private constructor(
         /** Unique identifier for the project that the project tag belongs under */
         @JsonProperty("project_id")
         @ExcludeMissing
-        fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
+        fun projectId(projectId: JsonField<String>) = apply {
+            this.projectId = projectId
+        }
 
         fun userId(userId: String) = userId(JsonField.of(userId))
 
         @JsonProperty("user_id")
         @ExcludeMissing
-        fun userId(userId: JsonField<String>) = apply { this.userId = userId }
+        fun userId(userId: JsonField<String>) = apply {
+            this.userId = userId
+        }
 
         /** Date of project tag creation */
         fun created(created: OffsetDateTime) = created(JsonField.of(created))
@@ -185,7 +223,9 @@ private constructor(
         /** Date of project tag creation */
         @JsonProperty("created")
         @ExcludeMissing
-        fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
+        fun created(created: JsonField<OffsetDateTime>) = apply {
+            this.created = created
+        }
 
         /** Name of the project tag */
         fun name(name: String) = name(JsonField.of(name))
@@ -193,7 +233,9 @@ private constructor(
         /** Name of the project tag */
         @JsonProperty("name")
         @ExcludeMissing
-        fun name(name: JsonField<String>) = apply { this.name = name }
+        fun name(name: JsonField<String>) = apply {
+            this.name = name
+        }
 
         /** Textual description of the project tag */
         fun description(description: String) = description(JsonField.of(description))
@@ -201,7 +243,9 @@ private constructor(
         /** Textual description of the project tag */
         @JsonProperty("description")
         @ExcludeMissing
-        fun description(description: JsonField<String>) = apply { this.description = description }
+        fun description(description: JsonField<String>) = apply {
+            this.description = description
+        }
 
         /** Color of the tag for the UI */
         fun color(color: String) = color(JsonField.of(color))
@@ -209,7 +253,9 @@ private constructor(
         /** Color of the tag for the UI */
         @JsonProperty("color")
         @ExcludeMissing
-        fun color(color: JsonField<String>) = apply { this.color = color }
+        fun color(color: JsonField<String>) = apply {
+            this.color = color
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -225,16 +271,15 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): ProjectTag =
-            ProjectTag(
-                id,
-                projectId,
-                userId,
-                created,
-                name,
-                description,
-                color,
-                additionalProperties.toUnmodifiable(),
-            )
+        fun build(): ProjectTag = ProjectTag(
+            id,
+            projectId,
+            userId,
+            created,
+            name,
+            description,
+            color,
+            additionalProperties.toUnmodifiable(),
+        )
     }
 }

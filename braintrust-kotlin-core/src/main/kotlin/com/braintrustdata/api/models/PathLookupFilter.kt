@@ -2,34 +2,51 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 
 /**
- * A path-lookup filter describes an equality comparison against a specific sub-field in the event
- * row. For instance, if you wish to filter on the value of `c` in `{"input": {"a": {"b": {"c":
- * "hello"}}}}`, pass `path=["input", "a", "b", "c"]` and `value="hello"`
+ * A path-lookup filter describes an equality comparison against a specific
+ * sub-field in the event row. For instance, if you wish to filter on the value of
+ * `c` in `{"input": {"a": {"b": {"c": "hello"}}}}`, pass
+ * `path=["input", "a", "b", "c"]` and `value="hello"`
  */
 @JsonDeserialize(builder = PathLookupFilter.Builder::class)
 @NoAutoDetect
-class PathLookupFilter
-private constructor(
-    private val type: JsonField<Type>,
-    private val path: JsonField<List<String>>,
-    private val value: JsonValue,
-    private val additionalProperties: Map<String, JsonValue>,
+class PathLookupFilter private constructor(
+  private val type: JsonField<Type>,
+  private val path: JsonField<List<String>>,
+  private val value: JsonValue,
+  private val additionalProperties: Map<String, JsonValue>,
+
 ) {
 
     private var validated: Boolean = false
@@ -40,37 +57,45 @@ private constructor(
     fun type(): Type = type.getRequired("type")
 
     /**
-     * List of fields describing the path to the value to be checked against. For instance, if you
-     * wish to filter on the value of `c` in `{"input": {"a": {"b": {"c": "hello"}}}}`, pass
-     * `path=["input", "a", "b", "c"]`
+     * List of fields describing the path to the value to be checked against. For
+     * instance, if you wish to filter on the value of `c` in
+     * `{"input": {"a": {"b": {"c": "hello"}}}}`, pass `path=["input", "a", "b", "c"]`
      */
     fun path(): List<String> = path.getRequired("path")
 
     /**
-     * The value to compare equality-wise against the event value at the specified `path`. The value
-     * must be a "primitive", that is, any JSON-serializable object except for objects and arrays.
-     * For instance, if you wish to filter on the value of "input.a.b.c" in the object `{"input":
-     * {"a": {"b": {"c": "hello"}}}}`, pass `value="hello"`
+     * The value to compare equality-wise against the event value at the specified
+     * `path`. The value must be a "primitive", that is, any JSON-serializable object
+     * except for objects and arrays. For instance, if you wish to filter on the value
+     * of "input.a.b.c" in the object `{"input": {"a": {"b": {"c": "hello"}}}}`, pass
+     * `value="hello"`
      */
     fun value(): JsonValue = value
 
     /** Denotes the type of filter as a path-lookup filter */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type")
+    @ExcludeMissing
+    fun _type() = type
 
     /**
-     * List of fields describing the path to the value to be checked against. For instance, if you
-     * wish to filter on the value of `c` in `{"input": {"a": {"b": {"c": "hello"}}}}`, pass
-     * `path=["input", "a", "b", "c"]`
+     * List of fields describing the path to the value to be checked against. For
+     * instance, if you wish to filter on the value of `c` in
+     * `{"input": {"a": {"b": {"c": "hello"}}}}`, pass `path=["input", "a", "b", "c"]`
      */
-    @JsonProperty("path") @ExcludeMissing fun _path() = path
+    @JsonProperty("path")
+    @ExcludeMissing
+    fun _path() = path
 
     /**
-     * The value to compare equality-wise against the event value at the specified `path`. The value
-     * must be a "primitive", that is, any JSON-serializable object except for objects and arrays.
-     * For instance, if you wish to filter on the value of "input.a.b.c" in the object `{"input":
-     * {"a": {"b": {"c": "hello"}}}}`, pass `value="hello"`
+     * The value to compare equality-wise against the event value at the specified
+     * `path`. The value must be a "primitive", that is, any JSON-serializable object
+     * except for objects and arrays. For instance, if you wish to filter on the value
+     * of "input.a.b.c" in the object `{"input": {"a": {"b": {"c": "hello"}}}}`, pass
+     * `value="hello"`
      */
-    @JsonProperty("value") @ExcludeMissing fun _value() = value
+    @JsonProperty("value")
+    @ExcludeMissing
+    fun _value() = value
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -78,42 +103,40 @@ private constructor(
 
     fun validate(): PathLookupFilter = apply {
         if (!validated) {
-            type()
-            path()
-            value()
-            validated = true
+          type()
+          path()
+          value()
+          validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is PathLookupFilter &&
-            this.type == other.type &&
-            this.path == other.path &&
-            this.value == other.value &&
-            this.additionalProperties == other.additionalProperties
+      return other is PathLookupFilter &&
+          this.type == other.type &&
+          this.path == other.path &&
+          this.value == other.value &&
+          this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    type,
-                    path,
-                    value,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+      if (hashCode == 0) {
+        hashCode = Objects.hash(
+            type,
+            path,
+            value,
+            additionalProperties,
+        )
+      }
+      return hashCode
     }
 
-    override fun toString() =
-        "PathLookupFilter{type=$type, path=$path, value=$value, additionalProperties=$additionalProperties}"
+    override fun toString() = "PathLookupFilter{type=$type, path=$path, value=$value, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -140,33 +163,40 @@ private constructor(
         /** Denotes the type of filter as a path-lookup filter */
         @JsonProperty("type")
         @ExcludeMissing
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonField<Type>) = apply {
+            this.type = type
+        }
 
         /**
-         * List of fields describing the path to the value to be checked against. For instance, if
-         * you wish to filter on the value of `c` in `{"input": {"a": {"b": {"c": "hello"}}}}`, pass
-         * `path=["input", "a", "b", "c"]`
+         * List of fields describing the path to the value to be checked against. For
+         * instance, if you wish to filter on the value of `c` in
+         * `{"input": {"a": {"b": {"c": "hello"}}}}`, pass `path=["input", "a", "b", "c"]`
          */
         fun path(path: List<String>) = path(JsonField.of(path))
 
         /**
-         * List of fields describing the path to the value to be checked against. For instance, if
-         * you wish to filter on the value of `c` in `{"input": {"a": {"b": {"c": "hello"}}}}`, pass
-         * `path=["input", "a", "b", "c"]`
+         * List of fields describing the path to the value to be checked against. For
+         * instance, if you wish to filter on the value of `c` in
+         * `{"input": {"a": {"b": {"c": "hello"}}}}`, pass `path=["input", "a", "b", "c"]`
          */
         @JsonProperty("path")
         @ExcludeMissing
-        fun path(path: JsonField<List<String>>) = apply { this.path = path }
+        fun path(path: JsonField<List<String>>) = apply {
+            this.path = path
+        }
 
         /**
-         * The value to compare equality-wise against the event value at the specified `path`. The
-         * value must be a "primitive", that is, any JSON-serializable object except for objects and
-         * arrays. For instance, if you wish to filter on the value of "input.a.b.c" in the object
-         * `{"input": {"a": {"b": {"c": "hello"}}}}`, pass `value="hello"`
+         * The value to compare equality-wise against the event value at the specified
+         * `path`. The value must be a "primitive", that is, any JSON-serializable object
+         * except for objects and arrays. For instance, if you wish to filter on the value
+         * of "input.a.b.c" in the object `{"input": {"a": {"b": {"c": "hello"}}}}`, pass
+         * `value="hello"`
          */
         @JsonProperty("value")
         @ExcludeMissing
-        fun value(value: JsonValue) = apply { this.value = value }
+        fun value(value: JsonValue) = apply {
+            this.value = value
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -182,29 +212,26 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): PathLookupFilter =
-            PathLookupFilter(
-                type,
-                path.map { it.toUnmodifiable() },
-                value,
-                additionalProperties.toUnmodifiable(),
-            )
+        fun build(): PathLookupFilter = PathLookupFilter(
+            type,
+            path.map { it.toUnmodifiable() },
+            value,
+            additionalProperties.toUnmodifiable(),
+        )
     }
 
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+        @com.fasterxml.jackson.annotation.JsonValue
+        fun _value(): JsonField<String> = value
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is Type && this.value == other.value
+          return other is Type &&
+              this.value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -227,17 +254,15 @@ private constructor(
             _UNKNOWN,
         }
 
-        fun value(): Value =
-            when (this) {
-                PATH_LOOKUP -> Value.PATH_LOOKUP
-                else -> Value._UNKNOWN
-            }
+        fun value(): Value = when (this) {
+            PATH_LOOKUP -> Value.PATH_LOOKUP
+            else -> Value._UNKNOWN
+        }
 
-        fun known(): Known =
-            when (this) {
-                PATH_LOOKUP -> Known.PATH_LOOKUP
-                else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-            }
+        fun known(): Known = when (this) {
+            PATH_LOOKUP -> Known.PATH_LOOKUP
+            else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+        }
 
         fun asString(): String = _value().asStringOrThrow()
     }
