@@ -2,23 +2,47 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.Enum
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import org.apache.hc.core5.http.ContentType
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.MultipartFormValue
 import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.ContentTypes
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.braintrustdata.api.models.*
-import com.fasterxml.jackson.annotation.JsonCreator
-import java.util.Objects
 
-class ViewRetrieveParams
-constructor(
-    private val viewId: String,
-    private val objectId: String,
-    private val objectType: ObjectType?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
+class ViewRetrieveParams constructor(
+  private val viewId: String,
+  private val objectId: String,
+  private val objectType: ObjectType?,
+  private val additionalQueryParams: Map<String, List<String>>,
+  private val additionalHeaders: Map<String, List<String>>,
+
 ) {
 
     fun viewId(): String = viewId
@@ -28,20 +52,24 @@ constructor(
     fun objectType(): ObjectType? = objectType
 
     internal fun getQueryParams(): Map<String, List<String>> {
-        val params = mutableMapOf<String, List<String>>()
-        this.objectId.let { params.put("object_id", listOf(it.toString())) }
-        this.objectType.let { params.put("object_type", listOf(it.toString())) }
-        params.putAll(additionalQueryParams)
-        return params.toUnmodifiable()
+      val params = mutableMapOf<String, List<String>>()
+      this.objectId.let {
+          params.put("object_id", listOf(it.toString()))
+      }
+      this.objectType.let {
+          params.put("object_type", listOf(it.toString()))
+      }
+      params.putAll(additionalQueryParams)
+      return params.toUnmodifiable()
     }
 
     internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
 
     fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> viewId
-            else -> ""
-        }
+      return when (index) {
+          0 -> viewId
+          else -> ""
+      }
     }
 
     fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -49,30 +77,29 @@ constructor(
     fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is ViewRetrieveParams &&
-            this.viewId == other.viewId &&
-            this.objectId == other.objectId &&
-            this.objectType == other.objectType &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders
+      return other is ViewRetrieveParams &&
+          this.viewId == other.viewId &&
+          this.objectId == other.objectId &&
+          this.objectType == other.objectType &&
+          this.additionalQueryParams == other.additionalQueryParams &&
+          this.additionalHeaders == other.additionalHeaders
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            viewId,
-            objectId,
-            objectType,
-            additionalQueryParams,
-            additionalHeaders,
-        )
+      return Objects.hash(
+          viewId,
+          objectId,
+          objectType,
+          additionalQueryParams,
+          additionalHeaders,
+      )
     }
 
-    override fun toString() =
-        "ViewRetrieveParams{viewId=$viewId, objectId=$objectId, objectType=$objectType, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
+    override fun toString() = "ViewRetrieveParams{viewId=$viewId, objectId=$objectId, objectType=$objectType, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -99,13 +126,19 @@ constructor(
         }
 
         /** View id */
-        fun viewId(viewId: String) = apply { this.viewId = viewId }
+        fun viewId(viewId: String) = apply {
+            this.viewId = viewId
+        }
 
         /** The id of the object the ACL applies to */
-        fun objectId(objectId: String) = apply { this.objectId = objectId }
+        fun objectId(objectId: String) = apply {
+            this.objectId = objectId
+        }
 
         /** The object type that the ACL applies to */
-        fun objectType(objectType: ObjectType) = apply { this.objectType = objectType }
+        fun objectType(objectType: ObjectType) = apply {
+            this.objectType = objectType
+        }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -145,32 +178,35 @@ constructor(
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun removeHeader(name: String) = apply {
+            this.additionalHeaders.put(name, mutableListOf())
+        }
 
-        fun build(): ViewRetrieveParams =
-            ViewRetrieveParams(
-                checkNotNull(viewId) { "`viewId` is required but was not set" },
-                checkNotNull(objectId) { "`objectId` is required but was not set" },
-                objectType,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-            )
+        fun build(): ViewRetrieveParams = ViewRetrieveParams(
+            checkNotNull(viewId) {
+                "`viewId` is required but was not set"
+            },
+            checkNotNull(objectId) {
+                "`objectId` is required but was not set"
+            },
+            objectType,
+            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+        )
     }
 
-    class ObjectType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class ObjectType @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+        @com.fasterxml.jackson.annotation.JsonValue
+        fun _value(): JsonField<String> = value
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is ObjectType && this.value == other.value
+          return other is ObjectType &&
+              this.value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -233,37 +269,35 @@ constructor(
             _UNKNOWN,
         }
 
-        fun value(): Value =
-            when (this) {
-                ORGANIZATION -> Value.ORGANIZATION
-                PROJECT -> Value.PROJECT
-                EXPERIMENT -> Value.EXPERIMENT
-                DATASET -> Value.DATASET
-                PROMPT -> Value.PROMPT
-                PROMPT_SESSION -> Value.PROMPT_SESSION
-                GROUP -> Value.GROUP
-                ROLE -> Value.ROLE
-                ORG_MEMBER -> Value.ORG_MEMBER
-                PROJECT_LOG -> Value.PROJECT_LOG
-                ORG_PROJECT -> Value.ORG_PROJECT
-                else -> Value._UNKNOWN
-            }
+        fun value(): Value = when (this) {
+            ORGANIZATION -> Value.ORGANIZATION
+            PROJECT -> Value.PROJECT
+            EXPERIMENT -> Value.EXPERIMENT
+            DATASET -> Value.DATASET
+            PROMPT -> Value.PROMPT
+            PROMPT_SESSION -> Value.PROMPT_SESSION
+            GROUP -> Value.GROUP
+            ROLE -> Value.ROLE
+            ORG_MEMBER -> Value.ORG_MEMBER
+            PROJECT_LOG -> Value.PROJECT_LOG
+            ORG_PROJECT -> Value.ORG_PROJECT
+            else -> Value._UNKNOWN
+        }
 
-        fun known(): Known =
-            when (this) {
-                ORGANIZATION -> Known.ORGANIZATION
-                PROJECT -> Known.PROJECT
-                EXPERIMENT -> Known.EXPERIMENT
-                DATASET -> Known.DATASET
-                PROMPT -> Known.PROMPT
-                PROMPT_SESSION -> Known.PROMPT_SESSION
-                GROUP -> Known.GROUP
-                ROLE -> Known.ROLE
-                ORG_MEMBER -> Known.ORG_MEMBER
-                PROJECT_LOG -> Known.PROJECT_LOG
-                ORG_PROJECT -> Known.ORG_PROJECT
-                else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
-            }
+        fun known(): Known = when (this) {
+            ORGANIZATION -> Known.ORGANIZATION
+            PROJECT -> Known.PROJECT
+            EXPERIMENT -> Known.EXPERIMENT
+            DATASET -> Known.DATASET
+            PROMPT -> Known.PROMPT
+            PROMPT_SESSION -> Known.PROMPT_SESSION
+            GROUP -> Known.GROUP
+            ROLE -> Known.ROLE
+            ORG_MEMBER -> Known.ORG_MEMBER
+            PROJECT_LOG -> Known.PROJECT_LOG
+            ORG_PROJECT -> Known.ORG_PROJECT
+            else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
+        }
 
         fun asString(): String = _value().asStringOrThrow()
     }

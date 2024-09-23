@@ -2,51 +2,57 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 
 @JsonDeserialize(builder = Function.Builder::class)
 @NoAutoDetect
-class Function
-private constructor(
-    private val id: JsonField<String>,
-    private val _xactId: JsonField<String>,
-    private val projectId: JsonField<String>,
-    private val logId: JsonField<LogId>,
-    private val orgId: JsonField<String>,
-    private val name: JsonField<String>,
-    private val slug: JsonField<String>,
-    private val description: JsonField<String>,
-    private val created: JsonField<OffsetDateTime>,
-    private val promptData: JsonField<PromptData>,
-    private val tags: JsonField<List<String>>,
-    private val metadata: JsonField<Metadata>,
-    private val functionType: JsonField<FunctionType>,
-    private val functionData: JsonField<FunctionData>,
-    private val origin: JsonField<Origin>,
-    private val additionalProperties: Map<String, JsonValue>,
+class Function private constructor(
+  private val id: JsonField<String>,
+  private val _xactId: JsonField<String>,
+  private val projectId: JsonField<String>,
+  private val logId: JsonField<LogId>,
+  private val orgId: JsonField<String>,
+  private val name: JsonField<String>,
+  private val slug: JsonField<String>,
+  private val description: JsonField<String>,
+  private val created: JsonField<OffsetDateTime>,
+  private val promptData: JsonField<PromptData>,
+  private val tags: JsonField<List<String>>,
+  private val metadata: JsonField<Metadata>,
+  private val functionType: JsonField<FunctionType>,
+  private val functionData: JsonField<FunctionData>,
+  private val origin: JsonField<Origin>,
+  private val additionalProperties: Map<String, JsonValue>,
+
 ) {
 
     private var validated: Boolean = false
@@ -57,9 +63,10 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
-     * The transaction id of an event is unique to the network operation that processed the event
-     * insertion. Transaction ids are monotonically increasing over time and can be used to retrieve
-     * a versioned snapshot of the prompt (see the `version` parameter)
+     * The transaction id of an event is unique to the network operation that processed
+     * the event insertion. Transaction ids are monotonically increasing over time and
+     * can be used to retrieve a versioned snapshot of the prompt (see the `version`
+     * parameter)
      */
     fun _xactId(): String = _xactId.getRequired("_xact_id")
 
@@ -100,50 +107,81 @@ private constructor(
     fun origin(): Origin? = origin.getNullable("origin")
 
     /** Unique identifier for the prompt */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id")
+    @ExcludeMissing
+    fun _id() = id
 
     /**
-     * The transaction id of an event is unique to the network operation that processed the event
-     * insertion. Transaction ids are monotonically increasing over time and can be used to retrieve
-     * a versioned snapshot of the prompt (see the `version` parameter)
+     * The transaction id of an event is unique to the network operation that processed
+     * the event insertion. Transaction ids are monotonically increasing over time and
+     * can be used to retrieve a versioned snapshot of the prompt (see the `version`
+     * parameter)
      */
-    @JsonProperty("_xact_id") @ExcludeMissing fun __xactId() = _xactId
+    @JsonProperty("_xact_id")
+    @ExcludeMissing
+    fun __xactId() = _xactId
 
     /** Unique identifier for the project that the prompt belongs under */
-    @JsonProperty("project_id") @ExcludeMissing fun _projectId() = projectId
+    @JsonProperty("project_id")
+    @ExcludeMissing
+    fun _projectId() = projectId
 
     /** A literal 'p' which identifies the object as a project prompt */
-    @JsonProperty("log_id") @ExcludeMissing fun _logId() = logId
+    @JsonProperty("log_id")
+    @ExcludeMissing
+    fun _logId() = logId
 
     /** Unique identifier for the organization */
-    @JsonProperty("org_id") @ExcludeMissing fun _orgId() = orgId
+    @JsonProperty("org_id")
+    @ExcludeMissing
+    fun _orgId() = orgId
 
     /** Name of the prompt */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name")
+    @ExcludeMissing
+    fun _name() = name
 
     /** Unique identifier for the prompt */
-    @JsonProperty("slug") @ExcludeMissing fun _slug() = slug
+    @JsonProperty("slug")
+    @ExcludeMissing
+    fun _slug() = slug
 
     /** Textual description of the prompt */
-    @JsonProperty("description") @ExcludeMissing fun _description() = description
+    @JsonProperty("description")
+    @ExcludeMissing
+    fun _description() = description
 
     /** Date of prompt creation */
-    @JsonProperty("created") @ExcludeMissing fun _created() = created
+    @JsonProperty("created")
+    @ExcludeMissing
+    fun _created() = created
 
     /** The prompt, model, and its parameters */
-    @JsonProperty("prompt_data") @ExcludeMissing fun _promptData() = promptData
+    @JsonProperty("prompt_data")
+    @ExcludeMissing
+    fun _promptData() = promptData
 
     /** A list of tags for the prompt */
-    @JsonProperty("tags") @ExcludeMissing fun _tags() = tags
+    @JsonProperty("tags")
+    @ExcludeMissing
+    fun _tags() = tags
 
     /** User-controlled metadata about the prompt */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+    @JsonProperty("metadata")
+    @ExcludeMissing
+    fun _metadata() = metadata
 
-    @JsonProperty("function_type") @ExcludeMissing fun _functionType() = functionType
+    @JsonProperty("function_type")
+    @ExcludeMissing
+    fun _functionType() = functionType
 
-    @JsonProperty("function_data") @ExcludeMissing fun _functionData() = functionData
+    @JsonProperty("function_data")
+    @ExcludeMissing
+    fun _functionData() = functionData
 
-    @JsonProperty("origin") @ExcludeMissing fun _origin() = origin
+    @JsonProperty("origin")
+    @ExcludeMissing
+    fun _origin() = origin
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -151,78 +189,76 @@ private constructor(
 
     fun validate(): Function = apply {
         if (!validated) {
-            id()
-            _xactId()
-            projectId()
-            logId()
-            orgId()
-            name()
-            slug()
-            description()
-            created()
-            promptData()?.validate()
-            tags()
-            metadata()?.validate()
-            functionType()
-            functionData()
-            origin()?.validate()
-            validated = true
+          id()
+          _xactId()
+          projectId()
+          logId()
+          orgId()
+          name()
+          slug()
+          description()
+          created()
+          promptData()?.validate()
+          tags()
+          metadata()?.validate()
+          functionType()
+          functionData()
+          origin()?.validate()
+          validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is Function &&
-            this.id == other.id &&
-            this._xactId == other._xactId &&
-            this.projectId == other.projectId &&
-            this.logId == other.logId &&
-            this.orgId == other.orgId &&
-            this.name == other.name &&
-            this.slug == other.slug &&
-            this.description == other.description &&
-            this.created == other.created &&
-            this.promptData == other.promptData &&
-            this.tags == other.tags &&
-            this.metadata == other.metadata &&
-            this.functionType == other.functionType &&
-            this.functionData == other.functionData &&
-            this.origin == other.origin &&
-            this.additionalProperties == other.additionalProperties
+      return other is Function &&
+          this.id == other.id &&
+          this._xactId == other._xactId &&
+          this.projectId == other.projectId &&
+          this.logId == other.logId &&
+          this.orgId == other.orgId &&
+          this.name == other.name &&
+          this.slug == other.slug &&
+          this.description == other.description &&
+          this.created == other.created &&
+          this.promptData == other.promptData &&
+          this.tags == other.tags &&
+          this.metadata == other.metadata &&
+          this.functionType == other.functionType &&
+          this.functionData == other.functionData &&
+          this.origin == other.origin &&
+          this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    id,
-                    _xactId,
-                    projectId,
-                    logId,
-                    orgId,
-                    name,
-                    slug,
-                    description,
-                    created,
-                    promptData,
-                    tags,
-                    metadata,
-                    functionType,
-                    functionData,
-                    origin,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+      if (hashCode == 0) {
+        hashCode = Objects.hash(
+            id,
+            _xactId,
+            projectId,
+            logId,
+            orgId,
+            name,
+            slug,
+            description,
+            created,
+            promptData,
+            tags,
+            metadata,
+            functionType,
+            functionData,
+            origin,
+            additionalProperties,
+        )
+      }
+      return hashCode
     }
 
-    override fun toString() =
-        "Function{id=$id, _xactId=$_xactId, projectId=$projectId, logId=$logId, orgId=$orgId, name=$name, slug=$slug, description=$description, created=$created, promptData=$promptData, tags=$tags, metadata=$metadata, functionType=$functionType, functionData=$functionData, origin=$origin, additionalProperties=$additionalProperties}"
+    override fun toString() = "Function{id=$id, _xactId=$_xactId, projectId=$projectId, logId=$logId, orgId=$orgId, name=$name, slug=$slug, description=$description, created=$created, promptData=$promptData, tags=$tags, metadata=$metadata, functionType=$functionType, functionData=$functionData, origin=$origin, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -271,23 +307,31 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** Unique identifier for the prompt */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        @JsonProperty("id")
+        @ExcludeMissing
+        fun id(id: JsonField<String>) = apply {
+            this.id = id
+        }
 
         /**
-         * The transaction id of an event is unique to the network operation that processed the
-         * event insertion. Transaction ids are monotonically increasing over time and can be used
-         * to retrieve a versioned snapshot of the prompt (see the `version` parameter)
+         * The transaction id of an event is unique to the network operation that processed
+         * the event insertion. Transaction ids are monotonically increasing over time and
+         * can be used to retrieve a versioned snapshot of the prompt (see the `version`
+         * parameter)
          */
         fun _xactId(_xactId: String) = _xactId(JsonField.of(_xactId))
 
         /**
-         * The transaction id of an event is unique to the network operation that processed the
-         * event insertion. Transaction ids are monotonically increasing over time and can be used
-         * to retrieve a versioned snapshot of the prompt (see the `version` parameter)
+         * The transaction id of an event is unique to the network operation that processed
+         * the event insertion. Transaction ids are monotonically increasing over time and
+         * can be used to retrieve a versioned snapshot of the prompt (see the `version`
+         * parameter)
          */
         @JsonProperty("_xact_id")
         @ExcludeMissing
-        fun _xactId(_xactId: JsonField<String>) = apply { this._xactId = _xactId }
+        fun _xactId(_xactId: JsonField<String>) = apply {
+            this._xactId = _xactId
+        }
 
         /** Unique identifier for the project that the prompt belongs under */
         fun projectId(projectId: String) = projectId(JsonField.of(projectId))
@@ -295,7 +339,9 @@ private constructor(
         /** Unique identifier for the project that the prompt belongs under */
         @JsonProperty("project_id")
         @ExcludeMissing
-        fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
+        fun projectId(projectId: JsonField<String>) = apply {
+            this.projectId = projectId
+        }
 
         /** A literal 'p' which identifies the object as a project prompt */
         fun logId(logId: LogId) = logId(JsonField.of(logId))
@@ -303,7 +349,9 @@ private constructor(
         /** A literal 'p' which identifies the object as a project prompt */
         @JsonProperty("log_id")
         @ExcludeMissing
-        fun logId(logId: JsonField<LogId>) = apply { this.logId = logId }
+        fun logId(logId: JsonField<LogId>) = apply {
+            this.logId = logId
+        }
 
         /** Unique identifier for the organization */
         fun orgId(orgId: String) = orgId(JsonField.of(orgId))
@@ -311,7 +359,9 @@ private constructor(
         /** Unique identifier for the organization */
         @JsonProperty("org_id")
         @ExcludeMissing
-        fun orgId(orgId: JsonField<String>) = apply { this.orgId = orgId }
+        fun orgId(orgId: JsonField<String>) = apply {
+            this.orgId = orgId
+        }
 
         /** Name of the prompt */
         fun name(name: String) = name(JsonField.of(name))
@@ -319,7 +369,9 @@ private constructor(
         /** Name of the prompt */
         @JsonProperty("name")
         @ExcludeMissing
-        fun name(name: JsonField<String>) = apply { this.name = name }
+        fun name(name: JsonField<String>) = apply {
+            this.name = name
+        }
 
         /** Unique identifier for the prompt */
         fun slug(slug: String) = slug(JsonField.of(slug))
@@ -327,7 +379,9 @@ private constructor(
         /** Unique identifier for the prompt */
         @JsonProperty("slug")
         @ExcludeMissing
-        fun slug(slug: JsonField<String>) = apply { this.slug = slug }
+        fun slug(slug: JsonField<String>) = apply {
+            this.slug = slug
+        }
 
         /** Textual description of the prompt */
         fun description(description: String) = description(JsonField.of(description))
@@ -335,7 +389,9 @@ private constructor(
         /** Textual description of the prompt */
         @JsonProperty("description")
         @ExcludeMissing
-        fun description(description: JsonField<String>) = apply { this.description = description }
+        fun description(description: JsonField<String>) = apply {
+            this.description = description
+        }
 
         /** Date of prompt creation */
         fun created(created: OffsetDateTime) = created(JsonField.of(created))
@@ -343,7 +399,9 @@ private constructor(
         /** Date of prompt creation */
         @JsonProperty("created")
         @ExcludeMissing
-        fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
+        fun created(created: JsonField<OffsetDateTime>) = apply {
+            this.created = created
+        }
 
         /** The prompt, model, and its parameters */
         fun promptData(promptData: PromptData) = promptData(JsonField.of(promptData))
@@ -351,7 +409,9 @@ private constructor(
         /** The prompt, model, and its parameters */
         @JsonProperty("prompt_data")
         @ExcludeMissing
-        fun promptData(promptData: JsonField<PromptData>) = apply { this.promptData = promptData }
+        fun promptData(promptData: JsonField<PromptData>) = apply {
+            this.promptData = promptData
+        }
 
         /** A list of tags for the prompt */
         fun tags(tags: List<String>) = tags(JsonField.of(tags))
@@ -359,7 +419,9 @@ private constructor(
         /** A list of tags for the prompt */
         @JsonProperty("tags")
         @ExcludeMissing
-        fun tags(tags: JsonField<List<String>>) = apply { this.tags = tags }
+        fun tags(tags: JsonField<List<String>>) = apply {
+            this.tags = tags
+        }
 
         /** User-controlled metadata about the prompt */
         fun metadata(metadata: Metadata) = metadata(JsonField.of(metadata))
@@ -367,7 +429,9 @@ private constructor(
         /** User-controlled metadata about the prompt */
         @JsonProperty("metadata")
         @ExcludeMissing
-        fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+        fun metadata(metadata: JsonField<Metadata>) = apply {
+            this.metadata = metadata
+        }
 
         fun functionType(functionType: FunctionType) = functionType(JsonField.of(functionType))
 
@@ -389,7 +453,9 @@ private constructor(
 
         @JsonProperty("origin")
         @ExcludeMissing
-        fun origin(origin: JsonField<Origin>) = apply { this.origin = origin }
+        fun origin(origin: JsonField<Origin>) = apply {
+            this.origin = origin
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -405,107 +471,100 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): Function =
-            Function(
-                id,
-                _xactId,
-                projectId,
-                logId,
-                orgId,
-                name,
-                slug,
-                description,
-                created,
-                promptData,
-                tags.map { it.toUnmodifiable() },
-                metadata,
-                functionType,
-                functionData,
-                origin,
-                additionalProperties.toUnmodifiable(),
-            )
+        fun build(): Function = Function(
+            id,
+            _xactId,
+            projectId,
+            logId,
+            orgId,
+            name,
+            slug,
+            description,
+            created,
+            promptData,
+            tags.map { it.toUnmodifiable() },
+            metadata,
+            functionType,
+            functionData,
+            origin,
+            additionalProperties.toUnmodifiable(),
+        )
     }
 
     @JsonDeserialize(using = FunctionData.Deserializer::class)
     @JsonSerialize(using = FunctionData.Serializer::class)
-    class FunctionData
-    private constructor(
-        private val prompt: Prompt? = null,
-        private val code: Code? = null,
-        private val global: Global? = null,
-        private val _json: JsonValue? = null,
+    class FunctionData private constructor(
+      private val prompt: Prompt? = null,
+      private val code: Code? = null,
+      private val global: Global? = null,
+      private val _json: JsonValue? = null,
+
     ) {
 
         private var validated: Boolean = false
 
         fun prompt(): Prompt? = prompt
-
         fun code(): Code? = code
-
         fun global(): Global? = global
 
         fun isPrompt(): Boolean = prompt != null
-
         fun isCode(): Boolean = code != null
-
         fun isGlobal(): Boolean = global != null
 
         fun asPrompt(): Prompt = prompt.getOrThrow("prompt")
-
         fun asCode(): Code = code.getOrThrow("code")
-
         fun asGlobal(): Global = global.getOrThrow("global")
 
         fun _json(): JsonValue? = _json
 
         fun <T> accept(visitor: Visitor<T>): T {
-            return when {
-                prompt != null -> visitor.visitPrompt(prompt)
-                code != null -> visitor.visitCode(code)
-                global != null -> visitor.visitGlobal(global)
-                else -> visitor.unknown(_json)
-            }
+          return when {
+              prompt != null -> visitor.visitPrompt(prompt)
+              code != null -> visitor.visitCode(code)
+              global != null -> visitor.visitGlobal(global)
+              else -> visitor.unknown(_json)
+          }
         }
 
         fun validate(): FunctionData = apply {
             if (!validated) {
-                if (prompt == null && code == null && global == null) {
-                    throw BraintrustInvalidDataException("Unknown FunctionData: $_json")
-                }
-                prompt?.validate()
-                code?.validate()
-                global?.validate()
-                validated = true
+              if (prompt == null && code == null && global == null) {
+                throw BraintrustInvalidDataException("Unknown FunctionData: $_json")
+              }
+              prompt?.validate()
+              code?.validate()
+              global?.validate()
+              validated = true
             }
         }
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is FunctionData &&
-                this.prompt == other.prompt &&
-                this.code == other.code &&
-                this.global == other.global
+          return other is FunctionData &&
+              this.prompt == other.prompt &&
+              this.code == other.code &&
+              this.global == other.global
         }
 
         override fun hashCode(): Int {
-            return Objects.hash(
-                prompt,
-                code,
-                global,
-            )
+          return Objects.hash(
+              prompt,
+              code,
+              global,
+          )
         }
 
         override fun toString(): String {
-            return when {
-                prompt != null -> "FunctionData{prompt=$prompt}"
-                code != null -> "FunctionData{code=$code}"
-                global != null -> "FunctionData{global=$global}"
-                _json != null -> "FunctionData{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid FunctionData")
-            }
+          return when {
+              prompt != null -> "FunctionData{prompt=$prompt}"
+              code != null -> "FunctionData{code=$code}"
+              global != null -> "FunctionData{global=$global}"
+              _json != null -> "FunctionData{_unknown=$_json}"
+              else -> throw IllegalStateException("Invalid FunctionData")
+          }
         }
 
         companion object {
@@ -526,55 +585,44 @@ private constructor(
             fun visitGlobal(global: Global): T
 
             fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown FunctionData: $json")
+              throw BraintrustInvalidDataException("Unknown FunctionData: $json")
             }
         }
 
         class Deserializer : BaseDeserializer<FunctionData>(FunctionData::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): FunctionData {
-                val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<Prompt>()) { it.validate() }
-                    ?.let {
-                        return FunctionData(prompt = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<Code>()) { it.validate() }
-                    ?.let {
-                        return FunctionData(code = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<Global>()) { it.validate() }
-                    ?.let {
-                        return FunctionData(global = it, _json = json)
-                    }
+              val json = JsonValue.fromJsonNode(node)
+              tryDeserialize(node, jacksonTypeRef<Prompt>()){ it.validate() }?.let {
+                  return FunctionData(prompt = it, _json = json)
+              }
+              tryDeserialize(node, jacksonTypeRef<Code>()){ it.validate() }?.let {
+                  return FunctionData(code = it, _json = json)
+              }
+              tryDeserialize(node, jacksonTypeRef<Global>()){ it.validate() }?.let {
+                  return FunctionData(global = it, _json = json)
+              }
 
-                return FunctionData(_json = json)
+              return FunctionData(_json = json)
             }
         }
 
         class Serializer : BaseSerializer<FunctionData>(FunctionData::class) {
 
-            override fun serialize(
-                value: FunctionData,
-                generator: JsonGenerator,
-                provider: SerializerProvider
-            ) {
-                when {
-                    value.prompt != null -> generator.writeObject(value.prompt)
-                    value.code != null -> generator.writeObject(value.code)
-                    value.global != null -> generator.writeObject(value.global)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid FunctionData")
-                }
+            override fun serialize(value: FunctionData, generator: JsonGenerator, provider: SerializerProvider) {
+              when {
+                  value.prompt != null -> generator.writeObject(value.prompt)
+                  value.code != null -> generator.writeObject(value.code)
+                  value.global != null -> generator.writeObject(value.global)
+                  value._json != null -> generator.writeObject(value._json)
+                  else -> throw IllegalStateException("Invalid FunctionData")
+              }
             }
         }
 
         @JsonDeserialize(builder = Prompt.Builder::class)
         @NoAutoDetect
-        class Prompt
-        private constructor(
-            private val type: JsonField<Type>,
-            private val additionalProperties: Map<String, JsonValue>,
-        ) {
+        class Prompt private constructor(private val type: JsonField<Type>, private val additionalProperties: Map<String, JsonValue>, ) {
 
             private var validated: Boolean = false
 
@@ -582,7 +630,9 @@ private constructor(
 
             fun type(): Type = type.getRequired("type")
 
-            @JsonProperty("type") @ExcludeMissing fun _type() = type
+            @JsonProperty("type")
+            @ExcludeMissing
+            fun _type() = type
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -590,32 +640,31 @@ private constructor(
 
             fun validate(): Prompt = apply {
                 if (!validated) {
-                    type()
-                    validated = true
+                  type()
+                  validated = true
                 }
             }
 
             fun toBuilder() = Builder().from(this)
 
             override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
+              if (this === other) {
+                  return true
+              }
 
-                return other is Prompt &&
-                    this.type == other.type &&
-                    this.additionalProperties == other.additionalProperties
+              return other is Prompt &&
+                  this.type == other.type &&
+                  this.additionalProperties == other.additionalProperties
             }
 
             override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode = Objects.hash(type, additionalProperties)
-                }
-                return hashCode
+              if (hashCode == 0) {
+                hashCode = Objects.hash(type, additionalProperties)
+              }
+              return hashCode
             }
 
-            override fun toString() =
-                "Prompt{type=$type, additionalProperties=$additionalProperties}"
+            override fun toString() = "Prompt{type=$type, additionalProperties=$additionalProperties}"
 
             companion object {
 
@@ -636,7 +685,9 @@ private constructor(
 
                 @JsonProperty("type")
                 @ExcludeMissing
-                fun type(type: JsonField<Type>) = apply { this.type = type }
+                fun type(type: JsonField<Type>) = apply {
+                    this.type = type
+                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -648,28 +699,25 @@ private constructor(
                     this.additionalProperties.put(key, value)
                 }
 
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.putAll(additionalProperties)
+                }
 
                 fun build(): Prompt = Prompt(type, additionalProperties.toUnmodifiable())
             }
 
-            class Type
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+                @com.fasterxml.jackson.annotation.JsonValue
+                fun _value(): JsonField<String> = value
 
                 override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
+                  if (this === other) {
+                      return true
+                  }
 
-                    return other is Type && this.value == other.value
+                  return other is Type &&
+                      this.value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -692,17 +740,15 @@ private constructor(
                     _UNKNOWN,
                 }
 
-                fun value(): Value =
-                    when (this) {
-                        PROMPT -> Value.PROMPT
-                        else -> Value._UNKNOWN
-                    }
+                fun value(): Value = when (this) {
+                    PROMPT -> Value.PROMPT
+                    else -> Value._UNKNOWN
+                }
 
-                fun known(): Known =
-                    when (this) {
-                        PROMPT -> Known.PROMPT
-                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                    }
+                fun known(): Known = when (this) {
+                    PROMPT -> Known.PROMPT
+                    else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                }
 
                 fun asString(): String = _value().asStringOrThrow()
             }
@@ -710,12 +756,7 @@ private constructor(
 
         @JsonDeserialize(builder = Code.Builder::class)
         @NoAutoDetect
-        class Code
-        private constructor(
-            private val type: JsonField<Type>,
-            private val data: JsonField<Data>,
-            private val additionalProperties: Map<String, JsonValue>,
-        ) {
+        class Code private constructor(private val type: JsonField<Type>, private val data: JsonField<Data>, private val additionalProperties: Map<String, JsonValue>, ) {
 
             private var validated: Boolean = false
 
@@ -725,9 +766,13 @@ private constructor(
 
             fun data(): Data = data.getRequired("data")
 
-            @JsonProperty("type") @ExcludeMissing fun _type() = type
+            @JsonProperty("type")
+            @ExcludeMissing
+            fun _type() = type
 
-            @JsonProperty("data") @ExcludeMissing fun _data() = data
+            @JsonProperty("data")
+            @ExcludeMissing
+            fun _data() = data
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -735,39 +780,37 @@ private constructor(
 
             fun validate(): Code = apply {
                 if (!validated) {
-                    type()
-                    data()
-                    validated = true
+                  type()
+                  data()
+                  validated = true
                 }
             }
 
             fun toBuilder() = Builder().from(this)
 
             override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
+              if (this === other) {
+                  return true
+              }
 
-                return other is Code &&
-                    this.type == other.type &&
-                    this.data == other.data &&
-                    this.additionalProperties == other.additionalProperties
+              return other is Code &&
+                  this.type == other.type &&
+                  this.data == other.data &&
+                  this.additionalProperties == other.additionalProperties
             }
 
             override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode =
-                        Objects.hash(
-                            type,
-                            data,
-                            additionalProperties,
-                        )
-                }
-                return hashCode
+              if (hashCode == 0) {
+                hashCode = Objects.hash(
+                    type,
+                    data,
+                    additionalProperties,
+                )
+              }
+              return hashCode
             }
 
-            override fun toString() =
-                "Code{type=$type, data=$data, additionalProperties=$additionalProperties}"
+            override fun toString() = "Code{type=$type, data=$data, additionalProperties=$additionalProperties}"
 
             companion object {
 
@@ -790,13 +833,17 @@ private constructor(
 
                 @JsonProperty("type")
                 @ExcludeMissing
-                fun type(type: JsonField<Type>) = apply { this.type = type }
+                fun type(type: JsonField<Type>) = apply {
+                    this.type = type
+                }
 
                 fun data(data: Data) = data(JsonField.of(data))
 
                 @JsonProperty("data")
                 @ExcludeMissing
-                fun data(data: JsonField<Data>) = apply { this.data = data }
+                fun data(data: JsonField<Data>) = apply {
+                    this.data = data
+                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -808,84 +855,74 @@ private constructor(
                     this.additionalProperties.put(key, value)
                 }
 
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.putAll(additionalProperties)
+                }
 
-                fun build(): Code =
-                    Code(
-                        type,
-                        data,
-                        additionalProperties.toUnmodifiable(),
-                    )
+                fun build(): Code = Code(
+                    type,
+                    data,
+                    additionalProperties.toUnmodifiable(),
+                )
             }
 
             @JsonDeserialize(using = Data.Deserializer::class)
             @JsonSerialize(using = Data.Serializer::class)
-            class Data
-            private constructor(
-                private val bundle: Bundle? = null,
-                private val inline: Inline? = null,
-                private val _json: JsonValue? = null,
-            ) {
+            class Data private constructor(private val bundle: Bundle? = null, private val inline: Inline? = null, private val _json: JsonValue? = null, ) {
 
                 private var validated: Boolean = false
 
                 fun bundle(): Bundle? = bundle
-
                 fun inline(): Inline? = inline
 
                 fun isBundle(): Boolean = bundle != null
-
                 fun isInline(): Boolean = inline != null
 
                 fun asBundle(): Bundle = bundle.getOrThrow("bundle")
-
                 fun asInline(): Inline = inline.getOrThrow("inline")
 
                 fun _json(): JsonValue? = _json
 
                 fun <T> accept(visitor: Visitor<T>): T {
-                    return when {
-                        bundle != null -> visitor.visitBundle(bundle)
-                        inline != null -> visitor.visitInline(inline)
-                        else -> visitor.unknown(_json)
-                    }
+                  return when {
+                      bundle != null -> visitor.visitBundle(bundle)
+                      inline != null -> visitor.visitInline(inline)
+                      else -> visitor.unknown(_json)
+                  }
                 }
 
                 fun validate(): Data = apply {
                     if (!validated) {
-                        if (bundle == null && inline == null) {
-                            throw BraintrustInvalidDataException("Unknown Data: $_json")
-                        }
-                        bundle?.validate()
-                        inline?.validate()
-                        validated = true
+                      if (bundle == null && inline == null) {
+                        throw BraintrustInvalidDataException("Unknown Data: $_json")
+                      }
+                      bundle?.validate()
+                      inline?.validate()
+                      validated = true
                     }
                 }
 
                 override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
+                  if (this === other) {
+                      return true
+                  }
 
-                    return other is Data &&
-                        this.bundle == other.bundle &&
-                        this.inline == other.inline
+                  return other is Data &&
+                      this.bundle == other.bundle &&
+                      this.inline == other.inline
                 }
 
                 override fun hashCode(): Int {
-                    return Objects.hash(bundle, inline)
+                  return Objects.hash(bundle, inline)
                 }
 
                 override fun toString(): String {
-                    return when {
-                        bundle != null -> "Data{bundle=$bundle}"
-                        inline != null -> "Data{inline=$inline}"
-                        _json != null -> "Data{_unknown=$_json}"
-                        else -> throw IllegalStateException("Invalid Data")
-                    }
+                  return when {
+                      bundle != null -> "Data{bundle=$bundle}"
+                      inline != null -> "Data{inline=$inline}"
+                      _json != null -> "Data{_unknown=$_json}"
+                      else -> throw IllegalStateException("Invalid Data")
+                  }
                 }
 
                 companion object {
@@ -902,53 +939,47 @@ private constructor(
                     fun visitInline(inline: Inline): T
 
                     fun unknown(json: JsonValue?): T {
-                        throw BraintrustInvalidDataException("Unknown Data: $json")
+                      throw BraintrustInvalidDataException("Unknown Data: $json")
                     }
                 }
 
                 class Deserializer : BaseDeserializer<Data>(Data::class) {
 
                     override fun ObjectCodec.deserialize(node: JsonNode): Data {
-                        val json = JsonValue.fromJsonNode(node)
-                        tryDeserialize(node, jacksonTypeRef<Bundle>()) { it.validate() }
-                            ?.let {
-                                return Data(bundle = it, _json = json)
-                            }
-                        tryDeserialize(node, jacksonTypeRef<Inline>()) { it.validate() }
-                            ?.let {
-                                return Data(inline = it, _json = json)
-                            }
+                      val json = JsonValue.fromJsonNode(node)
+                      tryDeserialize(node, jacksonTypeRef<Bundle>()){ it.validate() }?.let {
+                          return Data(bundle = it, _json = json)
+                      }
+                      tryDeserialize(node, jacksonTypeRef<Inline>()){ it.validate() }?.let {
+                          return Data(inline = it, _json = json)
+                      }
 
-                        return Data(_json = json)
+                      return Data(_json = json)
                     }
                 }
 
                 class Serializer : BaseSerializer<Data>(Data::class) {
 
-                    override fun serialize(
-                        value: Data,
-                        generator: JsonGenerator,
-                        provider: SerializerProvider
-                    ) {
-                        when {
-                            value.bundle != null -> generator.writeObject(value.bundle)
-                            value.inline != null -> generator.writeObject(value.inline)
-                            value._json != null -> generator.writeObject(value._json)
-                            else -> throw IllegalStateException("Invalid Data")
-                        }
+                    override fun serialize(value: Data, generator: JsonGenerator, provider: SerializerProvider) {
+                      when {
+                          value.bundle != null -> generator.writeObject(value.bundle)
+                          value.inline != null -> generator.writeObject(value.inline)
+                          value._json != null -> generator.writeObject(value._json)
+                          else -> throw IllegalStateException("Invalid Data")
+                      }
                     }
                 }
 
                 @JsonDeserialize(builder = Bundle.Builder::class)
                 @NoAutoDetect
-                class Bundle
-                private constructor(
-                    private val type: JsonField<Type>,
-                    private val runtimeContext: JsonField<RuntimeContext>,
-                    private val location: JsonField<Location>,
-                    private val bundleId: JsonField<String>,
-                    private val preview: JsonField<String>,
-                    private val additionalProperties: Map<String, JsonValue>,
+                class Bundle private constructor(
+                  private val type: JsonField<Type>,
+                  private val runtimeContext: JsonField<RuntimeContext>,
+                  private val location: JsonField<Location>,
+                  private val bundleId: JsonField<String>,
+                  private val preview: JsonField<String>,
+                  private val additionalProperties: Map<String, JsonValue>,
+
                 ) {
 
                     private var validated: Boolean = false
@@ -957,8 +988,7 @@ private constructor(
 
                     fun type(): Type = type.getRequired("type")
 
-                    fun runtimeContext(): RuntimeContext =
-                        runtimeContext.getRequired("runtime_context")
+                    fun runtimeContext(): RuntimeContext = runtimeContext.getRequired("runtime_context")
 
                     fun location(): Location = location.getRequired("location")
 
@@ -967,18 +997,26 @@ private constructor(
                     /** A preview of the code */
                     fun preview(): String? = preview.getNullable("preview")
 
-                    @JsonProperty("type") @ExcludeMissing fun _type() = type
+                    @JsonProperty("type")
+                    @ExcludeMissing
+                    fun _type() = type
 
                     @JsonProperty("runtime_context")
                     @ExcludeMissing
                     fun _runtimeContext() = runtimeContext
 
-                    @JsonProperty("location") @ExcludeMissing fun _location() = location
+                    @JsonProperty("location")
+                    @ExcludeMissing
+                    fun _location() = location
 
-                    @JsonProperty("bundle_id") @ExcludeMissing fun _bundleId() = bundleId
+                    @JsonProperty("bundle_id")
+                    @ExcludeMissing
+                    fun _bundleId() = bundleId
 
                     /** A preview of the code */
-                    @JsonProperty("preview") @ExcludeMissing fun _preview() = preview
+                    @JsonProperty("preview")
+                    @ExcludeMissing
+                    fun _preview() = preview
 
                     @JsonAnyGetter
                     @ExcludeMissing
@@ -986,48 +1024,46 @@ private constructor(
 
                     fun validate(): Bundle = apply {
                         if (!validated) {
-                            type()
-                            runtimeContext().validate()
-                            location().validate()
-                            bundleId()
-                            preview()
-                            validated = true
+                          type()
+                          runtimeContext().validate()
+                          location().validate()
+                          bundleId()
+                          preview()
+                          validated = true
                         }
                     }
 
                     fun toBuilder() = Builder().from(this)
 
                     override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
+                      if (this === other) {
+                          return true
+                      }
 
-                        return other is Bundle &&
-                            this.type == other.type &&
-                            this.runtimeContext == other.runtimeContext &&
-                            this.location == other.location &&
-                            this.bundleId == other.bundleId &&
-                            this.preview == other.preview &&
-                            this.additionalProperties == other.additionalProperties
+                      return other is Bundle &&
+                          this.type == other.type &&
+                          this.runtimeContext == other.runtimeContext &&
+                          this.location == other.location &&
+                          this.bundleId == other.bundleId &&
+                          this.preview == other.preview &&
+                          this.additionalProperties == other.additionalProperties
                     }
 
                     override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode =
-                                Objects.hash(
-                                    type,
-                                    runtimeContext,
-                                    location,
-                                    bundleId,
-                                    preview,
-                                    additionalProperties,
-                                )
-                        }
-                        return hashCode
+                      if (hashCode == 0) {
+                        hashCode = Objects.hash(
+                            type,
+                            runtimeContext,
+                            location,
+                            bundleId,
+                            preview,
+                            additionalProperties,
+                        )
+                      }
+                      return hashCode
                     }
 
-                    override fun toString() =
-                        "Bundle{type=$type, runtimeContext=$runtimeContext, location=$location, bundleId=$bundleId, preview=$preview, additionalProperties=$additionalProperties}"
+                    override fun toString() = "Bundle{type=$type, runtimeContext=$runtimeContext, location=$location, bundleId=$bundleId, preview=$preview, additionalProperties=$additionalProperties}"
 
                     companion object {
 
@@ -1041,8 +1077,7 @@ private constructor(
                         private var location: JsonField<Location> = JsonMissing.of()
                         private var bundleId: JsonField<String> = JsonMissing.of()
                         private var preview: JsonField<String> = JsonMissing.of()
-                        private var additionalProperties: MutableMap<String, JsonValue> =
-                            mutableMapOf()
+                        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                         internal fun from(bundle: Bundle) = apply {
                             this.type = bundle.type
@@ -1057,10 +1092,11 @@ private constructor(
 
                         @JsonProperty("type")
                         @ExcludeMissing
-                        fun type(type: JsonField<Type>) = apply { this.type = type }
+                        fun type(type: JsonField<Type>) = apply {
+                            this.type = type
+                        }
 
-                        fun runtimeContext(runtimeContext: RuntimeContext) =
-                            runtimeContext(JsonField.of(runtimeContext))
+                        fun runtimeContext(runtimeContext: RuntimeContext) = runtimeContext(JsonField.of(runtimeContext))
 
                         @JsonProperty("runtime_context")
                         @ExcludeMissing
@@ -1090,42 +1126,42 @@ private constructor(
                         /** A preview of the code */
                         @JsonProperty("preview")
                         @ExcludeMissing
-                        fun preview(preview: JsonField<String>) = apply { this.preview = preview }
+                        fun preview(preview: JsonField<String>) = apply {
+                            this.preview = preview
+                        }
 
-                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                            apply {
-                                this.additionalProperties.clear()
-                                this.additionalProperties.putAll(additionalProperties)
-                            }
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                            this.additionalProperties.clear()
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
 
                         @JsonAnySetter
                         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                             this.additionalProperties.put(key, value)
                         }
 
-                        fun putAllAdditionalProperties(
-                            additionalProperties: Map<String, JsonValue>
-                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+                        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
 
-                        fun build(): Bundle =
-                            Bundle(
-                                type,
-                                runtimeContext,
-                                location,
-                                bundleId,
-                                preview,
-                                additionalProperties.toUnmodifiable(),
-                            )
+                        fun build(): Bundle = Bundle(
+                            type,
+                            runtimeContext,
+                            location,
+                            bundleId,
+                            preview,
+                            additionalProperties.toUnmodifiable(),
+                        )
                     }
 
                     @JsonDeserialize(builder = Location.Builder::class)
                     @NoAutoDetect
-                    class Location
-                    private constructor(
-                        private val type: JsonField<Type>,
-                        private val evalName: JsonField<String>,
-                        private val position: JsonField<Position>,
-                        private val additionalProperties: Map<String, JsonValue>,
+                    class Location private constructor(
+                      private val type: JsonField<Type>,
+                      private val evalName: JsonField<String>,
+                      private val position: JsonField<Position>,
+                      private val additionalProperties: Map<String, JsonValue>,
+
                     ) {
 
                         private var validated: Boolean = false
@@ -1138,11 +1174,17 @@ private constructor(
 
                         fun position(): Position = position.getRequired("position")
 
-                        @JsonProperty("type") @ExcludeMissing fun _type() = type
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        fun _type() = type
 
-                        @JsonProperty("eval_name") @ExcludeMissing fun _evalName() = evalName
+                        @JsonProperty("eval_name")
+                        @ExcludeMissing
+                        fun _evalName() = evalName
 
-                        @JsonProperty("position") @ExcludeMissing fun _position() = position
+                        @JsonProperty("position")
+                        @ExcludeMissing
+                        fun _position() = position
 
                         @JsonAnyGetter
                         @ExcludeMissing
@@ -1150,42 +1192,40 @@ private constructor(
 
                         fun validate(): Location = apply {
                             if (!validated) {
-                                type()
-                                evalName()
-                                position()
-                                validated = true
+                              type()
+                              evalName()
+                              position()
+                              validated = true
                             }
                         }
 
                         fun toBuilder() = Builder().from(this)
 
                         override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
+                          if (this === other) {
+                              return true
+                          }
 
-                            return other is Location &&
-                                this.type == other.type &&
-                                this.evalName == other.evalName &&
-                                this.position == other.position &&
-                                this.additionalProperties == other.additionalProperties
+                          return other is Location &&
+                              this.type == other.type &&
+                              this.evalName == other.evalName &&
+                              this.position == other.position &&
+                              this.additionalProperties == other.additionalProperties
                         }
 
                         override fun hashCode(): Int {
-                            if (hashCode == 0) {
-                                hashCode =
-                                    Objects.hash(
-                                        type,
-                                        evalName,
-                                        position,
-                                        additionalProperties,
-                                    )
-                            }
-                            return hashCode
+                          if (hashCode == 0) {
+                            hashCode = Objects.hash(
+                                type,
+                                evalName,
+                                position,
+                                additionalProperties,
+                            )
+                          }
+                          return hashCode
                         }
 
-                        override fun toString() =
-                            "Location{type=$type, evalName=$evalName, position=$position, additionalProperties=$additionalProperties}"
+                        override fun toString() = "Location{type=$type, evalName=$evalName, position=$position, additionalProperties=$additionalProperties}"
 
                         companion object {
 
@@ -1197,8 +1237,7 @@ private constructor(
                             private var type: JsonField<Type> = JsonMissing.of()
                             private var evalName: JsonField<String> = JsonMissing.of()
                             private var position: JsonField<Position> = JsonMissing.of()
-                            private var additionalProperties: MutableMap<String, JsonValue> =
-                                mutableMapOf()
+                            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                             internal fun from(location: Location) = apply {
                                 this.type = location.type
@@ -1211,7 +1250,9 @@ private constructor(
 
                             @JsonProperty("type")
                             @ExcludeMissing
-                            fun type(type: JsonField<Type>) = apply { this.type = type }
+                            fun type(type: JsonField<Type>) = apply {
+                                this.type = type
+                            }
 
                             fun evalName(evalName: String) = evalName(JsonField.of(evalName))
 
@@ -1229,97 +1270,85 @@ private constructor(
                                 this.position = position
                             }
 
-                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                                apply {
-                                    this.additionalProperties.clear()
-                                    this.additionalProperties.putAll(additionalProperties)
-                                }
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                                this.additionalProperties.clear()
+                                this.additionalProperties.putAll(additionalProperties)
+                            }
 
                             @JsonAnySetter
                             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                                 this.additionalProperties.put(key, value)
                             }
 
-                            fun putAllAdditionalProperties(
-                                additionalProperties: Map<String, JsonValue>
-                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+                            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                                this.additionalProperties.putAll(additionalProperties)
+                            }
 
-                            fun build(): Location =
-                                Location(
-                                    type,
-                                    evalName,
-                                    position,
-                                    additionalProperties.toUnmodifiable(),
-                                )
+                            fun build(): Location = Location(
+                                type,
+                                evalName,
+                                position,
+                                additionalProperties.toUnmodifiable(),
+                            )
                         }
 
                         @JsonDeserialize(using = Position.Deserializer::class)
                         @JsonSerialize(using = Position.Serializer::class)
-                        class Position
-                        private constructor(
-                            private val type: Type? = null,
-                            private val scorer: Scorer? = null,
-                            private val _json: JsonValue? = null,
-                        ) {
+                        class Position private constructor(private val type: Type? = null, private val scorer: Scorer? = null, private val _json: JsonValue? = null, ) {
 
                             private var validated: Boolean = false
 
                             fun type(): Type? = type
-
                             fun scorer(): Scorer? = scorer
 
                             fun isType(): Boolean = type != null
-
                             fun isScorer(): Boolean = scorer != null
 
                             fun asType(): Type = type.getOrThrow("type")
-
                             fun asScorer(): Scorer = scorer.getOrThrow("scorer")
 
                             fun _json(): JsonValue? = _json
 
                             fun <T> accept(visitor: Visitor<T>): T {
-                                return when {
-                                    type != null -> visitor.visitType(type)
-                                    scorer != null -> visitor.visitScorer(scorer)
-                                    else -> visitor.unknown(_json)
-                                }
+                              return when {
+                                  type != null -> visitor.visitType(type)
+                                  scorer != null -> visitor.visitScorer(scorer)
+                                  else -> visitor.unknown(_json)
+                              }
                             }
 
                             fun validate(): Position = apply {
                                 if (!validated) {
-                                    if (type == null && scorer == null) {
-                                        throw BraintrustInvalidDataException(
-                                            "Unknown Position: $_json"
-                                        )
-                                    }
-                                    type?.validate()
-                                    scorer?.validate()
-                                    validated = true
+                                  if (type == null && scorer == null) {
+                                    throw BraintrustInvalidDataException("Unknown Position: $_json")
+                                  }
+                                  type?.validate()
+                                  scorer?.validate()
+                                  validated = true
                                 }
                             }
 
                             override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
+                              if (this === other) {
+                                  return true
+                              }
 
-                                return other is Position &&
-                                    this.type == other.type &&
-                                    this.scorer == other.scorer
+                              return other is Position &&
+                                  this.type == other.type &&
+                                  this.scorer == other.scorer
                             }
 
                             override fun hashCode(): Int {
-                                return Objects.hash(type, scorer)
+                              return Objects.hash(type, scorer)
                             }
 
                             override fun toString(): String {
-                                return when {
-                                    type != null -> "Position{type=$type}"
-                                    scorer != null -> "Position{scorer=$scorer}"
-                                    _json != null -> "Position{_unknown=$_json}"
-                                    else -> throw IllegalStateException("Invalid Position")
-                                }
+                              return when {
+                                  type != null -> "Position{type=$type}"
+                                  scorer != null -> "Position{scorer=$scorer}"
+                                  _json != null -> "Position{_unknown=$_json}"
+                                  else -> throw IllegalStateException("Invalid Position")
+                              }
                             }
 
                             companion object {
@@ -1336,50 +1365,40 @@ private constructor(
                                 fun visitScorer(scorer: Scorer): T
 
                                 fun unknown(json: JsonValue?): T {
-                                    throw BraintrustInvalidDataException("Unknown Position: $json")
+                                  throw BraintrustInvalidDataException("Unknown Position: $json")
                                 }
                             }
 
                             class Deserializer : BaseDeserializer<Position>(Position::class) {
 
                                 override fun ObjectCodec.deserialize(node: JsonNode): Position {
-                                    val json = JsonValue.fromJsonNode(node)
-                                    tryDeserialize(node, jacksonTypeRef<Type>()) { it.validate() }
-                                        ?.let {
-                                            return Position(type = it, _json = json)
-                                        }
-                                    tryDeserialize(node, jacksonTypeRef<Scorer>()) { it.validate() }
-                                        ?.let {
-                                            return Position(scorer = it, _json = json)
-                                        }
+                                  val json = JsonValue.fromJsonNode(node)
+                                  tryDeserialize(node, jacksonTypeRef<Type>()){ it.validate() }?.let {
+                                      return Position(type = it, _json = json)
+                                  }
+                                  tryDeserialize(node, jacksonTypeRef<Scorer>()){ it.validate() }?.let {
+                                      return Position(scorer = it, _json = json)
+                                  }
 
-                                    return Position(_json = json)
+                                  return Position(_json = json)
                                 }
                             }
 
                             class Serializer : BaseSerializer<Position>(Position::class) {
 
-                                override fun serialize(
-                                    value: Position,
-                                    generator: JsonGenerator,
-                                    provider: SerializerProvider
-                                ) {
-                                    when {
-                                        value.type != null -> generator.writeObject(value.type)
-                                        value.scorer != null -> generator.writeObject(value.scorer)
-                                        value._json != null -> generator.writeObject(value._json)
-                                        else -> throw IllegalStateException("Invalid Position")
-                                    }
+                                override fun serialize(value: Position, generator: JsonGenerator, provider: SerializerProvider) {
+                                  when {
+                                      value.type != null -> generator.writeObject(value.type)
+                                      value.scorer != null -> generator.writeObject(value.scorer)
+                                      value._json != null -> generator.writeObject(value._json)
+                                      else -> throw IllegalStateException("Invalid Position")
+                                  }
                                 }
                             }
 
                             @JsonDeserialize(builder = Type.Builder::class)
                             @NoAutoDetect
-                            class Type
-                            private constructor(
-                                private val type: JsonField<Type>,
-                                private val additionalProperties: Map<String, JsonValue>,
-                            ) {
+                            class Type private constructor(private val type: JsonField<Type>, private val additionalProperties: Map<String, JsonValue>, ) {
 
                                 private var validated: Boolean = false
 
@@ -1387,41 +1406,41 @@ private constructor(
 
                                 fun type(): Type = type.getRequired("type")
 
-                                @JsonProperty("type") @ExcludeMissing fun _type() = type
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                fun _type() = type
 
                                 @JsonAnyGetter
                                 @ExcludeMissing
-                                fun _additionalProperties(): Map<String, JsonValue> =
-                                    additionalProperties
+                                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
                                 fun validate(): Type = apply {
                                     if (!validated) {
-                                        type()
-                                        validated = true
+                                      type()
+                                      validated = true
                                     }
                                 }
 
                                 fun toBuilder() = Builder().from(this)
 
                                 override fun equals(other: Any?): Boolean {
-                                    if (this === other) {
-                                        return true
-                                    }
+                                  if (this === other) {
+                                      return true
+                                  }
 
-                                    return other is Type &&
-                                        this.type == other.type &&
-                                        this.additionalProperties == other.additionalProperties
+                                  return other is Type &&
+                                      this.type == other.type &&
+                                      this.additionalProperties == other.additionalProperties
                                 }
 
                                 override fun hashCode(): Int {
-                                    if (hashCode == 0) {
-                                        hashCode = Objects.hash(type, additionalProperties)
-                                    }
-                                    return hashCode
+                                  if (hashCode == 0) {
+                                    hashCode = Objects.hash(type, additionalProperties)
+                                  }
+                                  return hashCode
                                 }
 
-                                override fun toString() =
-                                    "Type{type=$type, additionalProperties=$additionalProperties}"
+                                override fun toString() = "Type{type=$type, additionalProperties=$additionalProperties}"
 
                                 companion object {
 
@@ -1431,9 +1450,7 @@ private constructor(
                                 class Builder {
 
                                     private var type: JsonField<Type> = JsonMissing.of()
-                                    private var additionalProperties:
-                                        MutableMap<String, JsonValue> =
-                                        mutableMapOf()
+                                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                                     internal fun from(type: Type) = apply {
                                         this.type = type.type
@@ -1444,46 +1461,39 @@ private constructor(
 
                                     @JsonProperty("type")
                                     @ExcludeMissing
-                                    fun type(type: JsonField<Type>) = apply { this.type = type }
+                                    fun type(type: JsonField<Type>) = apply {
+                                        this.type = type
+                                    }
 
-                                    fun additionalProperties(
-                                        additionalProperties: Map<String, JsonValue>
-                                    ) = apply {
+                                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                                         this.additionalProperties.clear()
                                         this.additionalProperties.putAll(additionalProperties)
                                     }
 
                                     @JsonAnySetter
-                                    fun putAdditionalProperty(key: String, value: JsonValue) =
-                                        apply {
-                                            this.additionalProperties.put(key, value)
-                                        }
+                                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                        this.additionalProperties.put(key, value)
+                                    }
 
-                                    fun putAllAdditionalProperties(
-                                        additionalProperties: Map<String, JsonValue>
-                                    ) = apply {
+                                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                                         this.additionalProperties.putAll(additionalProperties)
                                     }
 
-                                    fun build(): Type =
-                                        Type(type, additionalProperties.toUnmodifiable())
+                                    fun build(): Type = Type(type, additionalProperties.toUnmodifiable())
                                 }
 
-                                class Type
-                                @JsonCreator
-                                private constructor(
-                                    private val value: JsonField<String>,
-                                ) : Enum {
+                                class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
                                     @com.fasterxml.jackson.annotation.JsonValue
                                     fun _value(): JsonField<String> = value
 
                                     override fun equals(other: Any?): Boolean {
-                                        if (this === other) {
-                                            return true
-                                        }
+                                      if (this === other) {
+                                          return true
+                                      }
 
-                                        return other is Type && this.value == other.value
+                                      return other is Type &&
+                                          this.value == other.value
                                     }
 
                                     override fun hashCode() = value.hashCode()
@@ -1506,20 +1516,15 @@ private constructor(
                                         _UNKNOWN,
                                     }
 
-                                    fun value(): Value =
-                                        when (this) {
-                                            TASK -> Value.TASK
-                                            else -> Value._UNKNOWN
-                                        }
+                                    fun value(): Value = when (this) {
+                                        TASK -> Value.TASK
+                                        else -> Value._UNKNOWN
+                                    }
 
-                                    fun known(): Known =
-                                        when (this) {
-                                            TASK -> Known.TASK
-                                            else ->
-                                                throw BraintrustInvalidDataException(
-                                                    "Unknown Type: $value"
-                                                )
-                                        }
+                                    fun known(): Known = when (this) {
+                                        TASK -> Known.TASK
+                                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                                    }
 
                                     fun asString(): String = _value().asStringOrThrow()
                                 }
@@ -1527,12 +1532,7 @@ private constructor(
 
                             @JsonDeserialize(builder = Scorer.Builder::class)
                             @NoAutoDetect
-                            class Scorer
-                            private constructor(
-                                private val type: JsonField<Type>,
-                                private val index: JsonField<Double>,
-                                private val additionalProperties: Map<String, JsonValue>,
-                            ) {
+                            class Scorer private constructor(private val type: JsonField<Type>, private val index: JsonField<Double>, private val additionalProperties: Map<String, JsonValue>, ) {
 
                                 private var validated: Boolean = false
 
@@ -1542,50 +1542,51 @@ private constructor(
 
                                 fun index(): Double = index.getRequired("index")
 
-                                @JsonProperty("type") @ExcludeMissing fun _type() = type
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                fun _type() = type
 
-                                @JsonProperty("index") @ExcludeMissing fun _index() = index
+                                @JsonProperty("index")
+                                @ExcludeMissing
+                                fun _index() = index
 
                                 @JsonAnyGetter
                                 @ExcludeMissing
-                                fun _additionalProperties(): Map<String, JsonValue> =
-                                    additionalProperties
+                                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
                                 fun validate(): Scorer = apply {
                                     if (!validated) {
-                                        type()
-                                        index()
-                                        validated = true
+                                      type()
+                                      index()
+                                      validated = true
                                     }
                                 }
 
                                 fun toBuilder() = Builder().from(this)
 
                                 override fun equals(other: Any?): Boolean {
-                                    if (this === other) {
-                                        return true
-                                    }
+                                  if (this === other) {
+                                      return true
+                                  }
 
-                                    return other is Scorer &&
-                                        this.type == other.type &&
-                                        this.index == other.index &&
-                                        this.additionalProperties == other.additionalProperties
+                                  return other is Scorer &&
+                                      this.type == other.type &&
+                                      this.index == other.index &&
+                                      this.additionalProperties == other.additionalProperties
                                 }
 
                                 override fun hashCode(): Int {
-                                    if (hashCode == 0) {
-                                        hashCode =
-                                            Objects.hash(
-                                                type,
-                                                index,
-                                                additionalProperties,
-                                            )
-                                    }
-                                    return hashCode
+                                  if (hashCode == 0) {
+                                    hashCode = Objects.hash(
+                                        type,
+                                        index,
+                                        additionalProperties,
+                                    )
+                                  }
+                                  return hashCode
                                 }
 
-                                override fun toString() =
-                                    "Scorer{type=$type, index=$index, additionalProperties=$additionalProperties}"
+                                override fun toString() = "Scorer{type=$type, index=$index, additionalProperties=$additionalProperties}"
 
                                 companion object {
 
@@ -1596,9 +1597,7 @@ private constructor(
 
                                     private var type: JsonField<Type> = JsonMissing.of()
                                     private var index: JsonField<Double> = JsonMissing.of()
-                                    private var additionalProperties:
-                                        MutableMap<String, JsonValue> =
-                                        mutableMapOf()
+                                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                                     internal fun from(scorer: Scorer) = apply {
                                         this.type = scorer.type
@@ -1610,7 +1609,9 @@ private constructor(
 
                                     @JsonProperty("type")
                                     @ExcludeMissing
-                                    fun type(type: JsonField<Type>) = apply { this.type = type }
+                                    fun type(type: JsonField<Type>) = apply {
+                                        this.type = type
+                                    }
 
                                     fun index(index: Double) = index(JsonField.of(index))
 
@@ -1620,48 +1621,39 @@ private constructor(
                                         this.index = index
                                     }
 
-                                    fun additionalProperties(
-                                        additionalProperties: Map<String, JsonValue>
-                                    ) = apply {
+                                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                                         this.additionalProperties.clear()
                                         this.additionalProperties.putAll(additionalProperties)
                                     }
 
                                     @JsonAnySetter
-                                    fun putAdditionalProperty(key: String, value: JsonValue) =
-                                        apply {
-                                            this.additionalProperties.put(key, value)
-                                        }
+                                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                        this.additionalProperties.put(key, value)
+                                    }
 
-                                    fun putAllAdditionalProperties(
-                                        additionalProperties: Map<String, JsonValue>
-                                    ) = apply {
+                                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                                         this.additionalProperties.putAll(additionalProperties)
                                     }
 
-                                    fun build(): Scorer =
-                                        Scorer(
-                                            type,
-                                            index,
-                                            additionalProperties.toUnmodifiable(),
-                                        )
+                                    fun build(): Scorer = Scorer(
+                                        type,
+                                        index,
+                                        additionalProperties.toUnmodifiable(),
+                                    )
                                 }
 
-                                class Type
-                                @JsonCreator
-                                private constructor(
-                                    private val value: JsonField<String>,
-                                ) : Enum {
+                                class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
                                     @com.fasterxml.jackson.annotation.JsonValue
                                     fun _value(): JsonField<String> = value
 
                                     override fun equals(other: Any?): Boolean {
-                                        if (this === other) {
-                                            return true
-                                        }
+                                      if (this === other) {
+                                          return true
+                                      }
 
-                                        return other is Type && this.value == other.value
+                                      return other is Type &&
+                                          this.value == other.value
                                     }
 
                                     override fun hashCode() = value.hashCode()
@@ -1684,41 +1676,33 @@ private constructor(
                                         _UNKNOWN,
                                     }
 
-                                    fun value(): Value =
-                                        when (this) {
-                                            SCORER -> Value.SCORER
-                                            else -> Value._UNKNOWN
-                                        }
+                                    fun value(): Value = when (this) {
+                                        SCORER -> Value.SCORER
+                                        else -> Value._UNKNOWN
+                                    }
 
-                                    fun known(): Known =
-                                        when (this) {
-                                            SCORER -> Known.SCORER
-                                            else ->
-                                                throw BraintrustInvalidDataException(
-                                                    "Unknown Type: $value"
-                                                )
-                                        }
+                                    fun known(): Known = when (this) {
+                                        SCORER -> Known.SCORER
+                                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                                    }
 
                                     fun asString(): String = _value().asStringOrThrow()
                                 }
                             }
                         }
 
-                        class Type
-                        @JsonCreator
-                        private constructor(
-                            private val value: JsonField<String>,
-                        ) : Enum {
+                        class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
                             @com.fasterxml.jackson.annotation.JsonValue
                             fun _value(): JsonField<String> = value
 
                             override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
+                              if (this === other) {
+                                  return true
+                              }
 
-                                return other is Type && this.value == other.value
+                              return other is Type &&
+                                  this.value == other.value
                             }
 
                             override fun hashCode() = value.hashCode()
@@ -1741,18 +1725,15 @@ private constructor(
                                 _UNKNOWN,
                             }
 
-                            fun value(): Value =
-                                when (this) {
-                                    EXPERIMENT -> Value.EXPERIMENT
-                                    else -> Value._UNKNOWN
-                                }
+                            fun value(): Value = when (this) {
+                                EXPERIMENT -> Value.EXPERIMENT
+                                else -> Value._UNKNOWN
+                            }
 
-                            fun known(): Known =
-                                when (this) {
-                                    EXPERIMENT -> Known.EXPERIMENT
-                                    else ->
-                                        throw BraintrustInvalidDataException("Unknown Type: $value")
-                                }
+                            fun known(): Known = when (this) {
+                                EXPERIMENT -> Known.EXPERIMENT
+                                else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                            }
 
                             fun asString(): String = _value().asStringOrThrow()
                         }
@@ -1760,12 +1741,7 @@ private constructor(
 
                     @JsonDeserialize(builder = RuntimeContext.Builder::class)
                     @NoAutoDetect
-                    class RuntimeContext
-                    private constructor(
-                        private val runtime: JsonField<Runtime>,
-                        private val version: JsonField<String>,
-                        private val additionalProperties: Map<String, JsonValue>,
-                    ) {
+                    class RuntimeContext private constructor(private val runtime: JsonField<Runtime>, private val version: JsonField<String>, private val additionalProperties: Map<String, JsonValue>, ) {
 
                         private var validated: Boolean = false
 
@@ -1775,9 +1751,13 @@ private constructor(
 
                         fun version(): String = version.getRequired("version")
 
-                        @JsonProperty("runtime") @ExcludeMissing fun _runtime() = runtime
+                        @JsonProperty("runtime")
+                        @ExcludeMissing
+                        fun _runtime() = runtime
 
-                        @JsonProperty("version") @ExcludeMissing fun _version() = version
+                        @JsonProperty("version")
+                        @ExcludeMissing
+                        fun _version() = version
 
                         @JsonAnyGetter
                         @ExcludeMissing
@@ -1785,39 +1765,37 @@ private constructor(
 
                         fun validate(): RuntimeContext = apply {
                             if (!validated) {
-                                runtime()
-                                version()
-                                validated = true
+                              runtime()
+                              version()
+                              validated = true
                             }
                         }
 
                         fun toBuilder() = Builder().from(this)
 
                         override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
+                          if (this === other) {
+                              return true
+                          }
 
-                            return other is RuntimeContext &&
-                                this.runtime == other.runtime &&
-                                this.version == other.version &&
-                                this.additionalProperties == other.additionalProperties
+                          return other is RuntimeContext &&
+                              this.runtime == other.runtime &&
+                              this.version == other.version &&
+                              this.additionalProperties == other.additionalProperties
                         }
 
                         override fun hashCode(): Int {
-                            if (hashCode == 0) {
-                                hashCode =
-                                    Objects.hash(
-                                        runtime,
-                                        version,
-                                        additionalProperties,
-                                    )
-                            }
-                            return hashCode
+                          if (hashCode == 0) {
+                            hashCode = Objects.hash(
+                                runtime,
+                                version,
+                                additionalProperties,
+                            )
+                          }
+                          return hashCode
                         }
 
-                        override fun toString() =
-                            "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
+                        override fun toString() = "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
 
                         companion object {
 
@@ -1828,8 +1806,7 @@ private constructor(
 
                             private var runtime: JsonField<Runtime> = JsonMissing.of()
                             private var version: JsonField<String> = JsonMissing.of()
-                            private var additionalProperties: MutableMap<String, JsonValue> =
-                                mutableMapOf()
+                            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                             internal fun from(runtimeContext: RuntimeContext) = apply {
                                 this.runtime = runtimeContext.runtime
@@ -1853,44 +1830,39 @@ private constructor(
                                 this.version = version
                             }
 
-                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                                apply {
-                                    this.additionalProperties.clear()
-                                    this.additionalProperties.putAll(additionalProperties)
-                                }
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                                this.additionalProperties.clear()
+                                this.additionalProperties.putAll(additionalProperties)
+                            }
 
                             @JsonAnySetter
                             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                                 this.additionalProperties.put(key, value)
                             }
 
-                            fun putAllAdditionalProperties(
-                                additionalProperties: Map<String, JsonValue>
-                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+                            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                                this.additionalProperties.putAll(additionalProperties)
+                            }
 
-                            fun build(): RuntimeContext =
-                                RuntimeContext(
-                                    runtime,
-                                    version,
-                                    additionalProperties.toUnmodifiable(),
-                                )
+                            fun build(): RuntimeContext = RuntimeContext(
+                                runtime,
+                                version,
+                                additionalProperties.toUnmodifiable(),
+                            )
                         }
 
-                        class Runtime
-                        @JsonCreator
-                        private constructor(
-                            private val value: JsonField<String>,
-                        ) : Enum {
+                        class Runtime @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
                             @com.fasterxml.jackson.annotation.JsonValue
                             fun _value(): JsonField<String> = value
 
                             override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
+                              if (this === other) {
+                                  return true
+                              }
 
-                                return other is Runtime && this.value == other.value
+                              return other is Runtime &&
+                                  this.value == other.value
                             }
 
                             override fun hashCode() = value.hashCode()
@@ -1917,42 +1889,34 @@ private constructor(
                                 _UNKNOWN,
                             }
 
-                            fun value(): Value =
-                                when (this) {
-                                    NODE -> Value.NODE
-                                    PYTHON -> Value.PYTHON
-                                    else -> Value._UNKNOWN
-                                }
+                            fun value(): Value = when (this) {
+                                NODE -> Value.NODE
+                                PYTHON -> Value.PYTHON
+                                else -> Value._UNKNOWN
+                            }
 
-                            fun known(): Known =
-                                when (this) {
-                                    NODE -> Known.NODE
-                                    PYTHON -> Known.PYTHON
-                                    else ->
-                                        throw BraintrustInvalidDataException(
-                                            "Unknown Runtime: $value"
-                                        )
-                                }
+                            fun known(): Known = when (this) {
+                                NODE -> Known.NODE
+                                PYTHON -> Known.PYTHON
+                                else -> throw BraintrustInvalidDataException("Unknown Runtime: $value")
+                            }
 
                             fun asString(): String = _value().asStringOrThrow()
                         }
                     }
 
-                    class Type
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
+                    class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
                         @com.fasterxml.jackson.annotation.JsonValue
                         fun _value(): JsonField<String> = value
 
                         override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
+                          if (this === other) {
+                              return true
+                          }
 
-                            return other is Type && this.value == other.value
+                          return other is Type &&
+                              this.value == other.value
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -1975,17 +1939,15 @@ private constructor(
                             _UNKNOWN,
                         }
 
-                        fun value(): Value =
-                            when (this) {
-                                BUNDLE -> Value.BUNDLE
-                                else -> Value._UNKNOWN
-                            }
+                        fun value(): Value = when (this) {
+                            BUNDLE -> Value.BUNDLE
+                            else -> Value._UNKNOWN
+                        }
 
-                        fun known(): Known =
-                            when (this) {
-                                BUNDLE -> Known.BUNDLE
-                                else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                            }
+                        fun known(): Known = when (this) {
+                            BUNDLE -> Known.BUNDLE
+                            else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                        }
 
                         fun asString(): String = _value().asStringOrThrow()
                     }
@@ -1993,12 +1955,12 @@ private constructor(
 
                 @JsonDeserialize(builder = Inline.Builder::class)
                 @NoAutoDetect
-                class Inline
-                private constructor(
-                    private val type: JsonField<Type>,
-                    private val runtimeContext: JsonField<RuntimeContext>,
-                    private val code: JsonField<String>,
-                    private val additionalProperties: Map<String, JsonValue>,
+                class Inline private constructor(
+                  private val type: JsonField<Type>,
+                  private val runtimeContext: JsonField<RuntimeContext>,
+                  private val code: JsonField<String>,
+                  private val additionalProperties: Map<String, JsonValue>,
+
                 ) {
 
                     private var validated: Boolean = false
@@ -2007,18 +1969,21 @@ private constructor(
 
                     fun type(): Type = type.getRequired("type")
 
-                    fun runtimeContext(): RuntimeContext =
-                        runtimeContext.getRequired("runtime_context")
+                    fun runtimeContext(): RuntimeContext = runtimeContext.getRequired("runtime_context")
 
                     fun code(): String = code.getRequired("code")
 
-                    @JsonProperty("type") @ExcludeMissing fun _type() = type
+                    @JsonProperty("type")
+                    @ExcludeMissing
+                    fun _type() = type
 
                     @JsonProperty("runtime_context")
                     @ExcludeMissing
                     fun _runtimeContext() = runtimeContext
 
-                    @JsonProperty("code") @ExcludeMissing fun _code() = code
+                    @JsonProperty("code")
+                    @ExcludeMissing
+                    fun _code() = code
 
                     @JsonAnyGetter
                     @ExcludeMissing
@@ -2026,42 +1991,40 @@ private constructor(
 
                     fun validate(): Inline = apply {
                         if (!validated) {
-                            type()
-                            runtimeContext().validate()
-                            code()
-                            validated = true
+                          type()
+                          runtimeContext().validate()
+                          code()
+                          validated = true
                         }
                     }
 
                     fun toBuilder() = Builder().from(this)
 
                     override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
+                      if (this === other) {
+                          return true
+                      }
 
-                        return other is Inline &&
-                            this.type == other.type &&
-                            this.runtimeContext == other.runtimeContext &&
-                            this.code == other.code &&
-                            this.additionalProperties == other.additionalProperties
+                      return other is Inline &&
+                          this.type == other.type &&
+                          this.runtimeContext == other.runtimeContext &&
+                          this.code == other.code &&
+                          this.additionalProperties == other.additionalProperties
                     }
 
                     override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode =
-                                Objects.hash(
-                                    type,
-                                    runtimeContext,
-                                    code,
-                                    additionalProperties,
-                                )
-                        }
-                        return hashCode
+                      if (hashCode == 0) {
+                        hashCode = Objects.hash(
+                            type,
+                            runtimeContext,
+                            code,
+                            additionalProperties,
+                        )
+                      }
+                      return hashCode
                     }
 
-                    override fun toString() =
-                        "Inline{type=$type, runtimeContext=$runtimeContext, code=$code, additionalProperties=$additionalProperties}"
+                    override fun toString() = "Inline{type=$type, runtimeContext=$runtimeContext, code=$code, additionalProperties=$additionalProperties}"
 
                     companion object {
 
@@ -2073,8 +2036,7 @@ private constructor(
                         private var type: JsonField<Type> = JsonMissing.of()
                         private var runtimeContext: JsonField<RuntimeContext> = JsonMissing.of()
                         private var code: JsonField<String> = JsonMissing.of()
-                        private var additionalProperties: MutableMap<String, JsonValue> =
-                            mutableMapOf()
+                        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                         internal fun from(inline: Inline) = apply {
                             this.type = inline.type
@@ -2087,10 +2049,11 @@ private constructor(
 
                         @JsonProperty("type")
                         @ExcludeMissing
-                        fun type(type: JsonField<Type>) = apply { this.type = type }
+                        fun type(type: JsonField<Type>) = apply {
+                            this.type = type
+                        }
 
-                        fun runtimeContext(runtimeContext: RuntimeContext) =
-                            runtimeContext(JsonField.of(runtimeContext))
+                        fun runtimeContext(runtimeContext: RuntimeContext) = runtimeContext(JsonField.of(runtimeContext))
 
                         @JsonProperty("runtime_context")
                         @ExcludeMissing
@@ -2102,40 +2065,35 @@ private constructor(
 
                         @JsonProperty("code")
                         @ExcludeMissing
-                        fun code(code: JsonField<String>) = apply { this.code = code }
+                        fun code(code: JsonField<String>) = apply {
+                            this.code = code
+                        }
 
-                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                            apply {
-                                this.additionalProperties.clear()
-                                this.additionalProperties.putAll(additionalProperties)
-                            }
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                            this.additionalProperties.clear()
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
 
                         @JsonAnySetter
                         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                             this.additionalProperties.put(key, value)
                         }
 
-                        fun putAllAdditionalProperties(
-                            additionalProperties: Map<String, JsonValue>
-                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+                        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
 
-                        fun build(): Inline =
-                            Inline(
-                                type,
-                                runtimeContext,
-                                code,
-                                additionalProperties.toUnmodifiable(),
-                            )
+                        fun build(): Inline = Inline(
+                            type,
+                            runtimeContext,
+                            code,
+                            additionalProperties.toUnmodifiable(),
+                        )
                     }
 
                     @JsonDeserialize(builder = RuntimeContext.Builder::class)
                     @NoAutoDetect
-                    class RuntimeContext
-                    private constructor(
-                        private val runtime: JsonField<Runtime>,
-                        private val version: JsonField<String>,
-                        private val additionalProperties: Map<String, JsonValue>,
-                    ) {
+                    class RuntimeContext private constructor(private val runtime: JsonField<Runtime>, private val version: JsonField<String>, private val additionalProperties: Map<String, JsonValue>, ) {
 
                         private var validated: Boolean = false
 
@@ -2145,9 +2103,13 @@ private constructor(
 
                         fun version(): String = version.getRequired("version")
 
-                        @JsonProperty("runtime") @ExcludeMissing fun _runtime() = runtime
+                        @JsonProperty("runtime")
+                        @ExcludeMissing
+                        fun _runtime() = runtime
 
-                        @JsonProperty("version") @ExcludeMissing fun _version() = version
+                        @JsonProperty("version")
+                        @ExcludeMissing
+                        fun _version() = version
 
                         @JsonAnyGetter
                         @ExcludeMissing
@@ -2155,39 +2117,37 @@ private constructor(
 
                         fun validate(): RuntimeContext = apply {
                             if (!validated) {
-                                runtime()
-                                version()
-                                validated = true
+                              runtime()
+                              version()
+                              validated = true
                             }
                         }
 
                         fun toBuilder() = Builder().from(this)
 
                         override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
+                          if (this === other) {
+                              return true
+                          }
 
-                            return other is RuntimeContext &&
-                                this.runtime == other.runtime &&
-                                this.version == other.version &&
-                                this.additionalProperties == other.additionalProperties
+                          return other is RuntimeContext &&
+                              this.runtime == other.runtime &&
+                              this.version == other.version &&
+                              this.additionalProperties == other.additionalProperties
                         }
 
                         override fun hashCode(): Int {
-                            if (hashCode == 0) {
-                                hashCode =
-                                    Objects.hash(
-                                        runtime,
-                                        version,
-                                        additionalProperties,
-                                    )
-                            }
-                            return hashCode
+                          if (hashCode == 0) {
+                            hashCode = Objects.hash(
+                                runtime,
+                                version,
+                                additionalProperties,
+                            )
+                          }
+                          return hashCode
                         }
 
-                        override fun toString() =
-                            "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
+                        override fun toString() = "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
 
                         companion object {
 
@@ -2198,8 +2158,7 @@ private constructor(
 
                             private var runtime: JsonField<Runtime> = JsonMissing.of()
                             private var version: JsonField<String> = JsonMissing.of()
-                            private var additionalProperties: MutableMap<String, JsonValue> =
-                                mutableMapOf()
+                            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                             internal fun from(runtimeContext: RuntimeContext) = apply {
                                 this.runtime = runtimeContext.runtime
@@ -2223,44 +2182,39 @@ private constructor(
                                 this.version = version
                             }
 
-                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                                apply {
-                                    this.additionalProperties.clear()
-                                    this.additionalProperties.putAll(additionalProperties)
-                                }
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                                this.additionalProperties.clear()
+                                this.additionalProperties.putAll(additionalProperties)
+                            }
 
                             @JsonAnySetter
                             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                                 this.additionalProperties.put(key, value)
                             }
 
-                            fun putAllAdditionalProperties(
-                                additionalProperties: Map<String, JsonValue>
-                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+                            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                                this.additionalProperties.putAll(additionalProperties)
+                            }
 
-                            fun build(): RuntimeContext =
-                                RuntimeContext(
-                                    runtime,
-                                    version,
-                                    additionalProperties.toUnmodifiable(),
-                                )
+                            fun build(): RuntimeContext = RuntimeContext(
+                                runtime,
+                                version,
+                                additionalProperties.toUnmodifiable(),
+                            )
                         }
 
-                        class Runtime
-                        @JsonCreator
-                        private constructor(
-                            private val value: JsonField<String>,
-                        ) : Enum {
+                        class Runtime @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
                             @com.fasterxml.jackson.annotation.JsonValue
                             fun _value(): JsonField<String> = value
 
                             override fun equals(other: Any?): Boolean {
-                                if (this === other) {
-                                    return true
-                                }
+                              if (this === other) {
+                                  return true
+                              }
 
-                                return other is Runtime && this.value == other.value
+                              return other is Runtime &&
+                                  this.value == other.value
                             }
 
                             override fun hashCode() = value.hashCode()
@@ -2287,42 +2241,34 @@ private constructor(
                                 _UNKNOWN,
                             }
 
-                            fun value(): Value =
-                                when (this) {
-                                    NODE -> Value.NODE
-                                    PYTHON -> Value.PYTHON
-                                    else -> Value._UNKNOWN
-                                }
+                            fun value(): Value = when (this) {
+                                NODE -> Value.NODE
+                                PYTHON -> Value.PYTHON
+                                else -> Value._UNKNOWN
+                            }
 
-                            fun known(): Known =
-                                when (this) {
-                                    NODE -> Known.NODE
-                                    PYTHON -> Known.PYTHON
-                                    else ->
-                                        throw BraintrustInvalidDataException(
-                                            "Unknown Runtime: $value"
-                                        )
-                                }
+                            fun known(): Known = when (this) {
+                                NODE -> Known.NODE
+                                PYTHON -> Known.PYTHON
+                                else -> throw BraintrustInvalidDataException("Unknown Runtime: $value")
+                            }
 
                             fun asString(): String = _value().asStringOrThrow()
                         }
                     }
 
-                    class Type
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
+                    class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
                         @com.fasterxml.jackson.annotation.JsonValue
                         fun _value(): JsonField<String> = value
 
                         override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
+                          if (this === other) {
+                              return true
+                          }
 
-                            return other is Type && this.value == other.value
+                          return other is Type &&
+                              this.value == other.value
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -2345,37 +2291,33 @@ private constructor(
                             _UNKNOWN,
                         }
 
-                        fun value(): Value =
-                            when (this) {
-                                INLINE -> Value.INLINE
-                                else -> Value._UNKNOWN
-                            }
+                        fun value(): Value = when (this) {
+                            INLINE -> Value.INLINE
+                            else -> Value._UNKNOWN
+                        }
 
-                        fun known(): Known =
-                            when (this) {
-                                INLINE -> Known.INLINE
-                                else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                            }
+                        fun known(): Known = when (this) {
+                            INLINE -> Known.INLINE
+                            else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                        }
 
                         fun asString(): String = _value().asStringOrThrow()
                     }
                 }
             }
 
-            class Type
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+                @com.fasterxml.jackson.annotation.JsonValue
+                fun _value(): JsonField<String> = value
 
                 override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
+                  if (this === other) {
+                      return true
+                  }
 
-                    return other is Type && this.value == other.value
+                  return other is Type &&
+                      this.value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -2398,17 +2340,15 @@ private constructor(
                     _UNKNOWN,
                 }
 
-                fun value(): Value =
-                    when (this) {
-                        CODE -> Value.CODE
-                        else -> Value._UNKNOWN
-                    }
+                fun value(): Value = when (this) {
+                    CODE -> Value.CODE
+                    else -> Value._UNKNOWN
+                }
 
-                fun known(): Known =
-                    when (this) {
-                        CODE -> Known.CODE
-                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                    }
+                fun known(): Known = when (this) {
+                    CODE -> Known.CODE
+                    else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                }
 
                 fun asString(): String = _value().asStringOrThrow()
             }
@@ -2416,12 +2356,7 @@ private constructor(
 
         @JsonDeserialize(builder = Global.Builder::class)
         @NoAutoDetect
-        class Global
-        private constructor(
-            private val type: JsonField<Type>,
-            private val name: JsonField<String>,
-            private val additionalProperties: Map<String, JsonValue>,
-        ) {
+        class Global private constructor(private val type: JsonField<Type>, private val name: JsonField<String>, private val additionalProperties: Map<String, JsonValue>, ) {
 
             private var validated: Boolean = false
 
@@ -2431,9 +2366,13 @@ private constructor(
 
             fun name(): String = name.getRequired("name")
 
-            @JsonProperty("type") @ExcludeMissing fun _type() = type
+            @JsonProperty("type")
+            @ExcludeMissing
+            fun _type() = type
 
-            @JsonProperty("name") @ExcludeMissing fun _name() = name
+            @JsonProperty("name")
+            @ExcludeMissing
+            fun _name() = name
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -2441,39 +2380,37 @@ private constructor(
 
             fun validate(): Global = apply {
                 if (!validated) {
-                    type()
-                    name()
-                    validated = true
+                  type()
+                  name()
+                  validated = true
                 }
             }
 
             fun toBuilder() = Builder().from(this)
 
             override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
+              if (this === other) {
+                  return true
+              }
 
-                return other is Global &&
-                    this.type == other.type &&
-                    this.name == other.name &&
-                    this.additionalProperties == other.additionalProperties
+              return other is Global &&
+                  this.type == other.type &&
+                  this.name == other.name &&
+                  this.additionalProperties == other.additionalProperties
             }
 
             override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode =
-                        Objects.hash(
-                            type,
-                            name,
-                            additionalProperties,
-                        )
-                }
-                return hashCode
+              if (hashCode == 0) {
+                hashCode = Objects.hash(
+                    type,
+                    name,
+                    additionalProperties,
+                )
+              }
+              return hashCode
             }
 
-            override fun toString() =
-                "Global{type=$type, name=$name, additionalProperties=$additionalProperties}"
+            override fun toString() = "Global{type=$type, name=$name, additionalProperties=$additionalProperties}"
 
             companion object {
 
@@ -2496,13 +2433,17 @@ private constructor(
 
                 @JsonProperty("type")
                 @ExcludeMissing
-                fun type(type: JsonField<Type>) = apply { this.type = type }
+                fun type(type: JsonField<Type>) = apply {
+                    this.type = type
+                }
 
                 fun name(name: String) = name(JsonField.of(name))
 
                 @JsonProperty("name")
                 @ExcludeMissing
-                fun name(name: JsonField<String>) = apply { this.name = name }
+                fun name(name: JsonField<String>) = apply {
+                    this.name = name
+                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -2514,33 +2455,29 @@ private constructor(
                     this.additionalProperties.put(key, value)
                 }
 
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.putAll(additionalProperties)
+                }
 
-                fun build(): Global =
-                    Global(
-                        type,
-                        name,
-                        additionalProperties.toUnmodifiable(),
-                    )
+                fun build(): Global = Global(
+                    type,
+                    name,
+                    additionalProperties.toUnmodifiable(),
+                )
             }
 
-            class Type
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+                @com.fasterxml.jackson.annotation.JsonValue
+                fun _value(): JsonField<String> = value
 
                 override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
+                  if (this === other) {
+                      return true
+                  }
 
-                    return other is Type && this.value == other.value
+                  return other is Type &&
+                      this.value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -2563,37 +2500,33 @@ private constructor(
                     _UNKNOWN,
                 }
 
-                fun value(): Value =
-                    when (this) {
-                        GLOBAL -> Value.GLOBAL
-                        else -> Value._UNKNOWN
-                    }
+                fun value(): Value = when (this) {
+                    GLOBAL -> Value.GLOBAL
+                    else -> Value._UNKNOWN
+                }
 
-                fun known(): Known =
-                    when (this) {
-                        GLOBAL -> Known.GLOBAL
-                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                    }
+                fun known(): Known = when (this) {
+                    GLOBAL -> Known.GLOBAL
+                    else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                }
 
                 fun asString(): String = _value().asStringOrThrow()
             }
         }
     }
 
-    class LogId
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class LogId @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+        @com.fasterxml.jackson.annotation.JsonValue
+        fun _value(): JsonField<String> = value
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is LogId && this.value == other.value
+          return other is LogId &&
+              this.value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2616,35 +2549,31 @@ private constructor(
             _UNKNOWN,
         }
 
-        fun value(): Value =
-            when (this) {
-                P -> Value.P
-                else -> Value._UNKNOWN
-            }
+        fun value(): Value = when (this) {
+            P -> Value.P
+            else -> Value._UNKNOWN
+        }
 
-        fun known(): Known =
-            when (this) {
-                P -> Known.P
-                else -> throw BraintrustInvalidDataException("Unknown LogId: $value")
-            }
+        fun known(): Known = when (this) {
+            P -> Known.P
+            else -> throw BraintrustInvalidDataException("Unknown LogId: $value")
+        }
 
         fun asString(): String = _value().asStringOrThrow()
     }
 
-    class FunctionType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class FunctionType @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+        @com.fasterxml.jackson.annotation.JsonValue
+        fun _value(): JsonField<String> = value
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is FunctionType && this.value == other.value
+          return other is FunctionType &&
+              this.value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2675,21 +2604,19 @@ private constructor(
             _UNKNOWN,
         }
 
-        fun value(): Value =
-            when (this) {
-                TASK -> Value.TASK
-                LLM -> Value.LLM
-                SCORER -> Value.SCORER
-                else -> Value._UNKNOWN
-            }
+        fun value(): Value = when (this) {
+            TASK -> Value.TASK
+            LLM -> Value.LLM
+            SCORER -> Value.SCORER
+            else -> Value._UNKNOWN
+        }
 
-        fun known(): Known =
-            when (this) {
-                TASK -> Known.TASK
-                LLM -> Known.LLM
-                SCORER -> Known.SCORER
-                else -> throw BraintrustInvalidDataException("Unknown FunctionType: $value")
-            }
+        fun known(): Known = when (this) {
+            TASK -> Known.TASK
+            LLM -> Known.LLM
+            SCORER -> Known.SCORER
+            else -> throw BraintrustInvalidDataException("Unknown FunctionType: $value")
+        }
 
         fun asString(): String = _value().asStringOrThrow()
     }
@@ -2697,10 +2624,7 @@ private constructor(
     /** User-controlled metadata about the prompt */
     @JsonDeserialize(builder = Metadata.Builder::class)
     @NoAutoDetect
-    class Metadata
-    private constructor(
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+    class Metadata private constructor(private val additionalProperties: Map<String, JsonValue>, ) {
 
         private var validated: Boolean = false
 
@@ -2712,25 +2636,26 @@ private constructor(
 
         fun validate(): Metadata = apply {
             if (!validated) {
-                validated = true
+              validated = true
             }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is Metadata && this.additionalProperties == other.additionalProperties
+          return other is Metadata &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(additionalProperties)
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(additionalProperties)
+          }
+          return hashCode
         }
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
@@ -2768,12 +2693,12 @@ private constructor(
 
     @JsonDeserialize(builder = Origin.Builder::class)
     @NoAutoDetect
-    class Origin
-    private constructor(
-        private val objectType: JsonField<ObjectType>,
-        private val objectId: JsonField<String>,
-        private val internal_: JsonField<Boolean>,
-        private val additionalProperties: Map<String, JsonValue>,
+    class Origin private constructor(
+      private val objectType: JsonField<ObjectType>,
+      private val objectId: JsonField<String>,
+      private val internal_: JsonField<Boolean>,
+      private val additionalProperties: Map<String, JsonValue>,
+
     ) {
 
         private var validated: Boolean = false
@@ -2787,22 +2712,28 @@ private constructor(
         fun objectId(): String = objectId.getRequired("object_id")
 
         /**
-         * The function exists for internal purposes and should not be displayed in the list of
-         * functions.
+         * The function exists for internal purposes and should not be displayed in the
+         * list of functions.
          */
         fun internal_(): Boolean? = internal_.getNullable("internal")
 
         /** The object type that the ACL applies to */
-        @JsonProperty("object_type") @ExcludeMissing fun _objectType() = objectType
+        @JsonProperty("object_type")
+        @ExcludeMissing
+        fun _objectType() = objectType
 
         /** Id of the object the function is originating from */
-        @JsonProperty("object_id") @ExcludeMissing fun _objectId() = objectId
+        @JsonProperty("object_id")
+        @ExcludeMissing
+        fun _objectId() = objectId
 
         /**
-         * The function exists for internal purposes and should not be displayed in the list of
-         * functions.
+         * The function exists for internal purposes and should not be displayed in the
+         * list of functions.
          */
-        @JsonProperty("internal") @ExcludeMissing fun _internal_() = internal_
+        @JsonProperty("internal")
+        @ExcludeMissing
+        fun _internal_() = internal_
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -2810,42 +2741,40 @@ private constructor(
 
         fun validate(): Origin = apply {
             if (!validated) {
-                objectType()
-                objectId()
-                internal_()
-                validated = true
+              objectType()
+              objectId()
+              internal_()
+              validated = true
             }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is Origin &&
-                this.objectType == other.objectType &&
-                this.objectId == other.objectId &&
-                this.internal_ == other.internal_ &&
-                this.additionalProperties == other.additionalProperties
+          return other is Origin &&
+              this.objectType == other.objectType &&
+              this.objectId == other.objectId &&
+              this.internal_ == other.internal_ &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        objectType,
-                        objectId,
-                        internal_,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(
+                objectType,
+                objectId,
+                internal_,
+                additionalProperties,
+            )
+          }
+          return hashCode
         }
 
-        override fun toString() =
-            "Origin{objectType=$objectType, objectId=$objectId, internal_=$internal_, additionalProperties=$additionalProperties}"
+        override fun toString() = "Origin{objectType=$objectType, objectId=$objectId, internal_=$internal_, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -2882,21 +2811,25 @@ private constructor(
             /** Id of the object the function is originating from */
             @JsonProperty("object_id")
             @ExcludeMissing
-            fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
+            fun objectId(objectId: JsonField<String>) = apply {
+                this.objectId = objectId
+            }
 
             /**
-             * The function exists for internal purposes and should not be displayed in the list of
-             * functions.
+             * The function exists for internal purposes and should not be displayed in the
+             * list of functions.
              */
             fun internal_(internal_: Boolean) = internal_(JsonField.of(internal_))
 
             /**
-             * The function exists for internal purposes and should not be displayed in the list of
-             * functions.
+             * The function exists for internal purposes and should not be displayed in the
+             * list of functions.
              */
             @JsonProperty("internal")
             @ExcludeMissing
-            fun internal_(internal_: JsonField<Boolean>) = apply { this.internal_ = internal_ }
+            fun internal_(internal_: JsonField<Boolean>) = apply {
+                this.internal_ = internal_
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -2912,29 +2845,26 @@ private constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): Origin =
-                Origin(
-                    objectType,
-                    objectId,
-                    internal_,
-                    additionalProperties.toUnmodifiable(),
-                )
+            fun build(): Origin = Origin(
+                objectType,
+                objectId,
+                internal_,
+                additionalProperties.toUnmodifiable(),
+            )
         }
 
-        class ObjectType
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class ObjectType @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
 
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+            @com.fasterxml.jackson.annotation.JsonValue
+            fun _value(): JsonField<String> = value
 
             override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
+              if (this === other) {
+                  return true
+              }
 
-                return other is ObjectType && this.value == other.value
+              return other is ObjectType &&
+                  this.value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -2997,37 +2927,35 @@ private constructor(
                 _UNKNOWN,
             }
 
-            fun value(): Value =
-                when (this) {
-                    ORGANIZATION -> Value.ORGANIZATION
-                    PROJECT -> Value.PROJECT
-                    EXPERIMENT -> Value.EXPERIMENT
-                    DATASET -> Value.DATASET
-                    PROMPT -> Value.PROMPT
-                    PROMPT_SESSION -> Value.PROMPT_SESSION
-                    GROUP -> Value.GROUP
-                    ROLE -> Value.ROLE
-                    ORG_MEMBER -> Value.ORG_MEMBER
-                    PROJECT_LOG -> Value.PROJECT_LOG
-                    ORG_PROJECT -> Value.ORG_PROJECT
-                    else -> Value._UNKNOWN
-                }
+            fun value(): Value = when (this) {
+                ORGANIZATION -> Value.ORGANIZATION
+                PROJECT -> Value.PROJECT
+                EXPERIMENT -> Value.EXPERIMENT
+                DATASET -> Value.DATASET
+                PROMPT -> Value.PROMPT
+                PROMPT_SESSION -> Value.PROMPT_SESSION
+                GROUP -> Value.GROUP
+                ROLE -> Value.ROLE
+                ORG_MEMBER -> Value.ORG_MEMBER
+                PROJECT_LOG -> Value.PROJECT_LOG
+                ORG_PROJECT -> Value.ORG_PROJECT
+                else -> Value._UNKNOWN
+            }
 
-            fun known(): Known =
-                when (this) {
-                    ORGANIZATION -> Known.ORGANIZATION
-                    PROJECT -> Known.PROJECT
-                    EXPERIMENT -> Known.EXPERIMENT
-                    DATASET -> Known.DATASET
-                    PROMPT -> Known.PROMPT
-                    PROMPT_SESSION -> Known.PROMPT_SESSION
-                    GROUP -> Known.GROUP
-                    ROLE -> Known.ROLE
-                    ORG_MEMBER -> Known.ORG_MEMBER
-                    PROJECT_LOG -> Known.PROJECT_LOG
-                    ORG_PROJECT -> Known.ORG_PROJECT
-                    else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
-                }
+            fun known(): Known = when (this) {
+                ORGANIZATION -> Known.ORGANIZATION
+                PROJECT -> Known.PROJECT
+                EXPERIMENT -> Known.EXPERIMENT
+                DATASET -> Known.DATASET
+                PROMPT -> Known.PROMPT
+                PROMPT_SESSION -> Known.PROMPT_SESSION
+                GROUP -> Known.GROUP
+                ROLE -> Known.ROLE
+                ORG_MEMBER -> Known.ORG_MEMBER
+                PROJECT_LOG -> Known.PROJECT_LOG
+                ORG_PROJECT -> Known.ORG_PROJECT
+                else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
+            }
 
             fun asString(): String = _value().asStringOrThrow()
         }

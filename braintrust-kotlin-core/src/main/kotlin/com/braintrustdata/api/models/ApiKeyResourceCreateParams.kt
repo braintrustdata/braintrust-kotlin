@@ -2,24 +2,47 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import org.apache.hc.core5.http.ContentType
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.MultipartFormValue
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.ContentTypes
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
+import com.braintrustdata.api.models.*
 
-class ApiKeyResourceCreateParams
-constructor(
-    private val name: String,
-    private val orgName: String?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
+class ApiKeyResourceCreateParams constructor(
+  private val name: String,
+  private val orgName: String?,
+  private val additionalQueryParams: Map<String, List<String>>,
+  private val additionalHeaders: Map<String, List<String>>,
+  private val additionalBodyProperties: Map<String, JsonValue>,
+
 ) {
 
     fun name(): String = name
@@ -27,11 +50,11 @@ constructor(
     fun orgName(): String? = orgName
 
     internal fun getBody(): ApiKeyResourceCreateBody {
-        return ApiKeyResourceCreateBody(
-            name,
-            orgName,
-            additionalBodyProperties,
-        )
+      return ApiKeyResourceCreateBody(
+          name,
+          orgName,
+          additionalBodyProperties,
+      )
     }
 
     internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -40,24 +63,21 @@ constructor(
 
     @JsonDeserialize(builder = ApiKeyResourceCreateBody.Builder::class)
     @NoAutoDetect
-    class ApiKeyResourceCreateBody
-    internal constructor(
-        private val name: String?,
-        private val orgName: String?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+    class ApiKeyResourceCreateBody internal constructor(private val name: String?, private val orgName: String?, private val additionalProperties: Map<String, JsonValue>, ) {
 
         private var hashCode: Int = 0
 
         /** Name of the api key. Does not have to be unique */
-        @JsonProperty("name") fun name(): String? = name
+        @JsonProperty("name")
+        fun name(): String? = name
 
         /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, you may specify the name of the
-         * organization the API key belongs in.
+         * For nearly all users, this parameter should be unnecessary. But in the rare case
+         * that your API key belongs to multiple organizations, you may specify the name of
+         * the organization the API key belongs in.
          */
-        @JsonProperty("org_name") fun orgName(): String? = orgName
+        @JsonProperty("org_name")
+        fun orgName(): String? = orgName
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -66,30 +86,28 @@ constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is ApiKeyResourceCreateBody &&
-                this.name == other.name &&
-                this.orgName == other.orgName &&
-                this.additionalProperties == other.additionalProperties
+          return other is ApiKeyResourceCreateBody &&
+              this.name == other.name &&
+              this.orgName == other.orgName &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        name,
-                        orgName,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(
+                name,
+                orgName,
+                additionalProperties,
+            )
+          }
+          return hashCode
         }
 
-        override fun toString() =
-            "ApiKeyResourceCreateBody{name=$name, orgName=$orgName, additionalProperties=$additionalProperties}"
+        override fun toString() = "ApiKeyResourceCreateBody{name=$name, orgName=$orgName, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -109,15 +127,20 @@ constructor(
             }
 
             /** Name of the api key. Does not have to be unique */
-            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+            @JsonProperty("name")
+            fun name(name: String) = apply {
+                this.name = name
+            }
 
             /**
-             * For nearly all users, this parameter should be unnecessary. But in the rare case that
-             * your API key belongs to multiple organizations, you may specify the name of the
-             * organization the API key belongs in.
+             * For nearly all users, this parameter should be unnecessary. But in the rare case
+             * that your API key belongs to multiple organizations, you may specify the name of
+             * the organization the API key belongs in.
              */
             @JsonProperty("org_name")
-            fun orgName(orgName: String) = apply { this.orgName = orgName }
+            fun orgName(orgName: String) = apply {
+                this.orgName = orgName
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -133,12 +156,13 @@ constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): ApiKeyResourceCreateBody =
-                ApiKeyResourceCreateBody(
-                    checkNotNull(name) { "`name` is required but was not set" },
-                    orgName,
-                    additionalProperties.toUnmodifiable(),
-                )
+            fun build(): ApiKeyResourceCreateBody = ApiKeyResourceCreateBody(
+                checkNotNull(name) {
+                    "`name` is required but was not set"
+                },
+                orgName,
+                additionalProperties.toUnmodifiable(),
+            )
         }
     }
 
@@ -149,30 +173,29 @@ constructor(
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is ApiKeyResourceCreateParams &&
-            this.name == other.name &&
-            this.orgName == other.orgName &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+      return other is ApiKeyResourceCreateParams &&
+          this.name == other.name &&
+          this.orgName == other.orgName &&
+          this.additionalQueryParams == other.additionalQueryParams &&
+          this.additionalHeaders == other.additionalHeaders &&
+          this.additionalBodyProperties == other.additionalBodyProperties
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            name,
-            orgName,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
+      return Objects.hash(
+          name,
+          orgName,
+          additionalQueryParams,
+          additionalHeaders,
+          additionalBodyProperties,
+      )
     }
 
-    override fun toString() =
-        "ApiKeyResourceCreateParams{name=$name, orgName=$orgName, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+    override fun toString() = "ApiKeyResourceCreateParams{name=$name, orgName=$orgName, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -199,14 +222,18 @@ constructor(
         }
 
         /** Name of the api key. Does not have to be unique */
-        fun name(name: String) = apply { this.name = name }
+        fun name(name: String) = apply {
+            this.name = name
+        }
 
         /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, you may specify the name of the
-         * organization the API key belongs in.
+         * For nearly all users, this parameter should be unnecessary. But in the rare case
+         * that your API key belongs to multiple organizations, you may specify the name of
+         * the organization the API key belongs in.
          */
-        fun orgName(orgName: String) = apply { this.orgName = orgName }
+        fun orgName(orgName: String) = apply {
+            this.orgName = orgName
+        }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -246,7 +273,9 @@ constructor(
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun removeHeader(name: String) = apply {
+            this.additionalHeaders.put(name, mutableListOf())
+        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             this.additionalBodyProperties.clear()
@@ -257,18 +286,18 @@ constructor(
             this.additionalBodyProperties.put(key, value)
         }
 
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            this.additionalBodyProperties.putAll(additionalBodyProperties)
+        }
 
-        fun build(): ApiKeyResourceCreateParams =
-            ApiKeyResourceCreateParams(
-                checkNotNull(name) { "`name` is required but was not set" },
-                orgName,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
+        fun build(): ApiKeyResourceCreateParams = ApiKeyResourceCreateParams(
+            checkNotNull(name) {
+                "`name` is required but was not set"
+            },
+            orgName,
+            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalBodyProperties.toUnmodifiable(),
+        )
     }
 }

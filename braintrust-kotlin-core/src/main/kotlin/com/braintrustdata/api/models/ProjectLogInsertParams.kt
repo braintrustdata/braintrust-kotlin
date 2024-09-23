@@ -2,34 +2,47 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import org.apache.hc.core5.http.ContentType
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Objects
+import java.util.Optional
+import java.util.UUID
+import com.braintrustdata.api.core.BaseDeserializer
+import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.MultipartFormValue
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.ContentTypes
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
+import com.braintrustdata.api.models.*
 
-class ProjectLogInsertParams
-constructor(
-    private val projectId: String,
-    private val events: List<Event>,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
+class ProjectLogInsertParams constructor(
+  private val projectId: String,
+  private val events: List<Event>,
+  private val additionalQueryParams: Map<String, List<String>>,
+  private val additionalHeaders: Map<String, List<String>>,
+  private val additionalBodyProperties: Map<String, JsonValue>,
+
 ) {
 
     fun projectId(): String = projectId
@@ -37,7 +50,7 @@ constructor(
     fun events(): List<Event> = events
 
     internal fun getBody(): ProjectLogInsertBody {
-        return ProjectLogInsertBody(events, additionalBodyProperties)
+      return ProjectLogInsertBody(events, additionalBodyProperties)
     }
 
     internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -45,24 +58,21 @@ constructor(
     internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
 
     fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> projectId
-            else -> ""
-        }
+      return when (index) {
+          0 -> projectId
+          else -> ""
+      }
     }
 
     @JsonDeserialize(builder = ProjectLogInsertBody.Builder::class)
     @NoAutoDetect
-    class ProjectLogInsertBody
-    internal constructor(
-        private val events: List<Event>?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+    class ProjectLogInsertBody internal constructor(private val events: List<Event>?, private val additionalProperties: Map<String, JsonValue>, ) {
 
         private var hashCode: Int = 0
 
         /** A list of project logs events to insert */
-        @JsonProperty("events") fun events(): List<Event>? = events
+        @JsonProperty("events")
+        fun events(): List<Event>? = events
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -71,24 +81,23 @@ constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is ProjectLogInsertBody &&
-                this.events == other.events &&
-                this.additionalProperties == other.additionalProperties
+          return other is ProjectLogInsertBody &&
+              this.events == other.events &&
+              this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(events, additionalProperties)
-            }
-            return hashCode
+          if (hashCode == 0) {
+            hashCode = Objects.hash(events, additionalProperties)
+          }
+          return hashCode
         }
 
-        override fun toString() =
-            "ProjectLogInsertBody{events=$events, additionalProperties=$additionalProperties}"
+        override fun toString() = "ProjectLogInsertBody{events=$events, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -106,7 +115,10 @@ constructor(
             }
 
             /** A list of project logs events to insert */
-            @JsonProperty("events") fun events(events: List<Event>) = apply { this.events = events }
+            @JsonProperty("events")
+            fun events(events: List<Event>) = apply {
+                this.events = events
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -122,12 +134,9 @@ constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): ProjectLogInsertBody =
-                ProjectLogInsertBody(
-                    checkNotNull(events) { "`events` is required but was not set" }
-                        .toUnmodifiable(),
-                    additionalProperties.toUnmodifiable()
-                )
+            fun build(): ProjectLogInsertBody = ProjectLogInsertBody(checkNotNull(events) {
+                "`events` is required but was not set"
+            }.toUnmodifiable(), additionalProperties.toUnmodifiable())
         }
     }
 
@@ -138,30 +147,29 @@ constructor(
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return other is ProjectLogInsertParams &&
-            this.projectId == other.projectId &&
-            this.events == other.events &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+      return other is ProjectLogInsertParams &&
+          this.projectId == other.projectId &&
+          this.events == other.events &&
+          this.additionalQueryParams == other.additionalQueryParams &&
+          this.additionalHeaders == other.additionalHeaders &&
+          this.additionalBodyProperties == other.additionalBodyProperties
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            projectId,
-            events,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
+      return Objects.hash(
+          projectId,
+          events,
+          additionalQueryParams,
+          additionalHeaders,
+          additionalBodyProperties,
+      )
     }
 
-    override fun toString() =
-        "ProjectLogInsertParams{projectId=$projectId, events=$events, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+    override fun toString() = "ProjectLogInsertParams{projectId=$projectId, events=$events, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -188,7 +196,9 @@ constructor(
         }
 
         /** Project id */
-        fun projectId(projectId: String) = apply { this.projectId = projectId }
+        fun projectId(projectId: String) = apply {
+            this.projectId = projectId
+        }
 
         /** A list of project logs events to insert */
         fun events(events: List<Event>) = apply {
@@ -197,7 +207,9 @@ constructor(
         }
 
         /** A list of project logs events to insert */
-        fun addEvent(event: Event) = apply { this.events.add(event) }
+        fun addEvent(event: Event) = apply {
+            this.events.add(event)
+        }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -237,7 +249,9 @@ constructor(
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun removeHeader(name: String) = apply {
+            this.additionalHeaders.put(name, mutableListOf())
+        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             this.additionalBodyProperties.clear()
@@ -248,158 +262,124 @@ constructor(
             this.additionalBodyProperties.put(key, value)
         }
 
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            this.additionalBodyProperties.putAll(additionalBodyProperties)
+        }
 
-        fun build(): ProjectLogInsertParams =
-            ProjectLogInsertParams(
-                checkNotNull(projectId) { "`projectId` is required but was not set" },
-                checkNotNull(events) { "`events` is required but was not set" }.toUnmodifiable(),
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
+        fun build(): ProjectLogInsertParams = ProjectLogInsertParams(
+            checkNotNull(projectId) {
+                "`projectId` is required but was not set"
+            },
+            checkNotNull(events) {
+                "`events` is required but was not set"
+            }.toUnmodifiable(),
+            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            additionalBodyProperties.toUnmodifiable(),
+        )
     }
 
     @JsonDeserialize(using = Event.Deserializer::class)
     @JsonSerialize(using = Event.Serializer::class)
-    class Event
-    private constructor(
-        private val insertProjectLogsEventReplace: InsertProjectLogsEventReplace? = null,
-        private val insertProjectLogsEventMerge: InsertProjectLogsEventMerge? = null,
-        private val _json: JsonValue? = null,
-    ) {
+    class Event private constructor(private val insertProjectLogsEventReplace: InsertProjectLogsEventReplace? = null, private val insertProjectLogsEventMerge: InsertProjectLogsEventMerge? = null, private val _json: JsonValue? = null, ) {
 
         private var validated: Boolean = false
 
-        fun insertProjectLogsEventReplace(): InsertProjectLogsEventReplace? =
-            insertProjectLogsEventReplace
-
-        fun insertProjectLogsEventMerge(): InsertProjectLogsEventMerge? =
-            insertProjectLogsEventMerge
+        fun insertProjectLogsEventReplace(): InsertProjectLogsEventReplace? = insertProjectLogsEventReplace
+        fun insertProjectLogsEventMerge(): InsertProjectLogsEventMerge? = insertProjectLogsEventMerge
 
         fun isInsertProjectLogsEventReplace(): Boolean = insertProjectLogsEventReplace != null
-
         fun isInsertProjectLogsEventMerge(): Boolean = insertProjectLogsEventMerge != null
 
-        fun asInsertProjectLogsEventReplace(): InsertProjectLogsEventReplace =
-            insertProjectLogsEventReplace.getOrThrow("insertProjectLogsEventReplace")
-
-        fun asInsertProjectLogsEventMerge(): InsertProjectLogsEventMerge =
-            insertProjectLogsEventMerge.getOrThrow("insertProjectLogsEventMerge")
+        fun asInsertProjectLogsEventReplace(): InsertProjectLogsEventReplace = insertProjectLogsEventReplace.getOrThrow("insertProjectLogsEventReplace")
+        fun asInsertProjectLogsEventMerge(): InsertProjectLogsEventMerge = insertProjectLogsEventMerge.getOrThrow("insertProjectLogsEventMerge")
 
         fun _json(): JsonValue? = _json
 
         fun <T> accept(visitor: Visitor<T>): T {
-            return when {
-                insertProjectLogsEventReplace != null ->
-                    visitor.visitInsertProjectLogsEventReplace(insertProjectLogsEventReplace)
-                insertProjectLogsEventMerge != null ->
-                    visitor.visitInsertProjectLogsEventMerge(insertProjectLogsEventMerge)
-                else -> visitor.unknown(_json)
-            }
+          return when {
+              insertProjectLogsEventReplace != null -> visitor.visitInsertProjectLogsEventReplace(insertProjectLogsEventReplace)
+              insertProjectLogsEventMerge != null -> visitor.visitInsertProjectLogsEventMerge(insertProjectLogsEventMerge)
+              else -> visitor.unknown(_json)
+          }
         }
 
         fun validate(): Event = apply {
             if (!validated) {
-                if (insertProjectLogsEventReplace == null && insertProjectLogsEventMerge == null) {
-                    throw BraintrustInvalidDataException("Unknown Event: $_json")
-                }
-                insertProjectLogsEventReplace?.validate()
-                insertProjectLogsEventMerge?.validate()
-                validated = true
+              if (insertProjectLogsEventReplace == null && insertProjectLogsEventMerge == null) {
+                throw BraintrustInvalidDataException("Unknown Event: $_json")
+              }
+              insertProjectLogsEventReplace?.validate()
+              insertProjectLogsEventMerge?.validate()
+              validated = true
             }
         }
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return other is Event &&
-                this.insertProjectLogsEventReplace == other.insertProjectLogsEventReplace &&
-                this.insertProjectLogsEventMerge == other.insertProjectLogsEventMerge
+          return other is Event &&
+              this.insertProjectLogsEventReplace == other.insertProjectLogsEventReplace &&
+              this.insertProjectLogsEventMerge == other.insertProjectLogsEventMerge
         }
 
         override fun hashCode(): Int {
-            return Objects.hash(insertProjectLogsEventReplace, insertProjectLogsEventMerge)
+          return Objects.hash(insertProjectLogsEventReplace, insertProjectLogsEventMerge)
         }
 
         override fun toString(): String {
-            return when {
-                insertProjectLogsEventReplace != null ->
-                    "Event{insertProjectLogsEventReplace=$insertProjectLogsEventReplace}"
-                insertProjectLogsEventMerge != null ->
-                    "Event{insertProjectLogsEventMerge=$insertProjectLogsEventMerge}"
-                _json != null -> "Event{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid Event")
-            }
+          return when {
+              insertProjectLogsEventReplace != null -> "Event{insertProjectLogsEventReplace=$insertProjectLogsEventReplace}"
+              insertProjectLogsEventMerge != null -> "Event{insertProjectLogsEventMerge=$insertProjectLogsEventMerge}"
+              _json != null -> "Event{_unknown=$_json}"
+              else -> throw IllegalStateException("Invalid Event")
+          }
         }
 
         companion object {
 
-            fun ofInsertProjectLogsEventReplace(
-                insertProjectLogsEventReplace: InsertProjectLogsEventReplace
-            ) = Event(insertProjectLogsEventReplace = insertProjectLogsEventReplace)
+            fun ofInsertProjectLogsEventReplace(insertProjectLogsEventReplace: InsertProjectLogsEventReplace) = Event(insertProjectLogsEventReplace = insertProjectLogsEventReplace)
 
-            fun ofInsertProjectLogsEventMerge(
-                insertProjectLogsEventMerge: InsertProjectLogsEventMerge
-            ) = Event(insertProjectLogsEventMerge = insertProjectLogsEventMerge)
+            fun ofInsertProjectLogsEventMerge(insertProjectLogsEventMerge: InsertProjectLogsEventMerge) = Event(insertProjectLogsEventMerge = insertProjectLogsEventMerge)
         }
 
         interface Visitor<out T> {
 
-            fun visitInsertProjectLogsEventReplace(
-                insertProjectLogsEventReplace: InsertProjectLogsEventReplace
-            ): T
+            fun visitInsertProjectLogsEventReplace(insertProjectLogsEventReplace: InsertProjectLogsEventReplace): T
 
-            fun visitInsertProjectLogsEventMerge(
-                insertProjectLogsEventMerge: InsertProjectLogsEventMerge
-            ): T
+            fun visitInsertProjectLogsEventMerge(insertProjectLogsEventMerge: InsertProjectLogsEventMerge): T
 
             fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown Event: $json")
+              throw BraintrustInvalidDataException("Unknown Event: $json")
             }
         }
 
         class Deserializer : BaseDeserializer<Event>(Event::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Event {
-                val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<InsertProjectLogsEventReplace>()) {
-                        it.validate()
-                    }
-                    ?.let {
-                        return Event(insertProjectLogsEventReplace = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<InsertProjectLogsEventMerge>()) {
-                        it.validate()
-                    }
-                    ?.let {
-                        return Event(insertProjectLogsEventMerge = it, _json = json)
-                    }
+              val json = JsonValue.fromJsonNode(node)
+              tryDeserialize(node, jacksonTypeRef<InsertProjectLogsEventReplace>()){ it.validate() }?.let {
+                  return Event(insertProjectLogsEventReplace = it, _json = json)
+              }
+              tryDeserialize(node, jacksonTypeRef<InsertProjectLogsEventMerge>()){ it.validate() }?.let {
+                  return Event(insertProjectLogsEventMerge = it, _json = json)
+              }
 
-                return Event(_json = json)
+              return Event(_json = json)
             }
         }
 
         class Serializer : BaseSerializer<Event>(Event::class) {
 
-            override fun serialize(
-                value: Event,
-                generator: JsonGenerator,
-                provider: SerializerProvider
-            ) {
-                when {
-                    value.insertProjectLogsEventReplace != null ->
-                        generator.writeObject(value.insertProjectLogsEventReplace)
-                    value.insertProjectLogsEventMerge != null ->
-                        generator.writeObject(value.insertProjectLogsEventMerge)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Event")
-                }
+            override fun serialize(value: Event, generator: JsonGenerator, provider: SerializerProvider) {
+              when {
+                  value.insertProjectLogsEventReplace != null -> generator.writeObject(value.insertProjectLogsEventReplace)
+                  value.insertProjectLogsEventMerge != null -> generator.writeObject(value.insertProjectLogsEventMerge)
+                  value._json != null -> generator.writeObject(value._json)
+                  else -> throw IllegalStateException("Invalid Event")
+              }
             }
         }
     }
