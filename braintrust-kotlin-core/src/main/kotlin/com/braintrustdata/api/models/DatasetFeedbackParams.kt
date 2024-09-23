@@ -2,47 +2,24 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import org.apache.hc.core5.http.ContentType
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Objects
-import java.util.Optional
-import java.util.UUID
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.MultipartFormValue
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.ContentTypes
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 
-class DatasetFeedbackParams constructor(
-  private val datasetId: String,
-  private val feedback: List<FeedbackDatasetItem>,
-  private val additionalQueryParams: Map<String, List<String>>,
-  private val additionalHeaders: Map<String, List<String>>,
-  private val additionalBodyProperties: Map<String, JsonValue>,
-
+class DatasetFeedbackParams
+constructor(
+    private val datasetId: String,
+    private val feedback: List<FeedbackDatasetItem>,
+    private val additionalQueryParams: Map<String, List<String>>,
+    private val additionalHeaders: Map<String, List<String>>,
+    private val additionalBodyProperties: Map<String, JsonValue>,
 ) {
 
     fun datasetId(): String = datasetId
@@ -50,7 +27,7 @@ class DatasetFeedbackParams constructor(
     fun feedback(): List<FeedbackDatasetItem> = feedback
 
     internal fun getBody(): DatasetFeedbackBody {
-      return DatasetFeedbackBody(feedback, additionalBodyProperties)
+        return DatasetFeedbackBody(feedback, additionalBodyProperties)
     }
 
     internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -58,21 +35,24 @@ class DatasetFeedbackParams constructor(
     internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
 
     fun getPathParam(index: Int): String {
-      return when (index) {
-          0 -> datasetId
-          else -> ""
-      }
+        return when (index) {
+            0 -> datasetId
+            else -> ""
+        }
     }
 
     @JsonDeserialize(builder = DatasetFeedbackBody.Builder::class)
     @NoAutoDetect
-    class DatasetFeedbackBody internal constructor(private val feedback: List<FeedbackDatasetItem>?, private val additionalProperties: Map<String, JsonValue>, ) {
+    class DatasetFeedbackBody
+    internal constructor(
+        private val feedback: List<FeedbackDatasetItem>?,
+        private val additionalProperties: Map<String, JsonValue>,
+    ) {
 
         private var hashCode: Int = 0
 
         /** A list of dataset feedback items */
-        @JsonProperty("feedback")
-        fun feedback(): List<FeedbackDatasetItem>? = feedback
+        @JsonProperty("feedback") fun feedback(): List<FeedbackDatasetItem>? = feedback
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -81,23 +61,24 @@ class DatasetFeedbackParams constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is DatasetFeedbackBody &&
-              this.feedback == other.feedback &&
-              this.additionalProperties == other.additionalProperties
+            return other is DatasetFeedbackBody &&
+                this.feedback == other.feedback &&
+                this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-          if (hashCode == 0) {
-            hashCode = Objects.hash(feedback, additionalProperties)
-          }
-          return hashCode
+            if (hashCode == 0) {
+                hashCode = Objects.hash(feedback, additionalProperties)
+            }
+            return hashCode
         }
 
-        override fun toString() = "DatasetFeedbackBody{feedback=$feedback, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "DatasetFeedbackBody{feedback=$feedback, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -116,9 +97,7 @@ class DatasetFeedbackParams constructor(
 
             /** A list of dataset feedback items */
             @JsonProperty("feedback")
-            fun feedback(feedback: List<FeedbackDatasetItem>) = apply {
-                this.feedback = feedback
-            }
+            fun feedback(feedback: List<FeedbackDatasetItem>) = apply { this.feedback = feedback }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -134,9 +113,12 @@ class DatasetFeedbackParams constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): DatasetFeedbackBody = DatasetFeedbackBody(checkNotNull(feedback) {
-                "`feedback` is required but was not set"
-            }.toUnmodifiable(), additionalProperties.toUnmodifiable())
+            fun build(): DatasetFeedbackBody =
+                DatasetFeedbackBody(
+                    checkNotNull(feedback) { "`feedback` is required but was not set" }
+                        .toUnmodifiable(),
+                    additionalProperties.toUnmodifiable()
+                )
         }
     }
 
@@ -147,29 +129,30 @@ class DatasetFeedbackParams constructor(
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return other is DatasetFeedbackParams &&
-          this.datasetId == other.datasetId &&
-          this.feedback == other.feedback &&
-          this.additionalQueryParams == other.additionalQueryParams &&
-          this.additionalHeaders == other.additionalHeaders &&
-          this.additionalBodyProperties == other.additionalBodyProperties
+        return other is DatasetFeedbackParams &&
+            this.datasetId == other.datasetId &&
+            this.feedback == other.feedback &&
+            this.additionalQueryParams == other.additionalQueryParams &&
+            this.additionalHeaders == other.additionalHeaders &&
+            this.additionalBodyProperties == other.additionalBodyProperties
     }
 
     override fun hashCode(): Int {
-      return Objects.hash(
-          datasetId,
-          feedback,
-          additionalQueryParams,
-          additionalHeaders,
-          additionalBodyProperties,
-      )
+        return Objects.hash(
+            datasetId,
+            feedback,
+            additionalQueryParams,
+            additionalHeaders,
+            additionalBodyProperties,
+        )
     }
 
-    override fun toString() = "DatasetFeedbackParams{datasetId=$datasetId, feedback=$feedback, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+    override fun toString() =
+        "DatasetFeedbackParams{datasetId=$datasetId, feedback=$feedback, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -196,9 +179,7 @@ class DatasetFeedbackParams constructor(
         }
 
         /** Dataset id */
-        fun datasetId(datasetId: String) = apply {
-            this.datasetId = datasetId
-        }
+        fun datasetId(datasetId: String) = apply { this.datasetId = datasetId }
 
         /** A list of dataset feedback items */
         fun feedback(feedback: List<FeedbackDatasetItem>) = apply {
@@ -207,9 +188,7 @@ class DatasetFeedbackParams constructor(
         }
 
         /** A list of dataset feedback items */
-        fun addFeedback(feedback: FeedbackDatasetItem) = apply {
-            this.feedback.add(feedback)
-        }
+        fun addFeedback(feedback: FeedbackDatasetItem) = apply { this.feedback.add(feedback) }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -249,9 +228,7 @@ class DatasetFeedbackParams constructor(
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply {
-            this.additionalHeaders.put(name, mutableListOf())
-        }
+        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             this.additionalBodyProperties.clear()
@@ -262,20 +239,19 @@ class DatasetFeedbackParams constructor(
             this.additionalBodyProperties.put(key, value)
         }
 
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                this.additionalBodyProperties.putAll(additionalBodyProperties)
+            }
 
-        fun build(): DatasetFeedbackParams = DatasetFeedbackParams(
-            checkNotNull(datasetId) {
-                "`datasetId` is required but was not set"
-            },
-            checkNotNull(feedback) {
-                "`feedback` is required but was not set"
-            }.toUnmodifiable(),
-            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-            additionalBodyProperties.toUnmodifiable(),
-        )
+        fun build(): DatasetFeedbackParams =
+            DatasetFeedbackParams(
+                checkNotNull(datasetId) { "`datasetId` is required but was not set" },
+                checkNotNull(feedback) { "`feedback` is required but was not set" }
+                    .toUnmodifiable(),
+                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalBodyProperties.toUnmodifiable(),
+            )
     }
 }

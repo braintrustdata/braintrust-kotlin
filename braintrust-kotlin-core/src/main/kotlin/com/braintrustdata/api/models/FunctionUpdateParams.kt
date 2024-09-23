@@ -2,51 +2,42 @@
 
 package com.braintrustdata.api.models
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import org.apache.hc.core5.http.ContentType
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Objects
-import java.util.Optional
-import java.util.UUID
 import com.braintrustdata.api.core.BaseDeserializer
 import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.MultipartFormValue
-import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.ContentTypes
+import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.braintrustdata.api.models.*
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.util.Objects
 
-class FunctionUpdateParams constructor(
-  private val functionId: String,
-  private val description: String?,
-  private val functionData: FunctionData?,
-  private val name: String?,
-  private val promptData: PromptData?,
-  private val tags: List<String>?,
-  private val additionalQueryParams: Map<String, List<String>>,
-  private val additionalHeaders: Map<String, List<String>>,
-  private val additionalBodyProperties: Map<String, JsonValue>,
-
+class FunctionUpdateParams
+constructor(
+    private val functionId: String,
+    private val description: String?,
+    private val functionData: FunctionData?,
+    private val name: String?,
+    private val promptData: PromptData?,
+    private val tags: List<String>?,
+    private val additionalQueryParams: Map<String, List<String>>,
+    private val additionalHeaders: Map<String, List<String>>,
+    private val additionalBodyProperties: Map<String, JsonValue>,
 ) {
 
     fun functionId(): String = functionId
@@ -62,14 +53,14 @@ class FunctionUpdateParams constructor(
     fun tags(): List<String>? = tags
 
     internal fun getBody(): FunctionUpdateBody {
-      return FunctionUpdateBody(
-          description,
-          functionData,
-          name,
-          promptData,
-          tags,
-          additionalBodyProperties,
-      )
+        return FunctionUpdateBody(
+            description,
+            functionData,
+            name,
+            promptData,
+            tags,
+            additionalBodyProperties,
+        )
     }
 
     internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -77,44 +68,39 @@ class FunctionUpdateParams constructor(
     internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
 
     fun getPathParam(index: Int): String {
-      return when (index) {
-          0 -> functionId
-          else -> ""
-      }
+        return when (index) {
+            0 -> functionId
+            else -> ""
+        }
     }
 
     @JsonDeserialize(builder = FunctionUpdateBody.Builder::class)
     @NoAutoDetect
-    class FunctionUpdateBody internal constructor(
-      private val description: String?,
-      private val functionData: FunctionData?,
-      private val name: String?,
-      private val promptData: PromptData?,
-      private val tags: List<String>?,
-      private val additionalProperties: Map<String, JsonValue>,
-
+    class FunctionUpdateBody
+    internal constructor(
+        private val description: String?,
+        private val functionData: FunctionData?,
+        private val name: String?,
+        private val promptData: PromptData?,
+        private val tags: List<String>?,
+        private val additionalProperties: Map<String, JsonValue>,
     ) {
 
         private var hashCode: Int = 0
 
         /** Textual description of the prompt */
-        @JsonProperty("description")
-        fun description(): String? = description
+        @JsonProperty("description") fun description(): String? = description
 
-        @JsonProperty("function_data")
-        fun functionData(): FunctionData? = functionData
+        @JsonProperty("function_data") fun functionData(): FunctionData? = functionData
 
         /** Name of the prompt */
-        @JsonProperty("name")
-        fun name(): String? = name
+        @JsonProperty("name") fun name(): String? = name
 
         /** The prompt, model, and its parameters */
-        @JsonProperty("prompt_data")
-        fun promptData(): PromptData? = promptData
+        @JsonProperty("prompt_data") fun promptData(): PromptData? = promptData
 
         /** A list of tags for the prompt */
-        @JsonProperty("tags")
-        fun tags(): List<String>? = tags
+        @JsonProperty("tags") fun tags(): List<String>? = tags
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -123,34 +109,36 @@ class FunctionUpdateParams constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is FunctionUpdateBody &&
-              this.description == other.description &&
-              this.functionData == other.functionData &&
-              this.name == other.name &&
-              this.promptData == other.promptData &&
-              this.tags == other.tags &&
-              this.additionalProperties == other.additionalProperties
+            return other is FunctionUpdateBody &&
+                this.description == other.description &&
+                this.functionData == other.functionData &&
+                this.name == other.name &&
+                this.promptData == other.promptData &&
+                this.tags == other.tags &&
+                this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-          if (hashCode == 0) {
-            hashCode = Objects.hash(
-                description,
-                functionData,
-                name,
-                promptData,
-                tags,
-                additionalProperties,
-            )
-          }
-          return hashCode
+            if (hashCode == 0) {
+                hashCode =
+                    Objects.hash(
+                        description,
+                        functionData,
+                        name,
+                        promptData,
+                        tags,
+                        additionalProperties,
+                    )
+            }
+            return hashCode
         }
 
-        override fun toString() = "FunctionUpdateBody{description=$description, functionData=$functionData, name=$name, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "FunctionUpdateBody{description=$description, functionData=$functionData, name=$name, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -177,9 +165,7 @@ class FunctionUpdateParams constructor(
 
             /** Textual description of the prompt */
             @JsonProperty("description")
-            fun description(description: String) = apply {
-                this.description = description
-            }
+            fun description(description: String) = apply { this.description = description }
 
             @JsonProperty("function_data")
             fun functionData(functionData: FunctionData) = apply {
@@ -187,22 +173,14 @@ class FunctionUpdateParams constructor(
             }
 
             /** Name of the prompt */
-            @JsonProperty("name")
-            fun name(name: String) = apply {
-                this.name = name
-            }
+            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
 
             /** The prompt, model, and its parameters */
             @JsonProperty("prompt_data")
-            fun promptData(promptData: PromptData) = apply {
-                this.promptData = promptData
-            }
+            fun promptData(promptData: PromptData) = apply { this.promptData = promptData }
 
             /** A list of tags for the prompt */
-            @JsonProperty("tags")
-            fun tags(tags: List<String>) = apply {
-                this.tags = tags
-            }
+            @JsonProperty("tags") fun tags(tags: List<String>) = apply { this.tags = tags }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -218,14 +196,15 @@ class FunctionUpdateParams constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): FunctionUpdateBody = FunctionUpdateBody(
-                description,
-                functionData,
-                name,
-                promptData,
-                tags?.toUnmodifiable(),
-                additionalProperties.toUnmodifiable(),
-            )
+            fun build(): FunctionUpdateBody =
+                FunctionUpdateBody(
+                    description,
+                    functionData,
+                    name,
+                    promptData,
+                    tags?.toUnmodifiable(),
+                    additionalProperties.toUnmodifiable(),
+                )
         }
     }
 
@@ -236,37 +215,38 @@ class FunctionUpdateParams constructor(
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return other is FunctionUpdateParams &&
-          this.functionId == other.functionId &&
-          this.description == other.description &&
-          this.functionData == other.functionData &&
-          this.name == other.name &&
-          this.promptData == other.promptData &&
-          this.tags == other.tags &&
-          this.additionalQueryParams == other.additionalQueryParams &&
-          this.additionalHeaders == other.additionalHeaders &&
-          this.additionalBodyProperties == other.additionalBodyProperties
+        return other is FunctionUpdateParams &&
+            this.functionId == other.functionId &&
+            this.description == other.description &&
+            this.functionData == other.functionData &&
+            this.name == other.name &&
+            this.promptData == other.promptData &&
+            this.tags == other.tags &&
+            this.additionalQueryParams == other.additionalQueryParams &&
+            this.additionalHeaders == other.additionalHeaders &&
+            this.additionalBodyProperties == other.additionalBodyProperties
     }
 
     override fun hashCode(): Int {
-      return Objects.hash(
-          functionId,
-          description,
-          functionData,
-          name,
-          promptData,
-          tags,
-          additionalQueryParams,
-          additionalHeaders,
-          additionalBodyProperties,
-      )
+        return Objects.hash(
+            functionId,
+            description,
+            functionData,
+            name,
+            promptData,
+            tags,
+            additionalQueryParams,
+            additionalHeaders,
+            additionalBodyProperties,
+        )
     }
 
-    override fun toString() = "FunctionUpdateParams{functionId=$functionId, description=$description, functionData=$functionData, name=$name, promptData=$promptData, tags=$tags, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+    override fun toString() =
+        "FunctionUpdateParams{functionId=$functionId, description=$description, functionData=$functionData, name=$name, promptData=$promptData, tags=$tags, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -301,18 +281,12 @@ class FunctionUpdateParams constructor(
         }
 
         /** Function id */
-        fun functionId(functionId: String) = apply {
-            this.functionId = functionId
-        }
+        fun functionId(functionId: String) = apply { this.functionId = functionId }
 
         /** Textual description of the prompt */
-        fun description(description: String) = apply {
-            this.description = description
-        }
+        fun description(description: String) = apply { this.description = description }
 
-        fun functionData(functionData: FunctionData) = apply {
-            this.functionData = functionData
-        }
+        fun functionData(functionData: FunctionData) = apply { this.functionData = functionData }
 
         fun functionData(prompt: FunctionData.Prompt) = apply {
             this.functionData = FunctionData.ofPrompt(prompt)
@@ -331,14 +305,10 @@ class FunctionUpdateParams constructor(
         }
 
         /** Name of the prompt */
-        fun name(name: String) = apply {
-            this.name = name
-        }
+        fun name(name: String) = apply { this.name = name }
 
         /** The prompt, model, and its parameters */
-        fun promptData(promptData: PromptData) = apply {
-            this.promptData = promptData
-        }
+        fun promptData(promptData: PromptData) = apply { this.promptData = promptData }
 
         /** A list of tags for the prompt */
         fun tags(tags: List<String>) = apply {
@@ -347,9 +317,7 @@ class FunctionUpdateParams constructor(
         }
 
         /** A list of tags for the prompt */
-        fun addTag(tag: String) = apply {
-            this.tags.add(tag)
-        }
+        fun addTag(tag: String) = apply { this.tags.add(tag) }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -389,9 +357,7 @@ class FunctionUpdateParams constructor(
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply {
-            this.additionalHeaders.put(name, mutableListOf())
-        }
+        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             this.additionalBodyProperties.clear()
@@ -402,108 +368,117 @@ class FunctionUpdateParams constructor(
             this.additionalBodyProperties.put(key, value)
         }
 
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                this.additionalBodyProperties.putAll(additionalBodyProperties)
+            }
 
-        fun build(): FunctionUpdateParams = FunctionUpdateParams(
-            checkNotNull(functionId) {
-                "`functionId` is required but was not set"
-            },
-            description,
-            functionData,
-            name,
-            promptData,
-            if(tags.size == 0) null else tags.toUnmodifiable(),
-            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-            additionalBodyProperties.toUnmodifiable(),
-        )
+        fun build(): FunctionUpdateParams =
+            FunctionUpdateParams(
+                checkNotNull(functionId) { "`functionId` is required but was not set" },
+                description,
+                functionData,
+                name,
+                promptData,
+                if (tags.size == 0) null else tags.toUnmodifiable(),
+                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalBodyProperties.toUnmodifiable(),
+            )
     }
 
     @JsonDeserialize(using = FunctionData.Deserializer::class)
     @JsonSerialize(using = FunctionData.Serializer::class)
-    class FunctionData private constructor(
-      private val prompt: Prompt? = null,
-      private val code: Code? = null,
-      private val global: Global? = null,
-      private val nullableVariant: NullableVariant? = null,
-      private val _json: JsonValue? = null,
-
+    class FunctionData
+    private constructor(
+        private val prompt: Prompt? = null,
+        private val code: Code? = null,
+        private val global: Global? = null,
+        private val nullableVariant: NullableVariant? = null,
+        private val _json: JsonValue? = null,
     ) {
 
         private var validated: Boolean = false
 
         fun prompt(): Prompt? = prompt
+
         fun code(): Code? = code
+
         fun global(): Global? = global
+
         fun nullableVariant(): NullableVariant? = nullableVariant
 
         fun isPrompt(): Boolean = prompt != null
+
         fun isCode(): Boolean = code != null
+
         fun isGlobal(): Boolean = global != null
+
         fun isNullableVariant(): Boolean = nullableVariant != null
 
         fun asPrompt(): Prompt = prompt.getOrThrow("prompt")
+
         fun asCode(): Code = code.getOrThrow("code")
+
         fun asGlobal(): Global = global.getOrThrow("global")
+
         fun asNullableVariant(): NullableVariant = nullableVariant.getOrThrow("nullableVariant")
 
         fun _json(): JsonValue? = _json
 
         fun <T> accept(visitor: Visitor<T>): T {
-          return when {
-              prompt != null -> visitor.visitPrompt(prompt)
-              code != null -> visitor.visitCode(code)
-              global != null -> visitor.visitGlobal(global)
-              nullableVariant != null -> visitor.visitNullableVariant(nullableVariant)
-              else -> visitor.unknown(_json)
-          }
+            return when {
+                prompt != null -> visitor.visitPrompt(prompt)
+                code != null -> visitor.visitCode(code)
+                global != null -> visitor.visitGlobal(global)
+                nullableVariant != null -> visitor.visitNullableVariant(nullableVariant)
+                else -> visitor.unknown(_json)
+            }
         }
 
         fun validate(): FunctionData = apply {
             if (!validated) {
-              if (prompt == null && code == null && global == null && nullableVariant == null) {
-                throw BraintrustInvalidDataException("Unknown FunctionData: $_json")
-              }
-              prompt?.validate()
-              code?.validate()
-              global?.validate()
-              nullableVariant?.validate()
-              validated = true
+                if (prompt == null && code == null && global == null && nullableVariant == null) {
+                    throw BraintrustInvalidDataException("Unknown FunctionData: $_json")
+                }
+                prompt?.validate()
+                code?.validate()
+                global?.validate()
+                nullableVariant?.validate()
+                validated = true
             }
         }
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is FunctionData &&
-              this.prompt == other.prompt &&
-              this.code == other.code &&
-              this.global == other.global &&
-              this.nullableVariant == other.nullableVariant
+            return other is FunctionData &&
+                this.prompt == other.prompt &&
+                this.code == other.code &&
+                this.global == other.global &&
+                this.nullableVariant == other.nullableVariant
         }
 
         override fun hashCode(): Int {
-          return Objects.hash(
-              prompt,
-              code,
-              global,
-              nullableVariant,
-          )
+            return Objects.hash(
+                prompt,
+                code,
+                global,
+                nullableVariant,
+            )
         }
 
         override fun toString(): String {
-          return when {
-              prompt != null -> "FunctionData{prompt=$prompt}"
-              code != null -> "FunctionData{code=$code}"
-              global != null -> "FunctionData{global=$global}"
-              nullableVariant != null -> "FunctionData{nullableVariant=$nullableVariant}"
-              _json != null -> "FunctionData{_unknown=$_json}"
-              else -> throw IllegalStateException("Invalid FunctionData")
-          }
+            return when {
+                prompt != null -> "FunctionData{prompt=$prompt}"
+                code != null -> "FunctionData{code=$code}"
+                global != null -> "FunctionData{global=$global}"
+                nullableVariant != null -> "FunctionData{nullableVariant=$nullableVariant}"
+                _json != null -> "FunctionData{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid FunctionData")
+            }
         }
 
         companion object {
@@ -514,7 +489,8 @@ class FunctionUpdateParams constructor(
 
             fun ofGlobal(global: Global) = FunctionData(global = global)
 
-            fun ofNullableVariant(nullableVariant: NullableVariant) = FunctionData(nullableVariant = nullableVariant)
+            fun ofNullableVariant(nullableVariant: NullableVariant) =
+                FunctionData(nullableVariant = nullableVariant)
         }
 
         interface Visitor<out T> {
@@ -528,48 +504,60 @@ class FunctionUpdateParams constructor(
             fun visitNullableVariant(nullableVariant: NullableVariant): T
 
             fun unknown(json: JsonValue?): T {
-              throw BraintrustInvalidDataException("Unknown FunctionData: $json")
+                throw BraintrustInvalidDataException("Unknown FunctionData: $json")
             }
         }
 
         class Deserializer : BaseDeserializer<FunctionData>(FunctionData::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): FunctionData {
-              val json = JsonValue.fromJsonNode(node)
-              tryDeserialize(node, jacksonTypeRef<Prompt>()){ it.validate() }?.let {
-                  return FunctionData(prompt = it, _json = json)
-              }
-              tryDeserialize(node, jacksonTypeRef<Code>()){ it.validate() }?.let {
-                  return FunctionData(code = it, _json = json)
-              }
-              tryDeserialize(node, jacksonTypeRef<Global>()){ it.validate() }?.let {
-                  return FunctionData(global = it, _json = json)
-              }
-              tryDeserialize(node, jacksonTypeRef<NullableVariant>()){ it.validate() }?.let {
-                  return FunctionData(nullableVariant = it, _json = json)
-              }
+                val json = JsonValue.fromJsonNode(node)
+                tryDeserialize(node, jacksonTypeRef<Prompt>()) { it.validate() }
+                    ?.let {
+                        return FunctionData(prompt = it, _json = json)
+                    }
+                tryDeserialize(node, jacksonTypeRef<Code>()) { it.validate() }
+                    ?.let {
+                        return FunctionData(code = it, _json = json)
+                    }
+                tryDeserialize(node, jacksonTypeRef<Global>()) { it.validate() }
+                    ?.let {
+                        return FunctionData(global = it, _json = json)
+                    }
+                tryDeserialize(node, jacksonTypeRef<NullableVariant>()) { it.validate() }
+                    ?.let {
+                        return FunctionData(nullableVariant = it, _json = json)
+                    }
 
-              return FunctionData(_json = json)
+                return FunctionData(_json = json)
             }
         }
 
         class Serializer : BaseSerializer<FunctionData>(FunctionData::class) {
 
-            override fun serialize(value: FunctionData, generator: JsonGenerator, provider: SerializerProvider) {
-              when {
-                  value.prompt != null -> generator.writeObject(value.prompt)
-                  value.code != null -> generator.writeObject(value.code)
-                  value.global != null -> generator.writeObject(value.global)
-                  value.nullableVariant != null -> generator.writeObject(value.nullableVariant)
-                  value._json != null -> generator.writeObject(value._json)
-                  else -> throw IllegalStateException("Invalid FunctionData")
-              }
+            override fun serialize(
+                value: FunctionData,
+                generator: JsonGenerator,
+                provider: SerializerProvider
+            ) {
+                when {
+                    value.prompt != null -> generator.writeObject(value.prompt)
+                    value.code != null -> generator.writeObject(value.code)
+                    value.global != null -> generator.writeObject(value.global)
+                    value.nullableVariant != null -> generator.writeObject(value.nullableVariant)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid FunctionData")
+                }
             }
         }
 
         @JsonDeserialize(builder = Prompt.Builder::class)
         @NoAutoDetect
-        class Prompt private constructor(private val type: JsonField<Type>, private val additionalProperties: Map<String, JsonValue>, ) {
+        class Prompt
+        private constructor(
+            private val type: JsonField<Type>,
+            private val additionalProperties: Map<String, JsonValue>,
+        ) {
 
             private var validated: Boolean = false
 
@@ -577,9 +565,7 @@ class FunctionUpdateParams constructor(
 
             fun type(): Type = type.getRequired("type")
 
-            @JsonProperty("type")
-            @ExcludeMissing
-            fun _type() = type
+            @JsonProperty("type") @ExcludeMissing fun _type() = type
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -587,31 +573,32 @@ class FunctionUpdateParams constructor(
 
             fun validate(): Prompt = apply {
                 if (!validated) {
-                  type()
-                  validated = true
+                    type()
+                    validated = true
                 }
             }
 
             fun toBuilder() = Builder().from(this)
 
             override fun equals(other: Any?): Boolean {
-              if (this === other) {
-                  return true
-              }
+                if (this === other) {
+                    return true
+                }
 
-              return other is Prompt &&
-                  this.type == other.type &&
-                  this.additionalProperties == other.additionalProperties
+                return other is Prompt &&
+                    this.type == other.type &&
+                    this.additionalProperties == other.additionalProperties
             }
 
             override fun hashCode(): Int {
-              if (hashCode == 0) {
-                hashCode = Objects.hash(type, additionalProperties)
-              }
-              return hashCode
+                if (hashCode == 0) {
+                    hashCode = Objects.hash(type, additionalProperties)
+                }
+                return hashCode
             }
 
-            override fun toString() = "Prompt{type=$type, additionalProperties=$additionalProperties}"
+            override fun toString() =
+                "Prompt{type=$type, additionalProperties=$additionalProperties}"
 
             companion object {
 
@@ -632,9 +619,7 @@ class FunctionUpdateParams constructor(
 
                 @JsonProperty("type")
                 @ExcludeMissing
-                fun type(type: JsonField<Type>) = apply {
-                    this.type = type
-                }
+                fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -646,25 +631,28 @@ class FunctionUpdateParams constructor(
                     this.additionalProperties.put(key, value)
                 }
 
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.putAll(additionalProperties)
-                }
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
 
                 fun build(): Prompt = Prompt(type, additionalProperties.toUnmodifiable())
             }
 
-            class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+            class Type
+            @JsonCreator
+            private constructor(
+                private val value: JsonField<String>,
+            ) : Enum {
 
-                @com.fasterxml.jackson.annotation.JsonValue
-                fun _value(): JsonField<String> = value
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
                 override fun equals(other: Any?): Boolean {
-                  if (this === other) {
-                      return true
-                  }
+                    if (this === other) {
+                        return true
+                    }
 
-                  return other is Type &&
-                      this.value == other.value
+                    return other is Type && this.value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -687,15 +675,17 @@ class FunctionUpdateParams constructor(
                     _UNKNOWN,
                 }
 
-                fun value(): Value = when (this) {
-                    PROMPT -> Value.PROMPT
-                    else -> Value._UNKNOWN
-                }
+                fun value(): Value =
+                    when (this) {
+                        PROMPT -> Value.PROMPT
+                        else -> Value._UNKNOWN
+                    }
 
-                fun known(): Known = when (this) {
-                    PROMPT -> Known.PROMPT
-                    else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                }
+                fun known(): Known =
+                    when (this) {
+                        PROMPT -> Known.PROMPT
+                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                    }
 
                 fun asString(): String = _value().asStringOrThrow()
             }
@@ -703,7 +693,12 @@ class FunctionUpdateParams constructor(
 
         @JsonDeserialize(builder = Code.Builder::class)
         @NoAutoDetect
-        class Code private constructor(private val type: JsonField<Type>, private val data: JsonField<Data>, private val additionalProperties: Map<String, JsonValue>, ) {
+        class Code
+        private constructor(
+            private val type: JsonField<Type>,
+            private val data: JsonField<Data>,
+            private val additionalProperties: Map<String, JsonValue>,
+        ) {
 
             private var validated: Boolean = false
 
@@ -713,13 +708,9 @@ class FunctionUpdateParams constructor(
 
             fun data(): Data = data.getRequired("data")
 
-            @JsonProperty("type")
-            @ExcludeMissing
-            fun _type() = type
+            @JsonProperty("type") @ExcludeMissing fun _type() = type
 
-            @JsonProperty("data")
-            @ExcludeMissing
-            fun _data() = data
+            @JsonProperty("data") @ExcludeMissing fun _data() = data
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -727,37 +718,39 @@ class FunctionUpdateParams constructor(
 
             fun validate(): Code = apply {
                 if (!validated) {
-                  type()
-                  data()
-                  validated = true
+                    type()
+                    data()
+                    validated = true
                 }
             }
 
             fun toBuilder() = Builder().from(this)
 
             override fun equals(other: Any?): Boolean {
-              if (this === other) {
-                  return true
-              }
+                if (this === other) {
+                    return true
+                }
 
-              return other is Code &&
-                  this.type == other.type &&
-                  this.data == other.data &&
-                  this.additionalProperties == other.additionalProperties
+                return other is Code &&
+                    this.type == other.type &&
+                    this.data == other.data &&
+                    this.additionalProperties == other.additionalProperties
             }
 
             override fun hashCode(): Int {
-              if (hashCode == 0) {
-                hashCode = Objects.hash(
-                    type,
-                    data,
-                    additionalProperties,
-                )
-              }
-              return hashCode
+                if (hashCode == 0) {
+                    hashCode =
+                        Objects.hash(
+                            type,
+                            data,
+                            additionalProperties,
+                        )
+                }
+                return hashCode
             }
 
-            override fun toString() = "Code{type=$type, data=$data, additionalProperties=$additionalProperties}"
+            override fun toString() =
+                "Code{type=$type, data=$data, additionalProperties=$additionalProperties}"
 
             companion object {
 
@@ -780,17 +773,13 @@ class FunctionUpdateParams constructor(
 
                 @JsonProperty("type")
                 @ExcludeMissing
-                fun type(type: JsonField<Type>) = apply {
-                    this.type = type
-                }
+                fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 fun data(data: Data) = data(JsonField.of(data))
 
                 @JsonProperty("data")
                 @ExcludeMissing
-                fun data(data: JsonField<Data>) = apply {
-                    this.data = data
-                }
+                fun data(data: JsonField<Data>) = apply { this.data = data }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -802,74 +791,84 @@ class FunctionUpdateParams constructor(
                     this.additionalProperties.put(key, value)
                 }
 
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.putAll(additionalProperties)
-                }
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
 
-                fun build(): Code = Code(
-                    type,
-                    data,
-                    additionalProperties.toUnmodifiable(),
-                )
+                fun build(): Code =
+                    Code(
+                        type,
+                        data,
+                        additionalProperties.toUnmodifiable(),
+                    )
             }
 
             @JsonDeserialize(using = Data.Deserializer::class)
             @JsonSerialize(using = Data.Serializer::class)
-            class Data private constructor(private val bundle: Bundle? = null, private val inline: Inline? = null, private val _json: JsonValue? = null, ) {
+            class Data
+            private constructor(
+                private val bundle: Bundle? = null,
+                private val inline: Inline? = null,
+                private val _json: JsonValue? = null,
+            ) {
 
                 private var validated: Boolean = false
 
                 fun bundle(): Bundle? = bundle
+
                 fun inline(): Inline? = inline
 
                 fun isBundle(): Boolean = bundle != null
+
                 fun isInline(): Boolean = inline != null
 
                 fun asBundle(): Bundle = bundle.getOrThrow("bundle")
+
                 fun asInline(): Inline = inline.getOrThrow("inline")
 
                 fun _json(): JsonValue? = _json
 
                 fun <T> accept(visitor: Visitor<T>): T {
-                  return when {
-                      bundle != null -> visitor.visitBundle(bundle)
-                      inline != null -> visitor.visitInline(inline)
-                      else -> visitor.unknown(_json)
-                  }
+                    return when {
+                        bundle != null -> visitor.visitBundle(bundle)
+                        inline != null -> visitor.visitInline(inline)
+                        else -> visitor.unknown(_json)
+                    }
                 }
 
                 fun validate(): Data = apply {
                     if (!validated) {
-                      if (bundle == null && inline == null) {
-                        throw BraintrustInvalidDataException("Unknown Data: $_json")
-                      }
-                      bundle?.validate()
-                      inline?.validate()
-                      validated = true
+                        if (bundle == null && inline == null) {
+                            throw BraintrustInvalidDataException("Unknown Data: $_json")
+                        }
+                        bundle?.validate()
+                        inline?.validate()
+                        validated = true
                     }
                 }
 
                 override fun equals(other: Any?): Boolean {
-                  if (this === other) {
-                      return true
-                  }
+                    if (this === other) {
+                        return true
+                    }
 
-                  return other is Data &&
-                      this.bundle == other.bundle &&
-                      this.inline == other.inline
+                    return other is Data &&
+                        this.bundle == other.bundle &&
+                        this.inline == other.inline
                 }
 
                 override fun hashCode(): Int {
-                  return Objects.hash(bundle, inline)
+                    return Objects.hash(bundle, inline)
                 }
 
                 override fun toString(): String {
-                  return when {
-                      bundle != null -> "Data{bundle=$bundle}"
-                      inline != null -> "Data{inline=$inline}"
-                      _json != null -> "Data{_unknown=$_json}"
-                      else -> throw IllegalStateException("Invalid Data")
-                  }
+                    return when {
+                        bundle != null -> "Data{bundle=$bundle}"
+                        inline != null -> "Data{inline=$inline}"
+                        _json != null -> "Data{_unknown=$_json}"
+                        else -> throw IllegalStateException("Invalid Data")
+                    }
                 }
 
                 companion object {
@@ -886,47 +885,53 @@ class FunctionUpdateParams constructor(
                     fun visitInline(inline: Inline): T
 
                     fun unknown(json: JsonValue?): T {
-                      throw BraintrustInvalidDataException("Unknown Data: $json")
+                        throw BraintrustInvalidDataException("Unknown Data: $json")
                     }
                 }
 
                 class Deserializer : BaseDeserializer<Data>(Data::class) {
 
                     override fun ObjectCodec.deserialize(node: JsonNode): Data {
-                      val json = JsonValue.fromJsonNode(node)
-                      tryDeserialize(node, jacksonTypeRef<Bundle>()){ it.validate() }?.let {
-                          return Data(bundle = it, _json = json)
-                      }
-                      tryDeserialize(node, jacksonTypeRef<Inline>()){ it.validate() }?.let {
-                          return Data(inline = it, _json = json)
-                      }
+                        val json = JsonValue.fromJsonNode(node)
+                        tryDeserialize(node, jacksonTypeRef<Bundle>()) { it.validate() }
+                            ?.let {
+                                return Data(bundle = it, _json = json)
+                            }
+                        tryDeserialize(node, jacksonTypeRef<Inline>()) { it.validate() }
+                            ?.let {
+                                return Data(inline = it, _json = json)
+                            }
 
-                      return Data(_json = json)
+                        return Data(_json = json)
                     }
                 }
 
                 class Serializer : BaseSerializer<Data>(Data::class) {
 
-                    override fun serialize(value: Data, generator: JsonGenerator, provider: SerializerProvider) {
-                      when {
-                          value.bundle != null -> generator.writeObject(value.bundle)
-                          value.inline != null -> generator.writeObject(value.inline)
-                          value._json != null -> generator.writeObject(value._json)
-                          else -> throw IllegalStateException("Invalid Data")
-                      }
+                    override fun serialize(
+                        value: Data,
+                        generator: JsonGenerator,
+                        provider: SerializerProvider
+                    ) {
+                        when {
+                            value.bundle != null -> generator.writeObject(value.bundle)
+                            value.inline != null -> generator.writeObject(value.inline)
+                            value._json != null -> generator.writeObject(value._json)
+                            else -> throw IllegalStateException("Invalid Data")
+                        }
                     }
                 }
 
                 @JsonDeserialize(builder = Bundle.Builder::class)
                 @NoAutoDetect
-                class Bundle private constructor(
-                  private val type: JsonField<Type>,
-                  private val runtimeContext: JsonField<RuntimeContext>,
-                  private val location: JsonField<Location>,
-                  private val bundleId: JsonField<String>,
-                  private val preview: JsonField<String>,
-                  private val additionalProperties: Map<String, JsonValue>,
-
+                class Bundle
+                private constructor(
+                    private val type: JsonField<Type>,
+                    private val runtimeContext: JsonField<RuntimeContext>,
+                    private val location: JsonField<Location>,
+                    private val bundleId: JsonField<String>,
+                    private val preview: JsonField<String>,
+                    private val additionalProperties: Map<String, JsonValue>,
                 ) {
 
                     private var validated: Boolean = false
@@ -935,7 +940,8 @@ class FunctionUpdateParams constructor(
 
                     fun type(): Type = type.getRequired("type")
 
-                    fun runtimeContext(): RuntimeContext = runtimeContext.getRequired("runtime_context")
+                    fun runtimeContext(): RuntimeContext =
+                        runtimeContext.getRequired("runtime_context")
 
                     fun location(): Location = location.getRequired("location")
 
@@ -944,26 +950,18 @@ class FunctionUpdateParams constructor(
                     /** A preview of the code */
                     fun preview(): String? = preview.getNullable("preview")
 
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    fun _type() = type
+                    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
                     @JsonProperty("runtime_context")
                     @ExcludeMissing
                     fun _runtimeContext() = runtimeContext
 
-                    @JsonProperty("location")
-                    @ExcludeMissing
-                    fun _location() = location
+                    @JsonProperty("location") @ExcludeMissing fun _location() = location
 
-                    @JsonProperty("bundle_id")
-                    @ExcludeMissing
-                    fun _bundleId() = bundleId
+                    @JsonProperty("bundle_id") @ExcludeMissing fun _bundleId() = bundleId
 
                     /** A preview of the code */
-                    @JsonProperty("preview")
-                    @ExcludeMissing
-                    fun _preview() = preview
+                    @JsonProperty("preview") @ExcludeMissing fun _preview() = preview
 
                     @JsonAnyGetter
                     @ExcludeMissing
@@ -971,46 +969,48 @@ class FunctionUpdateParams constructor(
 
                     fun validate(): Bundle = apply {
                         if (!validated) {
-                          type()
-                          runtimeContext().validate()
-                          location().validate()
-                          bundleId()
-                          preview()
-                          validated = true
+                            type()
+                            runtimeContext().validate()
+                            location().validate()
+                            bundleId()
+                            preview()
+                            validated = true
                         }
                     }
 
                     fun toBuilder() = Builder().from(this)
 
                     override fun equals(other: Any?): Boolean {
-                      if (this === other) {
-                          return true
-                      }
+                        if (this === other) {
+                            return true
+                        }
 
-                      return other is Bundle &&
-                          this.type == other.type &&
-                          this.runtimeContext == other.runtimeContext &&
-                          this.location == other.location &&
-                          this.bundleId == other.bundleId &&
-                          this.preview == other.preview &&
-                          this.additionalProperties == other.additionalProperties
+                        return other is Bundle &&
+                            this.type == other.type &&
+                            this.runtimeContext == other.runtimeContext &&
+                            this.location == other.location &&
+                            this.bundleId == other.bundleId &&
+                            this.preview == other.preview &&
+                            this.additionalProperties == other.additionalProperties
                     }
 
                     override fun hashCode(): Int {
-                      if (hashCode == 0) {
-                        hashCode = Objects.hash(
-                            type,
-                            runtimeContext,
-                            location,
-                            bundleId,
-                            preview,
-                            additionalProperties,
-                        )
-                      }
-                      return hashCode
+                        if (hashCode == 0) {
+                            hashCode =
+                                Objects.hash(
+                                    type,
+                                    runtimeContext,
+                                    location,
+                                    bundleId,
+                                    preview,
+                                    additionalProperties,
+                                )
+                        }
+                        return hashCode
                     }
 
-                    override fun toString() = "Bundle{type=$type, runtimeContext=$runtimeContext, location=$location, bundleId=$bundleId, preview=$preview, additionalProperties=$additionalProperties}"
+                    override fun toString() =
+                        "Bundle{type=$type, runtimeContext=$runtimeContext, location=$location, bundleId=$bundleId, preview=$preview, additionalProperties=$additionalProperties}"
 
                     companion object {
 
@@ -1024,7 +1024,8 @@ class FunctionUpdateParams constructor(
                         private var location: JsonField<Location> = JsonMissing.of()
                         private var bundleId: JsonField<String> = JsonMissing.of()
                         private var preview: JsonField<String> = JsonMissing.of()
-                        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
 
                         internal fun from(bundle: Bundle) = apply {
                             this.type = bundle.type
@@ -1039,11 +1040,10 @@ class FunctionUpdateParams constructor(
 
                         @JsonProperty("type")
                         @ExcludeMissing
-                        fun type(type: JsonField<Type>) = apply {
-                            this.type = type
-                        }
+                        fun type(type: JsonField<Type>) = apply { this.type = type }
 
-                        fun runtimeContext(runtimeContext: RuntimeContext) = runtimeContext(JsonField.of(runtimeContext))
+                        fun runtimeContext(runtimeContext: RuntimeContext) =
+                            runtimeContext(JsonField.of(runtimeContext))
 
                         @JsonProperty("runtime_context")
                         @ExcludeMissing
@@ -1073,42 +1073,42 @@ class FunctionUpdateParams constructor(
                         /** A preview of the code */
                         @JsonProperty("preview")
                         @ExcludeMissing
-                        fun preview(preview: JsonField<String>) = apply {
-                            this.preview = preview
-                        }
+                        fun preview(preview: JsonField<String>) = apply { this.preview = preview }
 
-                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                            this.additionalProperties.clear()
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                this.additionalProperties.putAll(additionalProperties)
+                            }
 
                         @JsonAnySetter
                         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                             this.additionalProperties.put(key, value)
                         }
 
-                        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
 
-                        fun build(): Bundle = Bundle(
-                            type,
-                            runtimeContext,
-                            location,
-                            bundleId,
-                            preview,
-                            additionalProperties.toUnmodifiable(),
-                        )
+                        fun build(): Bundle =
+                            Bundle(
+                                type,
+                                runtimeContext,
+                                location,
+                                bundleId,
+                                preview,
+                                additionalProperties.toUnmodifiable(),
+                            )
                     }
 
                     @JsonDeserialize(builder = Location.Builder::class)
                     @NoAutoDetect
-                    class Location private constructor(
-                      private val type: JsonField<Type>,
-                      private val evalName: JsonField<String>,
-                      private val position: JsonField<Position>,
-                      private val additionalProperties: Map<String, JsonValue>,
-
+                    class Location
+                    private constructor(
+                        private val type: JsonField<Type>,
+                        private val evalName: JsonField<String>,
+                        private val position: JsonField<Position>,
+                        private val additionalProperties: Map<String, JsonValue>,
                     ) {
 
                         private var validated: Boolean = false
@@ -1121,17 +1121,11 @@ class FunctionUpdateParams constructor(
 
                         fun position(): Position = position.getRequired("position")
 
-                        @JsonProperty("type")
-                        @ExcludeMissing
-                        fun _type() = type
+                        @JsonProperty("type") @ExcludeMissing fun _type() = type
 
-                        @JsonProperty("eval_name")
-                        @ExcludeMissing
-                        fun _evalName() = evalName
+                        @JsonProperty("eval_name") @ExcludeMissing fun _evalName() = evalName
 
-                        @JsonProperty("position")
-                        @ExcludeMissing
-                        fun _position() = position
+                        @JsonProperty("position") @ExcludeMissing fun _position() = position
 
                         @JsonAnyGetter
                         @ExcludeMissing
@@ -1139,40 +1133,42 @@ class FunctionUpdateParams constructor(
 
                         fun validate(): Location = apply {
                             if (!validated) {
-                              type()
-                              evalName()
-                              position()
-                              validated = true
+                                type()
+                                evalName()
+                                position()
+                                validated = true
                             }
                         }
 
                         fun toBuilder() = Builder().from(this)
 
                         override fun equals(other: Any?): Boolean {
-                          if (this === other) {
-                              return true
-                          }
+                            if (this === other) {
+                                return true
+                            }
 
-                          return other is Location &&
-                              this.type == other.type &&
-                              this.evalName == other.evalName &&
-                              this.position == other.position &&
-                              this.additionalProperties == other.additionalProperties
+                            return other is Location &&
+                                this.type == other.type &&
+                                this.evalName == other.evalName &&
+                                this.position == other.position &&
+                                this.additionalProperties == other.additionalProperties
                         }
 
                         override fun hashCode(): Int {
-                          if (hashCode == 0) {
-                            hashCode = Objects.hash(
-                                type,
-                                evalName,
-                                position,
-                                additionalProperties,
-                            )
-                          }
-                          return hashCode
+                            if (hashCode == 0) {
+                                hashCode =
+                                    Objects.hash(
+                                        type,
+                                        evalName,
+                                        position,
+                                        additionalProperties,
+                                    )
+                            }
+                            return hashCode
                         }
 
-                        override fun toString() = "Location{type=$type, evalName=$evalName, position=$position, additionalProperties=$additionalProperties}"
+                        override fun toString() =
+                            "Location{type=$type, evalName=$evalName, position=$position, additionalProperties=$additionalProperties}"
 
                         companion object {
 
@@ -1184,7 +1180,8 @@ class FunctionUpdateParams constructor(
                             private var type: JsonField<Type> = JsonMissing.of()
                             private var evalName: JsonField<String> = JsonMissing.of()
                             private var position: JsonField<Position> = JsonMissing.of()
-                            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
 
                             internal fun from(location: Location) = apply {
                                 this.type = location.type
@@ -1197,9 +1194,7 @@ class FunctionUpdateParams constructor(
 
                             @JsonProperty("type")
                             @ExcludeMissing
-                            fun type(type: JsonField<Type>) = apply {
-                                this.type = type
-                            }
+                            fun type(type: JsonField<Type>) = apply { this.type = type }
 
                             fun evalName(evalName: String) = evalName(JsonField.of(evalName))
 
@@ -1217,85 +1212,97 @@ class FunctionUpdateParams constructor(
                                 this.position = position
                             }
 
-                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                                this.additionalProperties.clear()
-                                this.additionalProperties.putAll(additionalProperties)
-                            }
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    this.additionalProperties.putAll(additionalProperties)
+                                }
 
                             @JsonAnySetter
                             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                                 this.additionalProperties.put(key, value)
                             }
 
-                            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                                this.additionalProperties.putAll(additionalProperties)
-                            }
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
 
-                            fun build(): Location = Location(
-                                type,
-                                evalName,
-                                position,
-                                additionalProperties.toUnmodifiable(),
-                            )
+                            fun build(): Location =
+                                Location(
+                                    type,
+                                    evalName,
+                                    position,
+                                    additionalProperties.toUnmodifiable(),
+                                )
                         }
 
                         @JsonDeserialize(using = Position.Deserializer::class)
                         @JsonSerialize(using = Position.Serializer::class)
-                        class Position private constructor(private val type: Type? = null, private val scorer: Scorer? = null, private val _json: JsonValue? = null, ) {
+                        class Position
+                        private constructor(
+                            private val type: Type? = null,
+                            private val scorer: Scorer? = null,
+                            private val _json: JsonValue? = null,
+                        ) {
 
                             private var validated: Boolean = false
 
                             fun type(): Type? = type
+
                             fun scorer(): Scorer? = scorer
 
                             fun isType(): Boolean = type != null
+
                             fun isScorer(): Boolean = scorer != null
 
                             fun asType(): Type = type.getOrThrow("type")
+
                             fun asScorer(): Scorer = scorer.getOrThrow("scorer")
 
                             fun _json(): JsonValue? = _json
 
                             fun <T> accept(visitor: Visitor<T>): T {
-                              return when {
-                                  type != null -> visitor.visitType(type)
-                                  scorer != null -> visitor.visitScorer(scorer)
-                                  else -> visitor.unknown(_json)
-                              }
+                                return when {
+                                    type != null -> visitor.visitType(type)
+                                    scorer != null -> visitor.visitScorer(scorer)
+                                    else -> visitor.unknown(_json)
+                                }
                             }
 
                             fun validate(): Position = apply {
                                 if (!validated) {
-                                  if (type == null && scorer == null) {
-                                    throw BraintrustInvalidDataException("Unknown Position: $_json")
-                                  }
-                                  type?.validate()
-                                  scorer?.validate()
-                                  validated = true
+                                    if (type == null && scorer == null) {
+                                        throw BraintrustInvalidDataException(
+                                            "Unknown Position: $_json"
+                                        )
+                                    }
+                                    type?.validate()
+                                    scorer?.validate()
+                                    validated = true
                                 }
                             }
 
                             override fun equals(other: Any?): Boolean {
-                              if (this === other) {
-                                  return true
-                              }
+                                if (this === other) {
+                                    return true
+                                }
 
-                              return other is Position &&
-                                  this.type == other.type &&
-                                  this.scorer == other.scorer
+                                return other is Position &&
+                                    this.type == other.type &&
+                                    this.scorer == other.scorer
                             }
 
                             override fun hashCode(): Int {
-                              return Objects.hash(type, scorer)
+                                return Objects.hash(type, scorer)
                             }
 
                             override fun toString(): String {
-                              return when {
-                                  type != null -> "Position{type=$type}"
-                                  scorer != null -> "Position{scorer=$scorer}"
-                                  _json != null -> "Position{_unknown=$_json}"
-                                  else -> throw IllegalStateException("Invalid Position")
-                              }
+                                return when {
+                                    type != null -> "Position{type=$type}"
+                                    scorer != null -> "Position{scorer=$scorer}"
+                                    _json != null -> "Position{_unknown=$_json}"
+                                    else -> throw IllegalStateException("Invalid Position")
+                                }
                             }
 
                             companion object {
@@ -1312,40 +1319,50 @@ class FunctionUpdateParams constructor(
                                 fun visitScorer(scorer: Scorer): T
 
                                 fun unknown(json: JsonValue?): T {
-                                  throw BraintrustInvalidDataException("Unknown Position: $json")
+                                    throw BraintrustInvalidDataException("Unknown Position: $json")
                                 }
                             }
 
                             class Deserializer : BaseDeserializer<Position>(Position::class) {
 
                                 override fun ObjectCodec.deserialize(node: JsonNode): Position {
-                                  val json = JsonValue.fromJsonNode(node)
-                                  tryDeserialize(node, jacksonTypeRef<Type>()){ it.validate() }?.let {
-                                      return Position(type = it, _json = json)
-                                  }
-                                  tryDeserialize(node, jacksonTypeRef<Scorer>()){ it.validate() }?.let {
-                                      return Position(scorer = it, _json = json)
-                                  }
+                                    val json = JsonValue.fromJsonNode(node)
+                                    tryDeserialize(node, jacksonTypeRef<Type>()) { it.validate() }
+                                        ?.let {
+                                            return Position(type = it, _json = json)
+                                        }
+                                    tryDeserialize(node, jacksonTypeRef<Scorer>()) { it.validate() }
+                                        ?.let {
+                                            return Position(scorer = it, _json = json)
+                                        }
 
-                                  return Position(_json = json)
+                                    return Position(_json = json)
                                 }
                             }
 
                             class Serializer : BaseSerializer<Position>(Position::class) {
 
-                                override fun serialize(value: Position, generator: JsonGenerator, provider: SerializerProvider) {
-                                  when {
-                                      value.type != null -> generator.writeObject(value.type)
-                                      value.scorer != null -> generator.writeObject(value.scorer)
-                                      value._json != null -> generator.writeObject(value._json)
-                                      else -> throw IllegalStateException("Invalid Position")
-                                  }
+                                override fun serialize(
+                                    value: Position,
+                                    generator: JsonGenerator,
+                                    provider: SerializerProvider
+                                ) {
+                                    when {
+                                        value.type != null -> generator.writeObject(value.type)
+                                        value.scorer != null -> generator.writeObject(value.scorer)
+                                        value._json != null -> generator.writeObject(value._json)
+                                        else -> throw IllegalStateException("Invalid Position")
+                                    }
                                 }
                             }
 
                             @JsonDeserialize(builder = Type.Builder::class)
                             @NoAutoDetect
-                            class Type private constructor(private val type: JsonField<Type>, private val additionalProperties: Map<String, JsonValue>, ) {
+                            class Type
+                            private constructor(
+                                private val type: JsonField<Type>,
+                                private val additionalProperties: Map<String, JsonValue>,
+                            ) {
 
                                 private var validated: Boolean = false
 
@@ -1353,41 +1370,41 @@ class FunctionUpdateParams constructor(
 
                                 fun type(): Type = type.getRequired("type")
 
-                                @JsonProperty("type")
-                                @ExcludeMissing
-                                fun _type() = type
+                                @JsonProperty("type") @ExcludeMissing fun _type() = type
 
                                 @JsonAnyGetter
                                 @ExcludeMissing
-                                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+                                fun _additionalProperties(): Map<String, JsonValue> =
+                                    additionalProperties
 
                                 fun validate(): Type = apply {
                                     if (!validated) {
-                                      type()
-                                      validated = true
+                                        type()
+                                        validated = true
                                     }
                                 }
 
                                 fun toBuilder() = Builder().from(this)
 
                                 override fun equals(other: Any?): Boolean {
-                                  if (this === other) {
-                                      return true
-                                  }
+                                    if (this === other) {
+                                        return true
+                                    }
 
-                                  return other is Type &&
-                                      this.type == other.type &&
-                                      this.additionalProperties == other.additionalProperties
+                                    return other is Type &&
+                                        this.type == other.type &&
+                                        this.additionalProperties == other.additionalProperties
                                 }
 
                                 override fun hashCode(): Int {
-                                  if (hashCode == 0) {
-                                    hashCode = Objects.hash(type, additionalProperties)
-                                  }
-                                  return hashCode
+                                    if (hashCode == 0) {
+                                        hashCode = Objects.hash(type, additionalProperties)
+                                    }
+                                    return hashCode
                                 }
 
-                                override fun toString() = "Type{type=$type, additionalProperties=$additionalProperties}"
+                                override fun toString() =
+                                    "Type{type=$type, additionalProperties=$additionalProperties}"
 
                                 companion object {
 
@@ -1397,7 +1414,9 @@ class FunctionUpdateParams constructor(
                                 class Builder {
 
                                     private var type: JsonField<Type> = JsonMissing.of()
-                                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+                                    private var additionalProperties:
+                                        MutableMap<String, JsonValue> =
+                                        mutableMapOf()
 
                                     internal fun from(type: Type) = apply {
                                         this.type = type.type
@@ -1408,39 +1427,46 @@ class FunctionUpdateParams constructor(
 
                                     @JsonProperty("type")
                                     @ExcludeMissing
-                                    fun type(type: JsonField<Type>) = apply {
-                                        this.type = type
-                                    }
+                                    fun type(type: JsonField<Type>) = apply { this.type = type }
 
-                                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                                    fun additionalProperties(
+                                        additionalProperties: Map<String, JsonValue>
+                                    ) = apply {
                                         this.additionalProperties.clear()
                                         this.additionalProperties.putAll(additionalProperties)
                                     }
 
                                     @JsonAnySetter
-                                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                                        this.additionalProperties.put(key, value)
-                                    }
+                                    fun putAdditionalProperty(key: String, value: JsonValue) =
+                                        apply {
+                                            this.additionalProperties.put(key, value)
+                                        }
 
-                                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                                    fun putAllAdditionalProperties(
+                                        additionalProperties: Map<String, JsonValue>
+                                    ) = apply {
                                         this.additionalProperties.putAll(additionalProperties)
                                     }
 
-                                    fun build(): Type = Type(type, additionalProperties.toUnmodifiable())
+                                    fun build(): Type =
+                                        Type(type, additionalProperties.toUnmodifiable())
                                 }
 
-                                class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+                                class Type
+                                @JsonCreator
+                                private constructor(
+                                    private val value: JsonField<String>,
+                                ) : Enum {
 
                                     @com.fasterxml.jackson.annotation.JsonValue
                                     fun _value(): JsonField<String> = value
 
                                     override fun equals(other: Any?): Boolean {
-                                      if (this === other) {
-                                          return true
-                                      }
+                                        if (this === other) {
+                                            return true
+                                        }
 
-                                      return other is Type &&
-                                          this.value == other.value
+                                        return other is Type && this.value == other.value
                                     }
 
                                     override fun hashCode() = value.hashCode()
@@ -1463,15 +1489,20 @@ class FunctionUpdateParams constructor(
                                         _UNKNOWN,
                                     }
 
-                                    fun value(): Value = when (this) {
-                                        TASK -> Value.TASK
-                                        else -> Value._UNKNOWN
-                                    }
+                                    fun value(): Value =
+                                        when (this) {
+                                            TASK -> Value.TASK
+                                            else -> Value._UNKNOWN
+                                        }
 
-                                    fun known(): Known = when (this) {
-                                        TASK -> Known.TASK
-                                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                                    }
+                                    fun known(): Known =
+                                        when (this) {
+                                            TASK -> Known.TASK
+                                            else ->
+                                                throw BraintrustInvalidDataException(
+                                                    "Unknown Type: $value"
+                                                )
+                                        }
 
                                     fun asString(): String = _value().asStringOrThrow()
                                 }
@@ -1479,7 +1510,12 @@ class FunctionUpdateParams constructor(
 
                             @JsonDeserialize(builder = Scorer.Builder::class)
                             @NoAutoDetect
-                            class Scorer private constructor(private val type: JsonField<Type>, private val index: JsonField<Double>, private val additionalProperties: Map<String, JsonValue>, ) {
+                            class Scorer
+                            private constructor(
+                                private val type: JsonField<Type>,
+                                private val index: JsonField<Double>,
+                                private val additionalProperties: Map<String, JsonValue>,
+                            ) {
 
                                 private var validated: Boolean = false
 
@@ -1489,51 +1525,50 @@ class FunctionUpdateParams constructor(
 
                                 fun index(): Double = index.getRequired("index")
 
-                                @JsonProperty("type")
-                                @ExcludeMissing
-                                fun _type() = type
+                                @JsonProperty("type") @ExcludeMissing fun _type() = type
 
-                                @JsonProperty("index")
-                                @ExcludeMissing
-                                fun _index() = index
+                                @JsonProperty("index") @ExcludeMissing fun _index() = index
 
                                 @JsonAnyGetter
                                 @ExcludeMissing
-                                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+                                fun _additionalProperties(): Map<String, JsonValue> =
+                                    additionalProperties
 
                                 fun validate(): Scorer = apply {
                                     if (!validated) {
-                                      type()
-                                      index()
-                                      validated = true
+                                        type()
+                                        index()
+                                        validated = true
                                     }
                                 }
 
                                 fun toBuilder() = Builder().from(this)
 
                                 override fun equals(other: Any?): Boolean {
-                                  if (this === other) {
-                                      return true
-                                  }
+                                    if (this === other) {
+                                        return true
+                                    }
 
-                                  return other is Scorer &&
-                                      this.type == other.type &&
-                                      this.index == other.index &&
-                                      this.additionalProperties == other.additionalProperties
+                                    return other is Scorer &&
+                                        this.type == other.type &&
+                                        this.index == other.index &&
+                                        this.additionalProperties == other.additionalProperties
                                 }
 
                                 override fun hashCode(): Int {
-                                  if (hashCode == 0) {
-                                    hashCode = Objects.hash(
-                                        type,
-                                        index,
-                                        additionalProperties,
-                                    )
-                                  }
-                                  return hashCode
+                                    if (hashCode == 0) {
+                                        hashCode =
+                                            Objects.hash(
+                                                type,
+                                                index,
+                                                additionalProperties,
+                                            )
+                                    }
+                                    return hashCode
                                 }
 
-                                override fun toString() = "Scorer{type=$type, index=$index, additionalProperties=$additionalProperties}"
+                                override fun toString() =
+                                    "Scorer{type=$type, index=$index, additionalProperties=$additionalProperties}"
 
                                 companion object {
 
@@ -1544,7 +1579,9 @@ class FunctionUpdateParams constructor(
 
                                     private var type: JsonField<Type> = JsonMissing.of()
                                     private var index: JsonField<Double> = JsonMissing.of()
-                                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+                                    private var additionalProperties:
+                                        MutableMap<String, JsonValue> =
+                                        mutableMapOf()
 
                                     internal fun from(scorer: Scorer) = apply {
                                         this.type = scorer.type
@@ -1556,9 +1593,7 @@ class FunctionUpdateParams constructor(
 
                                     @JsonProperty("type")
                                     @ExcludeMissing
-                                    fun type(type: JsonField<Type>) = apply {
-                                        this.type = type
-                                    }
+                                    fun type(type: JsonField<Type>) = apply { this.type = type }
 
                                     fun index(index: Double) = index(JsonField.of(index))
 
@@ -1568,39 +1603,48 @@ class FunctionUpdateParams constructor(
                                         this.index = index
                                     }
 
-                                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                                    fun additionalProperties(
+                                        additionalProperties: Map<String, JsonValue>
+                                    ) = apply {
                                         this.additionalProperties.clear()
                                         this.additionalProperties.putAll(additionalProperties)
                                     }
 
                                     @JsonAnySetter
-                                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                                        this.additionalProperties.put(key, value)
-                                    }
+                                    fun putAdditionalProperty(key: String, value: JsonValue) =
+                                        apply {
+                                            this.additionalProperties.put(key, value)
+                                        }
 
-                                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                                    fun putAllAdditionalProperties(
+                                        additionalProperties: Map<String, JsonValue>
+                                    ) = apply {
                                         this.additionalProperties.putAll(additionalProperties)
                                     }
 
-                                    fun build(): Scorer = Scorer(
-                                        type,
-                                        index,
-                                        additionalProperties.toUnmodifiable(),
-                                    )
+                                    fun build(): Scorer =
+                                        Scorer(
+                                            type,
+                                            index,
+                                            additionalProperties.toUnmodifiable(),
+                                        )
                                 }
 
-                                class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+                                class Type
+                                @JsonCreator
+                                private constructor(
+                                    private val value: JsonField<String>,
+                                ) : Enum {
 
                                     @com.fasterxml.jackson.annotation.JsonValue
                                     fun _value(): JsonField<String> = value
 
                                     override fun equals(other: Any?): Boolean {
-                                      if (this === other) {
-                                          return true
-                                      }
+                                        if (this === other) {
+                                            return true
+                                        }
 
-                                      return other is Type &&
-                                          this.value == other.value
+                                        return other is Type && this.value == other.value
                                     }
 
                                     override fun hashCode() = value.hashCode()
@@ -1623,33 +1667,41 @@ class FunctionUpdateParams constructor(
                                         _UNKNOWN,
                                     }
 
-                                    fun value(): Value = when (this) {
-                                        SCORER -> Value.SCORER
-                                        else -> Value._UNKNOWN
-                                    }
+                                    fun value(): Value =
+                                        when (this) {
+                                            SCORER -> Value.SCORER
+                                            else -> Value._UNKNOWN
+                                        }
 
-                                    fun known(): Known = when (this) {
-                                        SCORER -> Known.SCORER
-                                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                                    }
+                                    fun known(): Known =
+                                        when (this) {
+                                            SCORER -> Known.SCORER
+                                            else ->
+                                                throw BraintrustInvalidDataException(
+                                                    "Unknown Type: $value"
+                                                )
+                                        }
 
                                     fun asString(): String = _value().asStringOrThrow()
                                 }
                             }
                         }
 
-                        class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+                        class Type
+                        @JsonCreator
+                        private constructor(
+                            private val value: JsonField<String>,
+                        ) : Enum {
 
                             @com.fasterxml.jackson.annotation.JsonValue
                             fun _value(): JsonField<String> = value
 
                             override fun equals(other: Any?): Boolean {
-                              if (this === other) {
-                                  return true
-                              }
+                                if (this === other) {
+                                    return true
+                                }
 
-                              return other is Type &&
-                                  this.value == other.value
+                                return other is Type && this.value == other.value
                             }
 
                             override fun hashCode() = value.hashCode()
@@ -1672,15 +1724,18 @@ class FunctionUpdateParams constructor(
                                 _UNKNOWN,
                             }
 
-                            fun value(): Value = when (this) {
-                                EXPERIMENT -> Value.EXPERIMENT
-                                else -> Value._UNKNOWN
-                            }
+                            fun value(): Value =
+                                when (this) {
+                                    EXPERIMENT -> Value.EXPERIMENT
+                                    else -> Value._UNKNOWN
+                                }
 
-                            fun known(): Known = when (this) {
-                                EXPERIMENT -> Known.EXPERIMENT
-                                else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                            }
+                            fun known(): Known =
+                                when (this) {
+                                    EXPERIMENT -> Known.EXPERIMENT
+                                    else ->
+                                        throw BraintrustInvalidDataException("Unknown Type: $value")
+                                }
 
                             fun asString(): String = _value().asStringOrThrow()
                         }
@@ -1688,7 +1743,12 @@ class FunctionUpdateParams constructor(
 
                     @JsonDeserialize(builder = RuntimeContext.Builder::class)
                     @NoAutoDetect
-                    class RuntimeContext private constructor(private val runtime: JsonField<Runtime>, private val version: JsonField<String>, private val additionalProperties: Map<String, JsonValue>, ) {
+                    class RuntimeContext
+                    private constructor(
+                        private val runtime: JsonField<Runtime>,
+                        private val version: JsonField<String>,
+                        private val additionalProperties: Map<String, JsonValue>,
+                    ) {
 
                         private var validated: Boolean = false
 
@@ -1698,13 +1758,9 @@ class FunctionUpdateParams constructor(
 
                         fun version(): String = version.getRequired("version")
 
-                        @JsonProperty("runtime")
-                        @ExcludeMissing
-                        fun _runtime() = runtime
+                        @JsonProperty("runtime") @ExcludeMissing fun _runtime() = runtime
 
-                        @JsonProperty("version")
-                        @ExcludeMissing
-                        fun _version() = version
+                        @JsonProperty("version") @ExcludeMissing fun _version() = version
 
                         @JsonAnyGetter
                         @ExcludeMissing
@@ -1712,37 +1768,39 @@ class FunctionUpdateParams constructor(
 
                         fun validate(): RuntimeContext = apply {
                             if (!validated) {
-                              runtime()
-                              version()
-                              validated = true
+                                runtime()
+                                version()
+                                validated = true
                             }
                         }
 
                         fun toBuilder() = Builder().from(this)
 
                         override fun equals(other: Any?): Boolean {
-                          if (this === other) {
-                              return true
-                          }
+                            if (this === other) {
+                                return true
+                            }
 
-                          return other is RuntimeContext &&
-                              this.runtime == other.runtime &&
-                              this.version == other.version &&
-                              this.additionalProperties == other.additionalProperties
+                            return other is RuntimeContext &&
+                                this.runtime == other.runtime &&
+                                this.version == other.version &&
+                                this.additionalProperties == other.additionalProperties
                         }
 
                         override fun hashCode(): Int {
-                          if (hashCode == 0) {
-                            hashCode = Objects.hash(
-                                runtime,
-                                version,
-                                additionalProperties,
-                            )
-                          }
-                          return hashCode
+                            if (hashCode == 0) {
+                                hashCode =
+                                    Objects.hash(
+                                        runtime,
+                                        version,
+                                        additionalProperties,
+                                    )
+                            }
+                            return hashCode
                         }
 
-                        override fun toString() = "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
+                        override fun toString() =
+                            "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
 
                         companion object {
 
@@ -1753,7 +1811,8 @@ class FunctionUpdateParams constructor(
 
                             private var runtime: JsonField<Runtime> = JsonMissing.of()
                             private var version: JsonField<String> = JsonMissing.of()
-                            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
 
                             internal fun from(runtimeContext: RuntimeContext) = apply {
                                 this.runtime = runtimeContext.runtime
@@ -1777,39 +1836,44 @@ class FunctionUpdateParams constructor(
                                 this.version = version
                             }
 
-                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                                this.additionalProperties.clear()
-                                this.additionalProperties.putAll(additionalProperties)
-                            }
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    this.additionalProperties.putAll(additionalProperties)
+                                }
 
                             @JsonAnySetter
                             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                                 this.additionalProperties.put(key, value)
                             }
 
-                            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                                this.additionalProperties.putAll(additionalProperties)
-                            }
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
 
-                            fun build(): RuntimeContext = RuntimeContext(
-                                runtime,
-                                version,
-                                additionalProperties.toUnmodifiable(),
-                            )
+                            fun build(): RuntimeContext =
+                                RuntimeContext(
+                                    runtime,
+                                    version,
+                                    additionalProperties.toUnmodifiable(),
+                                )
                         }
 
-                        class Runtime @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+                        class Runtime
+                        @JsonCreator
+                        private constructor(
+                            private val value: JsonField<String>,
+                        ) : Enum {
 
                             @com.fasterxml.jackson.annotation.JsonValue
                             fun _value(): JsonField<String> = value
 
                             override fun equals(other: Any?): Boolean {
-                              if (this === other) {
-                                  return true
-                              }
+                                if (this === other) {
+                                    return true
+                                }
 
-                              return other is Runtime &&
-                                  this.value == other.value
+                                return other is Runtime && this.value == other.value
                             }
 
                             override fun hashCode() = value.hashCode()
@@ -1836,34 +1900,42 @@ class FunctionUpdateParams constructor(
                                 _UNKNOWN,
                             }
 
-                            fun value(): Value = when (this) {
-                                NODE -> Value.NODE
-                                PYTHON -> Value.PYTHON
-                                else -> Value._UNKNOWN
-                            }
+                            fun value(): Value =
+                                when (this) {
+                                    NODE -> Value.NODE
+                                    PYTHON -> Value.PYTHON
+                                    else -> Value._UNKNOWN
+                                }
 
-                            fun known(): Known = when (this) {
-                                NODE -> Known.NODE
-                                PYTHON -> Known.PYTHON
-                                else -> throw BraintrustInvalidDataException("Unknown Runtime: $value")
-                            }
+                            fun known(): Known =
+                                when (this) {
+                                    NODE -> Known.NODE
+                                    PYTHON -> Known.PYTHON
+                                    else ->
+                                        throw BraintrustInvalidDataException(
+                                            "Unknown Runtime: $value"
+                                        )
+                                }
 
                             fun asString(): String = _value().asStringOrThrow()
                         }
                     }
 
-                    class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+                    class Type
+                    @JsonCreator
+                    private constructor(
+                        private val value: JsonField<String>,
+                    ) : Enum {
 
                         @com.fasterxml.jackson.annotation.JsonValue
                         fun _value(): JsonField<String> = value
 
                         override fun equals(other: Any?): Boolean {
-                          if (this === other) {
-                              return true
-                          }
+                            if (this === other) {
+                                return true
+                            }
 
-                          return other is Type &&
-                              this.value == other.value
+                            return other is Type && this.value == other.value
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -1886,15 +1958,17 @@ class FunctionUpdateParams constructor(
                             _UNKNOWN,
                         }
 
-                        fun value(): Value = when (this) {
-                            BUNDLE -> Value.BUNDLE
-                            else -> Value._UNKNOWN
-                        }
+                        fun value(): Value =
+                            when (this) {
+                                BUNDLE -> Value.BUNDLE
+                                else -> Value._UNKNOWN
+                            }
 
-                        fun known(): Known = when (this) {
-                            BUNDLE -> Known.BUNDLE
-                            else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                        }
+                        fun known(): Known =
+                            when (this) {
+                                BUNDLE -> Known.BUNDLE
+                                else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                            }
 
                         fun asString(): String = _value().asStringOrThrow()
                     }
@@ -1902,12 +1976,12 @@ class FunctionUpdateParams constructor(
 
                 @JsonDeserialize(builder = Inline.Builder::class)
                 @NoAutoDetect
-                class Inline private constructor(
-                  private val type: JsonField<Type>,
-                  private val runtimeContext: JsonField<RuntimeContext>,
-                  private val code: JsonField<String>,
-                  private val additionalProperties: Map<String, JsonValue>,
-
+                class Inline
+                private constructor(
+                    private val type: JsonField<Type>,
+                    private val runtimeContext: JsonField<RuntimeContext>,
+                    private val code: JsonField<String>,
+                    private val additionalProperties: Map<String, JsonValue>,
                 ) {
 
                     private var validated: Boolean = false
@@ -1916,21 +1990,18 @@ class FunctionUpdateParams constructor(
 
                     fun type(): Type = type.getRequired("type")
 
-                    fun runtimeContext(): RuntimeContext = runtimeContext.getRequired("runtime_context")
+                    fun runtimeContext(): RuntimeContext =
+                        runtimeContext.getRequired("runtime_context")
 
                     fun code(): String = code.getRequired("code")
 
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    fun _type() = type
+                    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
                     @JsonProperty("runtime_context")
                     @ExcludeMissing
                     fun _runtimeContext() = runtimeContext
 
-                    @JsonProperty("code")
-                    @ExcludeMissing
-                    fun _code() = code
+                    @JsonProperty("code") @ExcludeMissing fun _code() = code
 
                     @JsonAnyGetter
                     @ExcludeMissing
@@ -1938,40 +2009,42 @@ class FunctionUpdateParams constructor(
 
                     fun validate(): Inline = apply {
                         if (!validated) {
-                          type()
-                          runtimeContext().validate()
-                          code()
-                          validated = true
+                            type()
+                            runtimeContext().validate()
+                            code()
+                            validated = true
                         }
                     }
 
                     fun toBuilder() = Builder().from(this)
 
                     override fun equals(other: Any?): Boolean {
-                      if (this === other) {
-                          return true
-                      }
+                        if (this === other) {
+                            return true
+                        }
 
-                      return other is Inline &&
-                          this.type == other.type &&
-                          this.runtimeContext == other.runtimeContext &&
-                          this.code == other.code &&
-                          this.additionalProperties == other.additionalProperties
+                        return other is Inline &&
+                            this.type == other.type &&
+                            this.runtimeContext == other.runtimeContext &&
+                            this.code == other.code &&
+                            this.additionalProperties == other.additionalProperties
                     }
 
                     override fun hashCode(): Int {
-                      if (hashCode == 0) {
-                        hashCode = Objects.hash(
-                            type,
-                            runtimeContext,
-                            code,
-                            additionalProperties,
-                        )
-                      }
-                      return hashCode
+                        if (hashCode == 0) {
+                            hashCode =
+                                Objects.hash(
+                                    type,
+                                    runtimeContext,
+                                    code,
+                                    additionalProperties,
+                                )
+                        }
+                        return hashCode
                     }
 
-                    override fun toString() = "Inline{type=$type, runtimeContext=$runtimeContext, code=$code, additionalProperties=$additionalProperties}"
+                    override fun toString() =
+                        "Inline{type=$type, runtimeContext=$runtimeContext, code=$code, additionalProperties=$additionalProperties}"
 
                     companion object {
 
@@ -1983,7 +2056,8 @@ class FunctionUpdateParams constructor(
                         private var type: JsonField<Type> = JsonMissing.of()
                         private var runtimeContext: JsonField<RuntimeContext> = JsonMissing.of()
                         private var code: JsonField<String> = JsonMissing.of()
-                        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
 
                         internal fun from(inline: Inline) = apply {
                             this.type = inline.type
@@ -1996,11 +2070,10 @@ class FunctionUpdateParams constructor(
 
                         @JsonProperty("type")
                         @ExcludeMissing
-                        fun type(type: JsonField<Type>) = apply {
-                            this.type = type
-                        }
+                        fun type(type: JsonField<Type>) = apply { this.type = type }
 
-                        fun runtimeContext(runtimeContext: RuntimeContext) = runtimeContext(JsonField.of(runtimeContext))
+                        fun runtimeContext(runtimeContext: RuntimeContext) =
+                            runtimeContext(JsonField.of(runtimeContext))
 
                         @JsonProperty("runtime_context")
                         @ExcludeMissing
@@ -2012,35 +2085,40 @@ class FunctionUpdateParams constructor(
 
                         @JsonProperty("code")
                         @ExcludeMissing
-                        fun code(code: JsonField<String>) = apply {
-                            this.code = code
-                        }
+                        fun code(code: JsonField<String>) = apply { this.code = code }
 
-                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                            this.additionalProperties.clear()
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                this.additionalProperties.putAll(additionalProperties)
+                            }
 
                         @JsonAnySetter
                         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                             this.additionalProperties.put(key, value)
                         }
 
-                        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
 
-                        fun build(): Inline = Inline(
-                            type,
-                            runtimeContext,
-                            code,
-                            additionalProperties.toUnmodifiable(),
-                        )
+                        fun build(): Inline =
+                            Inline(
+                                type,
+                                runtimeContext,
+                                code,
+                                additionalProperties.toUnmodifiable(),
+                            )
                     }
 
                     @JsonDeserialize(builder = RuntimeContext.Builder::class)
                     @NoAutoDetect
-                    class RuntimeContext private constructor(private val runtime: JsonField<Runtime>, private val version: JsonField<String>, private val additionalProperties: Map<String, JsonValue>, ) {
+                    class RuntimeContext
+                    private constructor(
+                        private val runtime: JsonField<Runtime>,
+                        private val version: JsonField<String>,
+                        private val additionalProperties: Map<String, JsonValue>,
+                    ) {
 
                         private var validated: Boolean = false
 
@@ -2050,13 +2128,9 @@ class FunctionUpdateParams constructor(
 
                         fun version(): String = version.getRequired("version")
 
-                        @JsonProperty("runtime")
-                        @ExcludeMissing
-                        fun _runtime() = runtime
+                        @JsonProperty("runtime") @ExcludeMissing fun _runtime() = runtime
 
-                        @JsonProperty("version")
-                        @ExcludeMissing
-                        fun _version() = version
+                        @JsonProperty("version") @ExcludeMissing fun _version() = version
 
                         @JsonAnyGetter
                         @ExcludeMissing
@@ -2064,37 +2138,39 @@ class FunctionUpdateParams constructor(
 
                         fun validate(): RuntimeContext = apply {
                             if (!validated) {
-                              runtime()
-                              version()
-                              validated = true
+                                runtime()
+                                version()
+                                validated = true
                             }
                         }
 
                         fun toBuilder() = Builder().from(this)
 
                         override fun equals(other: Any?): Boolean {
-                          if (this === other) {
-                              return true
-                          }
+                            if (this === other) {
+                                return true
+                            }
 
-                          return other is RuntimeContext &&
-                              this.runtime == other.runtime &&
-                              this.version == other.version &&
-                              this.additionalProperties == other.additionalProperties
+                            return other is RuntimeContext &&
+                                this.runtime == other.runtime &&
+                                this.version == other.version &&
+                                this.additionalProperties == other.additionalProperties
                         }
 
                         override fun hashCode(): Int {
-                          if (hashCode == 0) {
-                            hashCode = Objects.hash(
-                                runtime,
-                                version,
-                                additionalProperties,
-                            )
-                          }
-                          return hashCode
+                            if (hashCode == 0) {
+                                hashCode =
+                                    Objects.hash(
+                                        runtime,
+                                        version,
+                                        additionalProperties,
+                                    )
+                            }
+                            return hashCode
                         }
 
-                        override fun toString() = "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
+                        override fun toString() =
+                            "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
 
                         companion object {
 
@@ -2105,7 +2181,8 @@ class FunctionUpdateParams constructor(
 
                             private var runtime: JsonField<Runtime> = JsonMissing.of()
                             private var version: JsonField<String> = JsonMissing.of()
-                            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
 
                             internal fun from(runtimeContext: RuntimeContext) = apply {
                                 this.runtime = runtimeContext.runtime
@@ -2129,39 +2206,44 @@ class FunctionUpdateParams constructor(
                                 this.version = version
                             }
 
-                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                                this.additionalProperties.clear()
-                                this.additionalProperties.putAll(additionalProperties)
-                            }
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    this.additionalProperties.putAll(additionalProperties)
+                                }
 
                             @JsonAnySetter
                             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                                 this.additionalProperties.put(key, value)
                             }
 
-                            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                                this.additionalProperties.putAll(additionalProperties)
-                            }
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
 
-                            fun build(): RuntimeContext = RuntimeContext(
-                                runtime,
-                                version,
-                                additionalProperties.toUnmodifiable(),
-                            )
+                            fun build(): RuntimeContext =
+                                RuntimeContext(
+                                    runtime,
+                                    version,
+                                    additionalProperties.toUnmodifiable(),
+                                )
                         }
 
-                        class Runtime @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+                        class Runtime
+                        @JsonCreator
+                        private constructor(
+                            private val value: JsonField<String>,
+                        ) : Enum {
 
                             @com.fasterxml.jackson.annotation.JsonValue
                             fun _value(): JsonField<String> = value
 
                             override fun equals(other: Any?): Boolean {
-                              if (this === other) {
-                                  return true
-                              }
+                                if (this === other) {
+                                    return true
+                                }
 
-                              return other is Runtime &&
-                                  this.value == other.value
+                                return other is Runtime && this.value == other.value
                             }
 
                             override fun hashCode() = value.hashCode()
@@ -2188,34 +2270,42 @@ class FunctionUpdateParams constructor(
                                 _UNKNOWN,
                             }
 
-                            fun value(): Value = when (this) {
-                                NODE -> Value.NODE
-                                PYTHON -> Value.PYTHON
-                                else -> Value._UNKNOWN
-                            }
+                            fun value(): Value =
+                                when (this) {
+                                    NODE -> Value.NODE
+                                    PYTHON -> Value.PYTHON
+                                    else -> Value._UNKNOWN
+                                }
 
-                            fun known(): Known = when (this) {
-                                NODE -> Known.NODE
-                                PYTHON -> Known.PYTHON
-                                else -> throw BraintrustInvalidDataException("Unknown Runtime: $value")
-                            }
+                            fun known(): Known =
+                                when (this) {
+                                    NODE -> Known.NODE
+                                    PYTHON -> Known.PYTHON
+                                    else ->
+                                        throw BraintrustInvalidDataException(
+                                            "Unknown Runtime: $value"
+                                        )
+                                }
 
                             fun asString(): String = _value().asStringOrThrow()
                         }
                     }
 
-                    class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+                    class Type
+                    @JsonCreator
+                    private constructor(
+                        private val value: JsonField<String>,
+                    ) : Enum {
 
                         @com.fasterxml.jackson.annotation.JsonValue
                         fun _value(): JsonField<String> = value
 
                         override fun equals(other: Any?): Boolean {
-                          if (this === other) {
-                              return true
-                          }
+                            if (this === other) {
+                                return true
+                            }
 
-                          return other is Type &&
-                              this.value == other.value
+                            return other is Type && this.value == other.value
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -2238,33 +2328,37 @@ class FunctionUpdateParams constructor(
                             _UNKNOWN,
                         }
 
-                        fun value(): Value = when (this) {
-                            INLINE -> Value.INLINE
-                            else -> Value._UNKNOWN
-                        }
+                        fun value(): Value =
+                            when (this) {
+                                INLINE -> Value.INLINE
+                                else -> Value._UNKNOWN
+                            }
 
-                        fun known(): Known = when (this) {
-                            INLINE -> Known.INLINE
-                            else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                        }
+                        fun known(): Known =
+                            when (this) {
+                                INLINE -> Known.INLINE
+                                else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                            }
 
                         fun asString(): String = _value().asStringOrThrow()
                     }
                 }
             }
 
-            class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+            class Type
+            @JsonCreator
+            private constructor(
+                private val value: JsonField<String>,
+            ) : Enum {
 
-                @com.fasterxml.jackson.annotation.JsonValue
-                fun _value(): JsonField<String> = value
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
                 override fun equals(other: Any?): Boolean {
-                  if (this === other) {
-                      return true
-                  }
+                    if (this === other) {
+                        return true
+                    }
 
-                  return other is Type &&
-                      this.value == other.value
+                    return other is Type && this.value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -2287,15 +2381,17 @@ class FunctionUpdateParams constructor(
                     _UNKNOWN,
                 }
 
-                fun value(): Value = when (this) {
-                    CODE -> Value.CODE
-                    else -> Value._UNKNOWN
-                }
+                fun value(): Value =
+                    when (this) {
+                        CODE -> Value.CODE
+                        else -> Value._UNKNOWN
+                    }
 
-                fun known(): Known = when (this) {
-                    CODE -> Known.CODE
-                    else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                }
+                fun known(): Known =
+                    when (this) {
+                        CODE -> Known.CODE
+                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                    }
 
                 fun asString(): String = _value().asStringOrThrow()
             }
@@ -2303,7 +2399,12 @@ class FunctionUpdateParams constructor(
 
         @JsonDeserialize(builder = Global.Builder::class)
         @NoAutoDetect
-        class Global private constructor(private val type: JsonField<Type>, private val name: JsonField<String>, private val additionalProperties: Map<String, JsonValue>, ) {
+        class Global
+        private constructor(
+            private val type: JsonField<Type>,
+            private val name: JsonField<String>,
+            private val additionalProperties: Map<String, JsonValue>,
+        ) {
 
             private var validated: Boolean = false
 
@@ -2313,13 +2414,9 @@ class FunctionUpdateParams constructor(
 
             fun name(): String = name.getRequired("name")
 
-            @JsonProperty("type")
-            @ExcludeMissing
-            fun _type() = type
+            @JsonProperty("type") @ExcludeMissing fun _type() = type
 
-            @JsonProperty("name")
-            @ExcludeMissing
-            fun _name() = name
+            @JsonProperty("name") @ExcludeMissing fun _name() = name
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -2327,37 +2424,39 @@ class FunctionUpdateParams constructor(
 
             fun validate(): Global = apply {
                 if (!validated) {
-                  type()
-                  name()
-                  validated = true
+                    type()
+                    name()
+                    validated = true
                 }
             }
 
             fun toBuilder() = Builder().from(this)
 
             override fun equals(other: Any?): Boolean {
-              if (this === other) {
-                  return true
-              }
+                if (this === other) {
+                    return true
+                }
 
-              return other is Global &&
-                  this.type == other.type &&
-                  this.name == other.name &&
-                  this.additionalProperties == other.additionalProperties
+                return other is Global &&
+                    this.type == other.type &&
+                    this.name == other.name &&
+                    this.additionalProperties == other.additionalProperties
             }
 
             override fun hashCode(): Int {
-              if (hashCode == 0) {
-                hashCode = Objects.hash(
-                    type,
-                    name,
-                    additionalProperties,
-                )
-              }
-              return hashCode
+                if (hashCode == 0) {
+                    hashCode =
+                        Objects.hash(
+                            type,
+                            name,
+                            additionalProperties,
+                        )
+                }
+                return hashCode
             }
 
-            override fun toString() = "Global{type=$type, name=$name, additionalProperties=$additionalProperties}"
+            override fun toString() =
+                "Global{type=$type, name=$name, additionalProperties=$additionalProperties}"
 
             companion object {
 
@@ -2380,17 +2479,13 @@ class FunctionUpdateParams constructor(
 
                 @JsonProperty("type")
                 @ExcludeMissing
-                fun type(type: JsonField<Type>) = apply {
-                    this.type = type
-                }
+                fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 fun name(name: String) = name(JsonField.of(name))
 
                 @JsonProperty("name")
                 @ExcludeMissing
-                fun name(name: JsonField<String>) = apply {
-                    this.name = name
-                }
+                fun name(name: JsonField<String>) = apply { this.name = name }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -2402,29 +2497,33 @@ class FunctionUpdateParams constructor(
                     this.additionalProperties.put(key, value)
                 }
 
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.putAll(additionalProperties)
-                }
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
 
-                fun build(): Global = Global(
-                    type,
-                    name,
-                    additionalProperties.toUnmodifiable(),
-                )
+                fun build(): Global =
+                    Global(
+                        type,
+                        name,
+                        additionalProperties.toUnmodifiable(),
+                    )
             }
 
-            class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+            class Type
+            @JsonCreator
+            private constructor(
+                private val value: JsonField<String>,
+            ) : Enum {
 
-                @com.fasterxml.jackson.annotation.JsonValue
-                fun _value(): JsonField<String> = value
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
                 override fun equals(other: Any?): Boolean {
-                  if (this === other) {
-                      return true
-                  }
+                    if (this === other) {
+                        return true
+                    }
 
-                  return other is Type &&
-                      this.value == other.value
+                    return other is Type && this.value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -2447,15 +2546,17 @@ class FunctionUpdateParams constructor(
                     _UNKNOWN,
                 }
 
-                fun value(): Value = when (this) {
-                    GLOBAL -> Value.GLOBAL
-                    else -> Value._UNKNOWN
-                }
+                fun value(): Value =
+                    when (this) {
+                        GLOBAL -> Value.GLOBAL
+                        else -> Value._UNKNOWN
+                    }
 
-                fun known(): Known = when (this) {
-                    GLOBAL -> Known.GLOBAL
-                    else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                }
+                fun known(): Known =
+                    when (this) {
+                        GLOBAL -> Known.GLOBAL
+                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                    }
 
                 fun asString(): String = _value().asStringOrThrow()
             }
@@ -2463,7 +2564,10 @@ class FunctionUpdateParams constructor(
 
         @JsonDeserialize(builder = NullableVariant.Builder::class)
         @NoAutoDetect
-        class NullableVariant private constructor(private val additionalProperties: Map<String, JsonValue>, ) {
+        class NullableVariant
+        private constructor(
+            private val additionalProperties: Map<String, JsonValue>,
+        ) {
 
             private var validated: Boolean = false
 
@@ -2475,26 +2579,26 @@ class FunctionUpdateParams constructor(
 
             fun validate(): NullableVariant = apply {
                 if (!validated) {
-                  validated = true
+                    validated = true
                 }
             }
 
             fun toBuilder() = Builder().from(this)
 
             override fun equals(other: Any?): Boolean {
-              if (this === other) {
-                  return true
-              }
+                if (this === other) {
+                    return true
+                }
 
-              return other is NullableVariant &&
-                  this.additionalProperties == other.additionalProperties
+                return other is NullableVariant &&
+                    this.additionalProperties == other.additionalProperties
             }
 
             override fun hashCode(): Int {
-              if (hashCode == 0) {
-                hashCode = Objects.hash(additionalProperties)
-              }
-              return hashCode
+                if (hashCode == 0) {
+                    hashCode = Objects.hash(additionalProperties)
+                }
+                return hashCode
             }
 
             override fun toString() = "NullableVariant{additionalProperties=$additionalProperties}"
@@ -2522,11 +2626,13 @@ class FunctionUpdateParams constructor(
                     this.additionalProperties.put(key, value)
                 }
 
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.putAll(additionalProperties)
-                }
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
 
-                fun build(): NullableVariant = NullableVariant(additionalProperties.toUnmodifiable())
+                fun build(): NullableVariant =
+                    NullableVariant(additionalProperties.toUnmodifiable())
             }
         }
     }

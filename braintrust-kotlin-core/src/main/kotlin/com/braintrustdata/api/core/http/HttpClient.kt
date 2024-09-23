@@ -1,7 +1,7 @@
 package com.braintrustdata.api.core.http
 
-import java.lang.AutoCloseable
 import com.braintrustdata.api.core.RequestOptions
+import java.lang.AutoCloseable
 
 interface HttpClient : AutoCloseable {
 
