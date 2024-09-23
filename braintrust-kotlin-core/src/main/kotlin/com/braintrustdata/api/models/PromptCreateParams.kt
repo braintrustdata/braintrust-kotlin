@@ -2,52 +2,33 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
+import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import org.apache.hc.core5.http.ContentType
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Objects
-import java.util.Optional
-import java.util.UUID
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.MultipartFormValue
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.ContentTypes
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 
-class PromptCreateParams constructor(
-  private val name: String,
-  private val projectId: String,
-  private val slug: String,
-  private val description: String?,
-  private val functionType: FunctionType?,
-  private val promptData: PromptData?,
-  private val tags: List<String>?,
-  private val additionalQueryParams: Map<String, List<String>>,
-  private val additionalHeaders: Map<String, List<String>>,
-  private val additionalBodyProperties: Map<String, JsonValue>,
-
+class PromptCreateParams
+constructor(
+    private val name: String,
+    private val projectId: String,
+    private val slug: String,
+    private val description: String?,
+    private val functionType: FunctionType?,
+    private val promptData: PromptData?,
+    private val tags: List<String>?,
+    private val additionalQueryParams: Map<String, List<String>>,
+    private val additionalHeaders: Map<String, List<String>>,
+    private val additionalBodyProperties: Map<String, JsonValue>,
 ) {
 
     fun name(): String = name
@@ -65,16 +46,16 @@ class PromptCreateParams constructor(
     fun tags(): List<String>? = tags
 
     internal fun getBody(): PromptCreateBody {
-      return PromptCreateBody(
-          name,
-          projectId,
-          slug,
-          description,
-          functionType,
-          promptData,
-          tags,
-          additionalBodyProperties,
-      )
+        return PromptCreateBody(
+            name,
+            projectId,
+            slug,
+            description,
+            functionType,
+            promptData,
+            tags,
+            additionalBodyProperties,
+        )
     }
 
     internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -83,46 +64,39 @@ class PromptCreateParams constructor(
 
     @JsonDeserialize(builder = PromptCreateBody.Builder::class)
     @NoAutoDetect
-    class PromptCreateBody internal constructor(
-      private val name: String?,
-      private val projectId: String?,
-      private val slug: String?,
-      private val description: String?,
-      private val functionType: FunctionType?,
-      private val promptData: PromptData?,
-      private val tags: List<String>?,
-      private val additionalProperties: Map<String, JsonValue>,
-
+    class PromptCreateBody
+    internal constructor(
+        private val name: String?,
+        private val projectId: String?,
+        private val slug: String?,
+        private val description: String?,
+        private val functionType: FunctionType?,
+        private val promptData: PromptData?,
+        private val tags: List<String>?,
+        private val additionalProperties: Map<String, JsonValue>,
     ) {
 
         private var hashCode: Int = 0
 
         /** Name of the prompt */
-        @JsonProperty("name")
-        fun name(): String? = name
+        @JsonProperty("name") fun name(): String? = name
 
         /** Unique identifier for the project that the prompt belongs under */
-        @JsonProperty("project_id")
-        fun projectId(): String? = projectId
+        @JsonProperty("project_id") fun projectId(): String? = projectId
 
         /** Unique identifier for the prompt */
-        @JsonProperty("slug")
-        fun slug(): String? = slug
+        @JsonProperty("slug") fun slug(): String? = slug
 
         /** Textual description of the prompt */
-        @JsonProperty("description")
-        fun description(): String? = description
+        @JsonProperty("description") fun description(): String? = description
 
-        @JsonProperty("function_type")
-        fun functionType(): FunctionType? = functionType
+        @JsonProperty("function_type") fun functionType(): FunctionType? = functionType
 
         /** The prompt, model, and its parameters */
-        @JsonProperty("prompt_data")
-        fun promptData(): PromptData? = promptData
+        @JsonProperty("prompt_data") fun promptData(): PromptData? = promptData
 
         /** A list of tags for the prompt */
-        @JsonProperty("tags")
-        fun tags(): List<String>? = tags
+        @JsonProperty("tags") fun tags(): List<String>? = tags
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -131,38 +105,40 @@ class PromptCreateParams constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is PromptCreateBody &&
-              this.name == other.name &&
-              this.projectId == other.projectId &&
-              this.slug == other.slug &&
-              this.description == other.description &&
-              this.functionType == other.functionType &&
-              this.promptData == other.promptData &&
-              this.tags == other.tags &&
-              this.additionalProperties == other.additionalProperties
+            return other is PromptCreateBody &&
+                this.name == other.name &&
+                this.projectId == other.projectId &&
+                this.slug == other.slug &&
+                this.description == other.description &&
+                this.functionType == other.functionType &&
+                this.promptData == other.promptData &&
+                this.tags == other.tags &&
+                this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-          if (hashCode == 0) {
-            hashCode = Objects.hash(
-                name,
-                projectId,
-                slug,
-                description,
-                functionType,
-                promptData,
-                tags,
-                additionalProperties,
-            )
-          }
-          return hashCode
+            if (hashCode == 0) {
+                hashCode =
+                    Objects.hash(
+                        name,
+                        projectId,
+                        slug,
+                        description,
+                        functionType,
+                        promptData,
+                        tags,
+                        additionalProperties,
+                    )
+            }
+            return hashCode
         }
 
-        override fun toString() = "PromptCreateBody{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "PromptCreateBody{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -192,28 +168,18 @@ class PromptCreateParams constructor(
             }
 
             /** Name of the prompt */
-            @JsonProperty("name")
-            fun name(name: String) = apply {
-                this.name = name
-            }
+            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
 
             /** Unique identifier for the project that the prompt belongs under */
             @JsonProperty("project_id")
-            fun projectId(projectId: String) = apply {
-                this.projectId = projectId
-            }
+            fun projectId(projectId: String) = apply { this.projectId = projectId }
 
             /** Unique identifier for the prompt */
-            @JsonProperty("slug")
-            fun slug(slug: String) = apply {
-                this.slug = slug
-            }
+            @JsonProperty("slug") fun slug(slug: String) = apply { this.slug = slug }
 
             /** Textual description of the prompt */
             @JsonProperty("description")
-            fun description(description: String) = apply {
-                this.description = description
-            }
+            fun description(description: String) = apply { this.description = description }
 
             @JsonProperty("function_type")
             fun functionType(functionType: FunctionType) = apply {
@@ -222,15 +188,10 @@ class PromptCreateParams constructor(
 
             /** The prompt, model, and its parameters */
             @JsonProperty("prompt_data")
-            fun promptData(promptData: PromptData) = apply {
-                this.promptData = promptData
-            }
+            fun promptData(promptData: PromptData) = apply { this.promptData = promptData }
 
             /** A list of tags for the prompt */
-            @JsonProperty("tags")
-            fun tags(tags: List<String>) = apply {
-                this.tags = tags
-            }
+            @JsonProperty("tags") fun tags(tags: List<String>) = apply { this.tags = tags }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -246,22 +207,17 @@ class PromptCreateParams constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): PromptCreateBody = PromptCreateBody(
-                checkNotNull(name) {
-                    "`name` is required but was not set"
-                },
-                checkNotNull(projectId) {
-                    "`projectId` is required but was not set"
-                },
-                checkNotNull(slug) {
-                    "`slug` is required but was not set"
-                },
-                description,
-                functionType,
-                promptData,
-                tags?.toUnmodifiable(),
-                additionalProperties.toUnmodifiable(),
-            )
+            fun build(): PromptCreateBody =
+                PromptCreateBody(
+                    checkNotNull(name) { "`name` is required but was not set" },
+                    checkNotNull(projectId) { "`projectId` is required but was not set" },
+                    checkNotNull(slug) { "`slug` is required but was not set" },
+                    description,
+                    functionType,
+                    promptData,
+                    tags?.toUnmodifiable(),
+                    additionalProperties.toUnmodifiable(),
+                )
         }
     }
 
@@ -272,39 +228,40 @@ class PromptCreateParams constructor(
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return other is PromptCreateParams &&
-          this.name == other.name &&
-          this.projectId == other.projectId &&
-          this.slug == other.slug &&
-          this.description == other.description &&
-          this.functionType == other.functionType &&
-          this.promptData == other.promptData &&
-          this.tags == other.tags &&
-          this.additionalQueryParams == other.additionalQueryParams &&
-          this.additionalHeaders == other.additionalHeaders &&
-          this.additionalBodyProperties == other.additionalBodyProperties
+        return other is PromptCreateParams &&
+            this.name == other.name &&
+            this.projectId == other.projectId &&
+            this.slug == other.slug &&
+            this.description == other.description &&
+            this.functionType == other.functionType &&
+            this.promptData == other.promptData &&
+            this.tags == other.tags &&
+            this.additionalQueryParams == other.additionalQueryParams &&
+            this.additionalHeaders == other.additionalHeaders &&
+            this.additionalBodyProperties == other.additionalBodyProperties
     }
 
     override fun hashCode(): Int {
-      return Objects.hash(
-          name,
-          projectId,
-          slug,
-          description,
-          functionType,
-          promptData,
-          tags,
-          additionalQueryParams,
-          additionalHeaders,
-          additionalBodyProperties,
-      )
+        return Objects.hash(
+            name,
+            projectId,
+            slug,
+            description,
+            functionType,
+            promptData,
+            tags,
+            additionalQueryParams,
+            additionalHeaders,
+            additionalBodyProperties,
+        )
     }
 
-    override fun toString() = "PromptCreateParams{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+    override fun toString() =
+        "PromptCreateParams{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -341,33 +298,21 @@ class PromptCreateParams constructor(
         }
 
         /** Name of the prompt */
-        fun name(name: String) = apply {
-            this.name = name
-        }
+        fun name(name: String) = apply { this.name = name }
 
         /** Unique identifier for the project that the prompt belongs under */
-        fun projectId(projectId: String) = apply {
-            this.projectId = projectId
-        }
+        fun projectId(projectId: String) = apply { this.projectId = projectId }
 
         /** Unique identifier for the prompt */
-        fun slug(slug: String) = apply {
-            this.slug = slug
-        }
+        fun slug(slug: String) = apply { this.slug = slug }
 
         /** Textual description of the prompt */
-        fun description(description: String) = apply {
-            this.description = description
-        }
+        fun description(description: String) = apply { this.description = description }
 
-        fun functionType(functionType: FunctionType) = apply {
-            this.functionType = functionType
-        }
+        fun functionType(functionType: FunctionType) = apply { this.functionType = functionType }
 
         /** The prompt, model, and its parameters */
-        fun promptData(promptData: PromptData) = apply {
-            this.promptData = promptData
-        }
+        fun promptData(promptData: PromptData) = apply { this.promptData = promptData }
 
         /** A list of tags for the prompt */
         fun tags(tags: List<String>) = apply {
@@ -376,9 +321,7 @@ class PromptCreateParams constructor(
         }
 
         /** A list of tags for the prompt */
-        fun addTag(tag: String) = apply {
-            this.tags.add(tag)
-        }
+        fun addTag(tag: String) = apply { this.tags.add(tag) }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -418,9 +361,7 @@ class PromptCreateParams constructor(
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply {
-            this.additionalHeaders.put(name, mutableListOf())
-        }
+        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             this.additionalBodyProperties.clear()
@@ -431,42 +372,40 @@ class PromptCreateParams constructor(
             this.additionalBodyProperties.put(key, value)
         }
 
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                this.additionalBodyProperties.putAll(additionalBodyProperties)
+            }
 
-        fun build(): PromptCreateParams = PromptCreateParams(
-            checkNotNull(name) {
-                "`name` is required but was not set"
-            },
-            checkNotNull(projectId) {
-                "`projectId` is required but was not set"
-            },
-            checkNotNull(slug) {
-                "`slug` is required but was not set"
-            },
-            description,
-            functionType,
-            promptData,
-            if(tags.size == 0) null else tags.toUnmodifiable(),
-            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-            additionalBodyProperties.toUnmodifiable(),
-        )
+        fun build(): PromptCreateParams =
+            PromptCreateParams(
+                checkNotNull(name) { "`name` is required but was not set" },
+                checkNotNull(projectId) { "`projectId` is required but was not set" },
+                checkNotNull(slug) { "`slug` is required but was not set" },
+                description,
+                functionType,
+                promptData,
+                if (tags.size == 0) null else tags.toUnmodifiable(),
+                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalBodyProperties.toUnmodifiable(),
+            )
     }
 
-    class FunctionType @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+    class FunctionType
+    @JsonCreator
+    private constructor(
+        private val value: JsonField<String>,
+    ) : Enum {
 
-        @com.fasterxml.jackson.annotation.JsonValue
-        fun _value(): JsonField<String> = value
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is FunctionType &&
-              this.value == other.value
+            return other is FunctionType && this.value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -497,19 +436,21 @@ class PromptCreateParams constructor(
             _UNKNOWN,
         }
 
-        fun value(): Value = when (this) {
-            TASK -> Value.TASK
-            LLM -> Value.LLM
-            SCORER -> Value.SCORER
-            else -> Value._UNKNOWN
-        }
+        fun value(): Value =
+            when (this) {
+                TASK -> Value.TASK
+                LLM -> Value.LLM
+                SCORER -> Value.SCORER
+                else -> Value._UNKNOWN
+            }
 
-        fun known(): Known = when (this) {
-            TASK -> Known.TASK
-            LLM -> Known.LLM
-            SCORER -> Known.SCORER
-            else -> throw BraintrustInvalidDataException("Unknown FunctionType: $value")
-        }
+        fun known(): Known =
+            when (this) {
+                TASK -> Known.TASK
+                LLM -> Known.LLM
+                SCORER -> Known.SCORER
+                else -> throw BraintrustInvalidDataException("Unknown FunctionType: $value")
+            }
 
         fun asString(): String = _value().asStringOrThrow()
     }

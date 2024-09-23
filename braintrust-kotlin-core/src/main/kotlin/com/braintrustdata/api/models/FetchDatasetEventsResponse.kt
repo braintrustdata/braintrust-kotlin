@@ -2,40 +2,26 @@
 
 package com.braintrustdata.api.models
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Objects
-import java.util.Optional
-import java.util.UUID
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.getOrThrow
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.JsonNull
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
+import com.braintrustdata.api.core.toUnmodifiable
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Objects
 
 @JsonDeserialize(builder = FetchDatasetEventsResponse.Builder::class)
 @NoAutoDetect
-class FetchDatasetEventsResponse private constructor(private val events: JsonField<List<DatasetEvent>>, private val cursor: JsonField<String>, private val additionalProperties: Map<String, JsonValue>, ) {
+class FetchDatasetEventsResponse
+private constructor(
+    private val events: JsonField<List<DatasetEvent>>,
+    private val cursor: JsonField<String>,
+    private val additionalProperties: Map<String, JsonValue>,
+) {
 
     private var validated: Boolean = false
 
@@ -47,25 +33,21 @@ class FetchDatasetEventsResponse private constructor(private val events: JsonFie
     /**
      * Pagination cursor
      *
-     * Pass this string directly as the `cursor` param to your next fetch request to
-     * get the next page of results. Not provided if the returned result set is empty.
+     * Pass this string directly as the `cursor` param to your next fetch request to get the next
+     * page of results. Not provided if the returned result set is empty.
      */
     fun cursor(): String? = cursor.getNullable("cursor")
 
     /** A list of fetched events */
-    @JsonProperty("events")
-    @ExcludeMissing
-    fun _events() = events
+    @JsonProperty("events") @ExcludeMissing fun _events() = events
 
     /**
      * Pagination cursor
      *
-     * Pass this string directly as the `cursor` param to your next fetch request to
-     * get the next page of results. Not provided if the returned result set is empty.
+     * Pass this string directly as the `cursor` param to your next fetch request to get the next
+     * page of results. Not provided if the returned result set is empty.
      */
-    @JsonProperty("cursor")
-    @ExcludeMissing
-    fun _cursor() = cursor
+    @JsonProperty("cursor") @ExcludeMissing fun _cursor() = cursor
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -73,37 +55,39 @@ class FetchDatasetEventsResponse private constructor(private val events: JsonFie
 
     fun validate(): FetchDatasetEventsResponse = apply {
         if (!validated) {
-          events().forEach { it.validate() }
-          cursor()
-          validated = true
+            events().forEach { it.validate() }
+            cursor()
+            validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return other is FetchDatasetEventsResponse &&
-          this.events == other.events &&
-          this.cursor == other.cursor &&
-          this.additionalProperties == other.additionalProperties
+        return other is FetchDatasetEventsResponse &&
+            this.events == other.events &&
+            this.cursor == other.cursor &&
+            this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-      if (hashCode == 0) {
-        hashCode = Objects.hash(
-            events,
-            cursor,
-            additionalProperties,
-        )
-      }
-      return hashCode
+        if (hashCode == 0) {
+            hashCode =
+                Objects.hash(
+                    events,
+                    cursor,
+                    additionalProperties,
+                )
+        }
+        return hashCode
     }
 
-    override fun toString() = "FetchDatasetEventsResponse{events=$events, cursor=$cursor, additionalProperties=$additionalProperties}"
+    override fun toString() =
+        "FetchDatasetEventsResponse{events=$events, cursor=$cursor, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -128,29 +112,25 @@ class FetchDatasetEventsResponse private constructor(private val events: JsonFie
         /** A list of fetched events */
         @JsonProperty("events")
         @ExcludeMissing
-        fun events(events: JsonField<List<DatasetEvent>>) = apply {
-            this.events = events
-        }
+        fun events(events: JsonField<List<DatasetEvent>>) = apply { this.events = events }
 
         /**
          * Pagination cursor
          *
-         * Pass this string directly as the `cursor` param to your next fetch request to
-         * get the next page of results. Not provided if the returned result set is empty.
+         * Pass this string directly as the `cursor` param to your next fetch request to get the
+         * next page of results. Not provided if the returned result set is empty.
          */
         fun cursor(cursor: String) = cursor(JsonField.of(cursor))
 
         /**
          * Pagination cursor
          *
-         * Pass this string directly as the `cursor` param to your next fetch request to
-         * get the next page of results. Not provided if the returned result set is empty.
+         * Pass this string directly as the `cursor` param to your next fetch request to get the
+         * next page of results. Not provided if the returned result set is empty.
          */
         @JsonProperty("cursor")
         @ExcludeMissing
-        fun cursor(cursor: JsonField<String>) = apply {
-            this.cursor = cursor
-        }
+        fun cursor(cursor: JsonField<String>) = apply { this.cursor = cursor }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -166,10 +146,11 @@ class FetchDatasetEventsResponse private constructor(private val events: JsonFie
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): FetchDatasetEventsResponse = FetchDatasetEventsResponse(
-            events.map { it.toUnmodifiable() },
-            cursor,
-            additionalProperties.toUnmodifiable(),
-        )
+        fun build(): FetchDatasetEventsResponse =
+            FetchDatasetEventsResponse(
+                events.map { it.toUnmodifiable() },
+                cursor,
+                additionalProperties.toUnmodifiable(),
+            )
     }
 }

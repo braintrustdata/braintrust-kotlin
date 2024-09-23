@@ -2,52 +2,37 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import java.time.LocalDate
 import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Objects
-import java.util.Optional
-import java.util.UUID
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.JsonNull
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
 
 @JsonDeserialize(builder = View.Builder::class)
 @NoAutoDetect
-class View private constructor(
-  private val id: JsonField<String>,
-  private val objectType: JsonField<ObjectType>,
-  private val objectId: JsonField<String>,
-  private val viewType: JsonField<ViewType>,
-  private val name: JsonField<String>,
-  private val created: JsonField<OffsetDateTime>,
-  private val viewData: JsonField<ViewData>,
-  private val options: JsonField<ViewOptions>,
-  private val userId: JsonField<String>,
-  private val deletedAt: JsonField<OffsetDateTime>,
-  private val additionalProperties: Map<String, JsonValue>,
-
+class View
+private constructor(
+    private val id: JsonField<String>,
+    private val objectType: JsonField<ObjectType>,
+    private val objectId: JsonField<String>,
+    private val viewType: JsonField<ViewType>,
+    private val name: JsonField<String>,
+    private val created: JsonField<OffsetDateTime>,
+    private val viewData: JsonField<ViewData>,
+    private val options: JsonField<ViewOptions>,
+    private val userId: JsonField<String>,
+    private val deletedAt: JsonField<OffsetDateTime>,
+    private val additionalProperties: Map<String, JsonValue>,
 ) {
 
     private var validated: Boolean = false
@@ -85,54 +70,34 @@ class View private constructor(
     fun deletedAt(): OffsetDateTime? = deletedAt.getNullable("deleted_at")
 
     /** Unique identifier for the view */
-    @JsonProperty("id")
-    @ExcludeMissing
-    fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id() = id
 
     /** The object type that the ACL applies to */
-    @JsonProperty("object_type")
-    @ExcludeMissing
-    fun _objectType() = objectType
+    @JsonProperty("object_type") @ExcludeMissing fun _objectType() = objectType
 
     /** The id of the object the view applies to */
-    @JsonProperty("object_id")
-    @ExcludeMissing
-    fun _objectId() = objectId
+    @JsonProperty("object_id") @ExcludeMissing fun _objectId() = objectId
 
     /** Type of table that the view corresponds to. */
-    @JsonProperty("view_type")
-    @ExcludeMissing
-    fun _viewType() = viewType
+    @JsonProperty("view_type") @ExcludeMissing fun _viewType() = viewType
 
     /** Name of the view */
-    @JsonProperty("name")
-    @ExcludeMissing
-    fun _name() = name
+    @JsonProperty("name") @ExcludeMissing fun _name() = name
 
     /** Date of view creation */
-    @JsonProperty("created")
-    @ExcludeMissing
-    fun _created() = created
+    @JsonProperty("created") @ExcludeMissing fun _created() = created
 
     /** The view definition */
-    @JsonProperty("view_data")
-    @ExcludeMissing
-    fun _viewData() = viewData
+    @JsonProperty("view_data") @ExcludeMissing fun _viewData() = viewData
 
     /** Options for the view in the app */
-    @JsonProperty("options")
-    @ExcludeMissing
-    fun _options() = options
+    @JsonProperty("options") @ExcludeMissing fun _options() = options
 
     /** Identifies the user who created the view */
-    @JsonProperty("user_id")
-    @ExcludeMissing
-    fun _userId() = userId
+    @JsonProperty("user_id") @ExcludeMissing fun _userId() = userId
 
     /** Date of role deletion, or null if the role is still active */
-    @JsonProperty("deleted_at")
-    @ExcludeMissing
-    fun _deletedAt() = deletedAt
+    @JsonProperty("deleted_at") @ExcludeMissing fun _deletedAt() = deletedAt
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -140,61 +105,63 @@ class View private constructor(
 
     fun validate(): View = apply {
         if (!validated) {
-          id()
-          objectType()
-          objectId()
-          viewType()
-          name()
-          created()
-          viewData()?.validate()
-          options()?.validate()
-          userId()
-          deletedAt()
-          validated = true
+            id()
+            objectType()
+            objectId()
+            viewType()
+            name()
+            created()
+            viewData()?.validate()
+            options()?.validate()
+            userId()
+            deletedAt()
+            validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return other is View &&
-          this.id == other.id &&
-          this.objectType == other.objectType &&
-          this.objectId == other.objectId &&
-          this.viewType == other.viewType &&
-          this.name == other.name &&
-          this.created == other.created &&
-          this.viewData == other.viewData &&
-          this.options == other.options &&
-          this.userId == other.userId &&
-          this.deletedAt == other.deletedAt &&
-          this.additionalProperties == other.additionalProperties
+        return other is View &&
+            this.id == other.id &&
+            this.objectType == other.objectType &&
+            this.objectId == other.objectId &&
+            this.viewType == other.viewType &&
+            this.name == other.name &&
+            this.created == other.created &&
+            this.viewData == other.viewData &&
+            this.options == other.options &&
+            this.userId == other.userId &&
+            this.deletedAt == other.deletedAt &&
+            this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-      if (hashCode == 0) {
-        hashCode = Objects.hash(
-            id,
-            objectType,
-            objectId,
-            viewType,
-            name,
-            created,
-            viewData,
-            options,
-            userId,
-            deletedAt,
-            additionalProperties,
-        )
-      }
-      return hashCode
+        if (hashCode == 0) {
+            hashCode =
+                Objects.hash(
+                    id,
+                    objectType,
+                    objectId,
+                    viewType,
+                    name,
+                    created,
+                    viewData,
+                    options,
+                    userId,
+                    deletedAt,
+                    additionalProperties,
+                )
+        }
+        return hashCode
     }
 
-    override fun toString() = "View{id=$id, objectType=$objectType, objectId=$objectId, viewType=$viewType, name=$name, created=$created, viewData=$viewData, options=$options, userId=$userId, deletedAt=$deletedAt, additionalProperties=$additionalProperties}"
+    override fun toString() =
+        "View{id=$id, objectType=$objectType, objectId=$objectId, viewType=$viewType, name=$name, created=$created, viewData=$viewData, options=$options, userId=$userId, deletedAt=$deletedAt, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -233,11 +200,7 @@ class View private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** Unique identifier for the view */
-        @JsonProperty("id")
-        @ExcludeMissing
-        fun id(id: JsonField<String>) = apply {
-            this.id = id
-        }
+        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The object type that the ACL applies to */
         fun objectType(objectType: ObjectType) = objectType(JsonField.of(objectType))
@@ -245,9 +208,7 @@ class View private constructor(
         /** The object type that the ACL applies to */
         @JsonProperty("object_type")
         @ExcludeMissing
-        fun objectType(objectType: JsonField<ObjectType>) = apply {
-            this.objectType = objectType
-        }
+        fun objectType(objectType: JsonField<ObjectType>) = apply { this.objectType = objectType }
 
         /** The id of the object the view applies to */
         fun objectId(objectId: String) = objectId(JsonField.of(objectId))
@@ -255,9 +216,7 @@ class View private constructor(
         /** The id of the object the view applies to */
         @JsonProperty("object_id")
         @ExcludeMissing
-        fun objectId(objectId: JsonField<String>) = apply {
-            this.objectId = objectId
-        }
+        fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
 
         /** Type of table that the view corresponds to. */
         fun viewType(viewType: ViewType) = viewType(JsonField.of(viewType))
@@ -265,9 +224,7 @@ class View private constructor(
         /** Type of table that the view corresponds to. */
         @JsonProperty("view_type")
         @ExcludeMissing
-        fun viewType(viewType: JsonField<ViewType>) = apply {
-            this.viewType = viewType
-        }
+        fun viewType(viewType: JsonField<ViewType>) = apply { this.viewType = viewType }
 
         /** Name of the view */
         fun name(name: String) = name(JsonField.of(name))
@@ -275,9 +232,7 @@ class View private constructor(
         /** Name of the view */
         @JsonProperty("name")
         @ExcludeMissing
-        fun name(name: JsonField<String>) = apply {
-            this.name = name
-        }
+        fun name(name: JsonField<String>) = apply { this.name = name }
 
         /** Date of view creation */
         fun created(created: OffsetDateTime) = created(JsonField.of(created))
@@ -285,9 +240,7 @@ class View private constructor(
         /** Date of view creation */
         @JsonProperty("created")
         @ExcludeMissing
-        fun created(created: JsonField<OffsetDateTime>) = apply {
-            this.created = created
-        }
+        fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
 
         /** The view definition */
         fun viewData(viewData: ViewData) = viewData(JsonField.of(viewData))
@@ -295,9 +248,7 @@ class View private constructor(
         /** The view definition */
         @JsonProperty("view_data")
         @ExcludeMissing
-        fun viewData(viewData: JsonField<ViewData>) = apply {
-            this.viewData = viewData
-        }
+        fun viewData(viewData: JsonField<ViewData>) = apply { this.viewData = viewData }
 
         /** Options for the view in the app */
         fun options(options: ViewOptions) = options(JsonField.of(options))
@@ -305,9 +256,7 @@ class View private constructor(
         /** Options for the view in the app */
         @JsonProperty("options")
         @ExcludeMissing
-        fun options(options: JsonField<ViewOptions>) = apply {
-            this.options = options
-        }
+        fun options(options: JsonField<ViewOptions>) = apply { this.options = options }
 
         /** Identifies the user who created the view */
         fun userId(userId: String) = userId(JsonField.of(userId))
@@ -315,9 +264,7 @@ class View private constructor(
         /** Identifies the user who created the view */
         @JsonProperty("user_id")
         @ExcludeMissing
-        fun userId(userId: JsonField<String>) = apply {
-            this.userId = userId
-        }
+        fun userId(userId: JsonField<String>) = apply { this.userId = userId }
 
         /** Date of role deletion, or null if the role is still active */
         fun deletedAt(deletedAt: OffsetDateTime) = deletedAt(JsonField.of(deletedAt))
@@ -325,9 +272,7 @@ class View private constructor(
         /** Date of role deletion, or null if the role is still active */
         @JsonProperty("deleted_at")
         @ExcludeMissing
-        fun deletedAt(deletedAt: JsonField<OffsetDateTime>) = apply {
-            this.deletedAt = deletedAt
-        }
+        fun deletedAt(deletedAt: JsonField<OffsetDateTime>) = apply { this.deletedAt = deletedAt }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -343,33 +288,36 @@ class View private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): View = View(
-            id,
-            objectType,
-            objectId,
-            viewType,
-            name,
-            created,
-            viewData,
-            options,
-            userId,
-            deletedAt,
-            additionalProperties.toUnmodifiable(),
-        )
+        fun build(): View =
+            View(
+                id,
+                objectType,
+                objectId,
+                viewType,
+                name,
+                created,
+                viewData,
+                options,
+                userId,
+                deletedAt,
+                additionalProperties.toUnmodifiable(),
+            )
     }
 
-    class ObjectType @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+    class ObjectType
+    @JsonCreator
+    private constructor(
+        private val value: JsonField<String>,
+    ) : Enum {
 
-        @com.fasterxml.jackson.annotation.JsonValue
-        fun _value(): JsonField<String> = value
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is ObjectType &&
-              this.value == other.value
+            return other is ObjectType && this.value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -432,51 +380,55 @@ class View private constructor(
             _UNKNOWN,
         }
 
-        fun value(): Value = when (this) {
-            ORGANIZATION -> Value.ORGANIZATION
-            PROJECT -> Value.PROJECT
-            EXPERIMENT -> Value.EXPERIMENT
-            DATASET -> Value.DATASET
-            PROMPT -> Value.PROMPT
-            PROMPT_SESSION -> Value.PROMPT_SESSION
-            GROUP -> Value.GROUP
-            ROLE -> Value.ROLE
-            ORG_MEMBER -> Value.ORG_MEMBER
-            PROJECT_LOG -> Value.PROJECT_LOG
-            ORG_PROJECT -> Value.ORG_PROJECT
-            else -> Value._UNKNOWN
-        }
+        fun value(): Value =
+            when (this) {
+                ORGANIZATION -> Value.ORGANIZATION
+                PROJECT -> Value.PROJECT
+                EXPERIMENT -> Value.EXPERIMENT
+                DATASET -> Value.DATASET
+                PROMPT -> Value.PROMPT
+                PROMPT_SESSION -> Value.PROMPT_SESSION
+                GROUP -> Value.GROUP
+                ROLE -> Value.ROLE
+                ORG_MEMBER -> Value.ORG_MEMBER
+                PROJECT_LOG -> Value.PROJECT_LOG
+                ORG_PROJECT -> Value.ORG_PROJECT
+                else -> Value._UNKNOWN
+            }
 
-        fun known(): Known = when (this) {
-            ORGANIZATION -> Known.ORGANIZATION
-            PROJECT -> Known.PROJECT
-            EXPERIMENT -> Known.EXPERIMENT
-            DATASET -> Known.DATASET
-            PROMPT -> Known.PROMPT
-            PROMPT_SESSION -> Known.PROMPT_SESSION
-            GROUP -> Known.GROUP
-            ROLE -> Known.ROLE
-            ORG_MEMBER -> Known.ORG_MEMBER
-            PROJECT_LOG -> Known.PROJECT_LOG
-            ORG_PROJECT -> Known.ORG_PROJECT
-            else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
-        }
+        fun known(): Known =
+            when (this) {
+                ORGANIZATION -> Known.ORGANIZATION
+                PROJECT -> Known.PROJECT
+                EXPERIMENT -> Known.EXPERIMENT
+                DATASET -> Known.DATASET
+                PROMPT -> Known.PROMPT
+                PROMPT_SESSION -> Known.PROMPT_SESSION
+                GROUP -> Known.GROUP
+                ROLE -> Known.ROLE
+                ORG_MEMBER -> Known.ORG_MEMBER
+                PROJECT_LOG -> Known.PROJECT_LOG
+                ORG_PROJECT -> Known.ORG_PROJECT
+                else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
+            }
 
         fun asString(): String = _value().asStringOrThrow()
     }
 
-    class ViewType @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+    class ViewType
+    @JsonCreator
+    private constructor(
+        private val value: JsonField<String>,
+    ) : Enum {
 
-        @com.fasterxml.jackson.annotation.JsonValue
-        fun _value(): JsonField<String> = value
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is ViewType &&
-              this.value == other.value
+            return other is ViewType && this.value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -527,29 +479,31 @@ class View private constructor(
             _UNKNOWN,
         }
 
-        fun value(): Value = when (this) {
-            PROJECTS -> Value.PROJECTS
-            LOGS -> Value.LOGS
-            EXPERIMENTS -> Value.EXPERIMENTS
-            DATASETS -> Value.DATASETS
-            PROMPTS -> Value.PROMPTS
-            PLAYGROUNDS -> Value.PLAYGROUNDS
-            EXPERIMENT -> Value.EXPERIMENT
-            DATASET -> Value.DATASET
-            else -> Value._UNKNOWN
-        }
+        fun value(): Value =
+            when (this) {
+                PROJECTS -> Value.PROJECTS
+                LOGS -> Value.LOGS
+                EXPERIMENTS -> Value.EXPERIMENTS
+                DATASETS -> Value.DATASETS
+                PROMPTS -> Value.PROMPTS
+                PLAYGROUNDS -> Value.PLAYGROUNDS
+                EXPERIMENT -> Value.EXPERIMENT
+                DATASET -> Value.DATASET
+                else -> Value._UNKNOWN
+            }
 
-        fun known(): Known = when (this) {
-            PROJECTS -> Known.PROJECTS
-            LOGS -> Known.LOGS
-            EXPERIMENTS -> Known.EXPERIMENTS
-            DATASETS -> Known.DATASETS
-            PROMPTS -> Known.PROMPTS
-            PLAYGROUNDS -> Known.PLAYGROUNDS
-            EXPERIMENT -> Known.EXPERIMENT
-            DATASET -> Known.DATASET
-            else -> throw BraintrustInvalidDataException("Unknown ViewType: $value")
-        }
+        fun known(): Known =
+            when (this) {
+                PROJECTS -> Known.PROJECTS
+                LOGS -> Known.LOGS
+                EXPERIMENTS -> Known.EXPERIMENTS
+                DATASETS -> Known.DATASETS
+                PROMPTS -> Known.PROMPTS
+                PLAYGROUNDS -> Known.PLAYGROUNDS
+                EXPERIMENT -> Known.EXPERIMENT
+                DATASET -> Known.DATASET
+                else -> throw BraintrustInvalidDataException("Unknown ViewType: $value")
+            }
 
         fun asString(): String = _value().asStringOrThrow()
     }
