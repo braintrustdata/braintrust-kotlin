@@ -2,29 +2,17 @@
 
 package com.braintrustdata.api.client
 
-import java.time.Duration
-import java.util.Base64
-import java.util.Optional
-import java.util.concurrent.CompletableFuture
 import com.braintrustdata.api.core.ClientOptions
-import com.braintrustdata.api.core.http.HttpMethod
-import com.braintrustdata.api.core.http.HttpRequest
 import com.braintrustdata.api.core.http.HttpResponse.Handler
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.errors.BraintrustError
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.braintrustdata.api.models.*
 import com.braintrustdata.api.services.async.*
-import com.braintrustdata.api.services.emptyHandler
 import com.braintrustdata.api.services.errorHandler
-import com.braintrustdata.api.services.json
-import com.braintrustdata.api.services.jsonHandler
-import com.braintrustdata.api.services.stringHandler
-import com.braintrustdata.api.services.binaryHandler
-import com.braintrustdata.api.services.withErrorHandler
 
-class BraintrustClientAsyncImpl constructor(private val clientOptions: ClientOptions, ) : BraintrustClientAsync {
+class BraintrustClientAsyncImpl
+constructor(
+    private val clientOptions: ClientOptions,
+) : BraintrustClientAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -34,7 +22,9 @@ class BraintrustClientAsyncImpl constructor(private val clientOptions: ClientOpt
 
     private val project: ProjectServiceAsync by lazy { ProjectServiceAsyncImpl(clientOptions) }
 
-    private val experiment: ExperimentServiceAsync by lazy { ExperimentServiceAsyncImpl(clientOptions) }
+    private val experiment: ExperimentServiceAsync by lazy {
+        ExperimentServiceAsyncImpl(clientOptions)
+    }
 
     private val dataset: DatasetServiceAsync by lazy { DatasetServiceAsyncImpl(clientOptions) }
 
@@ -48,19 +38,29 @@ class BraintrustClientAsyncImpl constructor(private val clientOptions: ClientOpt
 
     private val user: UserServiceAsync by lazy { UserServiceAsyncImpl(clientOptions) }
 
-    private val projectScore: ProjectScoreServiceAsync by lazy { ProjectScoreServiceAsyncImpl(clientOptions) }
+    private val projectScore: ProjectScoreServiceAsync by lazy {
+        ProjectScoreServiceAsyncImpl(clientOptions)
+    }
 
-    private val projectTag: ProjectTagServiceAsync by lazy { ProjectTagServiceAsyncImpl(clientOptions) }
+    private val projectTag: ProjectTagServiceAsync by lazy {
+        ProjectTagServiceAsyncImpl(clientOptions)
+    }
 
     private val function: FunctionServiceAsync by lazy { FunctionServiceAsyncImpl(clientOptions) }
 
     private val view: ViewServiceAsync by lazy { ViewServiceAsyncImpl(clientOptions) }
 
-    private val organization: OrganizationServiceAsync by lazy { OrganizationServiceAsyncImpl(clientOptions) }
+    private val organization: OrganizationServiceAsync by lazy {
+        OrganizationServiceAsyncImpl(clientOptions)
+    }
 
-    private val apiKeyResource: ApiKeyResourceServiceAsync by lazy { ApiKeyResourceServiceAsyncImpl(clientOptions) }
+    private val apiKeyResource: ApiKeyResourceServiceAsync by lazy {
+        ApiKeyResourceServiceAsyncImpl(clientOptions)
+    }
 
-    private val orgSecret: OrgSecretServiceAsync by lazy { OrgSecretServiceAsyncImpl(clientOptions) }
+    private val orgSecret: OrgSecretServiceAsync by lazy {
+        OrgSecretServiceAsyncImpl(clientOptions)
+    }
 
     override fun sync(): BraintrustClient = sync
 

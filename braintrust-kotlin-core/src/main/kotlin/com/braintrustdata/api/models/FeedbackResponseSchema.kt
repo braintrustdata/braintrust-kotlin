@@ -2,40 +2,28 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Objects
-import java.util.Optional
-import java.util.UUID
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.JsonNull
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
 
 @JsonDeserialize(builder = FeedbackResponseSchema.Builder::class)
 @NoAutoDetect
-class FeedbackResponseSchema private constructor(private val status: JsonField<Status>, private val additionalProperties: Map<String, JsonValue>, ) {
+class FeedbackResponseSchema
+private constructor(
+    private val status: JsonField<Status>,
+    private val additionalProperties: Map<String, JsonValue>,
+) {
 
     private var validated: Boolean = false
 
@@ -43,9 +31,7 @@ class FeedbackResponseSchema private constructor(private val status: JsonField<S
 
     fun status(): Status = status.getRequired("status")
 
-    @JsonProperty("status")
-    @ExcludeMissing
-    fun _status() = status
+    @JsonProperty("status") @ExcludeMissing fun _status() = status
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -53,31 +39,32 @@ class FeedbackResponseSchema private constructor(private val status: JsonField<S
 
     fun validate(): FeedbackResponseSchema = apply {
         if (!validated) {
-          status()
-          validated = true
+            status()
+            validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return other is FeedbackResponseSchema &&
-          this.status == other.status &&
-          this.additionalProperties == other.additionalProperties
+        return other is FeedbackResponseSchema &&
+            this.status == other.status &&
+            this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-      if (hashCode == 0) {
-        hashCode = Objects.hash(status, additionalProperties)
-      }
-      return hashCode
+        if (hashCode == 0) {
+            hashCode = Objects.hash(status, additionalProperties)
+        }
+        return hashCode
     }
 
-    override fun toString() = "FeedbackResponseSchema{status=$status, additionalProperties=$additionalProperties}"
+    override fun toString() =
+        "FeedbackResponseSchema{status=$status, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -98,9 +85,7 @@ class FeedbackResponseSchema private constructor(private val status: JsonField<S
 
         @JsonProperty("status")
         @ExcludeMissing
-        fun status(status: JsonField<Status>) = apply {
-            this.status = status
-        }
+        fun status(status: JsonField<Status>) = apply { this.status = status }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -116,21 +101,24 @@ class FeedbackResponseSchema private constructor(private val status: JsonField<S
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): FeedbackResponseSchema = FeedbackResponseSchema(status, additionalProperties.toUnmodifiable())
+        fun build(): FeedbackResponseSchema =
+            FeedbackResponseSchema(status, additionalProperties.toUnmodifiable())
     }
 
-    class Status @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+    class Status
+    @JsonCreator
+    private constructor(
+        private val value: JsonField<String>,
+    ) : Enum {
 
-        @com.fasterxml.jackson.annotation.JsonValue
-        fun _value(): JsonField<String> = value
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is Status &&
-              this.value == other.value
+            return other is Status && this.value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -153,15 +141,17 @@ class FeedbackResponseSchema private constructor(private val status: JsonField<S
             _UNKNOWN,
         }
 
-        fun value(): Value = when (this) {
-            SUCCESS -> Value.SUCCESS
-            else -> Value._UNKNOWN
-        }
+        fun value(): Value =
+            when (this) {
+                SUCCESS -> Value.SUCCESS
+                else -> Value._UNKNOWN
+            }
 
-        fun known(): Known = when (this) {
-            SUCCESS -> Known.SUCCESS
-            else -> throw BraintrustInvalidDataException("Unknown Status: $value")
-        }
+        fun known(): Known =
+            when (this) {
+                SUCCESS -> Known.SUCCESS
+                else -> throw BraintrustInvalidDataException("Unknown Status: $value")
+            }
 
         fun asString(): String = _value().asStringOrThrow()
     }

@@ -2,46 +2,27 @@
 
 package com.braintrustdata.api.models
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Objects
-import java.util.Optional
-import java.util.UUID
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.getOrThrow
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.JsonNull
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
+import com.braintrustdata.api.core.toUnmodifiable
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Objects
 
 @JsonDeserialize(builder = ViewDataSearch.Builder::class)
 @NoAutoDetect
-class ViewDataSearch private constructor(
-  private val filter: JsonField<List<JsonValue>>,
-  private val tag: JsonField<List<JsonValue>>,
-  private val match: JsonField<List<JsonValue>>,
-  private val sort: JsonField<List<JsonValue>>,
-  private val additionalProperties: Map<String, JsonValue>,
-
+class ViewDataSearch
+private constructor(
+    private val filter: JsonField<List<JsonValue>>,
+    private val tag: JsonField<List<JsonValue>>,
+    private val match: JsonField<List<JsonValue>>,
+    private val sort: JsonField<List<JsonValue>>,
+    private val additionalProperties: Map<String, JsonValue>,
 ) {
 
     private var validated: Boolean = false
@@ -56,21 +37,13 @@ class ViewDataSearch private constructor(
 
     fun sort(): List<JsonValue>? = sort.getNullable("sort")
 
-    @JsonProperty("filter")
-    @ExcludeMissing
-    fun _filter() = filter
+    @JsonProperty("filter") @ExcludeMissing fun _filter() = filter
 
-    @JsonProperty("tag")
-    @ExcludeMissing
-    fun _tag() = tag
+    @JsonProperty("tag") @ExcludeMissing fun _tag() = tag
 
-    @JsonProperty("match")
-    @ExcludeMissing
-    fun _match() = match
+    @JsonProperty("match") @ExcludeMissing fun _match() = match
 
-    @JsonProperty("sort")
-    @ExcludeMissing
-    fun _sort() = sort
+    @JsonProperty("sort") @ExcludeMissing fun _sort() = sort
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -78,43 +51,45 @@ class ViewDataSearch private constructor(
 
     fun validate(): ViewDataSearch = apply {
         if (!validated) {
-          filter()
-          tag()
-          match()
-          sort()
-          validated = true
+            filter()
+            tag()
+            match()
+            sort()
+            validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return other is ViewDataSearch &&
-          this.filter == other.filter &&
-          this.tag == other.tag &&
-          this.match == other.match &&
-          this.sort == other.sort &&
-          this.additionalProperties == other.additionalProperties
+        return other is ViewDataSearch &&
+            this.filter == other.filter &&
+            this.tag == other.tag &&
+            this.match == other.match &&
+            this.sort == other.sort &&
+            this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-      if (hashCode == 0) {
-        hashCode = Objects.hash(
-            filter,
-            tag,
-            match,
-            sort,
-            additionalProperties,
-        )
-      }
-      return hashCode
+        if (hashCode == 0) {
+            hashCode =
+                Objects.hash(
+                    filter,
+                    tag,
+                    match,
+                    sort,
+                    additionalProperties,
+                )
+        }
+        return hashCode
     }
 
-    override fun toString() = "ViewDataSearch{filter=$filter, tag=$tag, match=$match, sort=$sort, additionalProperties=$additionalProperties}"
+    override fun toString() =
+        "ViewDataSearch{filter=$filter, tag=$tag, match=$match, sort=$sort, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -141,33 +116,25 @@ class ViewDataSearch private constructor(
 
         @JsonProperty("filter")
         @ExcludeMissing
-        fun filter(filter: JsonField<List<JsonValue>>) = apply {
-            this.filter = filter
-        }
+        fun filter(filter: JsonField<List<JsonValue>>) = apply { this.filter = filter }
 
         fun tag(tag: List<JsonValue>) = tag(JsonField.of(tag))
 
         @JsonProperty("tag")
         @ExcludeMissing
-        fun tag(tag: JsonField<List<JsonValue>>) = apply {
-            this.tag = tag
-        }
+        fun tag(tag: JsonField<List<JsonValue>>) = apply { this.tag = tag }
 
         fun match(match: List<JsonValue>) = match(JsonField.of(match))
 
         @JsonProperty("match")
         @ExcludeMissing
-        fun match(match: JsonField<List<JsonValue>>) = apply {
-            this.match = match
-        }
+        fun match(match: JsonField<List<JsonValue>>) = apply { this.match = match }
 
         fun sort(sort: List<JsonValue>) = sort(JsonField.of(sort))
 
         @JsonProperty("sort")
         @ExcludeMissing
-        fun sort(sort: JsonField<List<JsonValue>>) = apply {
-            this.sort = sort
-        }
+        fun sort(sort: JsonField<List<JsonValue>>) = apply { this.sort = sort }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -183,12 +150,13 @@ class ViewDataSearch private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): ViewDataSearch = ViewDataSearch(
-            filter.map { it.toUnmodifiable() },
-            tag.map { it.toUnmodifiable() },
-            match.map { it.toUnmodifiable() },
-            sort.map { it.toUnmodifiable() },
-            additionalProperties.toUnmodifiable(),
-        )
+        fun build(): ViewDataSearch =
+            ViewDataSearch(
+                filter.map { it.toUnmodifiable() },
+                tag.map { it.toUnmodifiable() },
+                match.map { it.toUnmodifiable() },
+                sort.map { it.toUnmodifiable() },
+                additionalProperties.toUnmodifiable(),
+            )
     }
 }
