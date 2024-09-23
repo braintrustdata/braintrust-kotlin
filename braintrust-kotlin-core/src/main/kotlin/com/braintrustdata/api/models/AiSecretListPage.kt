@@ -8,79 +8,73 @@ import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.services.async.OrgSecretServiceAsync
+import com.braintrustdata.api.services.blocking.AiSecretService
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 
-class OrgSecretListPageAsync
+class AiSecretListPage
 private constructor(
-    private val orgSecretService: OrgSecretServiceAsync,
-    private val params: OrgSecretListParams,
+    private val aiSecretService: AiSecretService,
+    private val params: AiSecretListParams,
     private val response: Response,
 ) {
 
     fun response(): Response = response
 
-    fun objects(): List<OrgSecret> = response().objects()
+    fun objects(): List<AISecret> = response().objects()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return other is OrgSecretListPageAsync &&
-            this.orgSecretService == other.orgSecretService &&
+        return other is AiSecretListPage &&
+            this.aiSecretService == other.aiSecretService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            orgSecretService,
+            aiSecretService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "OrgSecretListPageAsync{orgSecretService=$orgSecretService, params=$params, response=$response}"
+        "AiSecretListPage{aiSecretService=$aiSecretService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
     }
 
-    fun getNextPageParams(): OrgSecretListParams? {
+    fun getNextPageParams(): AiSecretListParams? {
         if (!hasNextPage()) {
             return null
         }
 
         return if (params.endingBefore() != null) {
-            OrgSecretListParams.builder().from(params).endingBefore(objects().first().id()).build()
+            AiSecretListParams.builder().from(params).endingBefore(objects().first().id()).build()
         } else {
-            OrgSecretListParams.builder().from(params).startingAfter(objects().last().id()).build()
+            AiSecretListParams.builder().from(params).startingAfter(objects().last().id()).build()
         }
     }
 
-    suspend fun getNextPage(): OrgSecretListPageAsync? {
-        return getNextPageParams()?.let { orgSecretService.list(it) }
+    fun getNextPage(): AiSecretListPage? {
+        return getNextPageParams()?.let { aiSecretService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
     companion object {
 
-        fun of(
-            orgSecretService: OrgSecretServiceAsync,
-            params: OrgSecretListParams,
-            response: Response
-        ) =
-            OrgSecretListPageAsync(
-                orgSecretService,
+        fun of(aiSecretService: AiSecretService, params: AiSecretListParams, response: Response) =
+            AiSecretListPage(
+                aiSecretService,
                 params,
                 response,
             )
@@ -90,15 +84,15 @@ private constructor(
     @NoAutoDetect
     class Response
     constructor(
-        private val objects: JsonField<List<OrgSecret>>,
+        private val objects: JsonField<List<AISecret>>,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
         private var validated: Boolean = false
 
-        fun objects(): List<OrgSecret> = objects.getNullable("objects") ?: listOf()
+        fun objects(): List<AISecret> = objects.getNullable("objects") ?: listOf()
 
-        @JsonProperty("objects") fun _objects(): JsonField<List<OrgSecret>>? = objects
+        @JsonProperty("objects") fun _objects(): JsonField<List<AISecret>>? = objects
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -128,7 +122,7 @@ private constructor(
         }
 
         override fun toString() =
-            "OrgSecretListPageAsync.Response{objects=$objects, additionalProperties=$additionalProperties}"
+            "AiSecretListPage.Response{objects=$objects, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -137,7 +131,7 @@ private constructor(
 
         class Builder {
 
-            private var objects: JsonField<List<OrgSecret>> = JsonMissing.of()
+            private var objects: JsonField<List<AISecret>> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(page: Response) = apply {
@@ -145,10 +139,10 @@ private constructor(
                 this.additionalProperties.putAll(page.additionalProperties)
             }
 
-            fun objects(objects: List<OrgSecret>) = objects(JsonField.of(objects))
+            fun objects(objects: List<AISecret>) = objects(JsonField.of(objects))
 
             @JsonProperty("objects")
-            fun objects(objects: JsonField<List<OrgSecret>>) = apply { this.objects = objects }
+            fun objects(objects: JsonField<List<AISecret>>) = apply { this.objects = objects }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
@@ -161,15 +155,15 @@ private constructor(
 
     class AutoPager
     constructor(
-        private val firstPage: OrgSecretListPageAsync,
-    ) : Flow<OrgSecret> {
+        private val firstPage: AiSecretListPage,
+    ) : Sequence<AISecret> {
 
-        override suspend fun collect(collector: FlowCollector<OrgSecret>) {
+        override fun iterator(): Iterator<AISecret> = iterator {
             var page = firstPage
             var index = 0
             while (true) {
                 while (index < page.objects().size) {
-                    collector.emit(page.objects()[index++])
+                    yield(page.objects()[index++])
                 }
                 page = page.getNextPage() ?: break
                 index = 0

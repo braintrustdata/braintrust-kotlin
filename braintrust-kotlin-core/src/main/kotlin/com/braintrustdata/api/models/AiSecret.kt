@@ -15,9 +15,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.time.OffsetDateTime
 import java.util.Objects
 
-@JsonDeserialize(builder = OrgSecret.Builder::class)
+@JsonDeserialize(builder = AISecret.Builder::class)
 @NoAutoDetect
-class OrgSecret
+class AISecret
 private constructor(
     private val id: JsonField<String>,
     private val created: JsonField<OffsetDateTime>,
@@ -33,16 +33,16 @@ private constructor(
 
     private var hashCode: Int = 0
 
-    /** Unique identifier for the org secret */
+    /** Unique identifier for the AI secret */
     fun id(): String = id.getRequired("id")
 
-    /** Date of org secret creation */
+    /** Date of AI secret creation */
     fun created(): OffsetDateTime? = created.getNullable("created")
 
     /** Unique identifier for the organization */
     fun orgId(): String = orgId.getRequired("org_id")
 
-    /** Name of the org secret */
+    /** Name of the AI secret */
     fun name(): String = name.getRequired("name")
 
     fun type(): String? = type.getNullable("type")
@@ -51,16 +51,16 @@ private constructor(
 
     fun previewSecret(): String? = previewSecret.getNullable("preview_secret")
 
-    /** Unique identifier for the org secret */
+    /** Unique identifier for the AI secret */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
 
-    /** Date of org secret creation */
+    /** Date of AI secret creation */
     @JsonProperty("created") @ExcludeMissing fun _created() = created
 
     /** Unique identifier for the organization */
     @JsonProperty("org_id") @ExcludeMissing fun _orgId() = orgId
 
-    /** Name of the org secret */
+    /** Name of the AI secret */
     @JsonProperty("name") @ExcludeMissing fun _name() = name
 
     @JsonProperty("type") @ExcludeMissing fun _type() = type
@@ -73,7 +73,7 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
-    fun validate(): OrgSecret = apply {
+    fun validate(): AISecret = apply {
         if (!validated) {
             id()
             created()
@@ -93,7 +93,7 @@ private constructor(
             return true
         }
 
-        return other is OrgSecret &&
+        return other is AISecret &&
             this.id == other.id &&
             this.created == other.created &&
             this.orgId == other.orgId &&
@@ -122,7 +122,7 @@ private constructor(
     }
 
     override fun toString() =
-        "OrgSecret{id=$id, created=$created, orgId=$orgId, name=$name, type=$type, metadata=$metadata, previewSecret=$previewSecret, additionalProperties=$additionalProperties}"
+        "AISecret{id=$id, created=$created, orgId=$orgId, name=$name, type=$type, metadata=$metadata, previewSecret=$previewSecret, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -140,27 +140,27 @@ private constructor(
         private var previewSecret: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        internal fun from(orgSecret: OrgSecret) = apply {
-            this.id = orgSecret.id
-            this.created = orgSecret.created
-            this.orgId = orgSecret.orgId
-            this.name = orgSecret.name
-            this.type = orgSecret.type
-            this.metadata = orgSecret.metadata
-            this.previewSecret = orgSecret.previewSecret
-            additionalProperties(orgSecret.additionalProperties)
+        internal fun from(aiSecret: AISecret) = apply {
+            this.id = aiSecret.id
+            this.created = aiSecret.created
+            this.orgId = aiSecret.orgId
+            this.name = aiSecret.name
+            this.type = aiSecret.type
+            this.metadata = aiSecret.metadata
+            this.previewSecret = aiSecret.previewSecret
+            additionalProperties(aiSecret.additionalProperties)
         }
 
-        /** Unique identifier for the org secret */
+        /** Unique identifier for the AI secret */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** Unique identifier for the org secret */
+        /** Unique identifier for the AI secret */
         @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** Date of org secret creation */
+        /** Date of AI secret creation */
         fun created(created: OffsetDateTime) = created(JsonField.of(created))
 
-        /** Date of org secret creation */
+        /** Date of AI secret creation */
         @JsonProperty("created")
         @ExcludeMissing
         fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
@@ -173,10 +173,10 @@ private constructor(
         @ExcludeMissing
         fun orgId(orgId: JsonField<String>) = apply { this.orgId = orgId }
 
-        /** Name of the org secret */
+        /** Name of the AI secret */
         fun name(name: String) = name(JsonField.of(name))
 
-        /** Name of the org secret */
+        /** Name of the AI secret */
         @JsonProperty("name")
         @ExcludeMissing
         fun name(name: JsonField<String>) = apply { this.name = name }
@@ -215,8 +215,8 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): OrgSecret =
-            OrgSecret(
+        fun build(): AISecret =
+            AISecret(
                 id,
                 created,
                 orgId,
