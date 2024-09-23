@@ -198,16 +198,14 @@ constructor(
         fun scoreType(scoreType: ScoreType) = apply { this.scoreType = scoreType }
 
         /** The type of the configured score */
-        fun scoreType(projectScoreSingle: ScoreType.ProjectScoreSingle) = apply {
-            this.scoreType = ScoreType.ofProjectScoreSingle(projectScoreSingle)
+        fun scoreType(unionMember0: ScoreType.UnionMember0) = apply {
+            this.scoreType = ScoreType.ofUnionMember0(unionMember0)
         }
 
         /** The type of the configured score */
-        fun scoreType(unnamedSchemaWithArrayParent0s: List<UnnamedSchemaWithArrayParent0?>) =
-            apply {
-                this.scoreType =
-                    ScoreType.ofUnnamedSchemaWithArrayParent0s(unnamedSchemaWithArrayParent0s)
-            }
+        fun scoreType(projectScoreTypes: List<ProjectScoreType?>) = apply {
+            this.scoreType = ScoreType.ofProjectScoreTypes(projectScoreTypes)
+        }
 
         /**
          * Pagination cursor id.
@@ -391,43 +389,40 @@ constructor(
     @JsonSerialize(using = ScoreType.Serializer::class)
     class ScoreType
     private constructor(
-        private val projectScoreSingle: ProjectScoreSingle? = null,
-        private val unnamedSchemaWithArrayParent1s: List<UnnamedSchemaWithArrayParent1?>? = null,
+        private val unionMember0: UnionMember0? = null,
+        private val projectScoreTypes: List<ProjectScoreType?>? = null,
         private val _json: JsonValue? = null,
     ) {
 
         private var validated: Boolean = false
 
         /** The type of the configured score */
-        fun projectScoreSingle(): ProjectScoreSingle? = projectScoreSingle
+        fun unionMember0(): UnionMember0? = unionMember0
         /** The type of the configured score */
-        fun unnamedSchemaWithArrayParent1s(): List<UnnamedSchemaWithArrayParent1?>? =
-            unnamedSchemaWithArrayParent1s
+        fun projectScoreTypes(): List<ProjectScoreType?>? = projectScoreTypes
 
-        fun isProjectScoreSingle(): Boolean = projectScoreSingle != null
+        fun isUnionMember0(): Boolean = unionMember0 != null
 
-        fun isUnnamedSchemaWithArrayParent1s(): Boolean = unnamedSchemaWithArrayParent1s != null
+        fun isProjectScoreTypes(): Boolean = projectScoreTypes != null
 
-        fun asProjectScoreSingle(): ProjectScoreSingle =
-            projectScoreSingle.getOrThrow("projectScoreSingle")
+        fun asUnionMember0(): UnionMember0 = unionMember0.getOrThrow("unionMember0")
 
-        fun asUnnamedSchemaWithArrayParent1s(): List<UnnamedSchemaWithArrayParent1?> =
-            unnamedSchemaWithArrayParent1s.getOrThrow("unnamedSchemaWithArrayParent1s")
+        fun asProjectScoreTypes(): List<ProjectScoreType?> =
+            projectScoreTypes.getOrThrow("projectScoreTypes")
 
         fun _json(): JsonValue? = _json
 
         fun <T> accept(visitor: Visitor<T>): T {
             return when {
-                projectScoreSingle != null -> visitor.visitProjectScoreSingle(projectScoreSingle)
-                unnamedSchemaWithArrayParent1s != null ->
-                    visitor.visitUnnamedSchemaWithArrayParent1s(unnamedSchemaWithArrayParent1s)
+                unionMember0 != null -> visitor.visitUnionMember0(unionMember0)
+                projectScoreTypes != null -> visitor.visitProjectScoreTypes(projectScoreTypes)
                 else -> visitor.unknown(_json)
             }
         }
 
         fun validate(): ScoreType = apply {
             if (!validated) {
-                if (projectScoreSingle == null && unnamedSchemaWithArrayParent1s == null) {
+                if (unionMember0 == null && projectScoreTypes == null) {
                     throw BraintrustInvalidDataException("Unknown ScoreType: $_json")
                 }
                 validated = true
@@ -440,19 +435,18 @@ constructor(
             }
 
             return other is ScoreType &&
-                this.projectScoreSingle == other.projectScoreSingle &&
-                this.unnamedSchemaWithArrayParent1s == other.unnamedSchemaWithArrayParent1s
+                this.unionMember0 == other.unionMember0 &&
+                this.projectScoreTypes == other.projectScoreTypes
         }
 
         override fun hashCode(): Int {
-            return Objects.hash(projectScoreSingle, unnamedSchemaWithArrayParent1s)
+            return Objects.hash(unionMember0, projectScoreTypes)
         }
 
         override fun toString(): String {
             return when {
-                projectScoreSingle != null -> "ScoreType{projectScoreSingle=$projectScoreSingle}"
-                unnamedSchemaWithArrayParent1s != null ->
-                    "ScoreType{unnamedSchemaWithArrayParent1s=$unnamedSchemaWithArrayParent1s}"
+                unionMember0 != null -> "ScoreType{unionMember0=$unionMember0}"
+                projectScoreTypes != null -> "ScoreType{projectScoreTypes=$projectScoreTypes}"
                 _json != null -> "ScoreType{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid ScoreType")
             }
@@ -460,21 +454,17 @@ constructor(
 
         companion object {
 
-            fun ofProjectScoreSingle(projectScoreSingle: ProjectScoreSingle) =
-                ScoreType(projectScoreSingle = projectScoreSingle)
+            fun ofUnionMember0(unionMember0: UnionMember0) = ScoreType(unionMember0 = unionMember0)
 
-            fun ofUnnamedSchemaWithArrayParent1s(
-                unnamedSchemaWithArrayParent1s: List<UnnamedSchemaWithArrayParent1?>
-            ) = ScoreType(unnamedSchemaWithArrayParent1s = unnamedSchemaWithArrayParent1s)
+            fun ofProjectScoreTypes(projectScoreTypes: List<ProjectScoreType?>) =
+                ScoreType(projectScoreTypes = projectScoreTypes)
         }
 
         interface Visitor<out T> {
 
-            fun visitProjectScoreSingle(projectScoreSingle: ProjectScoreSingle): T
+            fun visitUnionMember0(unionMember0: UnionMember0): T
 
-            fun visitUnnamedSchemaWithArrayParent1s(
-                unnamedSchemaWithArrayParent1s: List<UnnamedSchemaWithArrayParent1?>
-            ): T
+            fun visitProjectScoreTypes(projectScoreTypes: List<ProjectScoreType?>): T
 
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown ScoreType: $json")
@@ -485,11 +475,11 @@ constructor(
 
             override fun ObjectCodec.deserialize(node: JsonNode): ScoreType {
                 val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<ProjectScoreSingle>())?.let {
-                    return ScoreType(projectScoreSingle = it, _json = json)
+                tryDeserialize(node, jacksonTypeRef<UnionMember0>())?.let {
+                    return ScoreType(unionMember0 = it, _json = json)
                 }
-                tryDeserialize(node, jacksonTypeRef<List<UnnamedSchemaWithArrayParent1?>>())?.let {
-                    return ScoreType(unnamedSchemaWithArrayParent1s = it, _json = json)
+                tryDeserialize(node, jacksonTypeRef<List<ProjectScoreType?>>())?.let {
+                    return ScoreType(projectScoreTypes = it, _json = json)
                 }
 
                 return ScoreType(_json = json)
@@ -504,17 +494,16 @@ constructor(
                 provider: SerializerProvider
             ) {
                 when {
-                    value.projectScoreSingle != null ->
-                        generator.writeObject(value.projectScoreSingle)
-                    value.unnamedSchemaWithArrayParent1s != null ->
-                        generator.writeObject(value.unnamedSchemaWithArrayParent1s)
+                    value.unionMember0 != null -> generator.writeObject(value.unionMember0)
+                    value.projectScoreTypes != null ->
+                        generator.writeObject(value.projectScoreTypes)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid ScoreType")
                 }
             }
         }
 
-        class ProjectScoreSingle
+        class UnionMember0
         @JsonCreator
         private constructor(
             private val value: JsonField<String>,
@@ -527,7 +516,7 @@ constructor(
                     return true
                 }
 
-                return other is ProjectScoreSingle && this.value == other.value
+                return other is UnionMember0 && this.value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -536,17 +525,17 @@ constructor(
 
             companion object {
 
-                val SLIDER = ProjectScoreSingle(JsonField.of("slider"))
+                val SLIDER = UnionMember0(JsonField.of("slider"))
 
-                val CATEGORICAL = ProjectScoreSingle(JsonField.of("categorical"))
+                val CATEGORICAL = UnionMember0(JsonField.of("categorical"))
 
-                val WEIGHTED = ProjectScoreSingle(JsonField.of("weighted"))
+                val WEIGHTED = UnionMember0(JsonField.of("weighted"))
 
-                val MINIMUM = ProjectScoreSingle(JsonField.of("minimum"))
+                val MINIMUM = UnionMember0(JsonField.of("minimum"))
 
-                val ONLINE = ProjectScoreSingle(JsonField.of("online"))
+                val ONLINE = UnionMember0(JsonField.of("online"))
 
-                fun of(value: String) = ProjectScoreSingle(JsonField.of(value))
+                fun of(value: String) = UnionMember0(JsonField.of(value))
             }
 
             enum class Known {
@@ -583,14 +572,13 @@ constructor(
                     WEIGHTED -> Known.WEIGHTED
                     MINIMUM -> Known.MINIMUM
                     ONLINE -> Known.ONLINE
-                    else ->
-                        throw BraintrustInvalidDataException("Unknown ProjectScoreSingle: $value")
+                    else -> throw BraintrustInvalidDataException("Unknown UnionMember0: $value")
                 }
 
             fun asString(): String = _value().asStringOrThrow()
         }
 
-        class UnnamedSchemaWithArrayParent1
+        class ProjectScoreType
         @JsonCreator
         private constructor(
             private val value: JsonField<String>,
@@ -603,7 +591,7 @@ constructor(
                     return true
                 }
 
-                return other is UnnamedSchemaWithArrayParent1 && this.value == other.value
+                return other is ProjectScoreType && this.value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -612,17 +600,17 @@ constructor(
 
             companion object {
 
-                val SLIDER = UnnamedSchemaWithArrayParent1(JsonField.of("slider"))
+                val SLIDER = ProjectScoreType(JsonField.of("slider"))
 
-                val CATEGORICAL = UnnamedSchemaWithArrayParent1(JsonField.of("categorical"))
+                val CATEGORICAL = ProjectScoreType(JsonField.of("categorical"))
 
-                val WEIGHTED = UnnamedSchemaWithArrayParent1(JsonField.of("weighted"))
+                val WEIGHTED = ProjectScoreType(JsonField.of("weighted"))
 
-                val MINIMUM = UnnamedSchemaWithArrayParent1(JsonField.of("minimum"))
+                val MINIMUM = ProjectScoreType(JsonField.of("minimum"))
 
-                val ONLINE = UnnamedSchemaWithArrayParent1(JsonField.of("online"))
+                val ONLINE = ProjectScoreType(JsonField.of("online"))
 
-                fun of(value: String) = UnnamedSchemaWithArrayParent1(JsonField.of(value))
+                fun of(value: String) = ProjectScoreType(JsonField.of(value))
             }
 
             enum class Known {
@@ -659,10 +647,7 @@ constructor(
                     WEIGHTED -> Known.WEIGHTED
                     MINIMUM -> Known.MINIMUM
                     ONLINE -> Known.ONLINE
-                    else ->
-                        throw BraintrustInvalidDataException(
-                            "Unknown UnnamedSchemaWithArrayParent1: $value"
-                        )
+                    else -> throw BraintrustInvalidDataException("Unknown ProjectScoreType: $value")
                 }
 
             fun asString(): String = _value().asStringOrThrow()
