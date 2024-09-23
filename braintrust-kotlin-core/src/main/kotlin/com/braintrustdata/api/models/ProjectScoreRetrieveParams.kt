@@ -2,41 +2,17 @@
 
 package com.braintrustdata.api.models
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import org.apache.hc.core5.http.ContentType
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Objects
-import java.util.Optional
-import java.util.UUID
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.MultipartFormValue
-import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.ContentTypes
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
+import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.models.*
+import java.util.Objects
 
-class ProjectScoreRetrieveParams constructor(private val projectScoreId: String, private val additionalQueryParams: Map<String, List<String>>, private val additionalHeaders: Map<String, List<String>>, ) {
+class ProjectScoreRetrieveParams
+constructor(
+    private val projectScoreId: String,
+    private val additionalQueryParams: Map<String, List<String>>,
+    private val additionalHeaders: Map<String, List<String>>,
+) {
 
     fun projectScoreId(): String = projectScoreId
 
@@ -45,10 +21,10 @@ class ProjectScoreRetrieveParams constructor(private val projectScoreId: String,
     internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
 
     fun getPathParam(index: Int): String {
-      return when (index) {
-          0 -> projectScoreId
-          else -> ""
-      }
+        return when (index) {
+            0 -> projectScoreId
+            else -> ""
+        }
     }
 
     fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -56,25 +32,26 @@ class ProjectScoreRetrieveParams constructor(private val projectScoreId: String,
     fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return other is ProjectScoreRetrieveParams &&
-          this.projectScoreId == other.projectScoreId &&
-          this.additionalQueryParams == other.additionalQueryParams &&
-          this.additionalHeaders == other.additionalHeaders
+        return other is ProjectScoreRetrieveParams &&
+            this.projectScoreId == other.projectScoreId &&
+            this.additionalQueryParams == other.additionalQueryParams &&
+            this.additionalHeaders == other.additionalHeaders
     }
 
     override fun hashCode(): Int {
-      return Objects.hash(
-          projectScoreId,
-          additionalQueryParams,
-          additionalHeaders,
-      )
+        return Objects.hash(
+            projectScoreId,
+            additionalQueryParams,
+            additionalHeaders,
+        )
     }
 
-    override fun toString() = "ProjectScoreRetrieveParams{projectScoreId=$projectScoreId, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
+    override fun toString() =
+        "ProjectScoreRetrieveParams{projectScoreId=$projectScoreId, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -97,9 +74,7 @@ class ProjectScoreRetrieveParams constructor(private val projectScoreId: String,
         }
 
         /** ProjectScore id */
-        fun projectScoreId(projectScoreId: String) = apply {
-            this.projectScoreId = projectScoreId
-        }
+        fun projectScoreId(projectScoreId: String) = apply { this.projectScoreId = projectScoreId }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -139,16 +114,13 @@ class ProjectScoreRetrieveParams constructor(private val projectScoreId: String,
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply {
-            this.additionalHeaders.put(name, mutableListOf())
-        }
+        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
 
-        fun build(): ProjectScoreRetrieveParams = ProjectScoreRetrieveParams(
-            checkNotNull(projectScoreId) {
-                "`projectScoreId` is required but was not set"
-            },
-            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-        )
+        fun build(): ProjectScoreRetrieveParams =
+            ProjectScoreRetrieveParams(
+                checkNotNull(projectScoreId) { "`projectScoreId` is required but was not set" },
+                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+            )
     }
 }

@@ -2,58 +2,43 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.Enum
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import java.time.LocalDate
 import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Objects
-import java.util.Optional
-import java.util.UUID
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.JsonNull
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
 
 @JsonDeserialize(builder = InsertExperimentEventMerge.Builder::class)
 @NoAutoDetect
-class InsertExperimentEventMerge private constructor(
-  private val input: JsonValue,
-  private val output: JsonValue,
-  private val expected: JsonValue,
-  private val error: JsonValue,
-  private val scores: JsonField<Scores>,
-  private val metadata: JsonField<Metadata>,
-  private val tags: JsonField<List<String>>,
-  private val metrics: JsonField<Metrics>,
-  private val context: JsonField<Context>,
-  private val spanAttributes: JsonField<SpanAttributes>,
-  private val id: JsonField<String>,
-  private val datasetRecordId: JsonField<String>,
-  private val created: JsonField<OffsetDateTime>,
-  private val _objectDelete: JsonField<Boolean>,
-  private val _isMerge: JsonField<Boolean>,
-  private val _mergePaths: JsonField<List<List<String>>>,
-  private val additionalProperties: Map<String, JsonValue>,
-
+class InsertExperimentEventMerge
+private constructor(
+    private val input: JsonValue,
+    private val output: JsonValue,
+    private val expected: JsonValue,
+    private val error: JsonValue,
+    private val scores: JsonField<Scores>,
+    private val metadata: JsonField<Metadata>,
+    private val tags: JsonField<List<String>>,
+    private val metrics: JsonField<Metrics>,
+    private val context: JsonField<Context>,
+    private val spanAttributes: JsonField<SpanAttributes>,
+    private val id: JsonField<String>,
+    private val datasetRecordId: JsonField<String>,
+    private val created: JsonField<OffsetDateTime>,
+    private val _objectDelete: JsonField<Boolean>,
+    private val _isMerge: JsonField<Boolean>,
+    private val _mergePaths: JsonField<List<List<String>>>,
+    private val additionalProperties: Map<String, JsonValue>,
 ) {
 
     private var validated: Boolean = false
@@ -61,31 +46,29 @@ class InsertExperimentEventMerge private constructor(
     private var hashCode: Int = 0
 
     /**
-     * The arguments that uniquely define a test case (an arbitrary, JSON serializable
-     * object). Later on, Braintrust will use the `input` to know whether two test
-     * cases are the same between experiments, so they should not contain
-     * experiment-specific state. A simple rule of thumb is that if you run the same
-     * experiment twice, the `input` should be identical
+     * The arguments that uniquely define a test case (an arbitrary, JSON serializable object).
+     * Later on, Braintrust will use the `input` to know whether two test cases are the same between
+     * experiments, so they should not contain experiment-specific state. A simple rule of thumb is
+     * that if you run the same experiment twice, the `input` should be identical
      */
     fun input(): JsonValue = input
 
     /**
-     * The output of your application, including post-processing (an arbitrary, JSON
-     * serializable object), that allows you to determine whether the result is correct
-     * or not. For example, in an app that generates SQL queries, the `output` should
-     * be the _result_ of the SQL query generated by the model, not the query itself,
-     * because there may be multiple valid queries that answer a single question
+     * The output of your application, including post-processing (an arbitrary, JSON serializable
+     * object), that allows you to determine whether the result is correct or not. For example, in
+     * an app that generates SQL queries, the `output` should be the _result_ of the SQL query
+     * generated by the model, not the query itself, because there may be multiple valid queries
+     * that answer a single question
      */
     fun output(): JsonValue = output
 
     /**
-     * The ground truth value (an arbitrary, JSON serializable object) that you'd
-     * compare to `output` to determine if your `output` value is correct or not.
-     * Braintrust currently does not compare `output` to `expected` for you, since
-     * there are so many different ways to do that correctly. Instead, these values are
-     * just used to help you navigate your experiments while digging into analyses.
-     * However, we may later use these values to re-score outputs or fine-tune your
-     * models
+     * The ground truth value (an arbitrary, JSON serializable object) that you'd compare to
+     * `output` to determine if your `output` value is correct or not. Braintrust currently does not
+     * compare `output` to `expected` for you, since there are so many different ways to do that
+     * correctly. Instead, these values are just used to help you navigate your experiments while
+     * digging into analyses. However, we may later use these values to re-score outputs or
+     * fine-tune your models
      */
     fun expected(): JsonValue = expected
 
@@ -93,23 +76,22 @@ class InsertExperimentEventMerge private constructor(
     fun error(): JsonValue = error
 
     /**
-     * A dictionary of numeric values (between 0 and 1) to log. The scores should give
-     * you a variety of signals that help you determine how accurate the outputs are
-     * compared to what you expect and diagnose failures. For example, a summarization
-     * app might have one score that tells you how accurate the summary is, and another
-     * that measures the word similarity between the generated and grouth truth
-     * summary. The word similarity score could help you determine whether the
-     * summarization was covering similar concepts or not. You can use these scores to
+     * A dictionary of numeric values (between 0 and 1) to log. The scores should give you a variety
+     * of signals that help you determine how accurate the outputs are compared to what you expect
+     * and diagnose failures. For example, a summarization app might have one score that tells you
+     * how accurate the summary is, and another that measures the word similarity between the
+     * generated and grouth truth summary. The word similarity score could help you determine
+     * whether the summarization was covering similar concepts or not. You can use these scores to
      * help you sort, filter, and compare experiments
      */
     fun scores(): Scores? = scores.getNullable("scores")
 
     /**
-     * A dictionary with additional data about the test example, model outputs, or just
-     * about anything else that's relevant, that you can use to help find and analyze
-     * examples later. For example, you could log the `prompt`, example's `id`, or
-     * anything else that would be useful to slice/dice later. The values in `metadata`
-     * can be any JSON-serializable type, but its keys must be strings
+     * A dictionary with additional data about the test example, model outputs, or just about
+     * anything else that's relevant, that you can use to help find and analyze examples later. For
+     * example, you could log the `prompt`, example's `id`, or anything else that would be useful to
+     * slice/dice later. The values in `metadata` can be any JSON-serializable type, but its keys
+     * must be strings
      */
     fun metadata(): Metadata? = metadata.getNullable("metadata")
 
@@ -117,17 +99,16 @@ class InsertExperimentEventMerge private constructor(
     fun tags(): List<String>? = tags.getNullable("tags")
 
     /**
-     * Metrics are numerical measurements tracking the execution of the code that
-     * produced the experiment event. Use "start" and "end" to track the time span over
-     * which the experiment event was produced
+     * Metrics are numerical measurements tracking the execution of the code that produced the
+     * experiment event. Use "start" and "end" to track the time span over which the experiment
+     * event was produced
      */
     fun metrics(): Metrics? = metrics.getNullable("metrics")
 
     /**
-     * Context is additional information about the code that produced the experiment
-     * event. It is essentially the textual counterpart to `metrics`. Use the
-     * `caller_*` attributes to track the location in code which produced the
-     * experiment event
+     * Context is additional information about the code that produced the experiment event. It is
+     * essentially the textual counterpart to `metrics`. Use the `caller_*` attributes to track the
+     * location in code which produced the experiment event
      */
     fun context(): Context? = context.getNullable("context")
 
@@ -135,14 +116,14 @@ class InsertExperimentEventMerge private constructor(
     fun spanAttributes(): SpanAttributes? = spanAttributes.getNullable("span_attributes")
 
     /**
-     * A unique identifier for the experiment event. If you don't provide one,
-     * BrainTrust will generate one for you
+     * A unique identifier for the experiment event. If you don't provide one, BrainTrust will
+     * generate one for you
      */
     fun id(): String? = id.getNullable("id")
 
     /**
-     * If the experiment is associated to a dataset, this is the event-level dataset id
-     * this experiment event is tied to
+     * If the experiment is associated to a dataset, this is the event-level dataset id this
+     * experiment event is tied to
      */
     fun datasetRecordId(): String? = datasetRecordId.getNullable("dataset_record_id")
 
@@ -150,201 +131,157 @@ class InsertExperimentEventMerge private constructor(
     fun created(): OffsetDateTime? = created.getNullable("created")
 
     /**
-     * Pass `_object_delete=true` to mark the experiment event deleted. Deleted events
-     * will not show up in subsequent fetches for this experiment
+     * Pass `_object_delete=true` to mark the experiment event deleted. Deleted events will not show
+     * up in subsequent fetches for this experiment
      */
     fun _objectDelete(): Boolean? = _objectDelete.getNullable("_object_delete")
 
     /**
-     * The `_is_merge` field controls how the row is merged with any existing row with
-     * the same id in the DB. By default (or when set to `false`), the existing row is
-     * completely replaced by the new row. When set to `true`, the new row is
-     * deep-merged into the existing row
+     * The `_is_merge` field controls how the row is merged with any existing row with the same id
+     * in the DB. By default (or when set to `false`), the existing row is completely replaced by
+     * the new row. When set to `true`, the new row is deep-merged into the existing row
      *
-     * For example, say there is an existing row in the DB
-     * `{"id": "foo", "input": {"a": 5, "b": 10}}`. If we merge a new row as
-     * `{"_is_merge": true, "id": "foo", "input": {"b": 11, "c": 20}}`, the new row
-     * will be `{"id": "foo", "input": {"a": 5, "b": 11, "c": 20}}`. If we replace the
-     * new row as `{"id": "foo", "input": {"b": 11, "c": 20}}`, the new row will be
+     * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": 5, "b":
+     * 10}}`. If we merge a new row as `{"_is_merge": true, "id": "foo", "input": {"b": 11, "c":
+     * 20}}`, the new row will be `{"id": "foo", "input": {"a": 5, "b": 11, "c": 20}}`. If we
+     * replace the new row as `{"id": "foo", "input": {"b": 11, "c": 20}}`, the new row will be
      * `{"id": "foo", "input": {"b": 11, "c": 20}}`
      */
     fun _isMerge(): Boolean = _isMerge.getRequired("_is_merge")
 
     /**
-     * The `_merge_paths` field allows controlling the depth of the merge. It can only
-     * be specified alongside `_is_merge=true`. `_merge_paths` is a list of paths,
-     * where each path is a list of field names. The deep merge will not descend below
-     * any of the specified merge paths.
+     * The `_merge_paths` field allows controlling the depth of the merge. It can only be specified
+     * alongside `_is_merge=true`. `_merge_paths` is a list of paths, where each path is a list of
+     * field names. The deep merge will not descend below any of the specified merge paths.
      *
-     * For example, say there is an existing row in the DB
-     * `{"id": "foo", "input": {"a": {"b": 10}, "c": {"d": 20}}, "output": {"a": 20}}`.
-     * If we merge a new row as
-     * `{"_is_merge": true, "_merge_paths": [["input", "a"], ["output"]], "input": {"a": {"q": 30}, "c": {"e": 30}, "bar": "baz"}, "output": {"d": 40}}`,
-     * the new row will be
-     * `{"id": "foo": "input": {"a": {"q": 30}, "c": {"d": 20, "e": 30}, "bar": "baz"}, "output": {"d": 40}}`.
-     * In this case, due to the merge paths, we have replaced `input.a` and `output`,
-     * but have still deep-merged `input` and `input.c`.
+     * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": {"b": 10},
+     * "c": {"d": 20}}, "output": {"a": 20}}`. If we merge a new row as `{"_is_merge": true,
+     * "_merge_paths": [["input", "a"], ["output"]], "input": {"a": {"q": 30}, "c": {"e": 30},
+     * "bar": "baz"}, "output": {"d": 40}}`, the new row will be `{"id": "foo": "input": {"a": {"q":
+     * 30}, "c": {"d": 20, "e": 30}, "bar": "baz"}, "output": {"d": 40}}`. In this case, due to the
+     * merge paths, we have replaced `input.a` and `output`, but have still deep-merged `input` and
+     * `input.c`.
      */
     fun _mergePaths(): List<List<String>>? = _mergePaths.getNullable("_merge_paths")
 
     /**
-     * The arguments that uniquely define a test case (an arbitrary, JSON serializable
-     * object). Later on, Braintrust will use the `input` to know whether two test
-     * cases are the same between experiments, so they should not contain
-     * experiment-specific state. A simple rule of thumb is that if you run the same
-     * experiment twice, the `input` should be identical
+     * The arguments that uniquely define a test case (an arbitrary, JSON serializable object).
+     * Later on, Braintrust will use the `input` to know whether two test cases are the same between
+     * experiments, so they should not contain experiment-specific state. A simple rule of thumb is
+     * that if you run the same experiment twice, the `input` should be identical
      */
-    @JsonProperty("input")
-    @ExcludeMissing
-    fun _input() = input
+    @JsonProperty("input") @ExcludeMissing fun _input() = input
 
     /**
-     * The output of your application, including post-processing (an arbitrary, JSON
-     * serializable object), that allows you to determine whether the result is correct
-     * or not. For example, in an app that generates SQL queries, the `output` should
-     * be the _result_ of the SQL query generated by the model, not the query itself,
-     * because there may be multiple valid queries that answer a single question
+     * The output of your application, including post-processing (an arbitrary, JSON serializable
+     * object), that allows you to determine whether the result is correct or not. For example, in
+     * an app that generates SQL queries, the `output` should be the _result_ of the SQL query
+     * generated by the model, not the query itself, because there may be multiple valid queries
+     * that answer a single question
      */
-    @JsonProperty("output")
-    @ExcludeMissing
-    fun _output() = output
+    @JsonProperty("output") @ExcludeMissing fun _output() = output
 
     /**
-     * The ground truth value (an arbitrary, JSON serializable object) that you'd
-     * compare to `output` to determine if your `output` value is correct or not.
-     * Braintrust currently does not compare `output` to `expected` for you, since
-     * there are so many different ways to do that correctly. Instead, these values are
-     * just used to help you navigate your experiments while digging into analyses.
-     * However, we may later use these values to re-score outputs or fine-tune your
-     * models
+     * The ground truth value (an arbitrary, JSON serializable object) that you'd compare to
+     * `output` to determine if your `output` value is correct or not. Braintrust currently does not
+     * compare `output` to `expected` for you, since there are so many different ways to do that
+     * correctly. Instead, these values are just used to help you navigate your experiments while
+     * digging into analyses. However, we may later use these values to re-score outputs or
+     * fine-tune your models
      */
-    @JsonProperty("expected")
-    @ExcludeMissing
-    fun _expected() = expected
+    @JsonProperty("expected") @ExcludeMissing fun _expected() = expected
 
     /** The error that occurred, if any. */
-    @JsonProperty("error")
-    @ExcludeMissing
-    fun _error() = error
+    @JsonProperty("error") @ExcludeMissing fun _error() = error
 
     /**
-     * A dictionary of numeric values (between 0 and 1) to log. The scores should give
-     * you a variety of signals that help you determine how accurate the outputs are
-     * compared to what you expect and diagnose failures. For example, a summarization
-     * app might have one score that tells you how accurate the summary is, and another
-     * that measures the word similarity between the generated and grouth truth
-     * summary. The word similarity score could help you determine whether the
-     * summarization was covering similar concepts or not. You can use these scores to
+     * A dictionary of numeric values (between 0 and 1) to log. The scores should give you a variety
+     * of signals that help you determine how accurate the outputs are compared to what you expect
+     * and diagnose failures. For example, a summarization app might have one score that tells you
+     * how accurate the summary is, and another that measures the word similarity between the
+     * generated and grouth truth summary. The word similarity score could help you determine
+     * whether the summarization was covering similar concepts or not. You can use these scores to
      * help you sort, filter, and compare experiments
      */
-    @JsonProperty("scores")
-    @ExcludeMissing
-    fun _scores() = scores
+    @JsonProperty("scores") @ExcludeMissing fun _scores() = scores
 
     /**
-     * A dictionary with additional data about the test example, model outputs, or just
-     * about anything else that's relevant, that you can use to help find and analyze
-     * examples later. For example, you could log the `prompt`, example's `id`, or
-     * anything else that would be useful to slice/dice later. The values in `metadata`
-     * can be any JSON-serializable type, but its keys must be strings
+     * A dictionary with additional data about the test example, model outputs, or just about
+     * anything else that's relevant, that you can use to help find and analyze examples later. For
+     * example, you could log the `prompt`, example's `id`, or anything else that would be useful to
+     * slice/dice later. The values in `metadata` can be any JSON-serializable type, but its keys
+     * must be strings
      */
-    @JsonProperty("metadata")
-    @ExcludeMissing
-    fun _metadata() = metadata
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
 
     /** A list of tags to log */
-    @JsonProperty("tags")
-    @ExcludeMissing
-    fun _tags() = tags
+    @JsonProperty("tags") @ExcludeMissing fun _tags() = tags
 
     /**
-     * Metrics are numerical measurements tracking the execution of the code that
-     * produced the experiment event. Use "start" and "end" to track the time span over
-     * which the experiment event was produced
+     * Metrics are numerical measurements tracking the execution of the code that produced the
+     * experiment event. Use "start" and "end" to track the time span over which the experiment
+     * event was produced
      */
-    @JsonProperty("metrics")
-    @ExcludeMissing
-    fun _metrics() = metrics
+    @JsonProperty("metrics") @ExcludeMissing fun _metrics() = metrics
 
     /**
-     * Context is additional information about the code that produced the experiment
-     * event. It is essentially the textual counterpart to `metrics`. Use the
-     * `caller_*` attributes to track the location in code which produced the
-     * experiment event
+     * Context is additional information about the code that produced the experiment event. It is
+     * essentially the textual counterpart to `metrics`. Use the `caller_*` attributes to track the
+     * location in code which produced the experiment event
      */
-    @JsonProperty("context")
-    @ExcludeMissing
-    fun _context() = context
+    @JsonProperty("context") @ExcludeMissing fun _context() = context
 
     /** Human-identifying attributes of the span, such as name, type, etc. */
-    @JsonProperty("span_attributes")
-    @ExcludeMissing
-    fun _spanAttributes() = spanAttributes
+    @JsonProperty("span_attributes") @ExcludeMissing fun _spanAttributes() = spanAttributes
 
     /**
-     * A unique identifier for the experiment event. If you don't provide one,
-     * BrainTrust will generate one for you
+     * A unique identifier for the experiment event. If you don't provide one, BrainTrust will
+     * generate one for you
      */
-    @JsonProperty("id")
-    @ExcludeMissing
-    fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id() = id
 
     /**
-     * If the experiment is associated to a dataset, this is the event-level dataset id
-     * this experiment event is tied to
+     * If the experiment is associated to a dataset, this is the event-level dataset id this
+     * experiment event is tied to
      */
-    @JsonProperty("dataset_record_id")
-    @ExcludeMissing
-    fun _datasetRecordId() = datasetRecordId
+    @JsonProperty("dataset_record_id") @ExcludeMissing fun _datasetRecordId() = datasetRecordId
 
     /** The timestamp the experiment event was created */
-    @JsonProperty("created")
-    @ExcludeMissing
-    fun _created() = created
+    @JsonProperty("created") @ExcludeMissing fun _created() = created
 
     /**
-     * Pass `_object_delete=true` to mark the experiment event deleted. Deleted events
-     * will not show up in subsequent fetches for this experiment
+     * Pass `_object_delete=true` to mark the experiment event deleted. Deleted events will not show
+     * up in subsequent fetches for this experiment
      */
-    @JsonProperty("_object_delete")
-    @ExcludeMissing
-    fun __objectDelete() = _objectDelete
+    @JsonProperty("_object_delete") @ExcludeMissing fun __objectDelete() = _objectDelete
 
     /**
-     * The `_is_merge` field controls how the row is merged with any existing row with
-     * the same id in the DB. By default (or when set to `false`), the existing row is
-     * completely replaced by the new row. When set to `true`, the new row is
-     * deep-merged into the existing row
+     * The `_is_merge` field controls how the row is merged with any existing row with the same id
+     * in the DB. By default (or when set to `false`), the existing row is completely replaced by
+     * the new row. When set to `true`, the new row is deep-merged into the existing row
      *
-     * For example, say there is an existing row in the DB
-     * `{"id": "foo", "input": {"a": 5, "b": 10}}`. If we merge a new row as
-     * `{"_is_merge": true, "id": "foo", "input": {"b": 11, "c": 20}}`, the new row
-     * will be `{"id": "foo", "input": {"a": 5, "b": 11, "c": 20}}`. If we replace the
-     * new row as `{"id": "foo", "input": {"b": 11, "c": 20}}`, the new row will be
+     * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": 5, "b":
+     * 10}}`. If we merge a new row as `{"_is_merge": true, "id": "foo", "input": {"b": 11, "c":
+     * 20}}`, the new row will be `{"id": "foo", "input": {"a": 5, "b": 11, "c": 20}}`. If we
+     * replace the new row as `{"id": "foo", "input": {"b": 11, "c": 20}}`, the new row will be
      * `{"id": "foo", "input": {"b": 11, "c": 20}}`
      */
-    @JsonProperty("_is_merge")
-    @ExcludeMissing
-    fun __isMerge() = _isMerge
+    @JsonProperty("_is_merge") @ExcludeMissing fun __isMerge() = _isMerge
 
     /**
-     * The `_merge_paths` field allows controlling the depth of the merge. It can only
-     * be specified alongside `_is_merge=true`. `_merge_paths` is a list of paths,
-     * where each path is a list of field names. The deep merge will not descend below
-     * any of the specified merge paths.
+     * The `_merge_paths` field allows controlling the depth of the merge. It can only be specified
+     * alongside `_is_merge=true`. `_merge_paths` is a list of paths, where each path is a list of
+     * field names. The deep merge will not descend below any of the specified merge paths.
      *
-     * For example, say there is an existing row in the DB
-     * `{"id": "foo", "input": {"a": {"b": 10}, "c": {"d": 20}}, "output": {"a": 20}}`.
-     * If we merge a new row as
-     * `{"_is_merge": true, "_merge_paths": [["input", "a"], ["output"]], "input": {"a": {"q": 30}, "c": {"e": 30}, "bar": "baz"}, "output": {"d": 40}}`,
-     * the new row will be
-     * `{"id": "foo": "input": {"a": {"q": 30}, "c": {"d": 20, "e": 30}, "bar": "baz"}, "output": {"d": 40}}`.
-     * In this case, due to the merge paths, we have replaced `input.a` and `output`,
-     * but have still deep-merged `input` and `input.c`.
+     * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": {"b": 10},
+     * "c": {"d": 20}}, "output": {"a": 20}}`. If we merge a new row as `{"_is_merge": true,
+     * "_merge_paths": [["input", "a"], ["output"]], "input": {"a": {"q": 30}, "c": {"e": 30},
+     * "bar": "baz"}, "output": {"d": 40}}`, the new row will be `{"id": "foo": "input": {"a": {"q":
+     * 30}, "c": {"d": 20, "e": 30}, "bar": "baz"}, "output": {"d": 40}}`. In this case, due to the
+     * merge paths, we have replaced `input.a` and `output`, but have still deep-merged `input` and
+     * `input.c`.
      */
-    @JsonProperty("_merge_paths")
-    @ExcludeMissing
-    fun __mergePaths() = _mergePaths
+    @JsonProperty("_merge_paths") @ExcludeMissing fun __mergePaths() = _mergePaths
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -352,79 +289,81 @@ class InsertExperimentEventMerge private constructor(
 
     fun validate(): InsertExperimentEventMerge = apply {
         if (!validated) {
-          input()
-          output()
-          expected()
-          error()
-          scores()?.validate()
-          metadata()?.validate()
-          tags()
-          metrics()?.validate()
-          context()?.validate()
-          spanAttributes()?.validate()
-          id()
-          datasetRecordId()
-          created()
-          _objectDelete()
-          _isMerge()
-          _mergePaths()
-          validated = true
+            input()
+            output()
+            expected()
+            error()
+            scores()?.validate()
+            metadata()?.validate()
+            tags()
+            metrics()?.validate()
+            context()?.validate()
+            spanAttributes()?.validate()
+            id()
+            datasetRecordId()
+            created()
+            _objectDelete()
+            _isMerge()
+            _mergePaths()
+            validated = true
         }
     }
 
     fun toBuilder() = Builder().from(this)
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return other is InsertExperimentEventMerge &&
-          this.input == other.input &&
-          this.output == other.output &&
-          this.expected == other.expected &&
-          this.error == other.error &&
-          this.scores == other.scores &&
-          this.metadata == other.metadata &&
-          this.tags == other.tags &&
-          this.metrics == other.metrics &&
-          this.context == other.context &&
-          this.spanAttributes == other.spanAttributes &&
-          this.id == other.id &&
-          this.datasetRecordId == other.datasetRecordId &&
-          this.created == other.created &&
-          this._objectDelete == other._objectDelete &&
-          this._isMerge == other._isMerge &&
-          this._mergePaths == other._mergePaths &&
-          this.additionalProperties == other.additionalProperties
+        return other is InsertExperimentEventMerge &&
+            this.input == other.input &&
+            this.output == other.output &&
+            this.expected == other.expected &&
+            this.error == other.error &&
+            this.scores == other.scores &&
+            this.metadata == other.metadata &&
+            this.tags == other.tags &&
+            this.metrics == other.metrics &&
+            this.context == other.context &&
+            this.spanAttributes == other.spanAttributes &&
+            this.id == other.id &&
+            this.datasetRecordId == other.datasetRecordId &&
+            this.created == other.created &&
+            this._objectDelete == other._objectDelete &&
+            this._isMerge == other._isMerge &&
+            this._mergePaths == other._mergePaths &&
+            this.additionalProperties == other.additionalProperties
     }
 
     override fun hashCode(): Int {
-      if (hashCode == 0) {
-        hashCode = Objects.hash(
-            input,
-            output,
-            expected,
-            error,
-            scores,
-            metadata,
-            tags,
-            metrics,
-            context,
-            spanAttributes,
-            id,
-            datasetRecordId,
-            created,
-            _objectDelete,
-            _isMerge,
-            _mergePaths,
-            additionalProperties,
-        )
-      }
-      return hashCode
+        if (hashCode == 0) {
+            hashCode =
+                Objects.hash(
+                    input,
+                    output,
+                    expected,
+                    error,
+                    scores,
+                    metadata,
+                    tags,
+                    metrics,
+                    context,
+                    spanAttributes,
+                    id,
+                    datasetRecordId,
+                    created,
+                    _objectDelete,
+                    _isMerge,
+                    _mergePaths,
+                    additionalProperties,
+                )
+        }
+        return hashCode
     }
 
-    override fun toString() = "InsertExperimentEventMerge{input=$input, output=$output, expected=$expected, error=$error, scores=$scores, metadata=$metadata, tags=$tags, metrics=$metrics, context=$context, spanAttributes=$spanAttributes, id=$id, datasetRecordId=$datasetRecordId, created=$created, _objectDelete=$_objectDelete, _isMerge=$_isMerge, _mergePaths=$_mergePaths, additionalProperties=$additionalProperties}"
+    override fun toString() =
+        "InsertExperimentEventMerge{input=$input, output=$output, expected=$expected, error=$error, scores=$scores, metadata=$metadata, tags=$tags, metrics=$metrics, context=$context, spanAttributes=$spanAttributes, id=$id, datasetRecordId=$datasetRecordId, created=$created, _objectDelete=$_objectDelete, _isMerge=$_isMerge, _mergePaths=$_mergePaths, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -472,102 +411,86 @@ class InsertExperimentEventMerge private constructor(
         }
 
         /**
-         * The arguments that uniquely define a test case (an arbitrary, JSON serializable
-         * object). Later on, Braintrust will use the `input` to know whether two test
-         * cases are the same between experiments, so they should not contain
-         * experiment-specific state. A simple rule of thumb is that if you run the same
-         * experiment twice, the `input` should be identical
+         * The arguments that uniquely define a test case (an arbitrary, JSON serializable object).
+         * Later on, Braintrust will use the `input` to know whether two test cases are the same
+         * between experiments, so they should not contain experiment-specific state. A simple rule
+         * of thumb is that if you run the same experiment twice, the `input` should be identical
          */
         @JsonProperty("input")
         @ExcludeMissing
-        fun input(input: JsonValue) = apply {
-            this.input = input
-        }
+        fun input(input: JsonValue) = apply { this.input = input }
 
         /**
          * The output of your application, including post-processing (an arbitrary, JSON
-         * serializable object), that allows you to determine whether the result is correct
-         * or not. For example, in an app that generates SQL queries, the `output` should
-         * be the _result_ of the SQL query generated by the model, not the query itself,
-         * because there may be multiple valid queries that answer a single question
+         * serializable object), that allows you to determine whether the result is correct or not.
+         * For example, in an app that generates SQL queries, the `output` should be the _result_ of
+         * the SQL query generated by the model, not the query itself, because there may be multiple
+         * valid queries that answer a single question
          */
         @JsonProperty("output")
         @ExcludeMissing
-        fun output(output: JsonValue) = apply {
-            this.output = output
-        }
+        fun output(output: JsonValue) = apply { this.output = output }
 
         /**
-         * The ground truth value (an arbitrary, JSON serializable object) that you'd
-         * compare to `output` to determine if your `output` value is correct or not.
-         * Braintrust currently does not compare `output` to `expected` for you, since
-         * there are so many different ways to do that correctly. Instead, these values are
-         * just used to help you navigate your experiments while digging into analyses.
-         * However, we may later use these values to re-score outputs or fine-tune your
-         * models
+         * The ground truth value (an arbitrary, JSON serializable object) that you'd compare to
+         * `output` to determine if your `output` value is correct or not. Braintrust currently does
+         * not compare `output` to `expected` for you, since there are so many different ways to do
+         * that correctly. Instead, these values are just used to help you navigate your experiments
+         * while digging into analyses. However, we may later use these values to re-score outputs
+         * or fine-tune your models
          */
         @JsonProperty("expected")
         @ExcludeMissing
-        fun expected(expected: JsonValue) = apply {
-            this.expected = expected
-        }
+        fun expected(expected: JsonValue) = apply { this.expected = expected }
 
         /** The error that occurred, if any. */
         @JsonProperty("error")
         @ExcludeMissing
-        fun error(error: JsonValue) = apply {
-            this.error = error
-        }
+        fun error(error: JsonValue) = apply { this.error = error }
 
         /**
-         * A dictionary of numeric values (between 0 and 1) to log. The scores should give
-         * you a variety of signals that help you determine how accurate the outputs are
-         * compared to what you expect and diagnose failures. For example, a summarization
-         * app might have one score that tells you how accurate the summary is, and another
-         * that measures the word similarity between the generated and grouth truth
-         * summary. The word similarity score could help you determine whether the
-         * summarization was covering similar concepts or not. You can use these scores to
-         * help you sort, filter, and compare experiments
+         * A dictionary of numeric values (between 0 and 1) to log. The scores should give you a
+         * variety of signals that help you determine how accurate the outputs are compared to what
+         * you expect and diagnose failures. For example, a summarization app might have one score
+         * that tells you how accurate the summary is, and another that measures the word similarity
+         * between the generated and grouth truth summary. The word similarity score could help you
+         * determine whether the summarization was covering similar concepts or not. You can use
+         * these scores to help you sort, filter, and compare experiments
          */
         fun scores(scores: Scores) = scores(JsonField.of(scores))
 
         /**
-         * A dictionary of numeric values (between 0 and 1) to log. The scores should give
-         * you a variety of signals that help you determine how accurate the outputs are
-         * compared to what you expect and diagnose failures. For example, a summarization
-         * app might have one score that tells you how accurate the summary is, and another
-         * that measures the word similarity between the generated and grouth truth
-         * summary. The word similarity score could help you determine whether the
-         * summarization was covering similar concepts or not. You can use these scores to
-         * help you sort, filter, and compare experiments
+         * A dictionary of numeric values (between 0 and 1) to log. The scores should give you a
+         * variety of signals that help you determine how accurate the outputs are compared to what
+         * you expect and diagnose failures. For example, a summarization app might have one score
+         * that tells you how accurate the summary is, and another that measures the word similarity
+         * between the generated and grouth truth summary. The word similarity score could help you
+         * determine whether the summarization was covering similar concepts or not. You can use
+         * these scores to help you sort, filter, and compare experiments
          */
         @JsonProperty("scores")
         @ExcludeMissing
-        fun scores(scores: JsonField<Scores>) = apply {
-            this.scores = scores
-        }
+        fun scores(scores: JsonField<Scores>) = apply { this.scores = scores }
 
         /**
-         * A dictionary with additional data about the test example, model outputs, or just
-         * about anything else that's relevant, that you can use to help find and analyze
-         * examples later. For example, you could log the `prompt`, example's `id`, or
-         * anything else that would be useful to slice/dice later. The values in `metadata`
-         * can be any JSON-serializable type, but its keys must be strings
+         * A dictionary with additional data about the test example, model outputs, or just about
+         * anything else that's relevant, that you can use to help find and analyze examples later.
+         * For example, you could log the `prompt`, example's `id`, or anything else that would be
+         * useful to slice/dice later. The values in `metadata` can be any JSON-serializable type,
+         * but its keys must be strings
          */
         fun metadata(metadata: Metadata) = metadata(JsonField.of(metadata))
 
         /**
-         * A dictionary with additional data about the test example, model outputs, or just
-         * about anything else that's relevant, that you can use to help find and analyze
-         * examples later. For example, you could log the `prompt`, example's `id`, or
-         * anything else that would be useful to slice/dice later. The values in `metadata`
-         * can be any JSON-serializable type, but its keys must be strings
+         * A dictionary with additional data about the test example, model outputs, or just about
+         * anything else that's relevant, that you can use to help find and analyze examples later.
+         * For example, you could log the `prompt`, example's `id`, or anything else that would be
+         * useful to slice/dice later. The values in `metadata` can be any JSON-serializable type,
+         * but its keys must be strings
          */
         @JsonProperty("metadata")
         @ExcludeMissing
-        fun metadata(metadata: JsonField<Metadata>) = apply {
-            this.metadata = metadata
-        }
+        fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /** A list of tags to log */
         fun tags(tags: List<String>) = tags(JsonField.of(tags))
@@ -575,50 +498,43 @@ class InsertExperimentEventMerge private constructor(
         /** A list of tags to log */
         @JsonProperty("tags")
         @ExcludeMissing
-        fun tags(tags: JsonField<List<String>>) = apply {
-            this.tags = tags
-        }
+        fun tags(tags: JsonField<List<String>>) = apply { this.tags = tags }
 
         /**
-         * Metrics are numerical measurements tracking the execution of the code that
-         * produced the experiment event. Use "start" and "end" to track the time span over
-         * which the experiment event was produced
+         * Metrics are numerical measurements tracking the execution of the code that produced the
+         * experiment event. Use "start" and "end" to track the time span over which the experiment
+         * event was produced
          */
         fun metrics(metrics: Metrics) = metrics(JsonField.of(metrics))
 
         /**
-         * Metrics are numerical measurements tracking the execution of the code that
-         * produced the experiment event. Use "start" and "end" to track the time span over
-         * which the experiment event was produced
+         * Metrics are numerical measurements tracking the execution of the code that produced the
+         * experiment event. Use "start" and "end" to track the time span over which the experiment
+         * event was produced
          */
         @JsonProperty("metrics")
         @ExcludeMissing
-        fun metrics(metrics: JsonField<Metrics>) = apply {
-            this.metrics = metrics
-        }
+        fun metrics(metrics: JsonField<Metrics>) = apply { this.metrics = metrics }
 
         /**
-         * Context is additional information about the code that produced the experiment
-         * event. It is essentially the textual counterpart to `metrics`. Use the
-         * `caller_*` attributes to track the location in code which produced the
-         * experiment event
+         * Context is additional information about the code that produced the experiment event. It
+         * is essentially the textual counterpart to `metrics`. Use the `caller_*` attributes to
+         * track the location in code which produced the experiment event
          */
         fun context(context: Context) = context(JsonField.of(context))
 
         /**
-         * Context is additional information about the code that produced the experiment
-         * event. It is essentially the textual counterpart to `metrics`. Use the
-         * `caller_*` attributes to track the location in code which produced the
-         * experiment event
+         * Context is additional information about the code that produced the experiment event. It
+         * is essentially the textual counterpart to `metrics`. Use the `caller_*` attributes to
+         * track the location in code which produced the experiment event
          */
         @JsonProperty("context")
         @ExcludeMissing
-        fun context(context: JsonField<Context>) = apply {
-            this.context = context
-        }
+        fun context(context: JsonField<Context>) = apply { this.context = context }
 
         /** Human-identifying attributes of the span, such as name, type, etc. */
-        fun spanAttributes(spanAttributes: SpanAttributes) = spanAttributes(JsonField.of(spanAttributes))
+        fun spanAttributes(spanAttributes: SpanAttributes) =
+            spanAttributes(JsonField.of(spanAttributes))
 
         /** Human-identifying attributes of the span, such as name, type, etc. */
         @JsonProperty("span_attributes")
@@ -628,30 +544,27 @@ class InsertExperimentEventMerge private constructor(
         }
 
         /**
-         * A unique identifier for the experiment event. If you don't provide one,
-         * BrainTrust will generate one for you
+         * A unique identifier for the experiment event. If you don't provide one, BrainTrust will
+         * generate one for you
          */
         fun id(id: String) = id(JsonField.of(id))
 
         /**
-         * A unique identifier for the experiment event. If you don't provide one,
-         * BrainTrust will generate one for you
+         * A unique identifier for the experiment event. If you don't provide one, BrainTrust will
+         * generate one for you
          */
-        @JsonProperty("id")
-        @ExcludeMissing
-        fun id(id: JsonField<String>) = apply {
-            this.id = id
-        }
+        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
 
         /**
-         * If the experiment is associated to a dataset, this is the event-level dataset id
-         * this experiment event is tied to
+         * If the experiment is associated to a dataset, this is the event-level dataset id this
+         * experiment event is tied to
          */
-        fun datasetRecordId(datasetRecordId: String) = datasetRecordId(JsonField.of(datasetRecordId))
+        fun datasetRecordId(datasetRecordId: String) =
+            datasetRecordId(JsonField.of(datasetRecordId))
 
         /**
-         * If the experiment is associated to a dataset, this is the event-level dataset id
-         * this experiment event is tied to
+         * If the experiment is associated to a dataset, this is the event-level dataset id this
+         * experiment event is tied to
          */
         @JsonProperty("dataset_record_id")
         @ExcludeMissing
@@ -665,19 +578,17 @@ class InsertExperimentEventMerge private constructor(
         /** The timestamp the experiment event was created */
         @JsonProperty("created")
         @ExcludeMissing
-        fun created(created: JsonField<OffsetDateTime>) = apply {
-            this.created = created
-        }
+        fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
 
         /**
-         * Pass `_object_delete=true` to mark the experiment event deleted. Deleted events
-         * will not show up in subsequent fetches for this experiment
+         * Pass `_object_delete=true` to mark the experiment event deleted. Deleted events will not
+         * show up in subsequent fetches for this experiment
          */
         fun _objectDelete(_objectDelete: Boolean) = _objectDelete(JsonField.of(_objectDelete))
 
         /**
-         * Pass `_object_delete=true` to mark the experiment event deleted. Deleted events
-         * will not show up in subsequent fetches for this experiment
+         * Pass `_object_delete=true` to mark the experiment event deleted. Deleted events will not
+         * show up in subsequent fetches for this experiment
          */
         @JsonProperty("_object_delete")
         @ExcludeMissing
@@ -686,70 +597,64 @@ class InsertExperimentEventMerge private constructor(
         }
 
         /**
-         * The `_is_merge` field controls how the row is merged with any existing row with
-         * the same id in the DB. By default (or when set to `false`), the existing row is
-         * completely replaced by the new row. When set to `true`, the new row is
-         * deep-merged into the existing row
+         * The `_is_merge` field controls how the row is merged with any existing row with the same
+         * id in the DB. By default (or when set to `false`), the existing row is completely
+         * replaced by the new row. When set to `true`, the new row is deep-merged into the existing
+         * row
          *
-         * For example, say there is an existing row in the DB
-         * `{"id": "foo", "input": {"a": 5, "b": 10}}`. If we merge a new row as
-         * `{"_is_merge": true, "id": "foo", "input": {"b": 11, "c": 20}}`, the new row
-         * will be `{"id": "foo", "input": {"a": 5, "b": 11, "c": 20}}`. If we replace the
-         * new row as `{"id": "foo", "input": {"b": 11, "c": 20}}`, the new row will be
+         * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": 5, "b":
+         * 10}}`. If we merge a new row as `{"_is_merge": true, "id": "foo", "input": {"b": 11, "c":
+         * 20}}`, the new row will be `{"id": "foo", "input": {"a": 5, "b": 11, "c": 20}}`. If we
+         * replace the new row as `{"id": "foo", "input": {"b": 11, "c": 20}}`, the new row will be
          * `{"id": "foo", "input": {"b": 11, "c": 20}}`
          */
         fun _isMerge(_isMerge: Boolean) = _isMerge(JsonField.of(_isMerge))
 
         /**
-         * The `_is_merge` field controls how the row is merged with any existing row with
-         * the same id in the DB. By default (or when set to `false`), the existing row is
-         * completely replaced by the new row. When set to `true`, the new row is
-         * deep-merged into the existing row
+         * The `_is_merge` field controls how the row is merged with any existing row with the same
+         * id in the DB. By default (or when set to `false`), the existing row is completely
+         * replaced by the new row. When set to `true`, the new row is deep-merged into the existing
+         * row
          *
-         * For example, say there is an existing row in the DB
-         * `{"id": "foo", "input": {"a": 5, "b": 10}}`. If we merge a new row as
-         * `{"_is_merge": true, "id": "foo", "input": {"b": 11, "c": 20}}`, the new row
-         * will be `{"id": "foo", "input": {"a": 5, "b": 11, "c": 20}}`. If we replace the
-         * new row as `{"id": "foo", "input": {"b": 11, "c": 20}}`, the new row will be
+         * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": 5, "b":
+         * 10}}`. If we merge a new row as `{"_is_merge": true, "id": "foo", "input": {"b": 11, "c":
+         * 20}}`, the new row will be `{"id": "foo", "input": {"a": 5, "b": 11, "c": 20}}`. If we
+         * replace the new row as `{"id": "foo", "input": {"b": 11, "c": 20}}`, the new row will be
          * `{"id": "foo", "input": {"b": 11, "c": 20}}`
          */
         @JsonProperty("_is_merge")
         @ExcludeMissing
-        fun _isMerge(_isMerge: JsonField<Boolean>) = apply {
-            this._isMerge = _isMerge
-        }
+        fun _isMerge(_isMerge: JsonField<Boolean>) = apply { this._isMerge = _isMerge }
 
         /**
-         * The `_merge_paths` field allows controlling the depth of the merge. It can only
-         * be specified alongside `_is_merge=true`. `_merge_paths` is a list of paths,
-         * where each path is a list of field names. The deep merge will not descend below
-         * any of the specified merge paths.
+         * The `_merge_paths` field allows controlling the depth of the merge. It can only be
+         * specified alongside `_is_merge=true`. `_merge_paths` is a list of paths, where each path
+         * is a list of field names. The deep merge will not descend below any of the specified
+         * merge paths.
          *
-         * For example, say there is an existing row in the DB
-         * `{"id": "foo", "input": {"a": {"b": 10}, "c": {"d": 20}}, "output": {"a": 20}}`.
-         * If we merge a new row as
-         * `{"_is_merge": true, "_merge_paths": [["input", "a"], ["output"]], "input": {"a": {"q": 30}, "c": {"e": 30}, "bar": "baz"}, "output": {"d": 40}}`,
-         * the new row will be
-         * `{"id": "foo": "input": {"a": {"q": 30}, "c": {"d": 20, "e": 30}, "bar": "baz"}, "output": {"d": 40}}`.
-         * In this case, due to the merge paths, we have replaced `input.a` and `output`,
-         * but have still deep-merged `input` and `input.c`.
+         * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": {"b":
+         * 10}, "c": {"d": 20}}, "output": {"a": 20}}`. If we merge a new row as `{"_is_merge":
+         * true, "_merge_paths": [["input", "a"], ["output"]], "input": {"a": {"q": 30}, "c": {"e":
+         * 30}, "bar": "baz"}, "output": {"d": 40}}`, the new row will be `{"id": "foo": "input":
+         * {"a": {"q": 30}, "c": {"d": 20, "e": 30}, "bar": "baz"}, "output": {"d": 40}}`. In this
+         * case, due to the merge paths, we have replaced `input.a` and `output`, but have still
+         * deep-merged `input` and `input.c`.
          */
         fun _mergePaths(_mergePaths: List<List<String>>) = _mergePaths(JsonField.of(_mergePaths))
 
         /**
-         * The `_merge_paths` field allows controlling the depth of the merge. It can only
-         * be specified alongside `_is_merge=true`. `_merge_paths` is a list of paths,
-         * where each path is a list of field names. The deep merge will not descend below
-         * any of the specified merge paths.
+         * The `_merge_paths` field allows controlling the depth of the merge. It can only be
+         * specified alongside `_is_merge=true`. `_merge_paths` is a list of paths, where each path
+         * is a list of field names. The deep merge will not descend below any of the specified
+         * merge paths.
          *
-         * For example, say there is an existing row in the DB
-         * `{"id": "foo", "input": {"a": {"b": 10}, "c": {"d": 20}}, "output": {"a": 20}}`.
-         * If we merge a new row as
-         * `{"_is_merge": true, "_merge_paths": [["input", "a"], ["output"]], "input": {"a": {"q": 30}, "c": {"e": 30}, "bar": "baz"}, "output": {"d": 40}}`,
-         * the new row will be
-         * `{"id": "foo": "input": {"a": {"q": 30}, "c": {"d": 20, "e": 30}, "bar": "baz"}, "output": {"d": 40}}`.
-         * In this case, due to the merge paths, we have replaced `input.a` and `output`,
-         * but have still deep-merged `input` and `input.c`.
+         * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": {"b":
+         * 10}, "c": {"d": 20}}, "output": {"a": 20}}`. If we merge a new row as `{"_is_merge":
+         * true, "_merge_paths": [["input", "a"], ["output"]], "input": {"a": {"q": 30}, "c": {"e":
+         * 30}, "bar": "baz"}, "output": {"d": 40}}`, the new row will be `{"id": "foo": "input":
+         * {"a": {"q": 30}, "c": {"d": 20, "e": 30}, "bar": "baz"}, "output": {"d": 40}}`. In this
+         * case, due to the merge paths, we have replaced `input.a` and `output`, but have still
+         * deep-merged `input` and `input.c`.
          */
         @JsonProperty("_merge_paths")
         @ExcludeMissing
@@ -771,41 +676,41 @@ class InsertExperimentEventMerge private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): InsertExperimentEventMerge = InsertExperimentEventMerge(
-            input,
-            output,
-            expected,
-            error,
-            scores,
-            metadata,
-            tags.map { it.toUnmodifiable() },
-            metrics,
-            context,
-            spanAttributes,
-            id,
-            datasetRecordId,
-            created,
-            _objectDelete,
-            _isMerge,
-            _mergePaths.map { it.toUnmodifiable() },
-            additionalProperties.toUnmodifiable(),
-        )
+        fun build(): InsertExperimentEventMerge =
+            InsertExperimentEventMerge(
+                input,
+                output,
+                expected,
+                error,
+                scores,
+                metadata,
+                tags.map { it.toUnmodifiable() },
+                metrics,
+                context,
+                spanAttributes,
+                id,
+                datasetRecordId,
+                created,
+                _objectDelete,
+                _isMerge,
+                _mergePaths.map { it.toUnmodifiable() },
+                additionalProperties.toUnmodifiable(),
+            )
     }
 
     /**
-     * Context is additional information about the code that produced the experiment
-     * event. It is essentially the textual counterpart to `metrics`. Use the
-     * `caller_*` attributes to track the location in code which produced the
-     * experiment event
+     * Context is additional information about the code that produced the experiment event. It is
+     * essentially the textual counterpart to `metrics`. Use the `caller_*` attributes to track the
+     * location in code which produced the experiment event
      */
     @JsonDeserialize(builder = Context.Builder::class)
     @NoAutoDetect
-    class Context private constructor(
-      private val callerFunctionname: JsonField<String>,
-      private val callerFilename: JsonField<String>,
-      private val callerLineno: JsonField<Long>,
-      private val additionalProperties: Map<String, JsonValue>,
-
+    class Context
+    private constructor(
+        private val callerFunctionname: JsonField<String>,
+        private val callerFilename: JsonField<String>,
+        private val callerLineno: JsonField<Long>,
+        private val additionalProperties: Map<String, JsonValue>,
     ) {
 
         private var validated: Boolean = false
@@ -827,14 +732,10 @@ class InsertExperimentEventMerge private constructor(
         fun _callerFunctionname() = callerFunctionname
 
         /** Name of the file in code where the experiment event was created */
-        @JsonProperty("caller_filename")
-        @ExcludeMissing
-        fun _callerFilename() = callerFilename
+        @JsonProperty("caller_filename") @ExcludeMissing fun _callerFilename() = callerFilename
 
         /** Line of code where the experiment event was created */
-        @JsonProperty("caller_lineno")
-        @ExcludeMissing
-        fun _callerLineno() = callerLineno
+        @JsonProperty("caller_lineno") @ExcludeMissing fun _callerLineno() = callerLineno
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -842,40 +743,42 @@ class InsertExperimentEventMerge private constructor(
 
         fun validate(): Context = apply {
             if (!validated) {
-              callerFunctionname()
-              callerFilename()
-              callerLineno()
-              validated = true
+                callerFunctionname()
+                callerFilename()
+                callerLineno()
+                validated = true
             }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is Context &&
-              this.callerFunctionname == other.callerFunctionname &&
-              this.callerFilename == other.callerFilename &&
-              this.callerLineno == other.callerLineno &&
-              this.additionalProperties == other.additionalProperties
+            return other is Context &&
+                this.callerFunctionname == other.callerFunctionname &&
+                this.callerFilename == other.callerFilename &&
+                this.callerLineno == other.callerLineno &&
+                this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-          if (hashCode == 0) {
-            hashCode = Objects.hash(
-                callerFunctionname,
-                callerFilename,
-                callerLineno,
-                additionalProperties,
-            )
-          }
-          return hashCode
+            if (hashCode == 0) {
+                hashCode =
+                    Objects.hash(
+                        callerFunctionname,
+                        callerFilename,
+                        callerLineno,
+                        additionalProperties,
+                    )
+            }
+            return hashCode
         }
 
-        override fun toString() = "Context{callerFunctionname=$callerFunctionname, callerFilename=$callerFilename, callerLineno=$callerLineno, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "Context{callerFunctionname=$callerFunctionname, callerFilename=$callerFilename, callerLineno=$callerLineno, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -897,7 +800,8 @@ class InsertExperimentEventMerge private constructor(
             }
 
             /** The function in code which created the experiment event */
-            fun callerFunctionname(callerFunctionname: String) = callerFunctionname(JsonField.of(callerFunctionname))
+            fun callerFunctionname(callerFunctionname: String) =
+                callerFunctionname(JsonField.of(callerFunctionname))
 
             /** The function in code which created the experiment event */
             @JsonProperty("caller_functionname")
@@ -907,7 +811,8 @@ class InsertExperimentEventMerge private constructor(
             }
 
             /** Name of the file in code where the experiment event was created */
-            fun callerFilename(callerFilename: String) = callerFilename(JsonField.of(callerFilename))
+            fun callerFilename(callerFilename: String) =
+                callerFilename(JsonField.of(callerFilename))
 
             /** Name of the file in code where the experiment event was created */
             @JsonProperty("caller_filename")
@@ -940,25 +845,29 @@ class InsertExperimentEventMerge private constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): Context = Context(
-                callerFunctionname,
-                callerFilename,
-                callerLineno,
-                additionalProperties.toUnmodifiable(),
-            )
+            fun build(): Context =
+                Context(
+                    callerFunctionname,
+                    callerFilename,
+                    callerLineno,
+                    additionalProperties.toUnmodifiable(),
+                )
         }
     }
 
     /**
-     * A dictionary with additional data about the test example, model outputs, or just
-     * about anything else that's relevant, that you can use to help find and analyze
-     * examples later. For example, you could log the `prompt`, example's `id`, or
-     * anything else that would be useful to slice/dice later. The values in `metadata`
-     * can be any JSON-serializable type, but its keys must be strings
+     * A dictionary with additional data about the test example, model outputs, or just about
+     * anything else that's relevant, that you can use to help find and analyze examples later. For
+     * example, you could log the `prompt`, example's `id`, or anything else that would be useful to
+     * slice/dice later. The values in `metadata` can be any JSON-serializable type, but its keys
+     * must be strings
      */
     @JsonDeserialize(builder = Metadata.Builder::class)
     @NoAutoDetect
-    class Metadata private constructor(private val additionalProperties: Map<String, JsonValue>, ) {
+    class Metadata
+    private constructor(
+        private val additionalProperties: Map<String, JsonValue>,
+    ) {
 
         private var validated: Boolean = false
 
@@ -970,26 +879,25 @@ class InsertExperimentEventMerge private constructor(
 
         fun validate(): Metadata = apply {
             if (!validated) {
-              validated = true
+                validated = true
             }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is Metadata &&
-              this.additionalProperties == other.additionalProperties
+            return other is Metadata && this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-          if (hashCode == 0) {
-            hashCode = Objects.hash(additionalProperties)
-          }
-          return hashCode
+            if (hashCode == 0) {
+                hashCode = Objects.hash(additionalProperties)
+            }
+            return hashCode
         }
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
@@ -1026,20 +934,20 @@ class InsertExperimentEventMerge private constructor(
     }
 
     /**
-     * Metrics are numerical measurements tracking the execution of the code that
-     * produced the experiment event. Use "start" and "end" to track the time span over
-     * which the experiment event was produced
+     * Metrics are numerical measurements tracking the execution of the code that produced the
+     * experiment event. Use "start" and "end" to track the time span over which the experiment
+     * event was produced
      */
     @JsonDeserialize(builder = Metrics.Builder::class)
     @NoAutoDetect
-    class Metrics private constructor(
-      private val start: JsonField<Double>,
-      private val end: JsonField<Double>,
-      private val promptTokens: JsonField<Long>,
-      private val completionTokens: JsonField<Long>,
-      private val tokens: JsonField<Long>,
-      private val additionalProperties: Map<String, JsonValue>,
-
+    class Metrics
+    private constructor(
+        private val start: JsonField<Double>,
+        private val end: JsonField<Double>,
+        private val promptTokens: JsonField<Long>,
+        private val completionTokens: JsonField<Long>,
+        private val tokens: JsonField<Long>,
+        private val additionalProperties: Map<String, JsonValue>,
     ) {
 
         private var validated: Boolean = false
@@ -1047,26 +955,26 @@ class InsertExperimentEventMerge private constructor(
         private var hashCode: Int = 0
 
         /**
-         * A unix timestamp recording when the section of code which produced the
-         * experiment event started
+         * A unix timestamp recording when the section of code which produced the experiment event
+         * started
          */
         fun start(): Double? = start.getNullable("start")
 
         /**
-         * A unix timestamp recording when the section of code which produced the
-         * experiment event finished
+         * A unix timestamp recording when the section of code which produced the experiment event
+         * finished
          */
         fun end(): Double? = end.getNullable("end")
 
         /**
-         * The number of tokens in the prompt used to generate the experiment event (only
-         * set if this is an LLM span)
+         * The number of tokens in the prompt used to generate the experiment event (only set if
+         * this is an LLM span)
          */
         fun promptTokens(): Long? = promptTokens.getNullable("prompt_tokens")
 
         /**
-         * The number of tokens in the completion generated by the model (only set if this
-         * is an LLM span)
+         * The number of tokens in the completion generated by the model (only set if this is an LLM
+         * span)
          */
         fun completionTokens(): Long? = completionTokens.getNullable("completion_tokens")
 
@@ -1074,41 +982,33 @@ class InsertExperimentEventMerge private constructor(
         fun tokens(): Long? = tokens.getNullable("tokens")
 
         /**
-         * A unix timestamp recording when the section of code which produced the
-         * experiment event started
+         * A unix timestamp recording when the section of code which produced the experiment event
+         * started
          */
-        @JsonProperty("start")
-        @ExcludeMissing
-        fun _start() = start
+        @JsonProperty("start") @ExcludeMissing fun _start() = start
 
         /**
-         * A unix timestamp recording when the section of code which produced the
-         * experiment event finished
+         * A unix timestamp recording when the section of code which produced the experiment event
+         * finished
          */
-        @JsonProperty("end")
-        @ExcludeMissing
-        fun _end() = end
+        @JsonProperty("end") @ExcludeMissing fun _end() = end
 
         /**
-         * The number of tokens in the prompt used to generate the experiment event (only
-         * set if this is an LLM span)
+         * The number of tokens in the prompt used to generate the experiment event (only set if
+         * this is an LLM span)
          */
-        @JsonProperty("prompt_tokens")
-        @ExcludeMissing
-        fun _promptTokens() = promptTokens
+        @JsonProperty("prompt_tokens") @ExcludeMissing fun _promptTokens() = promptTokens
 
         /**
-         * The number of tokens in the completion generated by the model (only set if this
-         * is an LLM span)
+         * The number of tokens in the completion generated by the model (only set if this is an LLM
+         * span)
          */
         @JsonProperty("completion_tokens")
         @ExcludeMissing
         fun _completionTokens() = completionTokens
 
         /** The total number of tokens in the input and output of the experiment event. */
-        @JsonProperty("tokens")
-        @ExcludeMissing
-        fun _tokens() = tokens
+        @JsonProperty("tokens") @ExcludeMissing fun _tokens() = tokens
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1116,46 +1016,48 @@ class InsertExperimentEventMerge private constructor(
 
         fun validate(): Metrics = apply {
             if (!validated) {
-              start()
-              end()
-              promptTokens()
-              completionTokens()
-              tokens()
-              validated = true
+                start()
+                end()
+                promptTokens()
+                completionTokens()
+                tokens()
+                validated = true
             }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is Metrics &&
-              this.start == other.start &&
-              this.end == other.end &&
-              this.promptTokens == other.promptTokens &&
-              this.completionTokens == other.completionTokens &&
-              this.tokens == other.tokens &&
-              this.additionalProperties == other.additionalProperties
+            return other is Metrics &&
+                this.start == other.start &&
+                this.end == other.end &&
+                this.promptTokens == other.promptTokens &&
+                this.completionTokens == other.completionTokens &&
+                this.tokens == other.tokens &&
+                this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-          if (hashCode == 0) {
-            hashCode = Objects.hash(
-                start,
-                end,
-                promptTokens,
-                completionTokens,
-                tokens,
-                additionalProperties,
-            )
-          }
-          return hashCode
+            if (hashCode == 0) {
+                hashCode =
+                    Objects.hash(
+                        start,
+                        end,
+                        promptTokens,
+                        completionTokens,
+                        tokens,
+                        additionalProperties,
+                    )
+            }
+            return hashCode
         }
 
-        override fun toString() = "Metrics{start=$start, end=$end, promptTokens=$promptTokens, completionTokens=$completionTokens, tokens=$tokens, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "Metrics{start=$start, end=$end, promptTokens=$promptTokens, completionTokens=$completionTokens, tokens=$tokens, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -1181,46 +1083,42 @@ class InsertExperimentEventMerge private constructor(
             }
 
             /**
-             * A unix timestamp recording when the section of code which produced the
-             * experiment event started
+             * A unix timestamp recording when the section of code which produced the experiment
+             * event started
              */
             fun start(start: Double) = start(JsonField.of(start))
 
             /**
-             * A unix timestamp recording when the section of code which produced the
-             * experiment event started
+             * A unix timestamp recording when the section of code which produced the experiment
+             * event started
              */
             @JsonProperty("start")
             @ExcludeMissing
-            fun start(start: JsonField<Double>) = apply {
-                this.start = start
-            }
+            fun start(start: JsonField<Double>) = apply { this.start = start }
 
             /**
-             * A unix timestamp recording when the section of code which produced the
-             * experiment event finished
+             * A unix timestamp recording when the section of code which produced the experiment
+             * event finished
              */
             fun end(end: Double) = end(JsonField.of(end))
 
             /**
-             * A unix timestamp recording when the section of code which produced the
-             * experiment event finished
+             * A unix timestamp recording when the section of code which produced the experiment
+             * event finished
              */
             @JsonProperty("end")
             @ExcludeMissing
-            fun end(end: JsonField<Double>) = apply {
-                this.end = end
-            }
+            fun end(end: JsonField<Double>) = apply { this.end = end }
 
             /**
-             * The number of tokens in the prompt used to generate the experiment event (only
-             * set if this is an LLM span)
+             * The number of tokens in the prompt used to generate the experiment event (only set if
+             * this is an LLM span)
              */
             fun promptTokens(promptTokens: Long) = promptTokens(JsonField.of(promptTokens))
 
             /**
-             * The number of tokens in the prompt used to generate the experiment event (only
-             * set if this is an LLM span)
+             * The number of tokens in the prompt used to generate the experiment event (only set if
+             * this is an LLM span)
              */
             @JsonProperty("prompt_tokens")
             @ExcludeMissing
@@ -1229,14 +1127,15 @@ class InsertExperimentEventMerge private constructor(
             }
 
             /**
-             * The number of tokens in the completion generated by the model (only set if this
-             * is an LLM span)
+             * The number of tokens in the completion generated by the model (only set if this is an
+             * LLM span)
              */
-            fun completionTokens(completionTokens: Long) = completionTokens(JsonField.of(completionTokens))
+            fun completionTokens(completionTokens: Long) =
+                completionTokens(JsonField.of(completionTokens))
 
             /**
-             * The number of tokens in the completion generated by the model (only set if this
-             * is an LLM span)
+             * The number of tokens in the completion generated by the model (only set if this is an
+             * LLM span)
              */
             @JsonProperty("completion_tokens")
             @ExcludeMissing
@@ -1250,9 +1149,7 @@ class InsertExperimentEventMerge private constructor(
             /** The total number of tokens in the input and output of the experiment event. */
             @JsonProperty("tokens")
             @ExcludeMissing
-            fun tokens(tokens: JsonField<Long>) = apply {
-                this.tokens = tokens
-            }
+            fun tokens(tokens: JsonField<Long>) = apply { this.tokens = tokens }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1268,30 +1165,33 @@ class InsertExperimentEventMerge private constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): Metrics = Metrics(
-                start,
-                end,
-                promptTokens,
-                completionTokens,
-                tokens,
-                additionalProperties.toUnmodifiable(),
-            )
+            fun build(): Metrics =
+                Metrics(
+                    start,
+                    end,
+                    promptTokens,
+                    completionTokens,
+                    tokens,
+                    additionalProperties.toUnmodifiable(),
+                )
         }
     }
 
     /**
-     * A dictionary of numeric values (between 0 and 1) to log. The scores should give
-     * you a variety of signals that help you determine how accurate the outputs are
-     * compared to what you expect and diagnose failures. For example, a summarization
-     * app might have one score that tells you how accurate the summary is, and another
-     * that measures the word similarity between the generated and grouth truth
-     * summary. The word similarity score could help you determine whether the
-     * summarization was covering similar concepts or not. You can use these scores to
+     * A dictionary of numeric values (between 0 and 1) to log. The scores should give you a variety
+     * of signals that help you determine how accurate the outputs are compared to what you expect
+     * and diagnose failures. For example, a summarization app might have one score that tells you
+     * how accurate the summary is, and another that measures the word similarity between the
+     * generated and grouth truth summary. The word similarity score could help you determine
+     * whether the summarization was covering similar concepts or not. You can use these scores to
      * help you sort, filter, and compare experiments
      */
     @JsonDeserialize(builder = Scores.Builder::class)
     @NoAutoDetect
-    class Scores private constructor(private val additionalProperties: Map<String, JsonValue>, ) {
+    class Scores
+    private constructor(
+        private val additionalProperties: Map<String, JsonValue>,
+    ) {
 
         private var validated: Boolean = false
 
@@ -1303,26 +1203,25 @@ class InsertExperimentEventMerge private constructor(
 
         fun validate(): Scores = apply {
             if (!validated) {
-              validated = true
+                validated = true
             }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is Scores &&
-              this.additionalProperties == other.additionalProperties
+            return other is Scores && this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-          if (hashCode == 0) {
-            hashCode = Objects.hash(additionalProperties)
-          }
-          return hashCode
+            if (hashCode == 0) {
+                hashCode = Objects.hash(additionalProperties)
+            }
+            return hashCode
         }
 
         override fun toString() = "Scores{additionalProperties=$additionalProperties}"
@@ -1361,7 +1260,12 @@ class InsertExperimentEventMerge private constructor(
     /** Human-identifying attributes of the span, such as name, type, etc. */
     @JsonDeserialize(builder = SpanAttributes.Builder::class)
     @NoAutoDetect
-    class SpanAttributes private constructor(private val name: JsonField<String>, private val type: JsonField<Type>, private val additionalProperties: Map<String, JsonValue>, ) {
+    class SpanAttributes
+    private constructor(
+        private val name: JsonField<String>,
+        private val type: JsonField<Type>,
+        private val additionalProperties: Map<String, JsonValue>,
+    ) {
 
         private var validated: Boolean = false
 
@@ -1374,14 +1278,10 @@ class InsertExperimentEventMerge private constructor(
         fun type(): Type? = type.getNullable("type")
 
         /** Name of the span, for display purposes only */
-        @JsonProperty("name")
-        @ExcludeMissing
-        fun _name() = name
+        @JsonProperty("name") @ExcludeMissing fun _name() = name
 
         /** Type of the span, for display purposes only */
-        @JsonProperty("type")
-        @ExcludeMissing
-        fun _type() = type
+        @JsonProperty("type") @ExcludeMissing fun _type() = type
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1389,37 +1289,39 @@ class InsertExperimentEventMerge private constructor(
 
         fun validate(): SpanAttributes = apply {
             if (!validated) {
-              name()
-              type()
-              validated = true
+                name()
+                type()
+                validated = true
             }
         }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is SpanAttributes &&
-              this.name == other.name &&
-              this.type == other.type &&
-              this.additionalProperties == other.additionalProperties
+            return other is SpanAttributes &&
+                this.name == other.name &&
+                this.type == other.type &&
+                this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-          if (hashCode == 0) {
-            hashCode = Objects.hash(
-                name,
-                type,
-                additionalProperties,
-            )
-          }
-          return hashCode
+            if (hashCode == 0) {
+                hashCode =
+                    Objects.hash(
+                        name,
+                        type,
+                        additionalProperties,
+                    )
+            }
+            return hashCode
         }
 
-        override fun toString() = "SpanAttributes{name=$name, type=$type, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "SpanAttributes{name=$name, type=$type, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -1444,9 +1346,7 @@ class InsertExperimentEventMerge private constructor(
             /** Name of the span, for display purposes only */
             @JsonProperty("name")
             @ExcludeMissing
-            fun name(name: JsonField<String>) = apply {
-                this.name = name
-            }
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /** Type of the span, for display purposes only */
             fun type(type: Type) = type(JsonField.of(type))
@@ -1454,9 +1354,7 @@ class InsertExperimentEventMerge private constructor(
             /** Type of the span, for display purposes only */
             @JsonProperty("type")
             @ExcludeMissing
-            fun type(type: JsonField<Type>) = apply {
-                this.type = type
-            }
+            fun type(type: JsonField<Type>) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1472,25 +1370,28 @@ class InsertExperimentEventMerge private constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): SpanAttributes = SpanAttributes(
-                name,
-                type,
-                additionalProperties.toUnmodifiable(),
-            )
+            fun build(): SpanAttributes =
+                SpanAttributes(
+                    name,
+                    type,
+                    additionalProperties.toUnmodifiable(),
+                )
         }
 
-        class Type @JsonCreator private constructor(private val value: JsonField<String>, ) : Enum {
+        class Type
+        @JsonCreator
+        private constructor(
+            private val value: JsonField<String>,
+        ) : Enum {
 
-            @com.fasterxml.jackson.annotation.JsonValue
-            fun _value(): JsonField<String> = value
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             override fun equals(other: Any?): Boolean {
-              if (this === other) {
-                  return true
-              }
+                if (this === other) {
+                    return true
+                }
 
-              return other is Type &&
-                  this.value == other.value
+                return other is Type && this.value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -1533,25 +1434,27 @@ class InsertExperimentEventMerge private constructor(
                 _UNKNOWN,
             }
 
-            fun value(): Value = when (this) {
-                LLM -> Value.LLM
-                SCORE -> Value.SCORE
-                FUNCTION -> Value.FUNCTION
-                EVAL -> Value.EVAL
-                TASK -> Value.TASK
-                TOOL -> Value.TOOL
-                else -> Value._UNKNOWN
-            }
+            fun value(): Value =
+                when (this) {
+                    LLM -> Value.LLM
+                    SCORE -> Value.SCORE
+                    FUNCTION -> Value.FUNCTION
+                    EVAL -> Value.EVAL
+                    TASK -> Value.TASK
+                    TOOL -> Value.TOOL
+                    else -> Value._UNKNOWN
+                }
 
-            fun known(): Known = when (this) {
-                LLM -> Known.LLM
-                SCORE -> Known.SCORE
-                FUNCTION -> Known.FUNCTION
-                EVAL -> Known.EVAL
-                TASK -> Known.TASK
-                TOOL -> Known.TOOL
-                else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-            }
+            fun known(): Known =
+                when (this) {
+                    LLM -> Known.LLM
+                    SCORE -> Known.SCORE
+                    FUNCTION -> Known.FUNCTION
+                    EVAL -> Known.EVAL
+                    TASK -> Known.TASK
+                    TOOL -> Known.TOOL
+                    else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                }
 
             fun asString(): String = _value().asStringOrThrow()
         }

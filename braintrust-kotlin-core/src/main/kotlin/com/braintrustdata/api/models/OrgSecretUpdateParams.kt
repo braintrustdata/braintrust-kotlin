@@ -2,50 +2,27 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import org.apache.hc.core5.http.ContentType
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Objects
-import java.util.Optional
-import java.util.UUID
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.MultipartFormValue
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.ContentTypes
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 
-class OrgSecretUpdateParams constructor(
-  private val orgSecretId: String,
-  private val metadata: Metadata?,
-  private val name: String?,
-  private val secret: String?,
-  private val type: String?,
-  private val additionalQueryParams: Map<String, List<String>>,
-  private val additionalHeaders: Map<String, List<String>>,
-  private val additionalBodyProperties: Map<String, JsonValue>,
-
+class OrgSecretUpdateParams
+constructor(
+    private val orgSecretId: String,
+    private val metadata: Metadata?,
+    private val name: String?,
+    private val secret: String?,
+    private val type: String?,
+    private val additionalQueryParams: Map<String, List<String>>,
+    private val additionalHeaders: Map<String, List<String>>,
+    private val additionalBodyProperties: Map<String, JsonValue>,
 ) {
 
     fun orgSecretId(): String = orgSecretId
@@ -59,13 +36,13 @@ class OrgSecretUpdateParams constructor(
     fun type(): String? = type
 
     internal fun getBody(): OrgSecretUpdateBody {
-      return OrgSecretUpdateBody(
-          metadata,
-          name,
-          secret,
-          type,
-          additionalBodyProperties,
-      )
+        return OrgSecretUpdateBody(
+            metadata,
+            name,
+            secret,
+            type,
+            additionalBodyProperties,
+        )
     }
 
     internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -73,37 +50,33 @@ class OrgSecretUpdateParams constructor(
     internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
 
     fun getPathParam(index: Int): String {
-      return when (index) {
-          0 -> orgSecretId
-          else -> ""
-      }
+        return when (index) {
+            0 -> orgSecretId
+            else -> ""
+        }
     }
 
     @JsonDeserialize(builder = OrgSecretUpdateBody.Builder::class)
     @NoAutoDetect
-    class OrgSecretUpdateBody internal constructor(
-      private val metadata: Metadata?,
-      private val name: String?,
-      private val secret: String?,
-      private val type: String?,
-      private val additionalProperties: Map<String, JsonValue>,
-
+    class OrgSecretUpdateBody
+    internal constructor(
+        private val metadata: Metadata?,
+        private val name: String?,
+        private val secret: String?,
+        private val type: String?,
+        private val additionalProperties: Map<String, JsonValue>,
     ) {
 
         private var hashCode: Int = 0
 
-        @JsonProperty("metadata")
-        fun metadata(): Metadata? = metadata
+        @JsonProperty("metadata") fun metadata(): Metadata? = metadata
 
         /** Name of the org secret */
-        @JsonProperty("name")
-        fun name(): String? = name
+        @JsonProperty("name") fun name(): String? = name
 
-        @JsonProperty("secret")
-        fun secret(): String? = secret
+        @JsonProperty("secret") fun secret(): String? = secret
 
-        @JsonProperty("type")
-        fun type(): String? = type
+        @JsonProperty("type") fun type(): String? = type
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -112,32 +85,34 @@ class OrgSecretUpdateParams constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is OrgSecretUpdateBody &&
-              this.metadata == other.metadata &&
-              this.name == other.name &&
-              this.secret == other.secret &&
-              this.type == other.type &&
-              this.additionalProperties == other.additionalProperties
+            return other is OrgSecretUpdateBody &&
+                this.metadata == other.metadata &&
+                this.name == other.name &&
+                this.secret == other.secret &&
+                this.type == other.type &&
+                this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-          if (hashCode == 0) {
-            hashCode = Objects.hash(
-                metadata,
-                name,
-                secret,
-                type,
-                additionalProperties,
-            )
-          }
-          return hashCode
+            if (hashCode == 0) {
+                hashCode =
+                    Objects.hash(
+                        metadata,
+                        name,
+                        secret,
+                        type,
+                        additionalProperties,
+                    )
+            }
+            return hashCode
         }
 
-        override fun toString() = "OrgSecretUpdateBody{metadata=$metadata, name=$name, secret=$secret, type=$type, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "OrgSecretUpdateBody{metadata=$metadata, name=$name, secret=$secret, type=$type, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -161,25 +136,14 @@ class OrgSecretUpdateParams constructor(
             }
 
             @JsonProperty("metadata")
-            fun metadata(metadata: Metadata) = apply {
-                this.metadata = metadata
-            }
+            fun metadata(metadata: Metadata) = apply { this.metadata = metadata }
 
             /** Name of the org secret */
-            @JsonProperty("name")
-            fun name(name: String) = apply {
-                this.name = name
-            }
+            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
 
-            @JsonProperty("secret")
-            fun secret(secret: String) = apply {
-                this.secret = secret
-            }
+            @JsonProperty("secret") fun secret(secret: String) = apply { this.secret = secret }
 
-            @JsonProperty("type")
-            fun type(type: String) = apply {
-                this.type = type
-            }
+            @JsonProperty("type") fun type(type: String) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -195,13 +159,14 @@ class OrgSecretUpdateParams constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): OrgSecretUpdateBody = OrgSecretUpdateBody(
-                metadata,
-                name,
-                secret,
-                type,
-                additionalProperties.toUnmodifiable(),
-            )
+            fun build(): OrgSecretUpdateBody =
+                OrgSecretUpdateBody(
+                    metadata,
+                    name,
+                    secret,
+                    type,
+                    additionalProperties.toUnmodifiable(),
+                )
         }
     }
 
@@ -212,35 +177,36 @@ class OrgSecretUpdateParams constructor(
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return other is OrgSecretUpdateParams &&
-          this.orgSecretId == other.orgSecretId &&
-          this.metadata == other.metadata &&
-          this.name == other.name &&
-          this.secret == other.secret &&
-          this.type == other.type &&
-          this.additionalQueryParams == other.additionalQueryParams &&
-          this.additionalHeaders == other.additionalHeaders &&
-          this.additionalBodyProperties == other.additionalBodyProperties
+        return other is OrgSecretUpdateParams &&
+            this.orgSecretId == other.orgSecretId &&
+            this.metadata == other.metadata &&
+            this.name == other.name &&
+            this.secret == other.secret &&
+            this.type == other.type &&
+            this.additionalQueryParams == other.additionalQueryParams &&
+            this.additionalHeaders == other.additionalHeaders &&
+            this.additionalBodyProperties == other.additionalBodyProperties
     }
 
     override fun hashCode(): Int {
-      return Objects.hash(
-          orgSecretId,
-          metadata,
-          name,
-          secret,
-          type,
-          additionalQueryParams,
-          additionalHeaders,
-          additionalBodyProperties,
-      )
+        return Objects.hash(
+            orgSecretId,
+            metadata,
+            name,
+            secret,
+            type,
+            additionalQueryParams,
+            additionalHeaders,
+            additionalBodyProperties,
+        )
     }
 
-    override fun toString() = "OrgSecretUpdateParams{orgSecretId=$orgSecretId, metadata=$metadata, name=$name, secret=$secret, type=$type, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+    override fun toString() =
+        "OrgSecretUpdateParams{orgSecretId=$orgSecretId, metadata=$metadata, name=$name, secret=$secret, type=$type, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -273,26 +239,16 @@ class OrgSecretUpdateParams constructor(
         }
 
         /** OrgSecret id */
-        fun orgSecretId(orgSecretId: String) = apply {
-            this.orgSecretId = orgSecretId
-        }
+        fun orgSecretId(orgSecretId: String) = apply { this.orgSecretId = orgSecretId }
 
-        fun metadata(metadata: Metadata) = apply {
-            this.metadata = metadata
-        }
+        fun metadata(metadata: Metadata) = apply { this.metadata = metadata }
 
         /** Name of the org secret */
-        fun name(name: String) = apply {
-            this.name = name
-        }
+        fun name(name: String) = apply { this.name = name }
 
-        fun secret(secret: String) = apply {
-            this.secret = secret
-        }
+        fun secret(secret: String) = apply { this.secret = secret }
 
-        fun type(type: String) = apply {
-            this.type = type
-        }
+        fun type(type: String) = apply { this.type = type }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -332,9 +288,7 @@ class OrgSecretUpdateParams constructor(
             additionalHeaders.forEach(this::putHeaders)
         }
 
-        fun removeHeader(name: String) = apply {
-            this.additionalHeaders.put(name, mutableListOf())
-        }
+        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             this.additionalBodyProperties.clear()
@@ -345,27 +299,30 @@ class OrgSecretUpdateParams constructor(
             this.additionalBodyProperties.put(key, value)
         }
 
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                this.additionalBodyProperties.putAll(additionalBodyProperties)
+            }
 
-        fun build(): OrgSecretUpdateParams = OrgSecretUpdateParams(
-            checkNotNull(orgSecretId) {
-                "`orgSecretId` is required but was not set"
-            },
-            metadata,
-            name,
-            secret,
-            type,
-            additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-            additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-            additionalBodyProperties.toUnmodifiable(),
-        )
+        fun build(): OrgSecretUpdateParams =
+            OrgSecretUpdateParams(
+                checkNotNull(orgSecretId) { "`orgSecretId` is required but was not set" },
+                metadata,
+                name,
+                secret,
+                type,
+                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalBodyProperties.toUnmodifiable(),
+            )
     }
 
     @JsonDeserialize(builder = Metadata.Builder::class)
     @NoAutoDetect
-    class Metadata private constructor(private val additionalProperties: Map<String, JsonValue>, ) {
+    class Metadata
+    private constructor(
+        private val additionalProperties: Map<String, JsonValue>,
+    ) {
 
         private var hashCode: Int = 0
 
@@ -376,19 +333,18 @@ class OrgSecretUpdateParams constructor(
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return other is Metadata &&
-              this.additionalProperties == other.additionalProperties
+            return other is Metadata && this.additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
-          if (hashCode == 0) {
-            hashCode = Objects.hash(additionalProperties)
-          }
-          return hashCode
+            if (hashCode == 0) {
+                hashCode = Objects.hash(additionalProperties)
+            }
+            return hashCode
         }
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
