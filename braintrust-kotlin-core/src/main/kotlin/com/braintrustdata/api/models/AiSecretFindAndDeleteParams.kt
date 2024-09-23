@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
-class OrgSecretFindAndDeleteParams
+class AiSecretFindAndDeleteParams
 constructor(
     private val name: String,
     private val orgName: String?,
@@ -26,8 +26,8 @@ constructor(
 
     fun orgName(): String? = orgName
 
-    internal fun getBody(): OrgSecretFindAndDeleteBody {
-        return OrgSecretFindAndDeleteBody(
+    internal fun getBody(): AiSecretFindAndDeleteBody {
+        return AiSecretFindAndDeleteBody(
             name,
             orgName,
             additionalBodyProperties,
@@ -38,9 +38,9 @@ constructor(
 
     internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
 
-    @JsonDeserialize(builder = OrgSecretFindAndDeleteBody.Builder::class)
+    @JsonDeserialize(builder = AiSecretFindAndDeleteBody.Builder::class)
     @NoAutoDetect
-    class OrgSecretFindAndDeleteBody
+    class AiSecretFindAndDeleteBody
     internal constructor(
         private val name: String?,
         private val orgName: String?,
@@ -49,13 +49,13 @@ constructor(
 
         private var hashCode: Int = 0
 
-        /** Name of the org secret */
+        /** Name of the AI secret */
         @JsonProperty("name") fun name(): String? = name
 
         /**
          * For nearly all users, this parameter should be unnecessary. But in the rare case that
          * your API key belongs to multiple organizations, you may specify the name of the
-         * organization the Org Secret belongs in.
+         * organization the AI Secret belongs in.
          */
         @JsonProperty("org_name") fun orgName(): String? = orgName
 
@@ -70,7 +70,7 @@ constructor(
                 return true
             }
 
-            return other is OrgSecretFindAndDeleteBody &&
+            return other is AiSecretFindAndDeleteBody &&
                 this.name == other.name &&
                 this.orgName == other.orgName &&
                 this.additionalProperties == other.additionalProperties
@@ -89,7 +89,7 @@ constructor(
         }
 
         override fun toString() =
-            "OrgSecretFindAndDeleteBody{name=$name, orgName=$orgName, additionalProperties=$additionalProperties}"
+            "AiSecretFindAndDeleteBody{name=$name, orgName=$orgName, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -102,19 +102,19 @@ constructor(
             private var orgName: String? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(orgSecretFindAndDeleteBody: OrgSecretFindAndDeleteBody) = apply {
-                this.name = orgSecretFindAndDeleteBody.name
-                this.orgName = orgSecretFindAndDeleteBody.orgName
-                additionalProperties(orgSecretFindAndDeleteBody.additionalProperties)
+            internal fun from(aiSecretFindAndDeleteBody: AiSecretFindAndDeleteBody) = apply {
+                this.name = aiSecretFindAndDeleteBody.name
+                this.orgName = aiSecretFindAndDeleteBody.orgName
+                additionalProperties(aiSecretFindAndDeleteBody.additionalProperties)
             }
 
-            /** Name of the org secret */
+            /** Name of the AI secret */
             @JsonProperty("name") fun name(name: String) = apply { this.name = name }
 
             /**
              * For nearly all users, this parameter should be unnecessary. But in the rare case that
              * your API key belongs to multiple organizations, you may specify the name of the
-             * organization the Org Secret belongs in.
+             * organization the AI Secret belongs in.
              */
             @JsonProperty("org_name")
             fun orgName(orgName: String) = apply { this.orgName = orgName }
@@ -133,8 +133,8 @@ constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): OrgSecretFindAndDeleteBody =
-                OrgSecretFindAndDeleteBody(
+            fun build(): AiSecretFindAndDeleteBody =
+                AiSecretFindAndDeleteBody(
                     checkNotNull(name) { "`name` is required but was not set" },
                     orgName,
                     additionalProperties.toUnmodifiable(),
@@ -153,7 +153,7 @@ constructor(
             return true
         }
 
-        return other is OrgSecretFindAndDeleteParams &&
+        return other is AiSecretFindAndDeleteParams &&
             this.name == other.name &&
             this.orgName == other.orgName &&
             this.additionalQueryParams == other.additionalQueryParams &&
@@ -172,7 +172,7 @@ constructor(
     }
 
     override fun toString() =
-        "OrgSecretFindAndDeleteParams{name=$name, orgName=$orgName, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+        "AiSecretFindAndDeleteParams{name=$name, orgName=$orgName, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -190,21 +190,21 @@ constructor(
         private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        internal fun from(orgSecretFindAndDeleteParams: OrgSecretFindAndDeleteParams) = apply {
-            this.name = orgSecretFindAndDeleteParams.name
-            this.orgName = orgSecretFindAndDeleteParams.orgName
-            additionalQueryParams(orgSecretFindAndDeleteParams.additionalQueryParams)
-            additionalHeaders(orgSecretFindAndDeleteParams.additionalHeaders)
-            additionalBodyProperties(orgSecretFindAndDeleteParams.additionalBodyProperties)
+        internal fun from(aiSecretFindAndDeleteParams: AiSecretFindAndDeleteParams) = apply {
+            this.name = aiSecretFindAndDeleteParams.name
+            this.orgName = aiSecretFindAndDeleteParams.orgName
+            additionalQueryParams(aiSecretFindAndDeleteParams.additionalQueryParams)
+            additionalHeaders(aiSecretFindAndDeleteParams.additionalHeaders)
+            additionalBodyProperties(aiSecretFindAndDeleteParams.additionalBodyProperties)
         }
 
-        /** Name of the org secret */
+        /** Name of the AI secret */
         fun name(name: String) = apply { this.name = name }
 
         /**
          * For nearly all users, this parameter should be unnecessary. But in the rare case that
          * your API key belongs to multiple organizations, you may specify the name of the
-         * organization the Org Secret belongs in.
+         * organization the AI Secret belongs in.
          */
         fun orgName(orgName: String) = apply { this.orgName = orgName }
 
@@ -262,8 +262,8 @@ constructor(
                 this.additionalBodyProperties.putAll(additionalBodyProperties)
             }
 
-        fun build(): OrgSecretFindAndDeleteParams =
-            OrgSecretFindAndDeleteParams(
+        fun build(): AiSecretFindAndDeleteParams =
+            AiSecretFindAndDeleteParams(
                 checkNotNull(name) { "`name` is required but was not set" },
                 orgName,
                 additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),

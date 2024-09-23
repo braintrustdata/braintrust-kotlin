@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
-class OrgSecretReplaceParams
+class AiSecretCreateParams
 constructor(
     private val name: String,
     private val metadata: Metadata?,
@@ -35,8 +35,8 @@ constructor(
 
     fun type(): String? = type
 
-    internal fun getBody(): OrgSecretReplaceBody {
-        return OrgSecretReplaceBody(
+    internal fun getBody(): AiSecretCreateBody {
+        return AiSecretCreateBody(
             name,
             metadata,
             orgName,
@@ -50,9 +50,9 @@ constructor(
 
     internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
 
-    @JsonDeserialize(builder = OrgSecretReplaceBody.Builder::class)
+    @JsonDeserialize(builder = AiSecretCreateBody.Builder::class)
     @NoAutoDetect
-    class OrgSecretReplaceBody
+    class AiSecretCreateBody
     internal constructor(
         private val name: String?,
         private val metadata: Metadata?,
@@ -64,7 +64,7 @@ constructor(
 
         private var hashCode: Int = 0
 
-        /** Name of the org secret */
+        /** Name of the AI secret */
         @JsonProperty("name") fun name(): String? = name
 
         @JsonProperty("metadata") fun metadata(): Metadata? = metadata
@@ -72,7 +72,7 @@ constructor(
         /**
          * For nearly all users, this parameter should be unnecessary. But in the rare case that
          * your API key belongs to multiple organizations, you may specify the name of the
-         * organization the Org Secret belongs in.
+         * organization the AI Secret belongs in.
          */
         @JsonProperty("org_name") fun orgName(): String? = orgName
 
@@ -95,7 +95,7 @@ constructor(
                 return true
             }
 
-            return other is OrgSecretReplaceBody &&
+            return other is AiSecretCreateBody &&
                 this.name == other.name &&
                 this.metadata == other.metadata &&
                 this.orgName == other.orgName &&
@@ -120,7 +120,7 @@ constructor(
         }
 
         override fun toString() =
-            "OrgSecretReplaceBody{name=$name, metadata=$metadata, orgName=$orgName, secret=$secret, type=$type, additionalProperties=$additionalProperties}"
+            "AiSecretCreateBody{name=$name, metadata=$metadata, orgName=$orgName, secret=$secret, type=$type, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -136,16 +136,16 @@ constructor(
             private var type: String? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(orgSecretReplaceBody: OrgSecretReplaceBody) = apply {
-                this.name = orgSecretReplaceBody.name
-                this.metadata = orgSecretReplaceBody.metadata
-                this.orgName = orgSecretReplaceBody.orgName
-                this.secret = orgSecretReplaceBody.secret
-                this.type = orgSecretReplaceBody.type
-                additionalProperties(orgSecretReplaceBody.additionalProperties)
+            internal fun from(aiSecretCreateBody: AiSecretCreateBody) = apply {
+                this.name = aiSecretCreateBody.name
+                this.metadata = aiSecretCreateBody.metadata
+                this.orgName = aiSecretCreateBody.orgName
+                this.secret = aiSecretCreateBody.secret
+                this.type = aiSecretCreateBody.type
+                additionalProperties(aiSecretCreateBody.additionalProperties)
             }
 
-            /** Name of the org secret */
+            /** Name of the AI secret */
             @JsonProperty("name") fun name(name: String) = apply { this.name = name }
 
             @JsonProperty("metadata")
@@ -154,7 +154,7 @@ constructor(
             /**
              * For nearly all users, this parameter should be unnecessary. But in the rare case that
              * your API key belongs to multiple organizations, you may specify the name of the
-             * organization the Org Secret belongs in.
+             * organization the AI Secret belongs in.
              */
             @JsonProperty("org_name")
             fun orgName(orgName: String) = apply { this.orgName = orgName }
@@ -181,8 +181,8 @@ constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): OrgSecretReplaceBody =
-                OrgSecretReplaceBody(
+            fun build(): AiSecretCreateBody =
+                AiSecretCreateBody(
                     checkNotNull(name) { "`name` is required but was not set" },
                     metadata,
                     orgName,
@@ -204,7 +204,7 @@ constructor(
             return true
         }
 
-        return other is OrgSecretReplaceParams &&
+        return other is AiSecretCreateParams &&
             this.name == other.name &&
             this.metadata == other.metadata &&
             this.orgName == other.orgName &&
@@ -229,7 +229,7 @@ constructor(
     }
 
     override fun toString() =
-        "OrgSecretReplaceParams{name=$name, metadata=$metadata, orgName=$orgName, secret=$secret, type=$type, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+        "AiSecretCreateParams{name=$name, metadata=$metadata, orgName=$orgName, secret=$secret, type=$type, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -250,18 +250,18 @@ constructor(
         private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        internal fun from(orgSecretReplaceParams: OrgSecretReplaceParams) = apply {
-            this.name = orgSecretReplaceParams.name
-            this.metadata = orgSecretReplaceParams.metadata
-            this.orgName = orgSecretReplaceParams.orgName
-            this.secret = orgSecretReplaceParams.secret
-            this.type = orgSecretReplaceParams.type
-            additionalQueryParams(orgSecretReplaceParams.additionalQueryParams)
-            additionalHeaders(orgSecretReplaceParams.additionalHeaders)
-            additionalBodyProperties(orgSecretReplaceParams.additionalBodyProperties)
+        internal fun from(aiSecretCreateParams: AiSecretCreateParams) = apply {
+            this.name = aiSecretCreateParams.name
+            this.metadata = aiSecretCreateParams.metadata
+            this.orgName = aiSecretCreateParams.orgName
+            this.secret = aiSecretCreateParams.secret
+            this.type = aiSecretCreateParams.type
+            additionalQueryParams(aiSecretCreateParams.additionalQueryParams)
+            additionalHeaders(aiSecretCreateParams.additionalHeaders)
+            additionalBodyProperties(aiSecretCreateParams.additionalBodyProperties)
         }
 
-        /** Name of the org secret */
+        /** Name of the AI secret */
         fun name(name: String) = apply { this.name = name }
 
         fun metadata(metadata: Metadata) = apply { this.metadata = metadata }
@@ -269,7 +269,7 @@ constructor(
         /**
          * For nearly all users, this parameter should be unnecessary. But in the rare case that
          * your API key belongs to multiple organizations, you may specify the name of the
-         * organization the Org Secret belongs in.
+         * organization the AI Secret belongs in.
          */
         fun orgName(orgName: String) = apply { this.orgName = orgName }
 
@@ -335,8 +335,8 @@ constructor(
                 this.additionalBodyProperties.putAll(additionalBodyProperties)
             }
 
-        fun build(): OrgSecretReplaceParams =
-            OrgSecretReplaceParams(
+        fun build(): AiSecretCreateParams =
+            AiSecretCreateParams(
                 checkNotNull(name) { "`name` is required but was not set" },
                 metadata,
                 orgName,
