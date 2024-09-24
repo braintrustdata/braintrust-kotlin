@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.FlowCollector
 
 class ProjectTagListPageAsync
 private constructor(
-    private val projectTagService: ProjectTagServiceAsync,
+    private val projectTagsService: ProjectTagServiceAsync,
     private val params: ProjectTagListParams,
     private val response: Response,
 ) {
@@ -34,21 +34,21 @@ private constructor(
         }
 
         return other is ProjectTagListPageAsync &&
-            this.projectTagService == other.projectTagService &&
+            this.projectTagsService == other.projectTagsService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            projectTagService,
+            projectTagsService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "ProjectTagListPageAsync{projectTagService=$projectTagService, params=$params, response=$response}"
+        "ProjectTagListPageAsync{projectTagsService=$projectTagsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -67,7 +67,7 @@ private constructor(
     }
 
     suspend fun getNextPage(): ProjectTagListPageAsync? {
-        return getNextPageParams()?.let { projectTagService.list(it) }
+        return getNextPageParams()?.let { projectTagsService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
@@ -75,12 +75,12 @@ private constructor(
     companion object {
 
         fun of(
-            projectTagService: ProjectTagServiceAsync,
+            projectTagsService: ProjectTagServiceAsync,
             params: ProjectTagListParams,
             response: Response
         ) =
             ProjectTagListPageAsync(
-                projectTagService,
+                projectTagsService,
                 params,
                 response,
             )

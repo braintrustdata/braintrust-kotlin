@@ -17,7 +17,7 @@ import java.util.Objects
 
 class ViewListPage
 private constructor(
-    private val viewService: ViewService,
+    private val viewsService: ViewService,
     private val params: ViewListParams,
     private val response: Response,
 ) {
@@ -32,21 +32,21 @@ private constructor(
         }
 
         return other is ViewListPage &&
-            this.viewService == other.viewService &&
+            this.viewsService == other.viewsService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            viewService,
+            viewsService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "ViewListPage{viewService=$viewService, params=$params, response=$response}"
+        "ViewListPage{viewsService=$viewsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -65,16 +65,16 @@ private constructor(
     }
 
     fun getNextPage(): ViewListPage? {
-        return getNextPageParams()?.let { viewService.list(it) }
+        return getNextPageParams()?.let { viewsService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
     companion object {
 
-        fun of(viewService: ViewService, params: ViewListParams, response: Response) =
+        fun of(viewsService: ViewService, params: ViewListParams, response: Response) =
             ViewListPage(
-                viewService,
+                viewsService,
                 params,
                 response,
             )

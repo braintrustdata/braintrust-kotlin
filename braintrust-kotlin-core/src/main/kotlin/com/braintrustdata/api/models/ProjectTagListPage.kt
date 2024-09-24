@@ -17,7 +17,7 @@ import java.util.Objects
 
 class ProjectTagListPage
 private constructor(
-    private val projectTagService: ProjectTagService,
+    private val projectTagsService: ProjectTagService,
     private val params: ProjectTagListParams,
     private val response: Response,
 ) {
@@ -32,21 +32,21 @@ private constructor(
         }
 
         return other is ProjectTagListPage &&
-            this.projectTagService == other.projectTagService &&
+            this.projectTagsService == other.projectTagsService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            projectTagService,
+            projectTagsService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "ProjectTagListPage{projectTagService=$projectTagService, params=$params, response=$response}"
+        "ProjectTagListPage{projectTagsService=$projectTagsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -65,7 +65,7 @@ private constructor(
     }
 
     fun getNextPage(): ProjectTagListPage? {
-        return getNextPageParams()?.let { projectTagService.list(it) }
+        return getNextPageParams()?.let { projectTagsService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
@@ -73,12 +73,12 @@ private constructor(
     companion object {
 
         fun of(
-            projectTagService: ProjectTagService,
+            projectTagsService: ProjectTagService,
             params: ProjectTagListParams,
             response: Response
         ) =
             ProjectTagListPage(
-                projectTagService,
+                projectTagsService,
                 params,
                 response,
             )
