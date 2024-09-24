@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.FlowCollector
 
 class AclListPageAsync
 private constructor(
-    private val aclService: AclServiceAsync,
+    private val aclsService: AclServiceAsync,
     private val params: AclListParams,
     private val response: Response,
 ) {
@@ -34,21 +34,21 @@ private constructor(
         }
 
         return other is AclListPageAsync &&
-            this.aclService == other.aclService &&
+            this.aclsService == other.aclsService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            aclService,
+            aclsService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "AclListPageAsync{aclService=$aclService, params=$params, response=$response}"
+        "AclListPageAsync{aclsService=$aclsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -67,16 +67,16 @@ private constructor(
     }
 
     suspend fun getNextPage(): AclListPageAsync? {
-        return getNextPageParams()?.let { aclService.list(it) }
+        return getNextPageParams()?.let { aclsService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
     companion object {
 
-        fun of(aclService: AclServiceAsync, params: AclListParams, response: Response) =
+        fun of(aclsService: AclServiceAsync, params: AclListParams, response: Response) =
             AclListPageAsync(
-                aclService,
+                aclsService,
                 params,
                 response,
             )

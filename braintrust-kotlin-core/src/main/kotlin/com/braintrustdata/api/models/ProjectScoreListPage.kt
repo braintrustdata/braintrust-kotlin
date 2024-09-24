@@ -17,7 +17,7 @@ import java.util.Objects
 
 class ProjectScoreListPage
 private constructor(
-    private val projectScoreService: ProjectScoreService,
+    private val projectScoresService: ProjectScoreService,
     private val params: ProjectScoreListParams,
     private val response: Response,
 ) {
@@ -32,21 +32,21 @@ private constructor(
         }
 
         return other is ProjectScoreListPage &&
-            this.projectScoreService == other.projectScoreService &&
+            this.projectScoresService == other.projectScoresService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            projectScoreService,
+            projectScoresService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "ProjectScoreListPage{projectScoreService=$projectScoreService, params=$params, response=$response}"
+        "ProjectScoreListPage{projectScoresService=$projectScoresService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -71,7 +71,7 @@ private constructor(
     }
 
     fun getNextPage(): ProjectScoreListPage? {
-        return getNextPageParams()?.let { projectScoreService.list(it) }
+        return getNextPageParams()?.let { projectScoresService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
@@ -79,12 +79,12 @@ private constructor(
     companion object {
 
         fun of(
-            projectScoreService: ProjectScoreService,
+            projectScoresService: ProjectScoreService,
             params: ProjectScoreListParams,
             response: Response
         ) =
             ProjectScoreListPage(
-                projectScoreService,
+                projectScoresService,
                 params,
                 response,
             )

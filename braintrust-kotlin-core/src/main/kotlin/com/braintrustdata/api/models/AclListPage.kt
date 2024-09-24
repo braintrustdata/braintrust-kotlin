@@ -17,7 +17,7 @@ import java.util.Objects
 
 class AclListPage
 private constructor(
-    private val aclService: AclService,
+    private val aclsService: AclService,
     private val params: AclListParams,
     private val response: Response,
 ) {
@@ -32,21 +32,21 @@ private constructor(
         }
 
         return other is AclListPage &&
-            this.aclService == other.aclService &&
+            this.aclsService == other.aclsService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            aclService,
+            aclsService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "AclListPage{aclService=$aclService, params=$params, response=$response}"
+        "AclListPage{aclsService=$aclsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -65,16 +65,16 @@ private constructor(
     }
 
     fun getNextPage(): AclListPage? {
-        return getNextPageParams()?.let { aclService.list(it) }
+        return getNextPageParams()?.let { aclsService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
     companion object {
 
-        fun of(aclService: AclService, params: AclListParams, response: Response) =
+        fun of(aclsService: AclService, params: AclListParams, response: Response) =
             AclListPage(
-                aclService,
+                aclsService,
                 params,
                 response,
             )

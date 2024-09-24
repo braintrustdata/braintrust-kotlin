@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.FlowCollector
 
 class ExperimentListPageAsync
 private constructor(
-    private val experimentService: ExperimentServiceAsync,
+    private val experimentsService: ExperimentServiceAsync,
     private val params: ExperimentListParams,
     private val response: Response,
 ) {
@@ -34,21 +34,21 @@ private constructor(
         }
 
         return other is ExperimentListPageAsync &&
-            this.experimentService == other.experimentService &&
+            this.experimentsService == other.experimentsService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            experimentService,
+            experimentsService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "ExperimentListPageAsync{experimentService=$experimentService, params=$params, response=$response}"
+        "ExperimentListPageAsync{experimentsService=$experimentsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -67,7 +67,7 @@ private constructor(
     }
 
     suspend fun getNextPage(): ExperimentListPageAsync? {
-        return getNextPageParams()?.let { experimentService.list(it) }
+        return getNextPageParams()?.let { experimentsService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
@@ -75,12 +75,12 @@ private constructor(
     companion object {
 
         fun of(
-            experimentService: ExperimentServiceAsync,
+            experimentsService: ExperimentServiceAsync,
             params: ExperimentListParams,
             response: Response
         ) =
             ExperimentListPageAsync(
-                experimentService,
+                experimentsService,
                 params,
                 response,
             )
