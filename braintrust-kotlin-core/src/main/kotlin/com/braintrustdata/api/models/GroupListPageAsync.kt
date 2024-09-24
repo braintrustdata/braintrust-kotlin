@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.FlowCollector
 
 class GroupListPageAsync
 private constructor(
-    private val groupService: GroupServiceAsync,
+    private val groupsService: GroupServiceAsync,
     private val params: GroupListParams,
     private val response: Response,
 ) {
@@ -34,21 +34,21 @@ private constructor(
         }
 
         return other is GroupListPageAsync &&
-            this.groupService == other.groupService &&
+            this.groupsService == other.groupsService &&
             this.params == other.params &&
             this.response == other.response
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
-            groupService,
+            groupsService,
             params,
             response,
         )
     }
 
     override fun toString() =
-        "GroupListPageAsync{groupService=$groupService, params=$params, response=$response}"
+        "GroupListPageAsync{groupsService=$groupsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
         return !objects().isEmpty()
@@ -67,16 +67,16 @@ private constructor(
     }
 
     suspend fun getNextPage(): GroupListPageAsync? {
-        return getNextPageParams()?.let { groupService.list(it) }
+        return getNextPageParams()?.let { groupsService.list(it) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
     companion object {
 
-        fun of(groupService: GroupServiceAsync, params: GroupListParams, response: Response) =
+        fun of(groupsService: GroupServiceAsync, params: GroupListParams, response: Response) =
             GroupListPageAsync(
-                groupService,
+                groupsService,
                 params,
                 response,
             )

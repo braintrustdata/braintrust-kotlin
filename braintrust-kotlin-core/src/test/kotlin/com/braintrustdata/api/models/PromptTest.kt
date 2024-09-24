@@ -21,7 +21,7 @@ class PromptTest {
                 .slug("slug")
                 .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .description("description")
-                .functionType(Prompt.FunctionType.TASK)
+                .functionType(Prompt.FunctionType.LLM)
                 .metadata(Prompt.Metadata.builder().build())
                 .promptData(
                     PromptData.builder()
@@ -99,6 +99,16 @@ class PromptTest {
                                     .build()
                             )
                         )
+                        .toolFunctions(
+                            listOf(
+                                PromptData.ToolFunction.ofFunction(
+                                    PromptData.ToolFunction.Function.builder()
+                                        .id("id")
+                                        .type(PromptData.ToolFunction.Function.Type.FUNCTION)
+                                        .build()
+                                )
+                            )
+                        )
                         .build()
                 )
                 .tags(listOf("string"))
@@ -113,7 +123,7 @@ class PromptTest {
         assertThat(prompt.slug()).isEqualTo("slug")
         assertThat(prompt.created()).isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(prompt.description()).isEqualTo("description")
-        assertThat(prompt.functionType()).isEqualTo(Prompt.FunctionType.TASK)
+        assertThat(prompt.functionType()).isEqualTo(Prompt.FunctionType.LLM)
         assertThat(prompt.metadata()).isEqualTo(Prompt.Metadata.builder().build())
         assertThat(prompt.promptData())
             .isEqualTo(
@@ -188,6 +198,16 @@ class PromptTest {
                                 .content("content")
                                 .type(PromptData.Prompt.Completion.Type.COMPLETION)
                                 .build()
+                        )
+                    )
+                    .toolFunctions(
+                        listOf(
+                            PromptData.ToolFunction.ofFunction(
+                                PromptData.ToolFunction.Function.builder()
+                                    .id("id")
+                                    .type(PromptData.ToolFunction.Function.Type.FUNCTION)
+                                    .build()
+                            )
                         )
                     )
                     .build()
