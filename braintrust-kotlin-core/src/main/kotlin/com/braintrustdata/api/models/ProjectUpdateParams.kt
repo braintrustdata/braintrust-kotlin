@@ -17,7 +17,7 @@ class ProjectUpdateParams
 constructor(
     private val projectId: String,
     private val name: String?,
-    private val settings: Settings?,
+    private val settings: ProjectSettings?,
     private val additionalQueryParams: Map<String, List<String>>,
     private val additionalHeaders: Map<String, List<String>>,
     private val additionalBodyProperties: Map<String, JsonValue>,
@@ -27,7 +27,7 @@ constructor(
 
     fun name(): String? = name
 
-    fun settings(): Settings? = settings
+    fun settings(): ProjectSettings? = settings
 
     internal fun getBody(): ProjectUpdateBody {
         return ProjectUpdateBody(
@@ -53,7 +53,7 @@ constructor(
     class ProjectUpdateBody
     internal constructor(
         private val name: String?,
-        private val settings: Settings?,
+        private val settings: ProjectSettings?,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
@@ -66,7 +66,7 @@ constructor(
          * Project settings. Patch operations replace all settings, so make sure you include all
          * settings you want to keep.
          */
-        @JsonProperty("settings") fun settings(): Settings? = settings
+        @JsonProperty("settings") fun settings(): ProjectSettings? = settings
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -108,7 +108,7 @@ constructor(
         class Builder {
 
             private var name: String? = null
-            private var settings: Settings? = null
+            private var settings: ProjectSettings? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(projectUpdateBody: ProjectUpdateBody) = apply {
@@ -125,7 +125,7 @@ constructor(
              * settings you want to keep.
              */
             @JsonProperty("settings")
-            fun settings(settings: Settings) = apply { this.settings = settings }
+            fun settings(settings: ProjectSettings) = apply { this.settings = settings }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -196,7 +196,7 @@ constructor(
 
         private var projectId: String? = null
         private var name: String? = null
-        private var settings: Settings? = null
+        private var settings: ProjectSettings? = null
         private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
         private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -220,7 +220,7 @@ constructor(
          * Project settings. Patch operations replace all settings, so make sure you include all
          * settings you want to keep.
          */
-        fun settings(settings: Settings) = apply { this.settings = settings }
+        fun settings(settings: ProjectSettings) = apply { this.settings = settings }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -285,85 +285,5 @@ constructor(
                 additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
                 additionalBodyProperties.toUnmodifiable(),
             )
-    }
-
-    /**
-     * Project settings. Patch operations replace all settings, so make sure you include all
-     * settings you want to keep.
-     */
-    @JsonDeserialize(builder = Settings.Builder::class)
-    @NoAutoDetect
-    class Settings
-    private constructor(
-        private val comparisonKey: String?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
-
-        private var hashCode: Int = 0
-
-        /** The key used to join two experiments (defaults to `input`). */
-        @JsonProperty("comparison_key") fun comparisonKey(): String? = comparisonKey
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Settings &&
-                this.comparisonKey == other.comparisonKey &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(comparisonKey, additionalProperties)
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "Settings{comparisonKey=$comparisonKey, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var comparisonKey: String? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(settings: Settings) = apply {
-                this.comparisonKey = settings.comparisonKey
-                additionalProperties(settings.additionalProperties)
-            }
-
-            /** The key used to join two experiments (defaults to `input`). */
-            @JsonProperty("comparison_key")
-            fun comparisonKey(comparisonKey: String) = apply { this.comparisonKey = comparisonKey }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            @JsonAnySetter
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun build(): Settings = Settings(comparisonKey, additionalProperties.toUnmodifiable())
-        }
     }
 }

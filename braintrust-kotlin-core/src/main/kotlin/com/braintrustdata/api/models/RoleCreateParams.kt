@@ -490,7 +490,7 @@ constructor(
 
             fun build(): MemberPermission =
                 MemberPermission(
-                    permission,
+                    checkNotNull(permission) { "`permission` is required but was not set" },
                     restrictObjectType,
                     additionalProperties.toUnmodifiable(),
                 )
