@@ -17,12 +17,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
-@JsonDeserialize(builder = Scorer.Builder::class)
+@JsonDeserialize(builder = ChatCompletionContentPartText.Builder::class)
 @NoAutoDetect
-class Scorer
+class ChatCompletionContentPartText
 private constructor(
+    private val text: JsonField<String>,
     private val type: JsonField<Type>,
-    private val index: JsonField<Long>,
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
@@ -30,22 +30,22 @@ private constructor(
 
     private var hashCode: Int = 0
 
+    fun text(): String? = text.getNullable("text")
+
     fun type(): Type = type.getRequired("type")
 
-    fun index(): Long = index.getRequired("index")
+    @JsonProperty("text") @ExcludeMissing fun _text() = text
 
     @JsonProperty("type") @ExcludeMissing fun _type() = type
-
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
 
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
-    fun validate(): Scorer = apply {
+    fun validate(): ChatCompletionContentPartText = apply {
         if (!validated) {
+            text()
             type()
-            index()
             validated = true
         }
     }
@@ -57,9 +57,9 @@ private constructor(
             return true
         }
 
-        return other is Scorer &&
+        return other is ChatCompletionContentPartText &&
+            this.text == other.text &&
             this.type == other.type &&
-            this.index == other.index &&
             this.additionalProperties == other.additionalProperties
     }
 
@@ -67,8 +67,8 @@ private constructor(
         if (hashCode == 0) {
             hashCode =
                 Objects.hash(
+                    text,
                     type,
-                    index,
                     additionalProperties,
                 )
         }
@@ -76,7 +76,7 @@ private constructor(
     }
 
     override fun toString() =
-        "Scorer{type=$type, index=$index, additionalProperties=$additionalProperties}"
+        "ChatCompletionContentPartText{text=$text, type=$type, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -85,27 +85,27 @@ private constructor(
 
     class Builder {
 
+        private var text: JsonField<String> = JsonMissing.of()
         private var type: JsonField<Type> = JsonMissing.of()
-        private var index: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        internal fun from(scorer: Scorer) = apply {
-            this.type = scorer.type
-            this.index = scorer.index
-            additionalProperties(scorer.additionalProperties)
+        internal fun from(chatCompletionContentPartText: ChatCompletionContentPartText) = apply {
+            this.text = chatCompletionContentPartText.text
+            this.type = chatCompletionContentPartText.type
+            additionalProperties(chatCompletionContentPartText.additionalProperties)
         }
+
+        fun text(text: String) = text(JsonField.of(text))
+
+        @JsonProperty("text")
+        @ExcludeMissing
+        fun text(text: JsonField<String>) = apply { this.text = text }
 
         fun type(type: Type) = type(JsonField.of(type))
 
         @JsonProperty("type")
         @ExcludeMissing
         fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        fun index(index: Long) = index(JsonField.of(index))
-
-        @JsonProperty("index")
-        @ExcludeMissing
-        fun index(index: JsonField<Long>) = apply { this.index = index }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -121,10 +121,10 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): Scorer =
-            Scorer(
+        fun build(): ChatCompletionContentPartText =
+            ChatCompletionContentPartText(
+                text,
                 type,
-                index,
                 additionalProperties.toUnmodifiable(),
             )
     }
@@ -151,29 +151,29 @@ private constructor(
 
         companion object {
 
-            val SCORER = Type(JsonField.of("scorer"))
+            val TEXT = Type(JsonField.of("text"))
 
             fun of(value: String) = Type(JsonField.of(value))
         }
 
         enum class Known {
-            SCORER,
+            TEXT,
         }
 
         enum class Value {
-            SCORER,
+            TEXT,
             _UNKNOWN,
         }
 
         fun value(): Value =
             when (this) {
-                SCORER -> Value.SCORER
+                TEXT -> Value.TEXT
                 else -> Value._UNKNOWN
             }
 
         fun known(): Known =
             when (this) {
-                SCORER -> Known.SCORER
+                TEXT -> Known.TEXT
                 else -> throw BraintrustInvalidDataException("Unknown Type: $value")
             }
 
