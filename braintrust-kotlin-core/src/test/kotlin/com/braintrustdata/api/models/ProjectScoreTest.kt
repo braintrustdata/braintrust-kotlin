@@ -27,16 +27,15 @@ class ProjectScoreTest {
                         .destination(ProjectScore.Config.Destination.EXPECTED)
                         .multiSelect(true)
                         .online(
-                            ProjectScore.Config.Online.builder()
+                            OnlineScoreConfig.builder()
                                 .samplingRate(1.0)
                                 .scorers(
                                     listOf(
-                                        ProjectScore.Config.Online.Scorer.ofFunction(
-                                            ProjectScore.Config.Online.Scorer.Function.builder()
+                                        OnlineScoreConfig.Scorer.ofFunction(
+                                            OnlineScoreConfig.Scorer.Function.builder()
                                                 .id("id")
                                                 .type(
-                                                    ProjectScore.Config.Online.Scorer.Function.Type
-                                                        .FUNCTION
+                                                    OnlineScoreConfig.Scorer.Function.Type.FUNCTION
                                                 )
                                                 .build()
                                         )
@@ -70,17 +69,14 @@ class ProjectScoreTest {
                     .destination(ProjectScore.Config.Destination.EXPECTED)
                     .multiSelect(true)
                     .online(
-                        ProjectScore.Config.Online.builder()
+                        OnlineScoreConfig.builder()
                             .samplingRate(1.0)
                             .scorers(
                                 listOf(
-                                    ProjectScore.Config.Online.Scorer.ofFunction(
-                                        ProjectScore.Config.Online.Scorer.Function.builder()
+                                    OnlineScoreConfig.Scorer.ofFunction(
+                                        OnlineScoreConfig.Scorer.Function.builder()
                                             .id("id")
-                                            .type(
-                                                ProjectScore.Config.Online.Scorer.Function.Type
-                                                    .FUNCTION
-                                            )
+                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
                                             .build()
                                     )
                                 )

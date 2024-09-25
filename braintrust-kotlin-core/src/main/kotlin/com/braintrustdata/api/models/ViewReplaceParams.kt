@@ -22,7 +22,7 @@ class ViewReplaceParams
 constructor(
     private val name: String,
     private val objectId: String,
-    private val objectType: ObjectType?,
+    private val objectType: ObjectType,
     private val viewType: ViewType?,
     private val deletedAt: OffsetDateTime?,
     private val options: ViewOptions?,
@@ -37,7 +37,7 @@ constructor(
 
     fun objectId(): String = objectId
 
-    fun objectType(): ObjectType? = objectType
+    fun objectType(): ObjectType = objectType
 
     fun viewType(): ViewType? = viewType
 
@@ -229,7 +229,7 @@ constructor(
                 ViewReplaceBody(
                     checkNotNull(name) { "`name` is required but was not set" },
                     checkNotNull(objectId) { "`objectId` is required but was not set" },
-                    objectType,
+                    checkNotNull(objectType) { "`objectType` is required but was not set" },
                     viewType,
                     deletedAt,
                     options,
@@ -402,7 +402,7 @@ constructor(
             ViewReplaceParams(
                 checkNotNull(name) { "`name` is required but was not set" },
                 checkNotNull(objectId) { "`objectId` is required but was not set" },
-                objectType,
+                checkNotNull(objectType) { "`objectType` is required but was not set" },
                 viewType,
                 deletedAt,
                 options,

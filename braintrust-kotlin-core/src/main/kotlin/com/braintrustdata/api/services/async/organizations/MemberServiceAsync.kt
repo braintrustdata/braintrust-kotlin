@@ -6,7 +6,7 @@ package com.braintrustdata.api.services.async.organizations
 
 import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.models.OrganizationMemberUpdateParams
-import com.braintrustdata.api.models.OrganizationMemberUpdateResponse
+import com.braintrustdata.api.models.PatchOrganizationMembersOutput
 
 interface MemberServiceAsync {
 
@@ -14,5 +14,5 @@ interface MemberServiceAsync {
     suspend fun update(
         params: OrganizationMemberUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): OrganizationMemberUpdateResponse
+    ): PatchOrganizationMembersOutput
 }

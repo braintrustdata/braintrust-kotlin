@@ -198,12 +198,12 @@ constructor(
         fun scoreType(scoreType: ScoreType) = apply { this.scoreType = scoreType }
 
         /** The type of the configured score */
-        fun scoreType(projectScoreTypeSingle: ScoreType.ProjectScoreTypeSingle) = apply {
-            this.scoreType = ScoreType.ofProjectScoreTypeSingle(projectScoreTypeSingle)
+        fun scoreType(projectScoreType: ScoreType.ProjectScoreType) = apply {
+            this.scoreType = ScoreType.ofProjectScoreType(projectScoreType)
         }
 
         /** The type of the configured score */
-        fun scoreType(projectScoreTypes: List<ProjectScoreType?>) = apply {
+        fun scoreType(projectScoreTypes: List<ProjectScoreType>) = apply {
             this.scoreType = ScoreType.ofProjectScoreTypes(projectScoreTypes)
         }
 
@@ -389,34 +389,32 @@ constructor(
     @JsonSerialize(using = ScoreType.Serializer::class)
     class ScoreType
     private constructor(
-        private val projectScoreTypeSingle: ProjectScoreTypeSingle? = null,
-        private val projectScoreTypes: List<ProjectScoreType?>? = null,
+        private val projectScoreType: ProjectScoreType? = null,
+        private val projectScoreTypes: List<ProjectScoreType>? = null,
         private val _json: JsonValue? = null,
     ) {
 
         private var validated: Boolean = false
 
         /** The type of the configured score */
-        fun projectScoreTypeSingle(): ProjectScoreTypeSingle? = projectScoreTypeSingle
+        fun projectScoreType(): ProjectScoreType? = projectScoreType
         /** The type of the configured score */
-        fun projectScoreTypes(): List<ProjectScoreType?>? = projectScoreTypes
+        fun projectScoreTypes(): List<ProjectScoreType>? = projectScoreTypes
 
-        fun isProjectScoreTypeSingle(): Boolean = projectScoreTypeSingle != null
+        fun isProjectScoreType(): Boolean = projectScoreType != null
 
         fun isProjectScoreTypes(): Boolean = projectScoreTypes != null
 
-        fun asProjectScoreTypeSingle(): ProjectScoreTypeSingle =
-            projectScoreTypeSingle.getOrThrow("projectScoreTypeSingle")
+        fun asProjectScoreType(): ProjectScoreType = projectScoreType.getOrThrow("projectScoreType")
 
-        fun asProjectScoreTypes(): List<ProjectScoreType?> =
+        fun asProjectScoreTypes(): List<ProjectScoreType> =
             projectScoreTypes.getOrThrow("projectScoreTypes")
 
         fun _json(): JsonValue? = _json
 
         fun <T> accept(visitor: Visitor<T>): T {
             return when {
-                projectScoreTypeSingle != null ->
-                    visitor.visitProjectScoreTypeSingle(projectScoreTypeSingle)
+                projectScoreType != null -> visitor.visitProjectScoreType(projectScoreType)
                 projectScoreTypes != null -> visitor.visitProjectScoreTypes(projectScoreTypes)
                 else -> visitor.unknown(_json)
             }
@@ -424,7 +422,7 @@ constructor(
 
         fun validate(): ScoreType = apply {
             if (!validated) {
-                if (projectScoreTypeSingle == null && projectScoreTypes == null) {
+                if (projectScoreType == null && projectScoreTypes == null) {
                     throw BraintrustInvalidDataException("Unknown ScoreType: $_json")
                 }
                 validated = true
@@ -437,18 +435,17 @@ constructor(
             }
 
             return other is ScoreType &&
-                this.projectScoreTypeSingle == other.projectScoreTypeSingle &&
+                this.projectScoreType == other.projectScoreType &&
                 this.projectScoreTypes == other.projectScoreTypes
         }
 
         override fun hashCode(): Int {
-            return Objects.hash(projectScoreTypeSingle, projectScoreTypes)
+            return Objects.hash(projectScoreType, projectScoreTypes)
         }
 
         override fun toString(): String {
             return when {
-                projectScoreTypeSingle != null ->
-                    "ScoreType{projectScoreTypeSingle=$projectScoreTypeSingle}"
+                projectScoreType != null -> "ScoreType{projectScoreType=$projectScoreType}"
                 projectScoreTypes != null -> "ScoreType{projectScoreTypes=$projectScoreTypes}"
                 _json != null -> "ScoreType{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid ScoreType")
@@ -457,18 +454,18 @@ constructor(
 
         companion object {
 
-            fun ofProjectScoreTypeSingle(projectScoreTypeSingle: ProjectScoreTypeSingle) =
-                ScoreType(projectScoreTypeSingle = projectScoreTypeSingle)
+            fun ofProjectScoreType(projectScoreType: ProjectScoreType) =
+                ScoreType(projectScoreType = projectScoreType)
 
-            fun ofProjectScoreTypes(projectScoreTypes: List<ProjectScoreType?>) =
+            fun ofProjectScoreTypes(projectScoreTypes: List<ProjectScoreType>) =
                 ScoreType(projectScoreTypes = projectScoreTypes)
         }
 
         interface Visitor<out T> {
 
-            fun visitProjectScoreTypeSingle(projectScoreTypeSingle: ProjectScoreTypeSingle): T
+            fun visitProjectScoreType(projectScoreType: ProjectScoreType): T
 
-            fun visitProjectScoreTypes(projectScoreTypes: List<ProjectScoreType?>): T
+            fun visitProjectScoreTypes(projectScoreTypes: List<ProjectScoreType>): T
 
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown ScoreType: $json")
@@ -479,10 +476,10 @@ constructor(
 
             override fun ObjectCodec.deserialize(node: JsonNode): ScoreType {
                 val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<ProjectScoreTypeSingle>())?.let {
-                    return ScoreType(projectScoreTypeSingle = it, _json = json)
+                tryDeserialize(node, jacksonTypeRef<ProjectScoreType>())?.let {
+                    return ScoreType(projectScoreType = it, _json = json)
                 }
-                tryDeserialize(node, jacksonTypeRef<List<ProjectScoreType?>>())?.let {
+                tryDeserialize(node, jacksonTypeRef<List<ProjectScoreType>>())?.let {
                     return ScoreType(projectScoreTypes = it, _json = json)
                 }
 
@@ -498,8 +495,7 @@ constructor(
                 provider: SerializerProvider
             ) {
                 when {
-                    value.projectScoreTypeSingle != null ->
-                        generator.writeObject(value.projectScoreTypeSingle)
+                    value.projectScoreType != null -> generator.writeObject(value.projectScoreType)
                     value.projectScoreTypes != null ->
                         generator.writeObject(value.projectScoreTypes)
                     value._json != null -> generator.writeObject(value._json)
@@ -508,7 +504,7 @@ constructor(
             }
         }
 
-        class ProjectScoreTypeSingle
+        class ProjectScoreType
         @JsonCreator
         private constructor(
             private val value: JsonField<String>,
@@ -521,7 +517,7 @@ constructor(
                     return true
                 }
 
-                return other is ProjectScoreTypeSingle && this.value == other.value
+                return other is ProjectScoreType && this.value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -530,17 +526,17 @@ constructor(
 
             companion object {
 
-                val SLIDER = ProjectScoreTypeSingle(JsonField.of("slider"))
+                val SLIDER = ProjectScoreType(JsonField.of("slider"))
 
-                val CATEGORICAL = ProjectScoreTypeSingle(JsonField.of("categorical"))
+                val CATEGORICAL = ProjectScoreType(JsonField.of("categorical"))
 
-                val WEIGHTED = ProjectScoreTypeSingle(JsonField.of("weighted"))
+                val WEIGHTED = ProjectScoreType(JsonField.of("weighted"))
 
-                val MINIMUM = ProjectScoreTypeSingle(JsonField.of("minimum"))
+                val MINIMUM = ProjectScoreType(JsonField.of("minimum"))
 
-                val ONLINE = ProjectScoreTypeSingle(JsonField.of("online"))
+                val ONLINE = ProjectScoreType(JsonField.of("online"))
 
-                fun of(value: String) = ProjectScoreTypeSingle(JsonField.of(value))
+                fun of(value: String) = ProjectScoreType(JsonField.of(value))
             }
 
             enum class Known {
@@ -577,10 +573,7 @@ constructor(
                     WEIGHTED -> Known.WEIGHTED
                     MINIMUM -> Known.MINIMUM
                     ONLINE -> Known.ONLINE
-                    else ->
-                        throw BraintrustInvalidDataException(
-                            "Unknown ProjectScoreTypeSingle: $value"
-                        )
+                    else -> throw BraintrustInvalidDataException("Unknown ProjectScoreType: $value")
                 }
 
             fun asString(): String = _value().asStringOrThrow()
