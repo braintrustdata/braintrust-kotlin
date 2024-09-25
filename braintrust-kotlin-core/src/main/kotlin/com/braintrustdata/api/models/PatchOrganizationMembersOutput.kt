@@ -17,9 +17,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
-@JsonDeserialize(builder = OrganizationMemberUpdateResponse.Builder::class)
+@JsonDeserialize(builder = PatchOrganizationMembersOutput.Builder::class)
 @NoAutoDetect
-class OrganizationMemberUpdateResponse
+class PatchOrganizationMembersOutput
 private constructor(
     private val status: JsonField<Status>,
     private val sendEmailError: JsonField<String>,
@@ -50,7 +50,7 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
-    fun validate(): OrganizationMemberUpdateResponse = apply {
+    fun validate(): PatchOrganizationMembersOutput = apply {
         if (!validated) {
             status()
             sendEmailError()
@@ -65,7 +65,7 @@ private constructor(
             return true
         }
 
-        return other is OrganizationMemberUpdateResponse &&
+        return other is PatchOrganizationMembersOutput &&
             this.status == other.status &&
             this.sendEmailError == other.sendEmailError &&
             this.additionalProperties == other.additionalProperties
@@ -84,7 +84,7 @@ private constructor(
     }
 
     override fun toString() =
-        "OrganizationMemberUpdateResponse{status=$status, sendEmailError=$sendEmailError, additionalProperties=$additionalProperties}"
+        "PatchOrganizationMembersOutput{status=$status, sendEmailError=$sendEmailError, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -97,12 +97,11 @@ private constructor(
         private var sendEmailError: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        internal fun from(organizationMemberUpdateResponse: OrganizationMemberUpdateResponse) =
-            apply {
-                this.status = organizationMemberUpdateResponse.status
-                this.sendEmailError = organizationMemberUpdateResponse.sendEmailError
-                additionalProperties(organizationMemberUpdateResponse.additionalProperties)
-            }
+        internal fun from(patchOrganizationMembersOutput: PatchOrganizationMembersOutput) = apply {
+            this.status = patchOrganizationMembersOutput.status
+            this.sendEmailError = patchOrganizationMembersOutput.sendEmailError
+            additionalProperties(patchOrganizationMembersOutput.additionalProperties)
+        }
 
         fun status(status: Status) = status(JsonField.of(status))
 
@@ -140,8 +139,8 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): OrganizationMemberUpdateResponse =
-            OrganizationMemberUpdateResponse(
+        fun build(): PatchOrganizationMembersOutput =
+            PatchOrganizationMembersOutput(
                 status,
                 sendEmailError,
                 additionalProperties.toUnmodifiable(),

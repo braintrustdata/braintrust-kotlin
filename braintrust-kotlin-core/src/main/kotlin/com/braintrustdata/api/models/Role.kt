@@ -360,7 +360,7 @@ private constructor(
          *
          * Permissions can be assigned to to objects on an individual basis, or grouped into roles
          */
-        fun permission(): Permission? = permission.getNullable("permission")
+        fun permission(): Permission = permission.getRequired("permission")
 
         /** The object type that the ACL applies to */
         fun restrictObjectType(): RestrictObjectType? =
