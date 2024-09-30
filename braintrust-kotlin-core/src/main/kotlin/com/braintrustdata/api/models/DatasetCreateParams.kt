@@ -16,8 +16,8 @@ import java.util.Objects
 class DatasetCreateParams
 constructor(
     private val name: String,
+    private val projectId: String,
     private val description: String?,
-    private val projectId: String?,
     private val additionalQueryParams: Map<String, List<String>>,
     private val additionalHeaders: Map<String, List<String>>,
     private val additionalBodyProperties: Map<String, JsonValue>,
@@ -25,15 +25,15 @@ constructor(
 
     fun name(): String = name
 
-    fun description(): String? = description
+    fun projectId(): String = projectId
 
-    fun projectId(): String? = projectId
+    fun description(): String? = description
 
     internal fun getBody(): DatasetCreateBody {
         return DatasetCreateBody(
             name,
-            description,
             projectId,
+            description,
             additionalBodyProperties,
         )
     }
@@ -47,8 +47,8 @@ constructor(
     class DatasetCreateBody
     internal constructor(
         private val name: String?,
-        private val description: String?,
         private val projectId: String?,
+        private val description: String?,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
@@ -57,11 +57,11 @@ constructor(
         /** Name of the dataset. Within a project, dataset names are unique */
         @JsonProperty("name") fun name(): String? = name
 
-        /** Textual description of the dataset */
-        @JsonProperty("description") fun description(): String? = description
-
         /** Unique identifier for the project that the dataset belongs under */
         @JsonProperty("project_id") fun projectId(): String? = projectId
+
+        /** Textual description of the dataset */
+        @JsonProperty("description") fun description(): String? = description
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -76,8 +76,8 @@ constructor(
 
             return other is DatasetCreateBody &&
                 this.name == other.name &&
-                this.description == other.description &&
                 this.projectId == other.projectId &&
+                this.description == other.description &&
                 this.additionalProperties == other.additionalProperties
         }
 
@@ -86,8 +86,8 @@ constructor(
                 hashCode =
                     Objects.hash(
                         name,
-                        description,
                         projectId,
+                        description,
                         additionalProperties,
                     )
             }
@@ -95,7 +95,7 @@ constructor(
         }
 
         override fun toString() =
-            "DatasetCreateBody{name=$name, description=$description, projectId=$projectId, additionalProperties=$additionalProperties}"
+            "DatasetCreateBody{name=$name, projectId=$projectId, description=$description, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -105,27 +105,27 @@ constructor(
         class Builder {
 
             private var name: String? = null
-            private var description: String? = null
             private var projectId: String? = null
+            private var description: String? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(datasetCreateBody: DatasetCreateBody) = apply {
                 this.name = datasetCreateBody.name
-                this.description = datasetCreateBody.description
                 this.projectId = datasetCreateBody.projectId
+                this.description = datasetCreateBody.description
                 additionalProperties(datasetCreateBody.additionalProperties)
             }
 
             /** Name of the dataset. Within a project, dataset names are unique */
             @JsonProperty("name") fun name(name: String) = apply { this.name = name }
 
-            /** Textual description of the dataset */
-            @JsonProperty("description")
-            fun description(description: String) = apply { this.description = description }
-
             /** Unique identifier for the project that the dataset belongs under */
             @JsonProperty("project_id")
             fun projectId(projectId: String) = apply { this.projectId = projectId }
+
+            /** Textual description of the dataset */
+            @JsonProperty("description")
+            fun description(description: String) = apply { this.description = description }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -144,8 +144,8 @@ constructor(
             fun build(): DatasetCreateBody =
                 DatasetCreateBody(
                     checkNotNull(name) { "`name` is required but was not set" },
+                    checkNotNull(projectId) { "`projectId` is required but was not set" },
                     description,
-                    projectId,
                     additionalProperties.toUnmodifiable(),
                 )
         }
@@ -164,8 +164,8 @@ constructor(
 
         return other is DatasetCreateParams &&
             this.name == other.name &&
-            this.description == other.description &&
             this.projectId == other.projectId &&
+            this.description == other.description &&
             this.additionalQueryParams == other.additionalQueryParams &&
             this.additionalHeaders == other.additionalHeaders &&
             this.additionalBodyProperties == other.additionalBodyProperties
@@ -174,8 +174,8 @@ constructor(
     override fun hashCode(): Int {
         return Objects.hash(
             name,
-            description,
             projectId,
+            description,
             additionalQueryParams,
             additionalHeaders,
             additionalBodyProperties,
@@ -183,7 +183,7 @@ constructor(
     }
 
     override fun toString() =
-        "DatasetCreateParams{name=$name, description=$description, projectId=$projectId, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+        "DatasetCreateParams{name=$name, projectId=$projectId, description=$description, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -196,16 +196,16 @@ constructor(
     class Builder {
 
         private var name: String? = null
-        private var description: String? = null
         private var projectId: String? = null
+        private var description: String? = null
         private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
         private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(datasetCreateParams: DatasetCreateParams) = apply {
             this.name = datasetCreateParams.name
-            this.description = datasetCreateParams.description
             this.projectId = datasetCreateParams.projectId
+            this.description = datasetCreateParams.description
             additionalQueryParams(datasetCreateParams.additionalQueryParams)
             additionalHeaders(datasetCreateParams.additionalHeaders)
             additionalBodyProperties(datasetCreateParams.additionalBodyProperties)
@@ -214,11 +214,11 @@ constructor(
         /** Name of the dataset. Within a project, dataset names are unique */
         fun name(name: String) = apply { this.name = name }
 
-        /** Textual description of the dataset */
-        fun description(description: String) = apply { this.description = description }
-
         /** Unique identifier for the project that the dataset belongs under */
         fun projectId(projectId: String) = apply { this.projectId = projectId }
+
+        /** Textual description of the dataset */
+        fun description(description: String) = apply { this.description = description }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
             this.additionalQueryParams.clear()
@@ -277,8 +277,8 @@ constructor(
         fun build(): DatasetCreateParams =
             DatasetCreateParams(
                 checkNotNull(name) { "`name` is required but was not set" },
+                checkNotNull(projectId) { "`projectId` is required but was not set" },
                 description,
-                projectId,
                 additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
                 additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
                 additionalBodyProperties.toUnmodifiable(),
