@@ -62,7 +62,7 @@ interface FunctionServiceAsync {
     suspend fun invoke(
         params: FunctionInvokeParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): FunctionInvokeResponse
+    ): FunctionInvokeResponse?
 
     /**
      * Create or replace function. If there is an existing function in the project with the same

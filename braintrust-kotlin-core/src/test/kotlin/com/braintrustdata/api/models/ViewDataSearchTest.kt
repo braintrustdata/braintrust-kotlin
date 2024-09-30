@@ -2,7 +2,7 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.JsonNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -12,15 +12,15 @@ class ViewDataSearchTest {
     fun createViewDataSearch() {
         val viewDataSearch =
             ViewDataSearch.builder()
-                .filter(listOf(JsonValue.from(mapOf<String, Any>())))
-                .match(listOf(JsonValue.from(mapOf<String, Any>())))
-                .sort(listOf(JsonValue.from(mapOf<String, Any>())))
-                .tag(listOf(JsonValue.from(mapOf<String, Any>())))
+                .filter(listOf(JsonNull.of()))
+                .match(listOf(JsonNull.of()))
+                .sort(listOf(JsonNull.of()))
+                .tag(listOf(JsonNull.of()))
                 .build()
         assertThat(viewDataSearch).isNotNull
-        assertThat(viewDataSearch.filter()).containsExactly(JsonValue.from(mapOf<String, Any>()))
-        assertThat(viewDataSearch.match()).containsExactly(JsonValue.from(mapOf<String, Any>()))
-        assertThat(viewDataSearch.sort()).containsExactly(JsonValue.from(mapOf<String, Any>()))
-        assertThat(viewDataSearch.tag()).containsExactly(JsonValue.from(mapOf<String, Any>()))
+        assertThat(viewDataSearch.filter()).containsExactly(JsonNull.of())
+        assertThat(viewDataSearch.match()).containsExactly(JsonNull.of())
+        assertThat(viewDataSearch.sort()).containsExactly(JsonNull.of())
+        assertThat(viewDataSearch.tag()).containsExactly(JsonNull.of())
     }
 }

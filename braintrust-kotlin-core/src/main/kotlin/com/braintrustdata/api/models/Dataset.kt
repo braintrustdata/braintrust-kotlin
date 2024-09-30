@@ -38,7 +38,7 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /** Unique identifier for the project that the dataset belongs under */
-    fun projectId(): String? = projectId.getNullable("project_id")
+    fun projectId(): String = projectId.getRequired("project_id")
 
     /** Name of the dataset. Within a project, dataset names are unique */
     fun name(): String = name.getRequired("name")
