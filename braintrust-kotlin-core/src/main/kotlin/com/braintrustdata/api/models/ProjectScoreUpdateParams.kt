@@ -30,6 +30,7 @@ class ProjectScoreUpdateParams
 constructor(
     private val projectScoreId: String,
     private val categories: Categories?,
+    private val config: ProjectScoreConfig?,
     private val description: String?,
     private val name: String?,
     private val scoreType: ScoreType?,
@@ -42,6 +43,8 @@ constructor(
 
     fun categories(): Categories? = categories
 
+    fun config(): ProjectScoreConfig? = config
+
     fun description(): String? = description
 
     fun name(): String? = name
@@ -51,6 +54,7 @@ constructor(
     internal fun getBody(): ProjectScoreUpdateBody {
         return ProjectScoreUpdateBody(
             categories,
+            config,
             description,
             name,
             scoreType,
@@ -69,11 +73,13 @@ constructor(
         }
     }
 
+    /** A project score is a user-configured score, which can be manually-labeled through the UI */
     @JsonDeserialize(builder = ProjectScoreUpdateBody.Builder::class)
     @NoAutoDetect
     class ProjectScoreUpdateBody
     internal constructor(
         private val categories: Categories?,
+        private val config: ProjectScoreConfig?,
         private val description: String?,
         private val name: String?,
         private val scoreType: ScoreType?,
@@ -83,6 +89,8 @@ constructor(
         private var hashCode: Int = 0
 
         @JsonProperty("categories") fun categories(): Categories? = categories
+
+        @JsonProperty("config") fun config(): ProjectScoreConfig? = config
 
         /** Textual description of the project score */
         @JsonProperty("description") fun description(): String? = description
@@ -106,6 +114,7 @@ constructor(
 
             return other is ProjectScoreUpdateBody &&
                 this.categories == other.categories &&
+                this.config == other.config &&
                 this.description == other.description &&
                 this.name == other.name &&
                 this.scoreType == other.scoreType &&
@@ -117,6 +126,7 @@ constructor(
                 hashCode =
                     Objects.hash(
                         categories,
+                        config,
                         description,
                         name,
                         scoreType,
@@ -127,7 +137,7 @@ constructor(
         }
 
         override fun toString() =
-            "ProjectScoreUpdateBody{categories=$categories, description=$description, name=$name, scoreType=$scoreType, additionalProperties=$additionalProperties}"
+            "ProjectScoreUpdateBody{categories=$categories, config=$config, description=$description, name=$name, scoreType=$scoreType, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -137,6 +147,7 @@ constructor(
         class Builder {
 
             private var categories: Categories? = null
+            private var config: ProjectScoreConfig? = null
             private var description: String? = null
             private var name: String? = null
             private var scoreType: ScoreType? = null
@@ -144,6 +155,7 @@ constructor(
 
             internal fun from(projectScoreUpdateBody: ProjectScoreUpdateBody) = apply {
                 this.categories = projectScoreUpdateBody.categories
+                this.config = projectScoreUpdateBody.config
                 this.description = projectScoreUpdateBody.description
                 this.name = projectScoreUpdateBody.name
                 this.scoreType = projectScoreUpdateBody.scoreType
@@ -152,6 +164,9 @@ constructor(
 
             @JsonProperty("categories")
             fun categories(categories: Categories) = apply { this.categories = categories }
+
+            @JsonProperty("config")
+            fun config(config: ProjectScoreConfig) = apply { this.config = config }
 
             /** Textual description of the project score */
             @JsonProperty("description")
@@ -181,6 +196,7 @@ constructor(
             fun build(): ProjectScoreUpdateBody =
                 ProjectScoreUpdateBody(
                     categories,
+                    config,
                     description,
                     name,
                     scoreType,
@@ -203,6 +219,7 @@ constructor(
         return other is ProjectScoreUpdateParams &&
             this.projectScoreId == other.projectScoreId &&
             this.categories == other.categories &&
+            this.config == other.config &&
             this.description == other.description &&
             this.name == other.name &&
             this.scoreType == other.scoreType &&
@@ -215,6 +232,7 @@ constructor(
         return Objects.hash(
             projectScoreId,
             categories,
+            config,
             description,
             name,
             scoreType,
@@ -225,7 +243,7 @@ constructor(
     }
 
     override fun toString() =
-        "ProjectScoreUpdateParams{projectScoreId=$projectScoreId, categories=$categories, description=$description, name=$name, scoreType=$scoreType, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+        "ProjectScoreUpdateParams{projectScoreId=$projectScoreId, categories=$categories, config=$config, description=$description, name=$name, scoreType=$scoreType, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -239,6 +257,7 @@ constructor(
 
         private var projectScoreId: String? = null
         private var categories: Categories? = null
+        private var config: ProjectScoreConfig? = null
         private var description: String? = null
         private var name: String? = null
         private var scoreType: ScoreType? = null
@@ -249,6 +268,7 @@ constructor(
         internal fun from(projectScoreUpdateParams: ProjectScoreUpdateParams) = apply {
             this.projectScoreId = projectScoreUpdateParams.projectScoreId
             this.categories = projectScoreUpdateParams.categories
+            this.config = projectScoreUpdateParams.config
             this.description = projectScoreUpdateParams.description
             this.name = projectScoreUpdateParams.name
             this.scoreType = projectScoreUpdateParams.scoreType
@@ -282,6 +302,8 @@ constructor(
         fun categories(nullableVariant: Categories.NullableVariant) = apply {
             this.categories = Categories.ofNullableVariant(nullableVariant)
         }
+
+        fun config(config: ProjectScoreConfig) = apply { this.config = config }
 
         /** Textual description of the project score */
         fun description(description: String) = apply { this.description = description }
@@ -350,6 +372,7 @@ constructor(
             ProjectScoreUpdateParams(
                 checkNotNull(projectScoreId) { "`projectScoreId` is required but was not set" },
                 categories,
+                config,
                 description,
                 name,
                 scoreType,

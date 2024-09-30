@@ -18,10 +18,10 @@ import java.util.Objects
 @NoAutoDetect
 class ViewDataSearch
 private constructor(
-    private val filter: JsonField<List<JsonValue>>,
-    private val tag: JsonField<List<JsonValue>>,
-    private val match: JsonField<List<JsonValue>>,
-    private val sort: JsonField<List<JsonValue>>,
+    private val filter: JsonField<List<JsonValue?>>,
+    private val tag: JsonField<List<JsonValue?>>,
+    private val match: JsonField<List<JsonValue?>>,
+    private val sort: JsonField<List<JsonValue?>>,
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
@@ -29,13 +29,13 @@ private constructor(
 
     private var hashCode: Int = 0
 
-    fun filter(): List<JsonValue>? = filter.getNullable("filter")
+    fun filter(): List<JsonValue?>? = filter.getNullable("filter")
 
-    fun tag(): List<JsonValue>? = tag.getNullable("tag")
+    fun tag(): List<JsonValue?>? = tag.getNullable("tag")
 
-    fun match(): List<JsonValue>? = match.getNullable("match")
+    fun match(): List<JsonValue?>? = match.getNullable("match")
 
-    fun sort(): List<JsonValue>? = sort.getNullable("sort")
+    fun sort(): List<JsonValue?>? = sort.getNullable("sort")
 
     @JsonProperty("filter") @ExcludeMissing fun _filter() = filter
 
@@ -98,10 +98,10 @@ private constructor(
 
     class Builder {
 
-        private var filter: JsonField<List<JsonValue>> = JsonMissing.of()
-        private var tag: JsonField<List<JsonValue>> = JsonMissing.of()
-        private var match: JsonField<List<JsonValue>> = JsonMissing.of()
-        private var sort: JsonField<List<JsonValue>> = JsonMissing.of()
+        private var filter: JsonField<List<JsonValue?>> = JsonMissing.of()
+        private var tag: JsonField<List<JsonValue?>> = JsonMissing.of()
+        private var match: JsonField<List<JsonValue?>> = JsonMissing.of()
+        private var sort: JsonField<List<JsonValue?>> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(viewDataSearch: ViewDataSearch) = apply {
@@ -112,29 +112,29 @@ private constructor(
             additionalProperties(viewDataSearch.additionalProperties)
         }
 
-        fun filter(filter: List<JsonValue>) = filter(JsonField.of(filter))
+        fun filter(filter: List<JsonValue?>) = filter(JsonField.of(filter))
 
         @JsonProperty("filter")
         @ExcludeMissing
-        fun filter(filter: JsonField<List<JsonValue>>) = apply { this.filter = filter }
+        fun filter(filter: JsonField<List<JsonValue?>>) = apply { this.filter = filter }
 
-        fun tag(tag: List<JsonValue>) = tag(JsonField.of(tag))
+        fun tag(tag: List<JsonValue?>) = tag(JsonField.of(tag))
 
         @JsonProperty("tag")
         @ExcludeMissing
-        fun tag(tag: JsonField<List<JsonValue>>) = apply { this.tag = tag }
+        fun tag(tag: JsonField<List<JsonValue?>>) = apply { this.tag = tag }
 
-        fun match(match: List<JsonValue>) = match(JsonField.of(match))
+        fun match(match: List<JsonValue?>) = match(JsonField.of(match))
 
         @JsonProperty("match")
         @ExcludeMissing
-        fun match(match: JsonField<List<JsonValue>>) = apply { this.match = match }
+        fun match(match: JsonField<List<JsonValue?>>) = apply { this.match = match }
 
-        fun sort(sort: List<JsonValue>) = sort(JsonField.of(sort))
+        fun sort(sort: List<JsonValue?>) = sort(JsonField.of(sort))
 
         @JsonProperty("sort")
         @ExcludeMissing
-        fun sort(sort: JsonField<List<JsonValue>>) = apply { this.sort = sort }
+        fun sort(sort: JsonField<List<JsonValue?>>) = apply { this.sort = sort }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()

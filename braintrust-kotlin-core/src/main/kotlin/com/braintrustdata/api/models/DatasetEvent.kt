@@ -54,7 +54,7 @@ private constructor(
     fun created(): OffsetDateTime = created.getRequired("created")
 
     /** Unique identifier for the project that the dataset belongs under */
-    fun projectId(): String? = projectId.getNullable("project_id")
+    fun projectId(): String = projectId.getRequired("project_id")
 
     /** Unique identifier for the dataset */
     fun datasetId(): String = datasetId.getRequired("dataset_id")
