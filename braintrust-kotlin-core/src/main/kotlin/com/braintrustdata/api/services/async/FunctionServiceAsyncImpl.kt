@@ -192,7 +192,7 @@ constructor(
     override suspend fun invoke(
         params: FunctionInvokeParams,
         requestOptions: RequestOptions
-    ): FunctionInvokeResponse? {
+    ): FunctionInvokeResponse {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
