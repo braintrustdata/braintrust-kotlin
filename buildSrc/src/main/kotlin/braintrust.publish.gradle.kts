@@ -28,7 +28,7 @@ configure<PublishingExtension> {
                 developers {
                     developer {
                         name.set("Braintrust")
-                        email.set("info@braintrustdata.com")
+                        email.set("info-test@braintrustdata.com")
                     }
                 }
 
