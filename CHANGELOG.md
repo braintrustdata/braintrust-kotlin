@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 (2024-10-01)
+
+Full Changelog: [v0.2.0...v0.3.0](https://github.com/braintrustdata/braintrust-kotlin/compare/v0.2.0...v0.3.0)
+
+### Features
+
+* **api:** manual updates ([#47](https://github.com/braintrustdata/braintrust-kotlin/issues/47)) ([36a795d](https://github.com/braintrustdata/braintrust-kotlin/commit/36a795d743eecb43dc011e4251ae109b62e5eca1))
+
 ## 0.2.0 (2024-10-01)
 
 Full Changelog: [v0.1.0...v0.2.0](https://github.com/braintrustdata/braintrust-kotlin/compare/v0.1.0...v0.2.0)
