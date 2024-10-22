@@ -33,8 +33,6 @@ private constructor(
 
     private var validated: Boolean = false
 
-    private var hashCode: Int = 0
-
     /** Unique identifier for the environment variable */
     fun id(): String = id.getRequired("id")
 
@@ -88,40 +86,6 @@ private constructor(
     }
 
     fun toBuilder() = Builder().from(this)
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is EnvVar &&
-            this.id == other.id &&
-            this.objectType == other.objectType &&
-            this.objectId == other.objectId &&
-            this.name == other.name &&
-            this.created == other.created &&
-            this.used == other.used &&
-            this.additionalProperties == other.additionalProperties
-    }
-
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    id,
-                    objectType,
-                    objectId,
-                    name,
-                    created,
-                    used,
-                    additionalProperties,
-                )
-        }
-        return hashCode
-    }
-
-    override fun toString() =
-        "EnvVar{id=$id, objectType=$objectType, objectId=$objectId, name=$name, created=$created, used=$used, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -233,7 +197,7 @@ private constructor(
                 return true
             }
 
-            return other is ObjectType && this.value == other.value
+            return /* spotless:off */ other is ObjectType && this.value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -282,4 +246,24 @@ private constructor(
 
         fun asString(): String = _value().asStringOrThrow()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is EnvVar && this.id == other.id && this.objectType == other.objectType && this.objectId == other.objectId && this.name == other.name && this.created == other.created && this.used == other.used && this.additionalProperties == other.additionalProperties /* spotless:on */
+    }
+
+    private var hashCode: Int = 0
+
+    override fun hashCode(): Int {
+        if (hashCode == 0) {
+            hashCode = /* spotless:off */ Objects.hash(id, objectType, objectId, name, created, used, additionalProperties) /* spotless:on */
+        }
+        return hashCode
+    }
+
+    override fun toString() =
+        "EnvVar{id=$id, objectType=$objectType, objectId=$objectId, name=$name, created=$created, used=$used, additionalProperties=$additionalProperties}"
 }

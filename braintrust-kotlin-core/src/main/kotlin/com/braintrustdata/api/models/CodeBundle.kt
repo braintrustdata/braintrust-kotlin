@@ -39,8 +39,6 @@ private constructor(
 
     private var validated: Boolean = false
 
-    private var hashCode: Int = 0
-
     fun runtimeContext(): RuntimeContext = runtimeContext.getRequired("runtime_context")
 
     fun location(): Location = location.getRequired("location")
@@ -74,36 +72,6 @@ private constructor(
     }
 
     fun toBuilder() = Builder().from(this)
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is CodeBundle &&
-            this.runtimeContext == other.runtimeContext &&
-            this.location == other.location &&
-            this.bundleId == other.bundleId &&
-            this.preview == other.preview &&
-            this.additionalProperties == other.additionalProperties
-    }
-
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    runtimeContext,
-                    location,
-                    bundleId,
-                    preview,
-                    additionalProperties,
-                )
-        }
-        return hashCode
-    }
-
-    override fun toString() =
-        "CodeBundle{runtimeContext=$runtimeContext, location=$location, bundleId=$bundleId, preview=$preview, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -228,13 +196,11 @@ private constructor(
                 return true
             }
 
-            return other is Location &&
-                this.experiment == other.experiment &&
-                this.function == other.function
+            return /* spotless:off */ other is Location && this.experiment == other.experiment && this.function == other.function /* spotless:on */
         }
 
         override fun hashCode(): Int {
-            return Objects.hash(experiment, function)
+            return /* spotless:off */ Objects.hash(experiment, function) /* spotless:on */
         }
 
         override fun toString(): String {
@@ -268,6 +234,7 @@ private constructor(
 
             override fun ObjectCodec.deserialize(node: JsonNode): Location {
                 val json = JsonValue.fromJsonNode(node)
+
                 tryDeserialize(node, jacksonTypeRef<Experiment>()) { it.validate() }
                     ?.let {
                         return Location(experiment = it, _json = json)
@@ -309,8 +276,6 @@ private constructor(
 
             private var validated: Boolean = false
 
-            private var hashCode: Int = 0
-
             fun type(): Type = type.getRequired("type")
 
             fun evalName(): String = evalName.getRequired("eval_name")
@@ -337,34 +302,6 @@ private constructor(
             }
 
             fun toBuilder() = Builder().from(this)
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Experiment &&
-                    this.type == other.type &&
-                    this.evalName == other.evalName &&
-                    this.position == other.position &&
-                    this.additionalProperties == other.additionalProperties
-            }
-
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode =
-                        Objects.hash(
-                            type,
-                            evalName,
-                            position,
-                            additionalProperties,
-                        )
-                }
-                return hashCode
-            }
-
-            override fun toString() =
-                "Experiment{type=$type, evalName=$evalName, position=$position, additionalProperties=$additionalProperties}"
 
             companion object {
 
@@ -476,13 +413,11 @@ private constructor(
                         return true
                     }
 
-                    return other is Position &&
-                        this.task == other.task &&
-                        this.scorer == other.scorer
+                    return /* spotless:off */ other is Position && this.task == other.task && this.scorer == other.scorer /* spotless:on */
                 }
 
                 override fun hashCode(): Int {
-                    return Objects.hash(task, scorer)
+                    return /* spotless:off */ Objects.hash(task, scorer) /* spotless:on */
                 }
 
                 override fun toString(): String {
@@ -516,6 +451,7 @@ private constructor(
 
                     override fun ObjectCodec.deserialize(node: JsonNode): Position {
                         val json = JsonValue.fromJsonNode(node)
+
                         tryDeserialize(node, jacksonTypeRef<Task>()) { it.validate() }
                             ?.let {
                                 return Position(task = it, _json = json)
@@ -559,7 +495,7 @@ private constructor(
                         return true
                     }
 
-                    return other is Type && this.value == other.value
+                    return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -596,6 +532,26 @@ private constructor(
 
                 fun asString(): String = _value().asStringOrThrow()
             }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Experiment && this.type == other.type && this.evalName == other.evalName && this.position == other.position && this.additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            private var hashCode: Int = 0
+
+            override fun hashCode(): Int {
+                if (hashCode == 0) {
+                    hashCode = /* spotless:off */ Objects.hash(type, evalName, position, additionalProperties) /* spotless:on */
+                }
+                return hashCode
+            }
+
+            override fun toString() =
+                "Experiment{type=$type, evalName=$evalName, position=$position, additionalProperties=$additionalProperties}"
         }
 
         @JsonDeserialize(builder = Function.Builder::class)
@@ -608,8 +564,6 @@ private constructor(
         ) {
 
             private var validated: Boolean = false
-
-            private var hashCode: Int = 0
 
             fun type(): Type = type.getRequired("type")
 
@@ -632,32 +586,6 @@ private constructor(
             }
 
             fun toBuilder() = Builder().from(this)
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Function &&
-                    this.type == other.type &&
-                    this.index == other.index &&
-                    this.additionalProperties == other.additionalProperties
-            }
-
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode =
-                        Objects.hash(
-                            type,
-                            index,
-                            additionalProperties,
-                        )
-                }
-                return hashCode
-            }
-
-            override fun toString() =
-                "Function{type=$type, index=$index, additionalProperties=$additionalProperties}"
 
             companion object {
 
@@ -724,7 +652,7 @@ private constructor(
                         return true
                     }
 
-                    return other is Type && this.value == other.value
+                    return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -761,6 +689,26 @@ private constructor(
 
                 fun asString(): String = _value().asStringOrThrow()
             }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Function && this.type == other.type && this.index == other.index && this.additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            private var hashCode: Int = 0
+
+            override fun hashCode(): Int {
+                if (hashCode == 0) {
+                    hashCode = /* spotless:off */ Objects.hash(type, index, additionalProperties) /* spotless:on */
+                }
+                return hashCode
+            }
+
+            override fun toString() =
+                "Function{type=$type, index=$index, additionalProperties=$additionalProperties}"
         }
     }
 
@@ -774,8 +722,6 @@ private constructor(
     ) {
 
         private var validated: Boolean = false
-
-        private var hashCode: Int = 0
 
         fun runtime(): Runtime = runtime.getRequired("runtime")
 
@@ -798,32 +744,6 @@ private constructor(
         }
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is RuntimeContext &&
-                this.runtime == other.runtime &&
-                this.version == other.version &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        runtime,
-                        version,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -889,7 +809,7 @@ private constructor(
                     return true
                 }
 
-                return other is Runtime && this.value == other.value
+                return /* spotless:off */ other is Runtime && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -932,5 +852,45 @@ private constructor(
 
             fun asString(): String = _value().asStringOrThrow()
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is RuntimeContext && this.runtime == other.runtime && this.version == other.version && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(runtime, version, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is CodeBundle && this.runtimeContext == other.runtimeContext && this.location == other.location && this.bundleId == other.bundleId && this.preview == other.preview && this.additionalProperties == other.additionalProperties /* spotless:on */
+    }
+
+    private var hashCode: Int = 0
+
+    override fun hashCode(): Int {
+        if (hashCode == 0) {
+            hashCode = /* spotless:off */ Objects.hash(runtimeContext, location, bundleId, preview, additionalProperties) /* spotless:on */
+        }
+        return hashCode
+    }
+
+    override fun toString() =
+        "CodeBundle{runtimeContext=$runtimeContext, location=$location, bundleId=$bundleId, preview=$preview, additionalProperties=$additionalProperties}"
 }
