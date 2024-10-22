@@ -101,8 +101,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         @JsonProperty("function_data") fun functionData(): FunctionData? = functionData
 
         /** Name of the prompt */
@@ -135,48 +133,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is FunctionReplaceBody &&
-                this.functionData == other.functionData &&
-                this.name == other.name &&
-                this.projectId == other.projectId &&
-                this.slug == other.slug &&
-                this.description == other.description &&
-                this.functionSchema == other.functionSchema &&
-                this.functionType == other.functionType &&
-                this.origin == other.origin &&
-                this.promptData == other.promptData &&
-                this.tags == other.tags &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        functionData,
-                        name,
-                        projectId,
-                        slug,
-                        description,
-                        functionSchema,
-                        functionType,
-                        origin,
-                        promptData,
-                        tags,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "FunctionReplaceBody{functionData=$functionData, name=$name, projectId=$projectId, slug=$slug, description=$description, functionSchema=$functionSchema, functionType=$functionType, origin=$origin, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -279,6 +235,26 @@ constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is FunctionReplaceBody && this.functionData == other.functionData && this.name == other.name && this.projectId == other.projectId && this.slug == other.slug && this.description == other.description && this.functionSchema == other.functionSchema && this.functionType == other.functionType && this.origin == other.origin && this.promptData == other.promptData && this.tags == other.tags && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(functionData, name, projectId, slug, description, functionSchema, functionType, origin, promptData, tags, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "FunctionReplaceBody{functionData=$functionData, name=$name, projectId=$projectId, slug=$slug, description=$description, functionSchema=$functionSchema, functionType=$functionType, origin=$origin, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
     }
 
     fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -292,38 +268,11 @@ constructor(
             return true
         }
 
-        return other is FunctionReplaceParams &&
-            this.functionData == other.functionData &&
-            this.name == other.name &&
-            this.projectId == other.projectId &&
-            this.slug == other.slug &&
-            this.description == other.description &&
-            this.functionSchema == other.functionSchema &&
-            this.functionType == other.functionType &&
-            this.origin == other.origin &&
-            this.promptData == other.promptData &&
-            this.tags == other.tags &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+        return /* spotless:off */ other is FunctionReplaceParams && this.functionData == other.functionData && this.name == other.name && this.projectId == other.projectId && this.slug == other.slug && this.description == other.description && this.functionSchema == other.functionSchema && this.functionType == other.functionType && this.origin == other.origin && this.promptData == other.promptData && this.tags == other.tags && this.additionalQueryParams == other.additionalQueryParams && this.additionalHeaders == other.additionalHeaders && this.additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            functionData,
-            name,
-            projectId,
-            slug,
-            description,
-            functionSchema,
-            functionType,
-            origin,
-            promptData,
-            tags,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
+        return /* spotless:off */ Objects.hash(functionData, name, projectId, slug, description, functionSchema, functionType, origin, promptData, tags, additionalQueryParams, additionalHeaders, additionalBodyProperties) /* spotless:on */
     }
 
     override fun toString() =
@@ -546,18 +495,11 @@ constructor(
                 return true
             }
 
-            return other is FunctionData &&
-                this.prompt == other.prompt &&
-                this.code == other.code &&
-                this.global == other.global
+            return /* spotless:off */ other is FunctionData && this.prompt == other.prompt && this.code == other.code && this.global == other.global /* spotless:on */
         }
 
         override fun hashCode(): Int {
-            return Objects.hash(
-                prompt,
-                code,
-                global,
-            )
+            return /* spotless:off */ Objects.hash(prompt, code, global) /* spotless:on */
         }
 
         override fun toString(): String {
@@ -596,6 +538,7 @@ constructor(
 
             override fun ObjectCodec.deserialize(node: JsonNode): FunctionData {
                 val json = JsonValue.fromJsonNode(node)
+
                 tryDeserialize(node, jacksonTypeRef<Prompt>()) { it.validate() }
                     ?.let {
                         return FunctionData(prompt = it, _json = json)
@@ -640,8 +583,6 @@ constructor(
 
             private var validated: Boolean = false
 
-            private var hashCode: Int = 0
-
             fun type(): Type = type.getRequired("type")
 
             @JsonProperty("type") @ExcludeMissing fun _type() = type
@@ -658,26 +599,6 @@ constructor(
             }
 
             fun toBuilder() = Builder().from(this)
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Prompt &&
-                    this.type == other.type &&
-                    this.additionalProperties == other.additionalProperties
-            }
-
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode = Objects.hash(type, additionalProperties)
-                }
-                return hashCode
-            }
-
-            override fun toString() =
-                "Prompt{type=$type, additionalProperties=$additionalProperties}"
 
             companion object {
 
@@ -731,7 +652,7 @@ constructor(
                         return true
                     }
 
-                    return other is Type && this.value == other.value
+                    return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -768,6 +689,26 @@ constructor(
 
                 fun asString(): String = _value().asStringOrThrow()
             }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Prompt && this.type == other.type && this.additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            private var hashCode: Int = 0
+
+            override fun hashCode(): Int {
+                if (hashCode == 0) {
+                    hashCode = /* spotless:off */ Objects.hash(type, additionalProperties) /* spotless:on */
+                }
+                return hashCode
+            }
+
+            override fun toString() =
+                "Prompt{type=$type, additionalProperties=$additionalProperties}"
         }
 
         @JsonDeserialize(builder = Code.Builder::class)
@@ -780,8 +721,6 @@ constructor(
         ) {
 
             private var validated: Boolean = false
-
-            private var hashCode: Int = 0
 
             fun type(): Type = type.getRequired("type")
 
@@ -804,32 +743,6 @@ constructor(
             }
 
             fun toBuilder() = Builder().from(this)
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Code &&
-                    this.type == other.type &&
-                    this.data == other.data &&
-                    this.additionalProperties == other.additionalProperties
-            }
-
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode =
-                        Objects.hash(
-                            type,
-                            data,
-                            additionalProperties,
-                        )
-                }
-                return hashCode
-            }
-
-            override fun toString() =
-                "Code{type=$type, data=$data, additionalProperties=$additionalProperties}"
 
             companion object {
 
@@ -931,13 +844,11 @@ constructor(
                         return true
                     }
 
-                    return other is Data &&
-                        this.bundle == other.bundle &&
-                        this.inline == other.inline
+                    return /* spotless:off */ other is Data && this.bundle == other.bundle && this.inline == other.inline /* spotless:on */
                 }
 
                 override fun hashCode(): Int {
-                    return Objects.hash(bundle, inline)
+                    return /* spotless:off */ Objects.hash(bundle, inline) /* spotless:on */
                 }
 
                 override fun toString(): String {
@@ -971,6 +882,7 @@ constructor(
 
                     override fun ObjectCodec.deserialize(node: JsonNode): Data {
                         val json = JsonValue.fromJsonNode(node)
+
                         tryDeserialize(node, jacksonTypeRef<Bundle>())?.let {
                             return Data(bundle = it, _json = json)
                         }
@@ -1012,8 +924,6 @@ constructor(
                 ) {
 
                     private var validated: Boolean = false
-
-                    private var hashCode: Int = 0
 
                     fun runtimeContext(): RuntimeContext =
                         runtimeContext.getRequired("runtime_context")
@@ -1064,38 +974,6 @@ constructor(
                     }
 
                     fun toBuilder() = Builder().from(this)
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return other is Bundle &&
-                            this.runtimeContext == other.runtimeContext &&
-                            this.location == other.location &&
-                            this.bundleId == other.bundleId &&
-                            this.preview == other.preview &&
-                            this.type == other.type &&
-                            this.additionalProperties == other.additionalProperties
-                    }
-
-                    override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode =
-                                Objects.hash(
-                                    runtimeContext,
-                                    location,
-                                    bundleId,
-                                    preview,
-                                    type,
-                                    additionalProperties,
-                                )
-                        }
-                        return hashCode
-                    }
-
-                    override fun toString() =
-                        "Bundle{runtimeContext=$runtimeContext, location=$location, bundleId=$bundleId, preview=$preview, type=$type, additionalProperties=$additionalProperties}"
 
                     companion object {
 
@@ -1200,7 +1078,7 @@ constructor(
                                 return true
                             }
 
-                            return other is Type && this.value == other.value
+                            return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -1237,6 +1115,26 @@ constructor(
 
                         fun asString(): String = _value().asStringOrThrow()
                     }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is Bundle && this.runtimeContext == other.runtimeContext && this.location == other.location && this.bundleId == other.bundleId && this.preview == other.preview && this.type == other.type && this.additionalProperties == other.additionalProperties /* spotless:on */
+                    }
+
+                    private var hashCode: Int = 0
+
+                    override fun hashCode(): Int {
+                        if (hashCode == 0) {
+                            hashCode = /* spotless:off */ Objects.hash(runtimeContext, location, bundleId, preview, type, additionalProperties) /* spotless:on */
+                        }
+                        return hashCode
+                    }
+
+                    override fun toString() =
+                        "Bundle{runtimeContext=$runtimeContext, location=$location, bundleId=$bundleId, preview=$preview, type=$type, additionalProperties=$additionalProperties}"
                 }
 
                 @JsonDeserialize(builder = Inline.Builder::class)
@@ -1250,8 +1148,6 @@ constructor(
                 ) {
 
                     private var validated: Boolean = false
-
-                    private var hashCode: Int = 0
 
                     fun type(): Type = type.getRequired("type")
 
@@ -1282,34 +1178,6 @@ constructor(
                     }
 
                     fun toBuilder() = Builder().from(this)
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return other is Inline &&
-                            this.type == other.type &&
-                            this.runtimeContext == other.runtimeContext &&
-                            this.code == other.code &&
-                            this.additionalProperties == other.additionalProperties
-                    }
-
-                    override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode =
-                                Objects.hash(
-                                    type,
-                                    runtimeContext,
-                                    code,
-                                    additionalProperties,
-                                )
-                        }
-                        return hashCode
-                    }
-
-                    override fun toString() =
-                        "Inline{type=$type, runtimeContext=$runtimeContext, code=$code, additionalProperties=$additionalProperties}"
 
                     companion object {
 
@@ -1387,8 +1255,6 @@ constructor(
 
                         private var validated: Boolean = false
 
-                        private var hashCode: Int = 0
-
                         fun runtime(): Runtime = runtime.getRequired("runtime")
 
                         fun version(): String = version.getRequired("version")
@@ -1410,32 +1276,6 @@ constructor(
                         }
 
                         fun toBuilder() = Builder().from(this)
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return other is RuntimeContext &&
-                                this.runtime == other.runtime &&
-                                this.version == other.version &&
-                                this.additionalProperties == other.additionalProperties
-                        }
-
-                        override fun hashCode(): Int {
-                            if (hashCode == 0) {
-                                hashCode =
-                                    Objects.hash(
-                                        runtime,
-                                        version,
-                                        additionalProperties,
-                                    )
-                            }
-                            return hashCode
-                        }
-
-                        override fun toString() =
-                            "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
 
                         companion object {
 
@@ -1508,7 +1348,7 @@ constructor(
                                     return true
                                 }
 
-                                return other is Runtime && this.value == other.value
+                                return /* spotless:off */ other is Runtime && this.value == other.value /* spotless:on */
                             }
 
                             override fun hashCode() = value.hashCode()
@@ -1554,6 +1394,26 @@ constructor(
 
                             fun asString(): String = _value().asStringOrThrow()
                         }
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is RuntimeContext && this.runtime == other.runtime && this.version == other.version && this.additionalProperties == other.additionalProperties /* spotless:on */
+                        }
+
+                        private var hashCode: Int = 0
+
+                        override fun hashCode(): Int {
+                            if (hashCode == 0) {
+                                hashCode = /* spotless:off */ Objects.hash(runtime, version, additionalProperties) /* spotless:on */
+                            }
+                            return hashCode
+                        }
+
+                        override fun toString() =
+                            "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
                     }
 
                     class Type
@@ -1570,7 +1430,7 @@ constructor(
                                 return true
                             }
 
-                            return other is Type && this.value == other.value
+                            return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -1607,6 +1467,26 @@ constructor(
 
                         fun asString(): String = _value().asStringOrThrow()
                     }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is Inline && this.type == other.type && this.runtimeContext == other.runtimeContext && this.code == other.code && this.additionalProperties == other.additionalProperties /* spotless:on */
+                    }
+
+                    private var hashCode: Int = 0
+
+                    override fun hashCode(): Int {
+                        if (hashCode == 0) {
+                            hashCode = /* spotless:off */ Objects.hash(type, runtimeContext, code, additionalProperties) /* spotless:on */
+                        }
+                        return hashCode
+                    }
+
+                    override fun toString() =
+                        "Inline{type=$type, runtimeContext=$runtimeContext, code=$code, additionalProperties=$additionalProperties}"
                 }
             }
 
@@ -1623,7 +1503,7 @@ constructor(
                         return true
                     }
 
-                    return other is Type && this.value == other.value
+                    return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -1660,6 +1540,26 @@ constructor(
 
                 fun asString(): String = _value().asStringOrThrow()
             }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Code && this.type == other.type && this.data == other.data && this.additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            private var hashCode: Int = 0
+
+            override fun hashCode(): Int {
+                if (hashCode == 0) {
+                    hashCode = /* spotless:off */ Objects.hash(type, data, additionalProperties) /* spotless:on */
+                }
+                return hashCode
+            }
+
+            override fun toString() =
+                "Code{type=$type, data=$data, additionalProperties=$additionalProperties}"
         }
 
         @JsonDeserialize(builder = Global.Builder::class)
@@ -1672,8 +1572,6 @@ constructor(
         ) {
 
             private var validated: Boolean = false
-
-            private var hashCode: Int = 0
 
             fun type(): Type = type.getRequired("type")
 
@@ -1696,32 +1594,6 @@ constructor(
             }
 
             fun toBuilder() = Builder().from(this)
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Global &&
-                    this.type == other.type &&
-                    this.name == other.name &&
-                    this.additionalProperties == other.additionalProperties
-            }
-
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode =
-                        Objects.hash(
-                            type,
-                            name,
-                            additionalProperties,
-                        )
-                }
-                return hashCode
-            }
-
-            override fun toString() =
-                "Global{type=$type, name=$name, additionalProperties=$additionalProperties}"
 
             companion object {
 
@@ -1788,7 +1660,7 @@ constructor(
                         return true
                     }
 
-                    return other is Type && this.value == other.value
+                    return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -1825,6 +1697,26 @@ constructor(
 
                 fun asString(): String = _value().asStringOrThrow()
             }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Global && this.type == other.type && this.name == other.name && this.additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            private var hashCode: Int = 0
+
+            override fun hashCode(): Int {
+                if (hashCode == 0) {
+                    hashCode = /* spotless:off */ Objects.hash(type, name, additionalProperties) /* spotless:on */
+                }
+                return hashCode
+            }
+
+            override fun toString() =
+                "Global{type=$type, name=$name, additionalProperties=$additionalProperties}"
         }
     }
 
@@ -1838,8 +1730,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         @JsonProperty("parameters") fun parameters(): JsonValue? = parameters
 
         @JsonProperty("returns") fun returns(): JsonValue? = returns
@@ -1849,32 +1739,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is FunctionSchema &&
-                this.parameters == other.parameters &&
-                this.returns == other.returns &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        parameters,
-                        returns,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "FunctionSchema{parameters=$parameters, returns=$returns, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -1920,6 +1784,26 @@ constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is FunctionSchema && this.parameters == other.parameters && this.returns == other.returns && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(parameters, returns, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "FunctionSchema{parameters=$parameters, returns=$returns, additionalProperties=$additionalProperties}"
     }
 
     class FunctionType
@@ -1935,7 +1819,7 @@ constructor(
                 return true
             }
 
-            return other is FunctionType && this.value == other.value
+            return /* spotless:off */ other is FunctionType && this.value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -2001,8 +1885,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         /** The object type that the ACL applies to */
         @JsonProperty("object_type") fun objectType(): ObjectType? = objectType
 
@@ -2020,34 +1902,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Origin &&
-                this.objectType == other.objectType &&
-                this.objectId == other.objectId &&
-                this.internal_ == other.internal_ &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        objectType,
-                        objectId,
-                        internal_,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "Origin{objectType=$objectType, objectId=$objectId, internal_=$internal_, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -2119,7 +1973,7 @@ constructor(
                     return true
                 }
 
-                return other is ObjectType && this.value == other.value
+                return /* spotless:off */ other is ObjectType && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -2216,5 +2070,25 @@ constructor(
 
             fun asString(): String = _value().asStringOrThrow()
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Origin && this.objectType == other.objectType && this.objectId == other.objectId && this.internal_ == other.internal_ && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(objectType, objectId, internal_, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "Origin{objectType=$objectType, objectId=$objectId, internal_=$internal_, additionalProperties=$additionalProperties}"
     }
 }

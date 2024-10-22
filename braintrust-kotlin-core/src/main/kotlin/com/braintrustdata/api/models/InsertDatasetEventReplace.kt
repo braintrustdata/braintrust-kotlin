@@ -33,8 +33,6 @@ private constructor(
 
     private var validated: Boolean = false
 
-    private var hashCode: Int = 0
-
     /** The argument that uniquely define an input case (an arbitrary, JSON serializable object) */
     fun input(): JsonValue = input
 
@@ -181,46 +179,6 @@ private constructor(
     }
 
     fun toBuilder() = Builder().from(this)
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is InsertDatasetEventReplace &&
-            this.input == other.input &&
-            this.expected == other.expected &&
-            this.metadata == other.metadata &&
-            this.tags == other.tags &&
-            this.id == other.id &&
-            this.created == other.created &&
-            this._objectDelete == other._objectDelete &&
-            this._isMerge == other._isMerge &&
-            this._parentId == other._parentId &&
-            this.additionalProperties == other.additionalProperties
-    }
-
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    input,
-                    expected,
-                    metadata,
-                    tags,
-                    id,
-                    created,
-                    _objectDelete,
-                    _isMerge,
-                    _parentId,
-                    additionalProperties,
-                )
-        }
-        return hashCode
-    }
-
-    override fun toString() =
-        "InsertDatasetEventReplace{input=$input, expected=$expected, metadata=$metadata, tags=$tags, id=$id, created=$created, _objectDelete=$_objectDelete, _isMerge=$_isMerge, _parentId=$_parentId, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -439,8 +397,6 @@ private constructor(
 
         private var validated: Boolean = false
 
-        private var hashCode: Int = 0
-
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -452,23 +408,6 @@ private constructor(
         }
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Metadata && this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(additionalProperties)
-            }
-            return hashCode
-        }
-
-        override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -499,5 +438,44 @@ private constructor(
 
             fun build(): Metadata = Metadata(additionalProperties.toUnmodifiable())
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Metadata && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is InsertDatasetEventReplace && this.input == other.input && this.expected == other.expected && this.metadata == other.metadata && this.tags == other.tags && this.id == other.id && this.created == other.created && this._objectDelete == other._objectDelete && this._isMerge == other._isMerge && this._parentId == other._parentId && this.additionalProperties == other.additionalProperties /* spotless:on */
+    }
+
+    private var hashCode: Int = 0
+
+    override fun hashCode(): Int {
+        if (hashCode == 0) {
+            hashCode = /* spotless:off */ Objects.hash(input, expected, metadata, tags, id, created, _objectDelete, _isMerge, _parentId, additionalProperties) /* spotless:on */
+        }
+        return hashCode
+    }
+
+    override fun toString() =
+        "InsertDatasetEventReplace{input=$input, expected=$expected, metadata=$metadata, tags=$tags, id=$id, created=$created, _objectDelete=$_objectDelete, _isMerge=$_isMerge, _parentId=$_parentId, additionalProperties=$additionalProperties}"
 }

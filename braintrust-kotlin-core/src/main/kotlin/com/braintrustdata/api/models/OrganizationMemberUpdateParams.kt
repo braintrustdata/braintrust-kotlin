@@ -57,8 +57,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         /** Users to invite to the organization */
         @JsonProperty("invite_users") fun inviteUsers(): InviteUsers? = inviteUsers
 
@@ -84,36 +82,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is OrganizationMemberUpdateBody &&
-                this.inviteUsers == other.inviteUsers &&
-                this.orgId == other.orgId &&
-                this.orgName == other.orgName &&
-                this.removeUsers == other.removeUsers &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        inviteUsers,
-                        orgId,
-                        orgName,
-                        removeUsers,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "OrganizationMemberUpdateBody{inviteUsers=$inviteUsers, orgId=$orgId, orgName=$orgName, removeUsers=$removeUsers, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -184,6 +152,26 @@ constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is OrganizationMemberUpdateBody && this.inviteUsers == other.inviteUsers && this.orgId == other.orgId && this.orgName == other.orgName && this.removeUsers == other.removeUsers && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(inviteUsers, orgId, orgName, removeUsers, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "OrganizationMemberUpdateBody{inviteUsers=$inviteUsers, orgId=$orgId, orgName=$orgName, removeUsers=$removeUsers, additionalProperties=$additionalProperties}"
     }
 
     fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -197,26 +185,11 @@ constructor(
             return true
         }
 
-        return other is OrganizationMemberUpdateParams &&
-            this.inviteUsers == other.inviteUsers &&
-            this.orgId == other.orgId &&
-            this.orgName == other.orgName &&
-            this.removeUsers == other.removeUsers &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+        return /* spotless:off */ other is OrganizationMemberUpdateParams && this.inviteUsers == other.inviteUsers && this.orgId == other.orgId && this.orgName == other.orgName && this.removeUsers == other.removeUsers && this.additionalQueryParams == other.additionalQueryParams && this.additionalHeaders == other.additionalHeaders && this.additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            inviteUsers,
-            orgId,
-            orgName,
-            removeUsers,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
+        return /* spotless:off */ Objects.hash(inviteUsers, orgId, orgName, removeUsers, additionalQueryParams, additionalHeaders, additionalBodyProperties) /* spotless:on */
     }
 
     override fun toString() =
@@ -351,8 +324,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         /** Ids of existing users to invite */
         @JsonProperty("ids") fun ids(): List<String>? = ids
 
@@ -379,42 +350,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is InviteUsers &&
-                this.ids == other.ids &&
-                this.emails == other.emails &&
-                this.sendInviteEmails == other.sendInviteEmails &&
-                this.groupIds == other.groupIds &&
-                this.groupNames == other.groupNames &&
-                this.groupId == other.groupId &&
-                this.groupName == other.groupName &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        ids,
-                        emails,
-                        sendInviteEmails,
-                        groupIds,
-                        groupNames,
-                        groupId,
-                        groupName,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "InviteUsers{ids=$ids, emails=$emails, sendInviteEmails=$sendInviteEmails, groupIds=$groupIds, groupNames=$groupNames, groupId=$groupId, groupName=$groupName, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -498,6 +433,26 @@ constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is InviteUsers && this.ids == other.ids && this.emails == other.emails && this.sendInviteEmails == other.sendInviteEmails && this.groupIds == other.groupIds && this.groupNames == other.groupNames && this.groupId == other.groupId && this.groupName == other.groupName && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(ids, emails, sendInviteEmails, groupIds, groupNames, groupId, groupName, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "InviteUsers{ids=$ids, emails=$emails, sendInviteEmails=$sendInviteEmails, groupIds=$groupIds, groupNames=$groupNames, groupId=$groupId, groupName=$groupName, additionalProperties=$additionalProperties}"
     }
 
     /** Users to remove from the organization */
@@ -510,8 +465,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         /** Ids of users to remove */
         @JsonProperty("ids") fun ids(): List<String>? = ids
 
@@ -523,32 +476,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is RemoveUsers &&
-                this.ids == other.ids &&
-                this.emails == other.emails &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        ids,
-                        emails,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "RemoveUsers{ids=$ids, emails=$emails, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -595,5 +522,25 @@ constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is RemoveUsers && this.ids == other.ids && this.emails == other.emails && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(ids, emails, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "RemoveUsers{ids=$ids, emails=$emails, additionalProperties=$additionalProperties}"
     }
 }

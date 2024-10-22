@@ -81,8 +81,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         /** A list of permissions to add to the role */
         @JsonProperty("add_member_permissions")
         fun addMemberPermissions(): List<AddMemberPermission>? = addMemberPermissions
@@ -109,40 +107,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is RoleUpdateBody &&
-                this.addMemberPermissions == other.addMemberPermissions &&
-                this.addMemberRoles == other.addMemberRoles &&
-                this.description == other.description &&
-                this.name == other.name &&
-                this.removeMemberPermissions == other.removeMemberPermissions &&
-                this.removeMemberRoles == other.removeMemberRoles &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        addMemberPermissions,
-                        addMemberRoles,
-                        description,
-                        name,
-                        removeMemberPermissions,
-                        removeMemberRoles,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "RoleUpdateBody{addMemberPermissions=$addMemberPermissions, addMemberRoles=$addMemberRoles, description=$description, name=$name, removeMemberPermissions=$removeMemberPermissions, removeMemberRoles=$removeMemberRoles, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -226,6 +190,26 @@ constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is RoleUpdateBody && this.addMemberPermissions == other.addMemberPermissions && this.addMemberRoles == other.addMemberRoles && this.description == other.description && this.name == other.name && this.removeMemberPermissions == other.removeMemberPermissions && this.removeMemberRoles == other.removeMemberRoles && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(addMemberPermissions, addMemberRoles, description, name, removeMemberPermissions, removeMemberRoles, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "RoleUpdateBody{addMemberPermissions=$addMemberPermissions, addMemberRoles=$addMemberRoles, description=$description, name=$name, removeMemberPermissions=$removeMemberPermissions, removeMemberRoles=$removeMemberRoles, additionalProperties=$additionalProperties}"
     }
 
     fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -239,32 +223,11 @@ constructor(
             return true
         }
 
-        return other is RoleUpdateParams &&
-            this.roleId == other.roleId &&
-            this.addMemberPermissions == other.addMemberPermissions &&
-            this.addMemberRoles == other.addMemberRoles &&
-            this.description == other.description &&
-            this.name == other.name &&
-            this.removeMemberPermissions == other.removeMemberPermissions &&
-            this.removeMemberRoles == other.removeMemberRoles &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+        return /* spotless:off */ other is RoleUpdateParams && this.roleId == other.roleId && this.addMemberPermissions == other.addMemberPermissions && this.addMemberRoles == other.addMemberRoles && this.description == other.description && this.name == other.name && this.removeMemberPermissions == other.removeMemberPermissions && this.removeMemberRoles == other.removeMemberRoles && this.additionalQueryParams == other.additionalQueryParams && this.additionalHeaders == other.additionalHeaders && this.additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            roleId,
-            addMemberPermissions,
-            addMemberRoles,
-            description,
-            name,
-            removeMemberPermissions,
-            removeMemberRoles,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
+        return /* spotless:off */ Objects.hash(roleId, addMemberPermissions, addMemberRoles, description, name, removeMemberPermissions, removeMemberRoles, additionalQueryParams, additionalHeaders, additionalBodyProperties) /* spotless:on */
     }
 
     override fun toString() =
@@ -436,8 +399,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         /**
          * Each permission permits a certain type of operation on an object in the system
          *
@@ -454,32 +415,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is AddMemberPermission &&
-                this.permission == other.permission &&
-                this.restrictObjectType == other.restrictObjectType &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        permission,
-                        restrictObjectType,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "AddMemberPermission{permission=$permission, restrictObjectType=$restrictObjectType, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -548,7 +483,7 @@ constructor(
                     return true
                 }
 
-                return other is Permission && this.value == other.value
+                return /* spotless:off */ other is Permission && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -641,7 +576,7 @@ constructor(
                     return true
                 }
 
-                return other is RestrictObjectType && this.value == other.value
+                return /* spotless:off */ other is RestrictObjectType && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -739,6 +674,26 @@ constructor(
 
             fun asString(): String = _value().asStringOrThrow()
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is AddMemberPermission && this.permission == other.permission && this.restrictObjectType == other.restrictObjectType && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(permission, restrictObjectType, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "AddMemberPermission{permission=$permission, restrictObjectType=$restrictObjectType, additionalProperties=$additionalProperties}"
     }
 
     @JsonDeserialize(builder = RemoveMemberPermission.Builder::class)
@@ -749,8 +704,6 @@ constructor(
         private val restrictObjectType: RestrictObjectType?,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
-
-        private var hashCode: Int = 0
 
         /**
          * Each permission permits a certain type of operation on an object in the system
@@ -768,32 +721,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is RemoveMemberPermission &&
-                this.permission == other.permission &&
-                this.restrictObjectType == other.restrictObjectType &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        permission,
-                        restrictObjectType,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "RemoveMemberPermission{permission=$permission, restrictObjectType=$restrictObjectType, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -862,7 +789,7 @@ constructor(
                     return true
                 }
 
-                return other is Permission && this.value == other.value
+                return /* spotless:off */ other is Permission && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -955,7 +882,7 @@ constructor(
                     return true
                 }
 
-                return other is RestrictObjectType && this.value == other.value
+                return /* spotless:off */ other is RestrictObjectType && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -1053,5 +980,25 @@ constructor(
 
             fun asString(): String = _value().asStringOrThrow()
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is RemoveMemberPermission && this.permission == other.permission && this.restrictObjectType == other.restrictObjectType && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(permission, restrictObjectType, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "RemoveMemberPermission{permission=$permission, restrictObjectType=$restrictObjectType, additionalProperties=$additionalProperties}"
     }
 }
