@@ -86,6 +86,7 @@ constructor(
         /** The type of the configured score */
         @JsonProperty("score_type") fun scoreType(): ProjectScoreType? = scoreType
 
+        /** For categorical-type project scores, the list of all categories */
         @JsonProperty("categories") fun categories(): Categories? = categories
 
         @JsonProperty("config") fun config(): ProjectScoreConfig? = config
@@ -135,6 +136,7 @@ constructor(
             @JsonProperty("score_type")
             fun scoreType(scoreType: ProjectScoreType) = apply { this.scoreType = scoreType }
 
+            /** For categorical-type project scores, the list of all categories */
             @JsonProperty("categories")
             fun categories(categories: Categories) = apply { this.categories = categories }
 
