@@ -11,7 +11,7 @@ import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
@@ -231,8 +231,8 @@ constructor(
                     functionType,
                     origin,
                     promptData,
-                    tags?.toUnmodifiable(),
-                    additionalProperties.toUnmodifiable(),
+                    tags?.toImmutable(),
+                    additionalProperties.toImmutable(),
                 )
         }
 
@@ -430,10 +430,10 @@ constructor(
                 functionType,
                 origin,
                 promptData,
-                if (tags.size == 0) null else tags.toUnmodifiable(),
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
+                if (tags.size == 0) null else tags.toImmutable(),
+                additionalQueryParams.mapValues { it.value.toImmutable() }.toImmutable(),
+                additionalHeaders.mapValues { it.value.toImmutable() }.toImmutable(),
+                additionalBodyProperties.toImmutable(),
             )
     }
 
@@ -636,7 +636,7 @@ constructor(
                         this.additionalProperties.putAll(additionalProperties)
                     }
 
-                fun build(): Prompt = Prompt(type, additionalProperties.toUnmodifiable())
+                fun build(): Prompt = Prompt(type, additionalProperties.toImmutable())
             }
 
             class Type
@@ -792,7 +792,7 @@ constructor(
                     Code(
                         type,
                         data,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1060,7 +1060,7 @@ constructor(
                                 bundleId,
                                 preview,
                                 type,
-                                additionalProperties.toUnmodifiable(),
+                                additionalProperties.toImmutable(),
                             )
                     }
 
@@ -1240,7 +1240,7 @@ constructor(
                                 type,
                                 runtimeContext,
                                 code,
-                                additionalProperties.toUnmodifiable(),
+                                additionalProperties.toImmutable(),
                             )
                     }
 
@@ -1330,7 +1330,7 @@ constructor(
                                 RuntimeContext(
                                     runtime,
                                     version,
-                                    additionalProperties.toUnmodifiable(),
+                                    additionalProperties.toImmutable(),
                                 )
                         }
 
@@ -1643,7 +1643,7 @@ constructor(
                     Global(
                         type,
                         name,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1781,7 +1781,7 @@ constructor(
                 FunctionSchema(
                     parameters,
                     returns,
-                    additionalProperties.toUnmodifiable(),
+                    additionalProperties.toImmutable(),
                 )
         }
 
@@ -1956,7 +1956,7 @@ constructor(
                     checkNotNull(objectType) { "`objectType` is required but was not set" },
                     checkNotNull(objectId) { "`objectId` is required but was not set" },
                     internal_,
-                    additionalProperties.toUnmodifiable(),
+                    additionalProperties.toImmutable(),
                 )
         }
 
