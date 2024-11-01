@@ -11,7 +11,7 @@ import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
@@ -183,12 +183,12 @@ constructor(
             fun build(): FunctionInvokeBody =
                 FunctionInvokeBody(
                     input,
-                    messages?.toUnmodifiable(),
+                    messages?.toImmutable(),
                     mode,
                     parent,
                     stream,
                     version,
-                    additionalProperties.toUnmodifiable(),
+                    additionalProperties.toImmutable(),
                 )
         }
 
@@ -364,14 +364,14 @@ constructor(
             FunctionInvokeParams(
                 checkNotNull(functionId) { "`functionId` is required but was not set" },
                 input,
-                if (messages.size == 0) null else messages.toUnmodifiable(),
+                if (messages.size == 0) null else messages.toImmutable(),
                 mode,
                 parent,
                 stream,
                 version,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
+                additionalQueryParams.mapValues { it.value.toImmutable() }.toImmutable(),
+                additionalHeaders.mapValues { it.value.toImmutable() }.toImmutable(),
+                additionalBodyProperties.toImmutable(),
             )
     }
 
@@ -671,7 +671,7 @@ constructor(
                         content,
                         role,
                         name,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -843,7 +843,7 @@ constructor(
                         content,
                         role,
                         name,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1167,8 +1167,8 @@ constructor(
                         content,
                         functionCall,
                         name,
-                        toolCalls.map { it.toUnmodifiable() },
-                        additionalProperties.toUnmodifiable(),
+                        toolCalls.map { it.toImmutable() },
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1306,7 +1306,7 @@ constructor(
                         FunctionCall(
                             arguments,
                             name,
-                            additionalProperties.toUnmodifiable(),
+                            additionalProperties.toImmutable(),
                         )
                 }
 
@@ -1450,7 +1450,7 @@ constructor(
                         content,
                         role,
                         toolCallId,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1622,7 +1622,7 @@ constructor(
                         content,
                         name,
                         role,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1779,7 +1779,7 @@ constructor(
                     Fallback(
                         role,
                         content,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -2162,7 +2162,7 @@ constructor(
                         objectId,
                         rowIds,
                         propagatedEvent,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -2274,7 +2274,7 @@ constructor(
                         }
 
                     fun build(): PropagatedEvent =
-                        PropagatedEvent(additionalProperties.toUnmodifiable())
+                        PropagatedEvent(additionalProperties.toImmutable())
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -2409,7 +2409,7 @@ constructor(
                             id,
                             spanId,
                             rootSpanId,
-                            additionalProperties.toUnmodifiable(),
+                            additionalProperties.toImmutable(),
                         )
                 }
 

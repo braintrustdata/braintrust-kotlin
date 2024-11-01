@@ -11,7 +11,7 @@ import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
@@ -204,13 +204,12 @@ constructor(
                 EvalCreateBody(
                     checkNotNull(data) { "`data` is required but was not set" },
                     checkNotNull(projectId) { "`projectId` is required but was not set" },
-                    checkNotNull(scores) { "`scores` is required but was not set" }
-                        .toUnmodifiable(),
+                    checkNotNull(scores) { "`scores` is required but was not set" }.toImmutable(),
                     checkNotNull(task) { "`task` is required but was not set" },
                     experimentName,
                     metadata,
                     stream,
-                    additionalProperties.toUnmodifiable(),
+                    additionalProperties.toImmutable(),
                 )
         }
 
@@ -419,14 +418,14 @@ constructor(
             EvalCreateParams(
                 checkNotNull(data) { "`data` is required but was not set" },
                 checkNotNull(projectId) { "`projectId` is required but was not set" },
-                checkNotNull(scores) { "`scores` is required but was not set" }.toUnmodifiable(),
+                checkNotNull(scores) { "`scores` is required but was not set" }.toImmutable(),
                 checkNotNull(task) { "`task` is required but was not set" },
                 experimentName,
                 metadata,
                 stream,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
+                additionalQueryParams.mapValues { it.value.toImmutable() }.toImmutable(),
+                additionalHeaders.mapValues { it.value.toImmutable() }.toImmutable(),
+                additionalBodyProperties.toImmutable(),
             )
     }
 
@@ -615,7 +614,7 @@ constructor(
                         this.additionalProperties.putAll(additionalProperties)
                     }
 
-                fun build(): DatasetId = DatasetId(datasetId, additionalProperties.toUnmodifiable())
+                fun build(): DatasetId = DatasetId(datasetId, additionalProperties.toImmutable())
             }
 
             override fun equals(other: Any?): Boolean {
@@ -725,7 +724,7 @@ constructor(
                     ProjectDatasetName(
                         projectName,
                         datasetName,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1046,7 +1045,7 @@ constructor(
                     FunctionId(
                         functionId,
                         version,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1182,7 +1181,7 @@ constructor(
                         projectName,
                         slug,
                         version,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1291,7 +1290,7 @@ constructor(
                     }
 
                 fun build(): GlobalFunction =
-                    GlobalFunction(globalFunction, additionalProperties.toUnmodifiable())
+                    GlobalFunction(globalFunction, additionalProperties.toImmutable())
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1435,7 +1434,7 @@ constructor(
                         promptSessionId,
                         promptSessionFunctionId,
                         version,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1568,7 +1567,7 @@ constructor(
                         inlineContext,
                         code,
                         name,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1653,7 +1652,7 @@ constructor(
                         InlineContext(
                             runtime,
                             version,
-                            additionalProperties.toUnmodifiable(),
+                            additionalProperties.toImmutable(),
                         )
                 }
 
@@ -1850,7 +1849,7 @@ constructor(
                     InlinePrompt(
                         inlinePrompt,
                         name,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -2171,7 +2170,7 @@ constructor(
                     FunctionId(
                         functionId,
                         version,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -2307,7 +2306,7 @@ constructor(
                         projectName,
                         slug,
                         version,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -2416,7 +2415,7 @@ constructor(
                     }
 
                 fun build(): GlobalFunction =
-                    GlobalFunction(globalFunction, additionalProperties.toUnmodifiable())
+                    GlobalFunction(globalFunction, additionalProperties.toImmutable())
             }
 
             override fun equals(other: Any?): Boolean {
@@ -2560,7 +2559,7 @@ constructor(
                         promptSessionId,
                         promptSessionFunctionId,
                         version,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -2693,7 +2692,7 @@ constructor(
                         inlineContext,
                         code,
                         name,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -2778,7 +2777,7 @@ constructor(
                         InlineContext(
                             runtime,
                             version,
-                            additionalProperties.toUnmodifiable(),
+                            additionalProperties.toImmutable(),
                         )
                 }
 
@@ -2975,7 +2974,7 @@ constructor(
                     InlinePrompt(
                         inlinePrompt,
                         name,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -3045,7 +3044,7 @@ constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): Metadata = Metadata(additionalProperties.toUnmodifiable())
+            fun build(): Metadata = Metadata(additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
