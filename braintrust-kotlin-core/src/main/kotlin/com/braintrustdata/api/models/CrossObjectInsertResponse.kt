@@ -7,7 +7,7 @@ import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.toImmutable
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -123,7 +123,7 @@ private constructor(
                 experiment,
                 dataset,
                 projectLogs,
-                additionalProperties.toUnmodifiable(),
+                additionalProperties.toImmutable(),
             )
     }
 
@@ -176,7 +176,7 @@ private constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): Dataset = Dataset(additionalProperties.toUnmodifiable())
+            fun build(): Dataset = Dataset(additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -248,7 +248,7 @@ private constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): Experiment = Experiment(additionalProperties.toUnmodifiable())
+            fun build(): Experiment = Experiment(additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -320,7 +320,7 @@ private constructor(
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): ProjectLogs = ProjectLogs(additionalProperties.toUnmodifiable())
+            fun build(): ProjectLogs = ProjectLogs(additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
