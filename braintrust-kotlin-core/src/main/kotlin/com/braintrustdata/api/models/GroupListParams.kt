@@ -66,28 +66,11 @@ constructor(
             return true
         }
 
-        return other is GroupListParams &&
-            this.endingBefore == other.endingBefore &&
-            this.groupName == other.groupName &&
-            this.ids == other.ids &&
-            this.limit == other.limit &&
-            this.orgName == other.orgName &&
-            this.startingAfter == other.startingAfter &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders
+        return /* spotless:off */ other is GroupListParams && this.endingBefore == other.endingBefore && this.groupName == other.groupName && this.ids == other.ids && this.limit == other.limit && this.orgName == other.orgName && this.startingAfter == other.startingAfter && this.additionalQueryParams == other.additionalQueryParams && this.additionalHeaders == other.additionalHeaders /* spotless:on */
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            endingBefore,
-            groupName,
-            ids,
-            limit,
-            orgName,
-            startingAfter,
-            additionalQueryParams,
-            additionalHeaders,
-        )
+        return /* spotless:off */ Objects.hash(endingBefore, groupName, ids, limit, orgName, startingAfter, additionalQueryParams, additionalHeaders) /* spotless:on */
     }
 
     override fun toString() =
@@ -151,7 +134,7 @@ constructor(
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun ids(strings: List<String>) = apply { this.ids = Ids.ofStrings(strings) }
+        fun idsOfStrings(strings: List<String>) = apply { this.ids = Ids.ofStrings(strings) }
 
         /** Limit the number of objects to return */
         fun limit(limit: Long) = apply { this.limit = limit }
@@ -268,11 +251,11 @@ constructor(
                 return true
             }
 
-            return other is Ids && this.string == other.string && this.strings == other.strings
+            return /* spotless:off */ other is Ids && this.string == other.string && this.strings == other.strings /* spotless:on */
         }
 
         override fun hashCode(): Int {
-            return Objects.hash(string, strings)
+            return /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
         }
 
         override fun toString(): String {
@@ -306,6 +289,7 @@ constructor(
 
             override fun ObjectCodec.deserialize(node: JsonNode): Ids {
                 val json = JsonValue.fromJsonNode(node)
+
                 tryDeserialize(node, jacksonTypeRef<String>())?.let {
                     return Ids(string = it, _json = json)
                 }

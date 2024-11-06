@@ -46,8 +46,6 @@ private constructor(
 
     private var validated: Boolean = false
 
-    private var hashCode: Int = 0
-
     /**
      * A unique identifier for the experiment event. If you don't provide one, BrainTrust will
      * generate one for you
@@ -306,66 +304,6 @@ private constructor(
     }
 
     fun toBuilder() = Builder().from(this)
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is ExperimentEvent &&
-            this.id == other.id &&
-            this.datasetRecordId == other.datasetRecordId &&
-            this._xactId == other._xactId &&
-            this.created == other.created &&
-            this.projectId == other.projectId &&
-            this.experimentId == other.experimentId &&
-            this.input == other.input &&
-            this.output == other.output &&
-            this.expected == other.expected &&
-            this.error == other.error &&
-            this.scores == other.scores &&
-            this.metadata == other.metadata &&
-            this.tags == other.tags &&
-            this.metrics == other.metrics &&
-            this.context == other.context &&
-            this.spanId == other.spanId &&
-            this.spanParents == other.spanParents &&
-            this.rootSpanId == other.rootSpanId &&
-            this.spanAttributes == other.spanAttributes &&
-            this.additionalProperties == other.additionalProperties
-    }
-
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    id,
-                    datasetRecordId,
-                    _xactId,
-                    created,
-                    projectId,
-                    experimentId,
-                    input,
-                    output,
-                    expected,
-                    error,
-                    scores,
-                    metadata,
-                    tags,
-                    metrics,
-                    context,
-                    spanId,
-                    spanParents,
-                    rootSpanId,
-                    spanAttributes,
-                    additionalProperties,
-                )
-        }
-        return hashCode
-    }
-
-    override fun toString() =
-        "ExperimentEvent{id=$id, datasetRecordId=$datasetRecordId, _xactId=$_xactId, created=$created, projectId=$projectId, experimentId=$experimentId, input=$input, output=$output, expected=$expected, error=$error, scores=$scores, metadata=$metadata, tags=$tags, metrics=$metrics, context=$context, spanId=$spanId, spanParents=$spanParents, rootSpanId=$rootSpanId, spanAttributes=$spanAttributes, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -718,8 +656,6 @@ private constructor(
 
         private var validated: Boolean = false
 
-        private var hashCode: Int = 0
-
         /** The function in code which created the experiment event */
         fun callerFunctionname(): String? = callerFunctionname.getNullable("caller_functionname")
 
@@ -754,34 +690,6 @@ private constructor(
         }
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Context &&
-                this.callerFunctionname == other.callerFunctionname &&
-                this.callerFilename == other.callerFilename &&
-                this.callerLineno == other.callerLineno &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        callerFunctionname,
-                        callerFilename,
-                        callerLineno,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "Context{callerFunctionname=$callerFunctionname, callerFilename=$callerFilename, callerLineno=$callerLineno, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -856,6 +764,26 @@ private constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Context && this.callerFunctionname == other.callerFunctionname && this.callerFilename == other.callerFilename && this.callerLineno == other.callerLineno && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(callerFunctionname, callerFilename, callerLineno, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "Context{callerFunctionname=$callerFunctionname, callerFilename=$callerFilename, callerLineno=$callerLineno, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -874,8 +802,6 @@ private constructor(
 
         private var validated: Boolean = false
 
-        private var hashCode: Int = 0
-
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -887,23 +813,6 @@ private constructor(
         }
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Metadata && this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(additionalProperties)
-            }
-            return hashCode
-        }
-
-        override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -934,6 +843,25 @@ private constructor(
 
             fun build(): Metadata = Metadata(additionalProperties.toUnmodifiable())
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Metadata && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -954,8 +882,6 @@ private constructor(
     ) {
 
         private var validated: Boolean = false
-
-        private var hashCode: Int = 0
 
         /**
          * A unix timestamp recording when the section of code which produced the experiment event
@@ -1029,38 +955,6 @@ private constructor(
         }
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Metrics &&
-                this.start == other.start &&
-                this.end == other.end &&
-                this.promptTokens == other.promptTokens &&
-                this.completionTokens == other.completionTokens &&
-                this.tokens == other.tokens &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        start,
-                        end,
-                        promptTokens,
-                        completionTokens,
-                        tokens,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "Metrics{start=$start, end=$end, promptTokens=$promptTokens, completionTokens=$completionTokens, tokens=$tokens, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -1178,6 +1072,26 @@ private constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Metrics && this.start == other.start && this.end == other.end && this.promptTokens == other.promptTokens && this.completionTokens == other.completionTokens && this.tokens == other.tokens && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(start, end, promptTokens, completionTokens, tokens, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "Metrics{start=$start, end=$end, promptTokens=$promptTokens, completionTokens=$completionTokens, tokens=$tokens, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1198,8 +1112,6 @@ private constructor(
 
         private var validated: Boolean = false
 
-        private var hashCode: Int = 0
-
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -1211,23 +1123,6 @@ private constructor(
         }
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Scores && this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(additionalProperties)
-            }
-            return hashCode
-        }
-
-        override fun toString() = "Scores{additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -1258,6 +1153,25 @@ private constructor(
 
             fun build(): Scores = Scores(additionalProperties.toUnmodifiable())
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Scores && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() = "Scores{additionalProperties=$additionalProperties}"
     }
 
     /** Human-identifying attributes of the span, such as name, type, etc. */
@@ -1271,8 +1185,6 @@ private constructor(
     ) {
 
         private var validated: Boolean = false
-
-        private var hashCode: Int = 0
 
         /** Name of the span, for display purposes only */
         fun name(): String? = name.getNullable("name")
@@ -1299,32 +1211,6 @@ private constructor(
         }
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is SpanAttributes &&
-                this.name == other.name &&
-                this.type == other.type &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        name,
-                        type,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "SpanAttributes{name=$name, type=$type, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -1394,7 +1280,7 @@ private constructor(
                     return true
                 }
 
-                return other is Type && this.value == other.value
+                return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -1461,5 +1347,45 @@ private constructor(
 
             fun asString(): String = _value().asStringOrThrow()
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is SpanAttributes && this.name == other.name && this.type == other.type && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(name, type, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "SpanAttributes{name=$name, type=$type, additionalProperties=$additionalProperties}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ExperimentEvent && this.id == other.id && this.datasetRecordId == other.datasetRecordId && this._xactId == other._xactId && this.created == other.created && this.projectId == other.projectId && this.experimentId == other.experimentId && this.input == other.input && this.output == other.output && this.expected == other.expected && this.error == other.error && this.scores == other.scores && this.metadata == other.metadata && this.tags == other.tags && this.metrics == other.metrics && this.context == other.context && this.spanId == other.spanId && this.spanParents == other.spanParents && this.rootSpanId == other.rootSpanId && this.spanAttributes == other.spanAttributes && this.additionalProperties == other.additionalProperties /* spotless:on */
+    }
+
+    private var hashCode: Int = 0
+
+    override fun hashCode(): Int {
+        if (hashCode == 0) {
+            hashCode = /* spotless:off */ Objects.hash(id, datasetRecordId, _xactId, created, projectId, experimentId, input, output, expected, error, scores, metadata, tags, metrics, context, spanId, spanParents, rootSpanId, spanAttributes, additionalProperties) /* spotless:on */
+        }
+        return hashCode
+    }
+
+    override fun toString() =
+        "ExperimentEvent{id=$id, datasetRecordId=$datasetRecordId, _xactId=$_xactId, created=$created, projectId=$projectId, experimentId=$experimentId, input=$input, output=$output, expected=$expected, error=$error, scores=$scores, metadata=$metadata, tags=$tags, metrics=$metrics, context=$context, spanId=$spanId, spanParents=$spanParents, rootSpanId=$rootSpanId, spanAttributes=$spanAttributes, additionalProperties=$additionalProperties}"
 }

@@ -51,8 +51,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         /**
          * An ACL grants a certain permission or role to a certain user or group on an object.
          *
@@ -82,32 +80,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is AclBatchUpdateBody &&
-                this.addAcls == other.addAcls &&
-                this.removeAcls == other.removeAcls &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        addAcls,
-                        removeAcls,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "AclBatchUpdateBody{addAcls=$addAcls, removeAcls=$removeAcls, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -175,6 +147,26 @@ constructor(
                     additionalProperties.toUnmodifiable(),
                 )
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is AclBatchUpdateBody && this.addAcls == other.addAcls && this.removeAcls == other.removeAcls && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(addAcls, removeAcls, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "AclBatchUpdateBody{addAcls=$addAcls, removeAcls=$removeAcls, additionalProperties=$additionalProperties}"
     }
 
     fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
@@ -188,22 +180,11 @@ constructor(
             return true
         }
 
-        return other is AclBatchUpdateParams &&
-            this.addAcls == other.addAcls &&
-            this.removeAcls == other.removeAcls &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+        return /* spotless:off */ other is AclBatchUpdateParams && this.addAcls == other.addAcls && this.removeAcls == other.removeAcls && this.additionalQueryParams == other.additionalQueryParams && this.additionalHeaders == other.additionalHeaders && this.additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(
-            addAcls,
-            removeAcls,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
+        return /* spotless:off */ Objects.hash(addAcls, removeAcls, additionalQueryParams, additionalHeaders, additionalBodyProperties) /* spotless:on */
     }
 
     override fun toString() =
@@ -375,8 +356,6 @@ constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
         /** The object type that the ACL applies to */
         @JsonProperty("object_type") fun objectType(): ObjectType? = objectType
 
@@ -416,42 +395,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is AddAcl &&
-                this.objectType == other.objectType &&
-                this.objectId == other.objectId &&
-                this.userId == other.userId &&
-                this.groupId == other.groupId &&
-                this.permission == other.permission &&
-                this.restrictObjectType == other.restrictObjectType &&
-                this.roleId == other.roleId &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        objectType,
-                        objectId,
-                        userId,
-                        groupId,
-                        permission,
-                        restrictObjectType,
-                        roleId,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "AddAcl{objectType=$objectType, objectId=$objectId, userId=$userId, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -562,7 +505,7 @@ constructor(
                     return true
                 }
 
-                return other is ObjectType && this.value == other.value
+                return /* spotless:off */ other is ObjectType && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -673,7 +616,7 @@ constructor(
                     return true
                 }
 
-                return other is Permission && this.value == other.value
+                return /* spotless:off */ other is Permission && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -766,7 +709,7 @@ constructor(
                     return true
                 }
 
-                return other is RestrictObjectType && this.value == other.value
+                return /* spotless:off */ other is RestrictObjectType && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -864,6 +807,26 @@ constructor(
 
             fun asString(): String = _value().asStringOrThrow()
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is AddAcl && this.objectType == other.objectType && this.objectId == other.objectId && this.userId == other.userId && this.groupId == other.groupId && this.permission == other.permission && this.restrictObjectType == other.restrictObjectType && this.roleId == other.roleId && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(objectType, objectId, userId, groupId, permission, restrictObjectType, roleId, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "AddAcl{objectType=$objectType, objectId=$objectId, userId=$userId, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -889,8 +852,6 @@ constructor(
         private val roleId: String?,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
-
-        private var hashCode: Int = 0
 
         /** The object type that the ACL applies to */
         @JsonProperty("object_type") fun objectType(): ObjectType? = objectType
@@ -931,42 +892,6 @@ constructor(
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is RemoveAcl &&
-                this.objectType == other.objectType &&
-                this.objectId == other.objectId &&
-                this.userId == other.userId &&
-                this.groupId == other.groupId &&
-                this.permission == other.permission &&
-                this.restrictObjectType == other.restrictObjectType &&
-                this.roleId == other.roleId &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        objectType,
-                        objectId,
-                        userId,
-                        groupId,
-                        permission,
-                        restrictObjectType,
-                        roleId,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "RemoveAcl{objectType=$objectType, objectId=$objectId, userId=$userId, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -1077,7 +1002,7 @@ constructor(
                     return true
                 }
 
-                return other is ObjectType && this.value == other.value
+                return /* spotless:off */ other is ObjectType && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -1188,7 +1113,7 @@ constructor(
                     return true
                 }
 
-                return other is Permission && this.value == other.value
+                return /* spotless:off */ other is Permission && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -1281,7 +1206,7 @@ constructor(
                     return true
                 }
 
-                return other is RestrictObjectType && this.value == other.value
+                return /* spotless:off */ other is RestrictObjectType && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -1379,5 +1304,25 @@ constructor(
 
             fun asString(): String = _value().asStringOrThrow()
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is RemoveAcl && this.objectType == other.objectType && this.objectId == other.objectId && this.userId == other.userId && this.groupId == other.groupId && this.permission == other.permission && this.restrictObjectType == other.restrictObjectType && this.roleId == other.roleId && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(objectType, objectId, userId, groupId, permission, restrictObjectType, roleId, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "RemoveAcl{objectType=$objectType, objectId=$objectId, userId=$userId, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, additionalProperties=$additionalProperties}"
     }
 }

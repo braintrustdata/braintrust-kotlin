@@ -28,8 +28,6 @@ private constructor(
 
     private var validated: Boolean = false
 
-    private var hashCode: Int = 0
-
     fun imageUrl(): ImageUrl = imageUrl.getRequired("image_url")
 
     fun type(): Type = type.getRequired("type")
@@ -51,32 +49,6 @@ private constructor(
     }
 
     fun toBuilder() = Builder().from(this)
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is ChatCompletionContentPartImage &&
-            this.imageUrl == other.imageUrl &&
-            this.type == other.type &&
-            this.additionalProperties == other.additionalProperties
-    }
-
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    imageUrl,
-                    type,
-                    additionalProperties,
-                )
-        }
-        return hashCode
-    }
-
-    override fun toString() =
-        "ChatCompletionContentPartImage{imageUrl=$imageUrl, type=$type, additionalProperties=$additionalProperties}"
 
     companion object {
 
@@ -140,8 +112,6 @@ private constructor(
 
         private var validated: Boolean = false
 
-        private var hashCode: Int = 0
-
         fun url(): String = url.getRequired("url")
 
         fun detail(): Detail? = detail.getNullable("detail")
@@ -163,32 +133,6 @@ private constructor(
         }
 
         fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is ImageUrl &&
-                this.url == other.url &&
-                this.detail == other.detail &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        url,
-                        detail,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "ImageUrl{url=$url, detail=$detail, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -254,7 +198,7 @@ private constructor(
                     return true
                 }
 
-                return other is Detail && this.value == other.value
+                return /* spotless:off */ other is Detail && this.value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -303,6 +247,26 @@ private constructor(
 
             fun asString(): String = _value().asStringOrThrow()
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is ImageUrl && this.url == other.url && this.detail == other.detail && this.additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        private var hashCode: Int = 0
+
+        override fun hashCode(): Int {
+            if (hashCode == 0) {
+                hashCode = /* spotless:off */ Objects.hash(url, detail, additionalProperties) /* spotless:on */
+            }
+            return hashCode
+        }
+
+        override fun toString() =
+            "ImageUrl{url=$url, detail=$detail, additionalProperties=$additionalProperties}"
     }
 
     class Type
@@ -318,7 +282,7 @@ private constructor(
                 return true
             }
 
-            return other is Type && this.value == other.value
+            return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -355,4 +319,24 @@ private constructor(
 
         fun asString(): String = _value().asStringOrThrow()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ChatCompletionContentPartImage && this.imageUrl == other.imageUrl && this.type == other.type && this.additionalProperties == other.additionalProperties /* spotless:on */
+    }
+
+    private var hashCode: Int = 0
+
+    override fun hashCode(): Int {
+        if (hashCode == 0) {
+            hashCode = /* spotless:off */ Objects.hash(imageUrl, type, additionalProperties) /* spotless:on */
+        }
+        return hashCode
+    }
+
+    override fun toString() =
+        "ChatCompletionContentPartImage{imageUrl=$imageUrl, type=$type, additionalProperties=$additionalProperties}"
 }
