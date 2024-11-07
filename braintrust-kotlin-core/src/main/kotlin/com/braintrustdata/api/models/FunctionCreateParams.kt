@@ -11,6 +11,8 @@ import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.getOrThrow
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.braintrustdata.api.models.*
@@ -25,8 +27,6 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.google.common.collect.ArrayListMultimap
-import com.google.common.collect.ListMultimap
 import java.util.Objects
 
 class FunctionCreateParams
@@ -41,8 +41,8 @@ constructor(
     private val origin: Origin?,
     private val promptData: PromptData?,
     private val tags: List<String>?,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalQueryParams: Map<String, List<String>>,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) {
 
@@ -82,9 +82,9 @@ constructor(
         )
     }
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+    internal fun getHeaders(): Headers = additionalHeaders
 
-    internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
+    internal fun getQueryParams(): QueryParams = additionalQueryParams
 
     @JsonDeserialize(builder = FunctionCreateBody.Builder::class)
     @NoAutoDetect
@@ -259,9 +259,9 @@ constructor(
             "FunctionCreateBody{functionData=$functionData, name=$name, projectId=$projectId, slug=$slug, description=$description, functionSchema=$functionSchema, functionType=$functionType, origin=$origin, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
+    fun _additionalHeaders(): Headers = additionalHeaders
 
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -300,8 +300,8 @@ constructor(
         private var origin: Origin? = null
         private var promptData: PromptData? = null
         private var tags: MutableList<String> = mutableListOf()
-        private var additionalHeaders: ListMultimap<String, String> = ArrayListMultimap.create()
-        private var additionalQueryParams: ListMultimap<String, String> = ArrayListMultimap.create()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(functionCreateParams: FunctionCreateParams) = apply {
@@ -367,6 +367,11 @@ constructor(
         /** A list of tags for the prompt */
         fun addTag(tag: String) = apply { this.tags.add(tag) }
 
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
         fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
             this.additionalHeaders.clear()
             putAllAdditionalHeaders(additionalHeaders)
@@ -377,29 +382,42 @@ constructor(
         }
 
         fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
-            additionalHeaders.putAll(name, values)
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
         }
 
         fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(::putAdditionalHeaders)
+            this.additionalHeaders.putAll(additionalHeaders)
         }
 
         fun replaceAdditionalHeaders(name: String, value: String) = apply {
-            additionalHeaders.replaceValues(name, listOf(value))
+            additionalHeaders.replace(name, value)
         }
 
         fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
-            additionalHeaders.replaceValues(name, values)
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
         }
 
         fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(::replaceAdditionalHeaders)
+            this.additionalHeaders.replaceAll(additionalHeaders)
         }
 
-        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.removeAll(name) }
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
 
         fun removeAllAdditionalHeaders(names: Set<String>) = apply {
-            names.forEach(::removeAdditionalHeaders)
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
         }
 
         fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
@@ -412,48 +430,62 @@ constructor(
         }
 
         fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
-            additionalQueryParams.putAll(key, values)
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
         }
 
         fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
-                additionalQueryParams.forEach(::putAdditionalQueryParams)
+                this.additionalQueryParams.putAll(additionalQueryParams)
             }
 
         fun replaceAdditionalQueryParams(key: String, value: String) = apply {
-            additionalQueryParams.replaceValues(key, listOf(value))
+            additionalQueryParams.replace(key, value)
         }
 
         fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
-            additionalQueryParams.replaceValues(key, values)
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
         }
 
         fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
-                additionalQueryParams.forEach(::replaceAdditionalQueryParams)
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
             }
 
-        fun removeAdditionalQueryParams(key: String) = apply {
-            additionalQueryParams.removeAll(key)
-        }
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
 
         fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalQueryParams)
+            additionalQueryParams.removeAll(keys)
         }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             this.additionalBodyProperties.clear()
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
+            putAllAdditionalBodyProperties(additionalBodyProperties)
         }
 
         fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            this.additionalBodyProperties.put(key, value)
+            additionalBodyProperties.put(key, value)
         }
 
         fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
             apply {
                 this.additionalBodyProperties.putAll(additionalBodyProperties)
             }
+
+        fun removeAdditionalBodyProperty(key: String) = apply {
+            additionalBodyProperties.remove(key)
+        }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalBodyProperty)
+        }
 
         fun build(): FunctionCreateParams =
             FunctionCreateParams(
@@ -467,14 +499,8 @@ constructor(
                 origin,
                 promptData,
                 if (tags.size == 0) null else tags.toImmutable(),
-                additionalHeaders
-                    .asMap()
-                    .mapValues { it.value.toList().toImmutable() }
-                    .toImmutable(),
-                additionalQueryParams
-                    .asMap()
-                    .mapValues { it.value.toList().toImmutable() }
-                    .toImmutable(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
             )
     }
