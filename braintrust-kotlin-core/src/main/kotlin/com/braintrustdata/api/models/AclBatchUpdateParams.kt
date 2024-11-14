@@ -442,14 +442,13 @@ constructor(
          */
         @JsonProperty("group_id") fun groupId(): String? = groupId
 
-        /**
-         * Each permission permits a certain type of operation on an object in the system
-         *
-         * Permissions can be assigned to to objects on an individual basis, or grouped into roles
-         */
+        /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
         @JsonProperty("permission") fun permission(): Permission? = permission
 
-        /** The object type that the ACL applies to */
+        /**
+         * When setting a permission directly, optionally restricts the permission grant to just the
+         * specified object type. Cannot be set alongside a `role_id`.
+         */
         @JsonProperty("restrict_object_type")
         fun restrictObjectType(): RestrictObjectType? = restrictObjectType
 
@@ -513,15 +512,15 @@ constructor(
             fun groupId(groupId: String) = apply { this.groupId = groupId }
 
             /**
-             * Each permission permits a certain type of operation on an object in the system
-             *
-             * Permissions can be assigned to to objects on an individual basis, or grouped into
-             * roles
+             * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
              */
             @JsonProperty("permission")
             fun permission(permission: Permission) = apply { this.permission = permission }
 
-            /** The object type that the ACL applies to */
+            /**
+             * When setting a permission directly, optionally restricts the permission grant to just
+             * the specified object type. Cannot be set alongside a `role_id`.
+             */
             @JsonProperty("restrict_object_type")
             fun restrictObjectType(restrictObjectType: RestrictObjectType) = apply {
                 this.restrictObjectType = restrictObjectType
@@ -939,14 +938,13 @@ constructor(
          */
         @JsonProperty("group_id") fun groupId(): String? = groupId
 
-        /**
-         * Each permission permits a certain type of operation on an object in the system
-         *
-         * Permissions can be assigned to to objects on an individual basis, or grouped into roles
-         */
+        /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
         @JsonProperty("permission") fun permission(): Permission? = permission
 
-        /** The object type that the ACL applies to */
+        /**
+         * When setting a permission directly, optionally restricts the permission grant to just the
+         * specified object type. Cannot be set alongside a `role_id`.
+         */
         @JsonProperty("restrict_object_type")
         fun restrictObjectType(): RestrictObjectType? = restrictObjectType
 
@@ -1010,15 +1008,15 @@ constructor(
             fun groupId(groupId: String) = apply { this.groupId = groupId }
 
             /**
-             * Each permission permits a certain type of operation on an object in the system
-             *
-             * Permissions can be assigned to to objects on an individual basis, or grouped into
-             * roles
+             * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
              */
             @JsonProperty("permission")
             fun permission(permission: Permission) = apply { this.permission = permission }
 
-            /** The object type that the ACL applies to */
+            /**
+             * When setting a permission directly, optionally restricts the permission grant to just
+             * the specified object type. Cannot be set alongside a `role_id`.
+             */
             @JsonProperty("restrict_object_type")
             fun restrictObjectType(restrictObjectType: RestrictObjectType) = apply {
                 this.restrictObjectType = restrictObjectType
