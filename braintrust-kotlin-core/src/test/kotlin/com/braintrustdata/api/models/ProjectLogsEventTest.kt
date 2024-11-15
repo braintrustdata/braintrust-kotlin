@@ -56,10 +56,7 @@ class ProjectLogsEventTest {
                 .output(JsonNull.of())
                 .scores(ProjectLogsEvent.Scores.builder().build())
                 .spanAttributes(
-                    ProjectLogsEvent.SpanAttributes.builder()
-                        .name("name")
-                        .type(ProjectLogsEvent.SpanAttributes.Type.LLM)
-                        .build()
+                    SpanAttributes.builder().name("name").type(SpanAttributes.Type.LLM).build()
                 )
                 .spanParents(listOf("string"))
                 .tags(listOf("string"))
@@ -113,12 +110,7 @@ class ProjectLogsEventTest {
         assertThat(projectLogsEvent._output()).isEqualTo(JsonNull.of())
         assertThat(projectLogsEvent.scores()).isEqualTo(ProjectLogsEvent.Scores.builder().build())
         assertThat(projectLogsEvent.spanAttributes())
-            .isEqualTo(
-                ProjectLogsEvent.SpanAttributes.builder()
-                    .name("name")
-                    .type(ProjectLogsEvent.SpanAttributes.Type.LLM)
-                    .build()
-            )
+            .isEqualTo(SpanAttributes.builder().name("name").type(SpanAttributes.Type.LLM).build())
         assertThat(projectLogsEvent.spanParents()).containsExactly("string")
         assertThat(projectLogsEvent.tags()).containsExactly("string")
     }
