@@ -4,7 +4,9 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.BaseDeserializer
 import com.braintrustdata.api.core.BaseSerializer
+import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.getOrThrow
@@ -14,6 +16,7 @@ import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.ObjectCodec
@@ -28,7 +31,7 @@ class ProjectScoreCreateParams
 constructor(
     private val name: String,
     private val projectId: String,
-    private val scoreType: ProjectScoreType,
+    private val scoreType: ScoreType,
     private val categories: Categories?,
     private val config: ProjectScoreConfig?,
     private val description: String?,
@@ -41,7 +44,7 @@ constructor(
 
     fun projectId(): String = projectId
 
-    fun scoreType(): ProjectScoreType = scoreType
+    fun scoreType(): ScoreType = scoreType
 
     fun categories(): Categories? = categories
 
@@ -72,7 +75,7 @@ constructor(
     internal constructor(
         private val name: String?,
         private val projectId: String?,
-        private val scoreType: ProjectScoreType?,
+        private val scoreType: ScoreType?,
         private val categories: Categories?,
         private val config: ProjectScoreConfig?,
         private val description: String?,
@@ -86,7 +89,7 @@ constructor(
         @JsonProperty("project_id") fun projectId(): String? = projectId
 
         /** The type of the configured score */
-        @JsonProperty("score_type") fun scoreType(): ProjectScoreType? = scoreType
+        @JsonProperty("score_type") fun scoreType(): ScoreType? = scoreType
 
         /** For categorical-type project scores, the list of all categories */
         @JsonProperty("categories") fun categories(): Categories? = categories
@@ -111,7 +114,7 @@ constructor(
 
             private var name: String? = null
             private var projectId: String? = null
-            private var scoreType: ProjectScoreType? = null
+            private var scoreType: ScoreType? = null
             private var categories: Categories? = null
             private var config: ProjectScoreConfig? = null
             private var description: String? = null
@@ -136,7 +139,7 @@ constructor(
 
             /** The type of the configured score */
             @JsonProperty("score_type")
-            fun scoreType(scoreType: ProjectScoreType) = apply { this.scoreType = scoreType }
+            fun scoreType(scoreType: ScoreType) = apply { this.scoreType = scoreType }
 
             /** For categorical-type project scores, the list of all categories */
             @JsonProperty("categories")
@@ -229,7 +232,7 @@ constructor(
 
         private var name: String? = null
         private var projectId: String? = null
-        private var scoreType: ProjectScoreType? = null
+        private var scoreType: ScoreType? = null
         private var categories: Categories? = null
         private var config: ProjectScoreConfig? = null
         private var description: String? = null
@@ -256,7 +259,7 @@ constructor(
         fun projectId(projectId: String) = apply { this.projectId = projectId }
 
         /** The type of the configured score */
-        fun scoreType(scoreType: ProjectScoreType) = apply { this.scoreType = scoreType }
+        fun scoreType(scoreType: ScoreType) = apply { this.scoreType = scoreType }
 
         /** For categorical-type project scores, the list of all categories */
         fun categories(categories: Categories) = apply { this.categories = categories }
@@ -418,6 +421,87 @@ constructor(
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
             )
+    }
+
+    class ScoreType
+    @JsonCreator
+    private constructor(
+        private val value: JsonField<String>,
+    ) : Enum {
+
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is ScoreType && this.value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+
+        companion object {
+
+            val SLIDER = ScoreType(JsonField.of("slider"))
+
+            val CATEGORICAL = ScoreType(JsonField.of("categorical"))
+
+            val WEIGHTED = ScoreType(JsonField.of("weighted"))
+
+            val MINIMUM = ScoreType(JsonField.of("minimum"))
+
+            val MAXIMUM = ScoreType(JsonField.of("maximum"))
+
+            val ONLINE = ScoreType(JsonField.of("online"))
+
+            fun of(value: String) = ScoreType(JsonField.of(value))
+        }
+
+        enum class Known {
+            SLIDER,
+            CATEGORICAL,
+            WEIGHTED,
+            MINIMUM,
+            MAXIMUM,
+            ONLINE,
+        }
+
+        enum class Value {
+            SLIDER,
+            CATEGORICAL,
+            WEIGHTED,
+            MINIMUM,
+            MAXIMUM,
+            ONLINE,
+            _UNKNOWN,
+        }
+
+        fun value(): Value =
+            when (this) {
+                SLIDER -> Value.SLIDER
+                CATEGORICAL -> Value.CATEGORICAL
+                WEIGHTED -> Value.WEIGHTED
+                MINIMUM -> Value.MINIMUM
+                MAXIMUM -> Value.MAXIMUM
+                ONLINE -> Value.ONLINE
+                else -> Value._UNKNOWN
+            }
+
+        fun known(): Known =
+            when (this) {
+                SLIDER -> Known.SLIDER
+                CATEGORICAL -> Known.CATEGORICAL
+                WEIGHTED -> Known.WEIGHTED
+                MINIMUM -> Known.MINIMUM
+                MAXIMUM -> Known.MAXIMUM
+                ONLINE -> Known.ONLINE
+                else -> throw BraintrustInvalidDataException("Unknown ScoreType: $value")
+            }
+
+        fun asString(): String = _value().asStringOrThrow()
     }
 
     @JsonDeserialize(using = Categories.Deserializer::class)
