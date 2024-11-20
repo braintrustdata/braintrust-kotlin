@@ -15,6 +15,7 @@ class FeedbackDatasetItemTest {
                 .comment("comment")
                 .metadata(FeedbackDatasetItem.Metadata.builder().build())
                 .source(FeedbackDatasetItem.Source.APP)
+                .tags(listOf("string"))
                 .build()
         assertThat(feedbackDatasetItem).isNotNull
         assertThat(feedbackDatasetItem.id()).isEqualTo("id")
@@ -22,5 +23,6 @@ class FeedbackDatasetItemTest {
         assertThat(feedbackDatasetItem.metadata())
             .isEqualTo(FeedbackDatasetItem.Metadata.builder().build())
         assertThat(feedbackDatasetItem.source()).isEqualTo(FeedbackDatasetItem.Source.APP)
+        assertThat(feedbackDatasetItem.tags()).containsExactly("string")
     }
 }

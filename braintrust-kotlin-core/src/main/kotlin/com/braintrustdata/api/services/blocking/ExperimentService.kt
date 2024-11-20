@@ -10,7 +10,6 @@ import com.braintrustdata.api.models.ExperimentFeedbackParams
 import com.braintrustdata.api.models.ExperimentFetchParams
 import com.braintrustdata.api.models.ExperimentFetchPostParams
 import com.braintrustdata.api.models.ExperimentInsertParams
-import com.braintrustdata.api.models.ExperimentInsertResponse
 import com.braintrustdata.api.models.ExperimentListPage
 import com.braintrustdata.api.models.ExperimentListParams
 import com.braintrustdata.api.models.ExperimentRetrieveParams
@@ -18,6 +17,7 @@ import com.braintrustdata.api.models.ExperimentSummarizeParams
 import com.braintrustdata.api.models.ExperimentUpdateParams
 import com.braintrustdata.api.models.FeedbackResponseSchema
 import com.braintrustdata.api.models.FetchExperimentEventsResponse
+import com.braintrustdata.api.models.InsertEventsResponse
 import com.braintrustdata.api.models.SummarizeExperimentResponse
 
 interface ExperimentService {
@@ -70,7 +70,8 @@ interface ExperimentService {
 
     /**
      * Fetch the events in an experiment. Equivalent to the POST form of the same path, but with the
-     * parameters in the URL query rather than in the request body
+     * parameters in the URL query rather than in the request body. For more complex queries, use
+     * the `POST /btql` endpoint.
      */
     fun fetch(
         params: ExperimentFetchParams,
@@ -79,7 +80,8 @@ interface ExperimentService {
 
     /**
      * Fetch the events in an experiment. Equivalent to the GET form of the same path, but with the
-     * parameters in the request body rather than in the URL query
+     * parameters in the request body rather than in the URL query. For more complex queries, use
+     * the `POST /btql` endpoint.
      */
     fun fetchPost(
         params: ExperimentFetchPostParams,
@@ -90,7 +92,7 @@ interface ExperimentService {
     fun insert(
         params: ExperimentInsertParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): ExperimentInsertResponse
+    ): InsertEventsResponse
 
     /** Summarize experiment */
     fun summarize(

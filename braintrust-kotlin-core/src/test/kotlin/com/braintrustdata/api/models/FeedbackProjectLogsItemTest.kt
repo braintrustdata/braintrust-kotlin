@@ -18,6 +18,7 @@ class FeedbackProjectLogsItemTest {
                 .metadata(FeedbackProjectLogsItem.Metadata.builder().build())
                 .scores(FeedbackProjectLogsItem.Scores.builder().build())
                 .source(FeedbackProjectLogsItem.Source.APP)
+                .tags(listOf("string"))
                 .build()
         assertThat(feedbackProjectLogsItem).isNotNull
         assertThat(feedbackProjectLogsItem.id()).isEqualTo("id")
@@ -28,5 +29,6 @@ class FeedbackProjectLogsItemTest {
         assertThat(feedbackProjectLogsItem.scores())
             .isEqualTo(FeedbackProjectLogsItem.Scores.builder().build())
         assertThat(feedbackProjectLogsItem.source()).isEqualTo(FeedbackProjectLogsItem.Source.APP)
+        assertThat(feedbackProjectLogsItem.tags()).containsExactly("string")
     }
 }
