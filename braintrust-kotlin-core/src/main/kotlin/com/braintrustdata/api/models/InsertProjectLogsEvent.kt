@@ -2,25 +2,23 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.toImmutable
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.time.OffsetDateTime
 import java.util.Objects
 
-@JsonDeserialize(builder = InsertProjectLogsEventMerge.Builder::class)
+/** A project logs event */
+@JsonDeserialize(builder = InsertProjectLogsEvent.Builder::class)
 @NoAutoDetect
-class InsertProjectLogsEventMerge
+class InsertProjectLogsEvent
 private constructor(
     private val input: JsonValue,
     private val output: JsonValue,
@@ -37,6 +35,10 @@ private constructor(
     private val _objectDelete: JsonField<Boolean>,
     private val _isMerge: JsonField<Boolean>,
     private val _mergePaths: JsonField<List<List<String>>>,
+    private val _parentId: JsonField<String>,
+    private val spanId: JsonField<String>,
+    private val rootSpanId: JsonField<String>,
+    private val spanParents: JsonField<List<String>>,
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
@@ -125,7 +127,8 @@ private constructor(
     /**
      * The `_is_merge` field controls how the row is merged with any existing row with the same id
      * in the DB. By default (or when set to `false`), the existing row is completely replaced by
-     * the new row. When set to `true`, the new row is deep-merged into the existing row
+     * the new row. When set to `true`, the new row is deep-merged into the existing row, if one is
+     * found. If no existing row is found, the new row is inserted as is.
      *
      * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": 5, "b":
      * 10}}`. If we merge a new row as `{"_is_merge": true, "id": "foo", "input": {"b": 11, "c":
@@ -133,12 +136,12 @@ private constructor(
      * replace the new row as `{"id": "foo", "input": {"b": 11, "c": 20}}`, the new row will be
      * `{"id": "foo", "input": {"b": 11, "c": 20}}`
      */
-    fun _isMerge(): Boolean = _isMerge.getRequired("_is_merge")
+    fun _isMerge(): Boolean? = _isMerge.getNullable("_is_merge")
 
     /**
-     * The `_merge_paths` field allows controlling the depth of the merge. It can only be specified
-     * alongside `_is_merge=true`. `_merge_paths` is a list of paths, where each path is a list of
-     * field names. The deep merge will not descend below any of the specified merge paths.
+     * The `_merge_paths` field allows controlling the depth of the merge, when `_is_merge=true`.
+     * `_merge_paths` is a list of paths, where each path is a list of field names. The deep merge
+     * will not descend below any of the specified merge paths.
      *
      * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": {"b": 10},
      * "c": {"d": 20}}, "output": {"a": 20}}`. If we merge a new row as `{"_is_merge": true,
@@ -149,6 +152,76 @@ private constructor(
      * `input.c`.
      */
     fun _mergePaths(): List<List<String>>? = _mergePaths.getNullable("_merge_paths")
+
+    /**
+     * Use the `_parent_id` field to create this row as a subspan of an existing row. Tracking
+     * hierarchical relationships are important for tracing (see the
+     * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details).
+     *
+     * For example, say we have logged a row `{"id": "abc", "input": "foo", "output": "bar",
+     * "expected": "boo", "scores": {"correctness": 0.33}}`. We can create a sub-span of the parent
+     * row by logging `{"_parent_id": "abc", "id": "llm_call", "input": {"prompt": "What comes after
+     * foo?"}, "output": "bar", "metrics": {"tokens": 1}}`. In the webapp, only the root span row
+     * `"abc"` will show up in the summary view. You can view the full trace hierarchy (in this
+     * case, the `"llm_call"` row) by clicking on the "abc" row.
+     *
+     * If the row is being merged into an existing row, this field will be ignored.
+     */
+    fun _parentId(): String? = _parentId.getNullable("_parent_id")
+
+    /**
+     * Use span_id, root_span_id, and span_parents as a more explicit alternative to \_parent_id.
+     * The span_id is a unique identifier describing the row's place in the a trace, and the
+     * root_span_id is a unique identifier for the whole trace. See the
+     * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details.
+     *
+     * For example, say we have logged a row `{"id": "abc", "span_id": "span0", "root_span_id":
+     * "root_span0", "input": "foo", "output": "bar", "expected": "boo", "scores": {"correctness":
+     * 0.33}}`. We can create a sub-span of the parent row by logging `{"id": "llm_call", "span_id":
+     * "span1", "root_span_id": "root_span0", "span_parents": ["span0"], "input": {"prompt": "What
+     * comes after foo?"}, "output": "bar", "metrics": {"tokens": 1}}`. In the webapp, only the root
+     * span row `"abc"` will show up in the summary view. You can view the full trace hierarchy (in
+     * this case, the `"llm_call"` row) by clicking on the "abc" row.
+     *
+     * If the row is being merged into an existing row, this field will be ignored.
+     */
+    fun spanId(): String? = spanId.getNullable("span_id")
+
+    /**
+     * Use span_id, root_span_id, and span_parents as a more explicit alternative to \_parent_id.
+     * The span_id is a unique identifier describing the row's place in the a trace, and the
+     * root_span_id is a unique identifier for the whole trace. See the
+     * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details.
+     *
+     * For example, say we have logged a row `{"id": "abc", "span_id": "span0", "root_span_id":
+     * "root_span0", "input": "foo", "output": "bar", "expected": "boo", "scores": {"correctness":
+     * 0.33}}`. We can create a sub-span of the parent row by logging `{"id": "llm_call", "span_id":
+     * "span1", "root_span_id": "root_span0", "span_parents": ["span0"], "input": {"prompt": "What
+     * comes after foo?"}, "output": "bar", "metrics": {"tokens": 1}}`. In the webapp, only the root
+     * span row `"abc"` will show up in the summary view. You can view the full trace hierarchy (in
+     * this case, the `"llm_call"` row) by clicking on the "abc" row.
+     *
+     * If the row is being merged into an existing row, this field will be ignored.
+     */
+    fun rootSpanId(): String? = rootSpanId.getNullable("root_span_id")
+
+    /**
+     * Use span_id, root_span_id, and span_parents as a more explicit alternative to \_parent_id.
+     * The span_id is a unique identifier describing the row's place in the a trace, and the
+     * root_span_id is a unique identifier for the whole trace. See the
+     * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details.
+     *
+     * For example, say we have logged a row `{"id": "abc", "span_id": "span0", "root_span_id":
+     * "root_span0", "input": "foo", "output": "bar", "expected": "boo", "scores": {"correctness":
+     * 0.33}}`. We can create a sub-span of the parent row by logging `{"id": "llm_call", "span_id":
+     * "span1", "root_span_id": "root_span0", "span_parents": ["span0"], "input": {"prompt": "What
+     * comes after foo?"}, "output": "bar", "metrics": {"tokens": 1}}`. In the webapp, only the root
+     * span row `"abc"` will show up in the summary view. You can view the full trace hierarchy (in
+     * this case, the `"llm_call"` row) by clicking on the "abc" row.
+     *
+     * If the row is being merged into an existing row, this field will be ignored.
+     */
+    fun spanParents(): List<String>? = spanParents.getNullable("span_parents")
 
     /** The arguments that uniquely define a user input (an arbitrary, JSON serializable object). */
     @JsonProperty("input") @ExcludeMissing fun _input() = input
@@ -233,7 +306,8 @@ private constructor(
     /**
      * The `_is_merge` field controls how the row is merged with any existing row with the same id
      * in the DB. By default (or when set to `false`), the existing row is completely replaced by
-     * the new row. When set to `true`, the new row is deep-merged into the existing row
+     * the new row. When set to `true`, the new row is deep-merged into the existing row, if one is
+     * found. If no existing row is found, the new row is inserted as is.
      *
      * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": 5, "b":
      * 10}}`. If we merge a new row as `{"_is_merge": true, "id": "foo", "input": {"b": 11, "c":
@@ -244,9 +318,9 @@ private constructor(
     @JsonProperty("_is_merge") @ExcludeMissing fun __isMerge() = _isMerge
 
     /**
-     * The `_merge_paths` field allows controlling the depth of the merge. It can only be specified
-     * alongside `_is_merge=true`. `_merge_paths` is a list of paths, where each path is a list of
-     * field names. The deep merge will not descend below any of the specified merge paths.
+     * The `_merge_paths` field allows controlling the depth of the merge, when `_is_merge=true`.
+     * `_merge_paths` is a list of paths, where each path is a list of field names. The deep merge
+     * will not descend below any of the specified merge paths.
      *
      * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": {"b": 10},
      * "c": {"d": 20}}, "output": {"a": 20}}`. If we merge a new row as `{"_is_merge": true,
@@ -258,11 +332,81 @@ private constructor(
      */
     @JsonProperty("_merge_paths") @ExcludeMissing fun __mergePaths() = _mergePaths
 
+    /**
+     * Use the `_parent_id` field to create this row as a subspan of an existing row. Tracking
+     * hierarchical relationships are important for tracing (see the
+     * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details).
+     *
+     * For example, say we have logged a row `{"id": "abc", "input": "foo", "output": "bar",
+     * "expected": "boo", "scores": {"correctness": 0.33}}`. We can create a sub-span of the parent
+     * row by logging `{"_parent_id": "abc", "id": "llm_call", "input": {"prompt": "What comes after
+     * foo?"}, "output": "bar", "metrics": {"tokens": 1}}`. In the webapp, only the root span row
+     * `"abc"` will show up in the summary view. You can view the full trace hierarchy (in this
+     * case, the `"llm_call"` row) by clicking on the "abc" row.
+     *
+     * If the row is being merged into an existing row, this field will be ignored.
+     */
+    @JsonProperty("_parent_id") @ExcludeMissing fun __parentId() = _parentId
+
+    /**
+     * Use span_id, root_span_id, and span_parents as a more explicit alternative to \_parent_id.
+     * The span_id is a unique identifier describing the row's place in the a trace, and the
+     * root_span_id is a unique identifier for the whole trace. See the
+     * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details.
+     *
+     * For example, say we have logged a row `{"id": "abc", "span_id": "span0", "root_span_id":
+     * "root_span0", "input": "foo", "output": "bar", "expected": "boo", "scores": {"correctness":
+     * 0.33}}`. We can create a sub-span of the parent row by logging `{"id": "llm_call", "span_id":
+     * "span1", "root_span_id": "root_span0", "span_parents": ["span0"], "input": {"prompt": "What
+     * comes after foo?"}, "output": "bar", "metrics": {"tokens": 1}}`. In the webapp, only the root
+     * span row `"abc"` will show up in the summary view. You can view the full trace hierarchy (in
+     * this case, the `"llm_call"` row) by clicking on the "abc" row.
+     *
+     * If the row is being merged into an existing row, this field will be ignored.
+     */
+    @JsonProperty("span_id") @ExcludeMissing fun _spanId() = spanId
+
+    /**
+     * Use span_id, root_span_id, and span_parents as a more explicit alternative to \_parent_id.
+     * The span_id is a unique identifier describing the row's place in the a trace, and the
+     * root_span_id is a unique identifier for the whole trace. See the
+     * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details.
+     *
+     * For example, say we have logged a row `{"id": "abc", "span_id": "span0", "root_span_id":
+     * "root_span0", "input": "foo", "output": "bar", "expected": "boo", "scores": {"correctness":
+     * 0.33}}`. We can create a sub-span of the parent row by logging `{"id": "llm_call", "span_id":
+     * "span1", "root_span_id": "root_span0", "span_parents": ["span0"], "input": {"prompt": "What
+     * comes after foo?"}, "output": "bar", "metrics": {"tokens": 1}}`. In the webapp, only the root
+     * span row `"abc"` will show up in the summary view. You can view the full trace hierarchy (in
+     * this case, the `"llm_call"` row) by clicking on the "abc" row.
+     *
+     * If the row is being merged into an existing row, this field will be ignored.
+     */
+    @JsonProperty("root_span_id") @ExcludeMissing fun _rootSpanId() = rootSpanId
+
+    /**
+     * Use span_id, root_span_id, and span_parents as a more explicit alternative to \_parent_id.
+     * The span_id is a unique identifier describing the row's place in the a trace, and the
+     * root_span_id is a unique identifier for the whole trace. See the
+     * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details.
+     *
+     * For example, say we have logged a row `{"id": "abc", "span_id": "span0", "root_span_id":
+     * "root_span0", "input": "foo", "output": "bar", "expected": "boo", "scores": {"correctness":
+     * 0.33}}`. We can create a sub-span of the parent row by logging `{"id": "llm_call", "span_id":
+     * "span1", "root_span_id": "root_span0", "span_parents": ["span0"], "input": {"prompt": "What
+     * comes after foo?"}, "output": "bar", "metrics": {"tokens": 1}}`. In the webapp, only the root
+     * span row `"abc"` will show up in the summary view. You can view the full trace hierarchy (in
+     * this case, the `"llm_call"` row) by clicking on the "abc" row.
+     *
+     * If the row is being merged into an existing row, this field will be ignored.
+     */
+    @JsonProperty("span_parents") @ExcludeMissing fun _spanParents() = spanParents
+
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
-    fun validate(): InsertProjectLogsEventMerge = apply {
+    fun validate(): InsertProjectLogsEvent = apply {
         if (!validated) {
             input()
             output()
@@ -279,6 +423,10 @@ private constructor(
             _objectDelete()
             _isMerge()
             _mergePaths()
+            _parentId()
+            spanId()
+            rootSpanId()
+            spanParents()
             validated = true
         }
     }
@@ -307,25 +455,33 @@ private constructor(
         private var _objectDelete: JsonField<Boolean> = JsonMissing.of()
         private var _isMerge: JsonField<Boolean> = JsonMissing.of()
         private var _mergePaths: JsonField<List<List<String>>> = JsonMissing.of()
+        private var _parentId: JsonField<String> = JsonMissing.of()
+        private var spanId: JsonField<String> = JsonMissing.of()
+        private var rootSpanId: JsonField<String> = JsonMissing.of()
+        private var spanParents: JsonField<List<String>> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        internal fun from(insertProjectLogsEventMerge: InsertProjectLogsEventMerge) = apply {
-            this.input = insertProjectLogsEventMerge.input
-            this.output = insertProjectLogsEventMerge.output
-            this.expected = insertProjectLogsEventMerge.expected
-            this.error = insertProjectLogsEventMerge.error
-            this.scores = insertProjectLogsEventMerge.scores
-            this.metadata = insertProjectLogsEventMerge.metadata
-            this.tags = insertProjectLogsEventMerge.tags
-            this.metrics = insertProjectLogsEventMerge.metrics
-            this.context = insertProjectLogsEventMerge.context
-            this.spanAttributes = insertProjectLogsEventMerge.spanAttributes
-            this.id = insertProjectLogsEventMerge.id
-            this.created = insertProjectLogsEventMerge.created
-            this._objectDelete = insertProjectLogsEventMerge._objectDelete
-            this._isMerge = insertProjectLogsEventMerge._isMerge
-            this._mergePaths = insertProjectLogsEventMerge._mergePaths
-            additionalProperties(insertProjectLogsEventMerge.additionalProperties)
+        internal fun from(insertProjectLogsEvent: InsertProjectLogsEvent) = apply {
+            this.input = insertProjectLogsEvent.input
+            this.output = insertProjectLogsEvent.output
+            this.expected = insertProjectLogsEvent.expected
+            this.error = insertProjectLogsEvent.error
+            this.scores = insertProjectLogsEvent.scores
+            this.metadata = insertProjectLogsEvent.metadata
+            this.tags = insertProjectLogsEvent.tags
+            this.metrics = insertProjectLogsEvent.metrics
+            this.context = insertProjectLogsEvent.context
+            this.spanAttributes = insertProjectLogsEvent.spanAttributes
+            this.id = insertProjectLogsEvent.id
+            this.created = insertProjectLogsEvent.created
+            this._objectDelete = insertProjectLogsEvent._objectDelete
+            this._isMerge = insertProjectLogsEvent._isMerge
+            this._mergePaths = insertProjectLogsEvent._mergePaths
+            this._parentId = insertProjectLogsEvent._parentId
+            this.spanId = insertProjectLogsEvent.spanId
+            this.rootSpanId = insertProjectLogsEvent.rootSpanId
+            this.spanParents = insertProjectLogsEvent.spanParents
+            additionalProperties(insertProjectLogsEvent.additionalProperties)
         }
 
         /**
@@ -498,7 +654,7 @@ private constructor(
          * The `_is_merge` field controls how the row is merged with any existing row with the same
          * id in the DB. By default (or when set to `false`), the existing row is completely
          * replaced by the new row. When set to `true`, the new row is deep-merged into the existing
-         * row
+         * row, if one is found. If no existing row is found, the new row is inserted as is.
          *
          * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": 5, "b":
          * 10}}`. If we merge a new row as `{"_is_merge": true, "id": "foo", "input": {"b": 11, "c":
@@ -512,7 +668,7 @@ private constructor(
          * The `_is_merge` field controls how the row is merged with any existing row with the same
          * id in the DB. By default (or when set to `false`), the existing row is completely
          * replaced by the new row. When set to `true`, the new row is deep-merged into the existing
-         * row
+         * row, if one is found. If no existing row is found, the new row is inserted as is.
          *
          * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": 5, "b":
          * 10}}`. If we merge a new row as `{"_is_merge": true, "id": "foo", "input": {"b": 11, "c":
@@ -525,10 +681,9 @@ private constructor(
         fun _isMerge(_isMerge: JsonField<Boolean>) = apply { this._isMerge = _isMerge }
 
         /**
-         * The `_merge_paths` field allows controlling the depth of the merge. It can only be
-         * specified alongside `_is_merge=true`. `_merge_paths` is a list of paths, where each path
-         * is a list of field names. The deep merge will not descend below any of the specified
-         * merge paths.
+         * The `_merge_paths` field allows controlling the depth of the merge, when
+         * `_is_merge=true`. `_merge_paths` is a list of paths, where each path is a list of field
+         * names. The deep merge will not descend below any of the specified merge paths.
          *
          * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": {"b":
          * 10}, "c": {"d": 20}}, "output": {"a": 20}}`. If we merge a new row as `{"_is_merge":
@@ -541,10 +696,9 @@ private constructor(
         fun _mergePaths(_mergePaths: List<List<String>>) = _mergePaths(JsonField.of(_mergePaths))
 
         /**
-         * The `_merge_paths` field allows controlling the depth of the merge. It can only be
-         * specified alongside `_is_merge=true`. `_merge_paths` is a list of paths, where each path
-         * is a list of field names. The deep merge will not descend below any of the specified
-         * merge paths.
+         * The `_merge_paths` field allows controlling the depth of the merge, when
+         * `_is_merge=true`. `_merge_paths` is a list of paths, where each path is a list of field
+         * names. The deep merge will not descend below any of the specified merge paths.
          *
          * For example, say there is an existing row in the DB `{"id": "foo", "input": {"a": {"b":
          * 10}, "c": {"d": 20}}, "output": {"a": 20}}`. If we merge a new row as `{"_is_merge":
@@ -558,6 +712,162 @@ private constructor(
         @ExcludeMissing
         fun _mergePaths(_mergePaths: JsonField<List<List<String>>>) = apply {
             this._mergePaths = _mergePaths
+        }
+
+        /**
+         * Use the `_parent_id` field to create this row as a subspan of an existing row. Tracking
+         * hierarchical relationships are important for tracing (see the
+         * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details).
+         *
+         * For example, say we have logged a row `{"id": "abc", "input": "foo", "output": "bar",
+         * "expected": "boo", "scores": {"correctness": 0.33}}`. We can create a sub-span of the
+         * parent row by logging `{"_parent_id": "abc", "id": "llm_call", "input": {"prompt": "What
+         * comes after foo?"}, "output": "bar", "metrics": {"tokens": 1}}`. In the webapp, only the
+         * root span row `"abc"` will show up in the summary view. You can view the full trace
+         * hierarchy (in this case, the `"llm_call"` row) by clicking on the "abc" row.
+         *
+         * If the row is being merged into an existing row, this field will be ignored.
+         */
+        fun _parentId(_parentId: String) = _parentId(JsonField.of(_parentId))
+
+        /**
+         * Use the `_parent_id` field to create this row as a subspan of an existing row. Tracking
+         * hierarchical relationships are important for tracing (see the
+         * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details).
+         *
+         * For example, say we have logged a row `{"id": "abc", "input": "foo", "output": "bar",
+         * "expected": "boo", "scores": {"correctness": 0.33}}`. We can create a sub-span of the
+         * parent row by logging `{"_parent_id": "abc", "id": "llm_call", "input": {"prompt": "What
+         * comes after foo?"}, "output": "bar", "metrics": {"tokens": 1}}`. In the webapp, only the
+         * root span row `"abc"` will show up in the summary view. You can view the full trace
+         * hierarchy (in this case, the `"llm_call"` row) by clicking on the "abc" row.
+         *
+         * If the row is being merged into an existing row, this field will be ignored.
+         */
+        @JsonProperty("_parent_id")
+        @ExcludeMissing
+        fun _parentId(_parentId: JsonField<String>) = apply { this._parentId = _parentId }
+
+        /**
+         * Use span_id, root_span_id, and span_parents as a more explicit alternative to
+         * \_parent_id. The span_id is a unique identifier describing the row's place in the a
+         * trace, and the root_span_id is a unique identifier for the whole trace. See the
+         * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details.
+         *
+         * For example, say we have logged a row `{"id": "abc", "span_id": "span0", "root_span_id":
+         * "root_span0", "input": "foo", "output": "bar", "expected": "boo", "scores":
+         * {"correctness": 0.33}}`. We can create a sub-span of the parent row by logging `{"id":
+         * "llm_call", "span_id": "span1", "root_span_id": "root_span0", "span_parents": ["span0"],
+         * "input": {"prompt": "What comes after foo?"}, "output": "bar", "metrics": {"tokens":
+         * 1}}`. In the webapp, only the root span row `"abc"` will show up in the summary view. You
+         * can view the full trace hierarchy (in this case, the `"llm_call"` row) by clicking on the
+         * "abc" row.
+         *
+         * If the row is being merged into an existing row, this field will be ignored.
+         */
+        fun spanId(spanId: String) = spanId(JsonField.of(spanId))
+
+        /**
+         * Use span_id, root_span_id, and span_parents as a more explicit alternative to
+         * \_parent_id. The span_id is a unique identifier describing the row's place in the a
+         * trace, and the root_span_id is a unique identifier for the whole trace. See the
+         * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details.
+         *
+         * For example, say we have logged a row `{"id": "abc", "span_id": "span0", "root_span_id":
+         * "root_span0", "input": "foo", "output": "bar", "expected": "boo", "scores":
+         * {"correctness": 0.33}}`. We can create a sub-span of the parent row by logging `{"id":
+         * "llm_call", "span_id": "span1", "root_span_id": "root_span0", "span_parents": ["span0"],
+         * "input": {"prompt": "What comes after foo?"}, "output": "bar", "metrics": {"tokens":
+         * 1}}`. In the webapp, only the root span row `"abc"` will show up in the summary view. You
+         * can view the full trace hierarchy (in this case, the `"llm_call"` row) by clicking on the
+         * "abc" row.
+         *
+         * If the row is being merged into an existing row, this field will be ignored.
+         */
+        @JsonProperty("span_id")
+        @ExcludeMissing
+        fun spanId(spanId: JsonField<String>) = apply { this.spanId = spanId }
+
+        /**
+         * Use span_id, root_span_id, and span_parents as a more explicit alternative to
+         * \_parent_id. The span_id is a unique identifier describing the row's place in the a
+         * trace, and the root_span_id is a unique identifier for the whole trace. See the
+         * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details.
+         *
+         * For example, say we have logged a row `{"id": "abc", "span_id": "span0", "root_span_id":
+         * "root_span0", "input": "foo", "output": "bar", "expected": "boo", "scores":
+         * {"correctness": 0.33}}`. We can create a sub-span of the parent row by logging `{"id":
+         * "llm_call", "span_id": "span1", "root_span_id": "root_span0", "span_parents": ["span0"],
+         * "input": {"prompt": "What comes after foo?"}, "output": "bar", "metrics": {"tokens":
+         * 1}}`. In the webapp, only the root span row `"abc"` will show up in the summary view. You
+         * can view the full trace hierarchy (in this case, the `"llm_call"` row) by clicking on the
+         * "abc" row.
+         *
+         * If the row is being merged into an existing row, this field will be ignored.
+         */
+        fun rootSpanId(rootSpanId: String) = rootSpanId(JsonField.of(rootSpanId))
+
+        /**
+         * Use span_id, root_span_id, and span_parents as a more explicit alternative to
+         * \_parent_id. The span_id is a unique identifier describing the row's place in the a
+         * trace, and the root_span_id is a unique identifier for the whole trace. See the
+         * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details.
+         *
+         * For example, say we have logged a row `{"id": "abc", "span_id": "span0", "root_span_id":
+         * "root_span0", "input": "foo", "output": "bar", "expected": "boo", "scores":
+         * {"correctness": 0.33}}`. We can create a sub-span of the parent row by logging `{"id":
+         * "llm_call", "span_id": "span1", "root_span_id": "root_span0", "span_parents": ["span0"],
+         * "input": {"prompt": "What comes after foo?"}, "output": "bar", "metrics": {"tokens":
+         * 1}}`. In the webapp, only the root span row `"abc"` will show up in the summary view. You
+         * can view the full trace hierarchy (in this case, the `"llm_call"` row) by clicking on the
+         * "abc" row.
+         *
+         * If the row is being merged into an existing row, this field will be ignored.
+         */
+        @JsonProperty("root_span_id")
+        @ExcludeMissing
+        fun rootSpanId(rootSpanId: JsonField<String>) = apply { this.rootSpanId = rootSpanId }
+
+        /**
+         * Use span_id, root_span_id, and span_parents as a more explicit alternative to
+         * \_parent_id. The span_id is a unique identifier describing the row's place in the a
+         * trace, and the root_span_id is a unique identifier for the whole trace. See the
+         * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details.
+         *
+         * For example, say we have logged a row `{"id": "abc", "span_id": "span0", "root_span_id":
+         * "root_span0", "input": "foo", "output": "bar", "expected": "boo", "scores":
+         * {"correctness": 0.33}}`. We can create a sub-span of the parent row by logging `{"id":
+         * "llm_call", "span_id": "span1", "root_span_id": "root_span0", "span_parents": ["span0"],
+         * "input": {"prompt": "What comes after foo?"}, "output": "bar", "metrics": {"tokens":
+         * 1}}`. In the webapp, only the root span row `"abc"` will show up in the summary view. You
+         * can view the full trace hierarchy (in this case, the `"llm_call"` row) by clicking on the
+         * "abc" row.
+         *
+         * If the row is being merged into an existing row, this field will be ignored.
+         */
+        fun spanParents(spanParents: List<String>) = spanParents(JsonField.of(spanParents))
+
+        /**
+         * Use span_id, root_span_id, and span_parents as a more explicit alternative to
+         * \_parent_id. The span_id is a unique identifier describing the row's place in the a
+         * trace, and the root_span_id is a unique identifier for the whole trace. See the
+         * [guide](https://www.braintrust.dev/docs/guides/tracing) for full details.
+         *
+         * For example, say we have logged a row `{"id": "abc", "span_id": "span0", "root_span_id":
+         * "root_span0", "input": "foo", "output": "bar", "expected": "boo", "scores":
+         * {"correctness": 0.33}}`. We can create a sub-span of the parent row by logging `{"id":
+         * "llm_call", "span_id": "span1", "root_span_id": "root_span0", "span_parents": ["span0"],
+         * "input": {"prompt": "What comes after foo?"}, "output": "bar", "metrics": {"tokens":
+         * 1}}`. In the webapp, only the root span row `"abc"` will show up in the summary view. You
+         * can view the full trace hierarchy (in this case, the `"llm_call"` row) by clicking on the
+         * "abc" row.
+         *
+         * If the row is being merged into an existing row, this field will be ignored.
+         */
+        @JsonProperty("span_parents")
+        @ExcludeMissing
+        fun spanParents(spanParents: JsonField<List<String>>) = apply {
+            this.spanParents = spanParents
         }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -574,8 +884,8 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): InsertProjectLogsEventMerge =
-            InsertProjectLogsEventMerge(
+        fun build(): InsertProjectLogsEvent =
+            InsertProjectLogsEvent(
                 input,
                 output,
                 expected,
@@ -591,6 +901,10 @@ private constructor(
                 _objectDelete,
                 _isMerge,
                 _mergePaths.map { it.toImmutable() },
+                _parentId,
+                spanId,
+                rootSpanId,
+                spanParents.map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
     }
@@ -1184,218 +1498,23 @@ private constructor(
         override fun toString() = "Scores{additionalProperties=$additionalProperties}"
     }
 
-    /** Human-identifying attributes of the span, such as name, type, etc. */
-    @JsonDeserialize(builder = SpanAttributes.Builder::class)
-    @NoAutoDetect
-    class SpanAttributes
-    private constructor(
-        private val name: JsonField<String>,
-        private val type: JsonField<Type>,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
-
-        private var validated: Boolean = false
-
-        /** Name of the span, for display purposes only */
-        fun name(): String? = name.getNullable("name")
-
-        /** Type of the span, for display purposes only */
-        fun type(): Type? = type.getNullable("type")
-
-        /** Name of the span, for display purposes only */
-        @JsonProperty("name") @ExcludeMissing fun _name() = name
-
-        /** Type of the span, for display purposes only */
-        @JsonProperty("type") @ExcludeMissing fun _type() = type
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun validate(): SpanAttributes = apply {
-            if (!validated) {
-                name()
-                type()
-                validated = true
-            }
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var name: JsonField<String> = JsonMissing.of()
-            private var type: JsonField<Type> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(spanAttributes: SpanAttributes) = apply {
-                this.name = spanAttributes.name
-                this.type = spanAttributes.type
-                additionalProperties(spanAttributes.additionalProperties)
-            }
-
-            /** Name of the span, for display purposes only */
-            fun name(name: String) = name(JsonField.of(name))
-
-            /** Name of the span, for display purposes only */
-            @JsonProperty("name")
-            @ExcludeMissing
-            fun name(name: JsonField<String>) = apply { this.name = name }
-
-            /** Type of the span, for display purposes only */
-            fun type(type: Type) = type(JsonField.of(type))
-
-            /** Type of the span, for display purposes only */
-            @JsonProperty("type")
-            @ExcludeMissing
-            fun type(type: JsonField<Type>) = apply { this.type = type }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            @JsonAnySetter
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun build(): SpanAttributes =
-                SpanAttributes(
-                    name,
-                    type,
-                    additionalProperties.toImmutable(),
-                )
-        }
-
-        class Type
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-
-            companion object {
-
-                val LLM = Type(JsonField.of("llm"))
-
-                val SCORE = Type(JsonField.of("score"))
-
-                val FUNCTION = Type(JsonField.of("function"))
-
-                val EVAL = Type(JsonField.of("eval"))
-
-                val TASK = Type(JsonField.of("task"))
-
-                val TOOL = Type(JsonField.of("tool"))
-
-                fun of(value: String) = Type(JsonField.of(value))
-            }
-
-            enum class Known {
-                LLM,
-                SCORE,
-                FUNCTION,
-                EVAL,
-                TASK,
-                TOOL,
-            }
-
-            enum class Value {
-                LLM,
-                SCORE,
-                FUNCTION,
-                EVAL,
-                TASK,
-                TOOL,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    LLM -> Value.LLM
-                    SCORE -> Value.SCORE
-                    FUNCTION -> Value.FUNCTION
-                    EVAL -> Value.EVAL
-                    TASK -> Value.TASK
-                    TOOL -> Value.TOOL
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    LLM -> Known.LLM
-                    SCORE -> Known.SCORE
-                    FUNCTION -> Known.FUNCTION
-                    EVAL -> Known.EVAL
-                    TASK -> Known.TASK
-                    TOOL -> Known.TOOL
-                    else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is SpanAttributes && this.name == other.name && this.type == other.type && this.additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        private var hashCode: Int = 0
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(name, type, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "SpanAttributes{name=$name, type=$type, additionalProperties=$additionalProperties}"
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is InsertProjectLogsEventMerge && this.input == other.input && this.output == other.output && this.expected == other.expected && this.error == other.error && this.scores == other.scores && this.metadata == other.metadata && this.tags == other.tags && this.metrics == other.metrics && this.context == other.context && this.spanAttributes == other.spanAttributes && this.id == other.id && this.created == other.created && this._objectDelete == other._objectDelete && this._isMerge == other._isMerge && this._mergePaths == other._mergePaths && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is InsertProjectLogsEvent && this.input == other.input && this.output == other.output && this.expected == other.expected && this.error == other.error && this.scores == other.scores && this.metadata == other.metadata && this.tags == other.tags && this.metrics == other.metrics && this.context == other.context && this.spanAttributes == other.spanAttributes && this.id == other.id && this.created == other.created && this._objectDelete == other._objectDelete && this._isMerge == other._isMerge && this._mergePaths == other._mergePaths && this._parentId == other._parentId && this.spanId == other.spanId && this.rootSpanId == other.rootSpanId && this.spanParents == other.spanParents && this.additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     private var hashCode: Int = 0
 
     override fun hashCode(): Int {
         if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(input, output, expected, error, scores, metadata, tags, metrics, context, spanAttributes, id, created, _objectDelete, _isMerge, _mergePaths, additionalProperties) /* spotless:on */
+            hashCode = /* spotless:off */ Objects.hash(input, output, expected, error, scores, metadata, tags, metrics, context, spanAttributes, id, created, _objectDelete, _isMerge, _mergePaths, _parentId, spanId, rootSpanId, spanParents, additionalProperties) /* spotless:on */
         }
         return hashCode
     }
 
     override fun toString() =
-        "InsertProjectLogsEventMerge{input=$input, output=$output, expected=$expected, error=$error, scores=$scores, metadata=$metadata, tags=$tags, metrics=$metrics, context=$context, spanAttributes=$spanAttributes, id=$id, created=$created, _objectDelete=$_objectDelete, _isMerge=$_isMerge, _mergePaths=$_mergePaths, additionalProperties=$additionalProperties}"
+        "InsertProjectLogsEvent{input=$input, output=$output, expected=$expected, error=$error, scores=$scores, metadata=$metadata, tags=$tags, metrics=$metrics, context=$context, spanAttributes=$spanAttributes, id=$id, created=$created, _objectDelete=$_objectDelete, _isMerge=$_isMerge, _mergePaths=$_mergePaths, _parentId=$_parentId, spanId=$spanId, rootSpanId=$rootSpanId, spanParents=$spanParents, additionalProperties=$additionalProperties}"
 }
