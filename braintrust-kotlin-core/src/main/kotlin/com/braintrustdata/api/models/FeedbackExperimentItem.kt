@@ -27,6 +27,7 @@ private constructor(
     private val comment: JsonField<String>,
     private val metadata: JsonField<Metadata>,
     private val source: JsonField<Source>,
+    private val tags: JsonField<List<String>>,
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
@@ -55,12 +56,16 @@ private constructor(
 
     /**
      * A dictionary with additional data about the feedback. If you have a `user_id`, you can log it
-     * here and access it in the Braintrust UI.
+     * here and access it in the Braintrust UI. Note, this metadata does not correspond to the main
+     * event itself, but rather the audit log attached to the event.
      */
     fun metadata(): Metadata? = metadata.getNullable("metadata")
 
     /** The source of the feedback. Must be one of "external" (default), "app", or "api" */
     fun source(): Source? = source.getNullable("source")
+
+    /** A list of tags to log */
+    fun tags(): List<String>? = tags.getNullable("tags")
 
     /**
      * The id of the experiment event to log feedback for. This is the row `id` returned by `POST
@@ -85,12 +90,16 @@ private constructor(
 
     /**
      * A dictionary with additional data about the feedback. If you have a `user_id`, you can log it
-     * here and access it in the Braintrust UI.
+     * here and access it in the Braintrust UI. Note, this metadata does not correspond to the main
+     * event itself, but rather the audit log attached to the event.
      */
     @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
 
     /** The source of the feedback. Must be one of "external" (default), "app", or "api" */
     @JsonProperty("source") @ExcludeMissing fun _source() = source
+
+    /** A list of tags to log */
+    @JsonProperty("tags") @ExcludeMissing fun _tags() = tags
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -104,6 +113,7 @@ private constructor(
             comment()
             metadata()?.validate()
             source()
+            tags()
             validated = true
         }
     }
@@ -123,6 +133,7 @@ private constructor(
         private var comment: JsonField<String> = JsonMissing.of()
         private var metadata: JsonField<Metadata> = JsonMissing.of()
         private var source: JsonField<Source> = JsonMissing.of()
+        private var tags: JsonField<List<String>> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(feedbackExperimentItem: FeedbackExperimentItem) = apply {
@@ -132,6 +143,7 @@ private constructor(
             this.comment = feedbackExperimentItem.comment
             this.metadata = feedbackExperimentItem.metadata
             this.source = feedbackExperimentItem.source
+            this.tags = feedbackExperimentItem.tags
             additionalProperties(feedbackExperimentItem.additionalProperties)
         }
 
@@ -179,13 +191,15 @@ private constructor(
 
         /**
          * A dictionary with additional data about the feedback. If you have a `user_id`, you can
-         * log it here and access it in the Braintrust UI.
+         * log it here and access it in the Braintrust UI. Note, this metadata does not correspond
+         * to the main event itself, but rather the audit log attached to the event.
          */
         fun metadata(metadata: Metadata) = metadata(JsonField.of(metadata))
 
         /**
          * A dictionary with additional data about the feedback. If you have a `user_id`, you can
-         * log it here and access it in the Braintrust UI.
+         * log it here and access it in the Braintrust UI. Note, this metadata does not correspond
+         * to the main event itself, but rather the audit log attached to the event.
          */
         @JsonProperty("metadata")
         @ExcludeMissing
@@ -198,6 +212,14 @@ private constructor(
         @JsonProperty("source")
         @ExcludeMissing
         fun source(source: JsonField<Source>) = apply { this.source = source }
+
+        /** A list of tags to log */
+        fun tags(tags: List<String>) = tags(JsonField.of(tags))
+
+        /** A list of tags to log */
+        @JsonProperty("tags")
+        @ExcludeMissing
+        fun tags(tags: JsonField<List<String>>) = apply { this.tags = tags }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -221,13 +243,15 @@ private constructor(
                 comment,
                 metadata,
                 source,
+                tags.map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
     }
 
     /**
      * A dictionary with additional data about the feedback. If you have a `user_id`, you can log it
-     * here and access it in the Braintrust UI.
+     * here and access it in the Braintrust UI. Note, this metadata does not correspond to the main
+     * event itself, but rather the audit log attached to the event.
      */
     @JsonDeserialize(builder = Metadata.Builder::class)
     @NoAutoDetect
@@ -443,18 +467,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FeedbackExperimentItem && this.id == other.id && this.scores == other.scores && this.expected == other.expected && this.comment == other.comment && this.metadata == other.metadata && this.source == other.source && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FeedbackExperimentItem && this.id == other.id && this.scores == other.scores && this.expected == other.expected && this.comment == other.comment && this.metadata == other.metadata && this.source == other.source && this.tags == other.tags && this.additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     private var hashCode: Int = 0
 
     override fun hashCode(): Int {
         if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(id, scores, expected, comment, metadata, source, additionalProperties) /* spotless:on */
+            hashCode = /* spotless:off */ Objects.hash(id, scores, expected, comment, metadata, source, tags, additionalProperties) /* spotless:on */
         }
         return hashCode
     }
 
     override fun toString() =
-        "FeedbackExperimentItem{id=$id, scores=$scores, expected=$expected, comment=$comment, metadata=$metadata, source=$source, additionalProperties=$additionalProperties}"
+        "FeedbackExperimentItem{id=$id, scores=$scores, expected=$expected, comment=$comment, metadata=$metadata, source=$source, tags=$tags, additionalProperties=$additionalProperties}"
 }

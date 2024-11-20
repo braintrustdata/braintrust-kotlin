@@ -22,6 +22,7 @@ import java.util.Objects
 class PatchOrganizationMembersOutput
 private constructor(
     private val status: JsonField<Status>,
+    private val orgId: JsonField<String>,
     private val sendEmailError: JsonField<String>,
     private val additionalProperties: Map<String, JsonValue>,
 ) {
@@ -30,6 +31,9 @@ private constructor(
 
     fun status(): Status = status.getRequired("status")
 
+    /** The id of the org that was modified. */
+    fun orgId(): String = orgId.getRequired("org_id")
+
     /**
      * If invite emails failed to send for some reason, the patch operation will still complete, but
      * we will return an error message here
@@ -37,6 +41,9 @@ private constructor(
     fun sendEmailError(): String? = sendEmailError.getNullable("send_email_error")
 
     @JsonProperty("status") @ExcludeMissing fun _status() = status
+
+    /** The id of the org that was modified. */
+    @JsonProperty("org_id") @ExcludeMissing fun _orgId() = orgId
 
     /**
      * If invite emails failed to send for some reason, the patch operation will still complete, but
@@ -51,6 +58,7 @@ private constructor(
     fun validate(): PatchOrganizationMembersOutput = apply {
         if (!validated) {
             status()
+            orgId()
             sendEmailError()
             validated = true
         }
@@ -66,11 +74,13 @@ private constructor(
     class Builder {
 
         private var status: JsonField<Status> = JsonMissing.of()
+        private var orgId: JsonField<String> = JsonMissing.of()
         private var sendEmailError: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(patchOrganizationMembersOutput: PatchOrganizationMembersOutput) = apply {
             this.status = patchOrganizationMembersOutput.status
+            this.orgId = patchOrganizationMembersOutput.orgId
             this.sendEmailError = patchOrganizationMembersOutput.sendEmailError
             additionalProperties(patchOrganizationMembersOutput.additionalProperties)
         }
@@ -80,6 +90,14 @@ private constructor(
         @JsonProperty("status")
         @ExcludeMissing
         fun status(status: JsonField<Status>) = apply { this.status = status }
+
+        /** The id of the org that was modified. */
+        fun orgId(orgId: String) = orgId(JsonField.of(orgId))
+
+        /** The id of the org that was modified. */
+        @JsonProperty("org_id")
+        @ExcludeMissing
+        fun orgId(orgId: JsonField<String>) = apply { this.orgId = orgId }
 
         /**
          * If invite emails failed to send for some reason, the patch operation will still complete,
@@ -114,6 +132,7 @@ private constructor(
         fun build(): PatchOrganizationMembersOutput =
             PatchOrganizationMembersOutput(
                 status,
+                orgId,
                 sendEmailError,
                 additionalProperties.toImmutable(),
             )
@@ -175,18 +194,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is PatchOrganizationMembersOutput && this.status == other.status && this.sendEmailError == other.sendEmailError && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is PatchOrganizationMembersOutput && this.status == other.status && this.orgId == other.orgId && this.sendEmailError == other.sendEmailError && this.additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     private var hashCode: Int = 0
 
     override fun hashCode(): Int {
         if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(status, sendEmailError, additionalProperties) /* spotless:on */
+            hashCode = /* spotless:off */ Objects.hash(status, orgId, sendEmailError, additionalProperties) /* spotless:on */
         }
         return hashCode
     }
 
     override fun toString() =
-        "PatchOrganizationMembersOutput{status=$status, sendEmailError=$sendEmailError, additionalProperties=$additionalProperties}"
+        "PatchOrganizationMembersOutput{status=$status, orgId=$orgId, sendEmailError=$sendEmailError, additionalProperties=$additionalProperties}"
 }
