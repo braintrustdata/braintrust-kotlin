@@ -96,7 +96,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -139,17 +139,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FeedbackResponseSchema && this.status == other.status && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FeedbackResponseSchema && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(status, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(status, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "FeedbackResponseSchema{status=$status, additionalProperties=$additionalProperties}"
