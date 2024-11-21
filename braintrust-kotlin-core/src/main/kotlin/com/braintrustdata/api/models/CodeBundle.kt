@@ -196,21 +196,18 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Location && this.experiment == other.experiment && this.function == other.function /* spotless:on */
+            return /* spotless:off */ other is Location && experiment == other.experiment && function == other.function /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(experiment, function) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(experiment, function) /* spotless:on */
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 experiment != null -> "Location{experiment=$experiment}"
                 function != null -> "Location{function=$function}"
                 _json != null -> "Location{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Location")
             }
-        }
 
         companion object {
 
@@ -413,21 +410,18 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Position && this.type == other.type && this.scorer == other.scorer /* spotless:on */
+                    return /* spotless:off */ other is Position && type == other.type && scorer == other.scorer /* spotless:on */
                 }
 
-                override fun hashCode(): Int {
-                    return /* spotless:off */ Objects.hash(type, scorer) /* spotless:on */
-                }
+                override fun hashCode(): Int = /* spotless:off */ Objects.hash(type, scorer) /* spotless:on */
 
-                override fun toString(): String {
-                    return when {
+                override fun toString(): String =
+                    when {
                         type != null -> "Position{type=$type}"
                         scorer != null -> "Position{scorer=$scorer}"
                         _json != null -> "Position{_unknown=$_json}"
                         else -> throw IllegalStateException("Invalid Position")
                     }
-                }
 
                 companion object {
 
@@ -562,7 +556,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
+                            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -605,17 +599,14 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Type && this.type == other.type && this.additionalProperties == other.additionalProperties /* spotless:on */
+                        return /* spotless:off */ other is Type && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                     }
 
-                    private var hashCode: Int = 0
+                    /* spotless:off */
+                    private val hashCode: Int by lazy { Objects.hash(type, additionalProperties) }
+                    /* spotless:on */
 
-                    override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode = /* spotless:off */ Objects.hash(type, additionalProperties) /* spotless:on */
-                        }
-                        return hashCode
-                    }
+                    override fun hashCode(): Int = hashCode
 
                     override fun toString() =
                         "Type{type=$type, additionalProperties=$additionalProperties}"
@@ -721,7 +712,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
+                            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -764,17 +755,14 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Scorer && this.type == other.type && this.index == other.index && this.additionalProperties == other.additionalProperties /* spotless:on */
+                        return /* spotless:off */ other is Scorer && type == other.type && index == other.index && additionalProperties == other.additionalProperties /* spotless:on */
                     }
 
-                    private var hashCode: Int = 0
+                    /* spotless:off */
+                    private val hashCode: Int by lazy { Objects.hash(type, index, additionalProperties) }
+                    /* spotless:on */
 
-                    override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode = /* spotless:off */ Objects.hash(type, index, additionalProperties) /* spotless:on */
-                        }
-                        return hashCode
-                    }
+                    override fun hashCode(): Int = hashCode
 
                     override fun toString() =
                         "Scorer{type=$type, index=$index, additionalProperties=$additionalProperties}"
@@ -794,7 +782,7 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
+                    return /* spotless:off */ other is Type && value == other.value /* spotless:on */
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -837,17 +825,14 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Experiment && this.type == other.type && this.evalName == other.evalName && this.position == other.position && this.additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Experiment && type == other.type && evalName == other.evalName && position == other.position && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
-            private var hashCode: Int = 0
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(type, evalName, position, additionalProperties) }
+            /* spotless:on */
 
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode = /* spotless:off */ Objects.hash(type, evalName, position, additionalProperties) /* spotless:on */
-                }
-                return hashCode
-            }
+            override fun hashCode(): Int = hashCode
 
             override fun toString() =
                 "Experiment{type=$type, evalName=$evalName, position=$position, additionalProperties=$additionalProperties}"
@@ -951,7 +936,7 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
+                    return /* spotless:off */ other is Type && value == other.value /* spotless:on */
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -994,17 +979,14 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Function && this.type == other.type && this.index == other.index && this.additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Function && type == other.type && index == other.index && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
-            private var hashCode: Int = 0
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(type, index, additionalProperties) }
+            /* spotless:on */
 
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode = /* spotless:off */ Objects.hash(type, index, additionalProperties) /* spotless:on */
-                }
-                return hashCode
-            }
+            override fun hashCode(): Int = hashCode
 
             override fun toString() =
                 "Function{type=$type, index=$index, additionalProperties=$additionalProperties}"
@@ -1108,7 +1090,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Runtime && this.value == other.value /* spotless:on */
+                return /* spotless:off */ other is Runtime && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -1157,17 +1139,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is RuntimeContext && this.runtime == other.runtime && this.version == other.version && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is RuntimeContext && runtime == other.runtime && version == other.version && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(runtime, version, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(runtime, version, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "RuntimeContext{runtime=$runtime, version=$version, additionalProperties=$additionalProperties}"
@@ -1178,17 +1157,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CodeBundle && this.runtimeContext == other.runtimeContext && this.location == other.location && this.bundleId == other.bundleId && this.preview == other.preview && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is CodeBundle && runtimeContext == other.runtimeContext && location == other.location && bundleId == other.bundleId && preview == other.preview && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(runtimeContext, location, bundleId, preview, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(runtimeContext, location, bundleId, preview, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "CodeBundle{runtimeContext=$runtimeContext, location=$location, bundleId=$bundleId, preview=$preview, additionalProperties=$additionalProperties}"
