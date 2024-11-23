@@ -32,6 +32,12 @@ constructor(
 
     fun removeAcls(): List<RemoveAcl>? = removeAcls
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): AclBatchUpdateBody {
         return AclBatchUpdateBody(
             addAcls,
@@ -168,25 +174,6 @@ constructor(
             "AclBatchUpdateBody{addAcls=$addAcls, removeAcls=$removeAcls, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is AclBatchUpdateParams && addAcls == other.addAcls && removeAcls == other.removeAcls && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(addAcls, removeAcls, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "AclBatchUpdateParams{addAcls=$addAcls, removeAcls=$removeAcls, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -204,11 +191,11 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(aclBatchUpdateParams: AclBatchUpdateParams) = apply {
-            this.addAcls(aclBatchUpdateParams.addAcls ?: listOf())
-            this.removeAcls(aclBatchUpdateParams.removeAcls ?: listOf())
-            additionalHeaders(aclBatchUpdateParams.additionalHeaders)
-            additionalQueryParams(aclBatchUpdateParams.additionalQueryParams)
-            additionalBodyProperties(aclBatchUpdateParams.additionalBodyProperties)
+            addAcls = aclBatchUpdateParams.addAcls?.toMutableList() ?: mutableListOf()
+            removeAcls = aclBatchUpdateParams.removeAcls?.toMutableList() ?: mutableListOf()
+            additionalHeaders = aclBatchUpdateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = aclBatchUpdateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = aclBatchUpdateParams.additionalBodyProperties.toMutableMap()
         }
 
         /**
@@ -387,8 +374,8 @@ constructor(
 
         fun build(): AclBatchUpdateParams =
             AclBatchUpdateParams(
-                if (addAcls.size == 0) null else addAcls.toImmutable(),
-                if (removeAcls.size == 0) null else removeAcls.toImmutable(),
+                addAcls.toImmutable().ifEmpty { null },
+                removeAcls.toImmutable().ifEmpty { null },
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -1380,4 +1367,17 @@ constructor(
         override fun toString() =
             "RemoveAcl{objectType=$objectType, objectId=$objectId, userId=$userId, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, additionalProperties=$additionalProperties}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is AclBatchUpdateParams && addAcls == other.addAcls && removeAcls == other.removeAcls && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(addAcls, removeAcls, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "AclBatchUpdateParams{addAcls=$addAcls, removeAcls=$removeAcls, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

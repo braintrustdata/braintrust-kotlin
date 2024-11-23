@@ -51,6 +51,12 @@ constructor(
 
     fun viewData(): ViewData? = viewData
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): ViewCreateBody {
         return ViewCreateBody(
             name,
@@ -219,25 +225,6 @@ constructor(
             "ViewCreateBody{name=$name, objectId=$objectId, objectType=$objectType, viewType=$viewType, deletedAt=$deletedAt, options=$options, userId=$userId, viewData=$viewData, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ViewCreateParams && name == other.name && objectId == other.objectId && objectType == other.objectType && viewType == other.viewType && deletedAt == other.deletedAt && options == other.options && userId == other.userId && viewData == other.viewData && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, objectId, objectType, viewType, deletedAt, options, userId, viewData, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "ViewCreateParams{name=$name, objectId=$objectId, objectType=$objectType, viewType=$viewType, deletedAt=$deletedAt, options=$options, userId=$userId, viewData=$viewData, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -261,17 +248,17 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(viewCreateParams: ViewCreateParams) = apply {
-            this.name = viewCreateParams.name
-            this.objectId = viewCreateParams.objectId
-            this.objectType = viewCreateParams.objectType
-            this.viewType = viewCreateParams.viewType
-            this.deletedAt = viewCreateParams.deletedAt
-            this.options = viewCreateParams.options
-            this.userId = viewCreateParams.userId
-            this.viewData = viewCreateParams.viewData
-            additionalHeaders(viewCreateParams.additionalHeaders)
-            additionalQueryParams(viewCreateParams.additionalQueryParams)
-            additionalBodyProperties(viewCreateParams.additionalBodyProperties)
+            name = viewCreateParams.name
+            objectId = viewCreateParams.objectId
+            objectType = viewCreateParams.objectType
+            viewType = viewCreateParams.viewType
+            deletedAt = viewCreateParams.deletedAt
+            options = viewCreateParams.options
+            userId = viewCreateParams.userId
+            viewData = viewCreateParams.viewData
+            additionalHeaders = viewCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = viewCreateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = viewCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Name of the view */
@@ -637,4 +624,17 @@ constructor(
 
         fun asString(): String = _value().asStringOrThrow()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ViewCreateParams && name == other.name && objectId == other.objectId && objectType == other.objectType && viewType == other.viewType && deletedAt == other.deletedAt && options == other.options && userId == other.userId && viewData == other.viewData && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, objectId, objectType, viewType, deletedAt, options, userId, viewData, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "ViewCreateParams{name=$name, objectId=$objectId, objectType=$objectType, viewType=$viewType, deletedAt=$deletedAt, options=$options, userId=$userId, viewData=$viewData, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

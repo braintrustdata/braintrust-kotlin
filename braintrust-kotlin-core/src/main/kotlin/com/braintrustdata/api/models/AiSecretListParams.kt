@@ -47,6 +47,10 @@ constructor(
 
     fun startingAfter(): String? = startingAfter
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams {
@@ -61,23 +65,6 @@ constructor(
         queryParams.putAll(additionalQueryParams)
         return queryParams.build()
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is AiSecretListParams && aiSecretName == other.aiSecretName && aiSecretType == other.aiSecretType && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && orgName == other.orgName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(aiSecretName, aiSecretType, endingBefore, ids, limit, orgName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "AiSecretListParams{aiSecretName=$aiSecretName, aiSecretType=$aiSecretType, endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -100,15 +87,15 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(aiSecretListParams: AiSecretListParams) = apply {
-            this.aiSecretName = aiSecretListParams.aiSecretName
-            this.aiSecretType = aiSecretListParams.aiSecretType
-            this.endingBefore = aiSecretListParams.endingBefore
-            this.ids = aiSecretListParams.ids
-            this.limit = aiSecretListParams.limit
-            this.orgName = aiSecretListParams.orgName
-            this.startingAfter = aiSecretListParams.startingAfter
-            additionalHeaders(aiSecretListParams.additionalHeaders)
-            additionalQueryParams(aiSecretListParams.additionalQueryParams)
+            aiSecretName = aiSecretListParams.aiSecretName
+            aiSecretType = aiSecretListParams.aiSecretType
+            endingBefore = aiSecretListParams.endingBefore
+            ids = aiSecretListParams.ids
+            limit = aiSecretListParams.limit
+            orgName = aiSecretListParams.orgName
+            startingAfter = aiSecretListParams.startingAfter
+            additionalHeaders = aiSecretListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = aiSecretListParams.additionalQueryParams.toBuilder()
         }
 
         /** Name of the ai_secret to search for */
@@ -499,4 +486,17 @@ constructor(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is AiSecretListParams && aiSecretName == other.aiSecretName && aiSecretType == other.aiSecretType && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && orgName == other.orgName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(aiSecretName, aiSecretType, endingBefore, ids, limit, orgName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "AiSecretListParams{aiSecretName=$aiSecretName, aiSecretType=$aiSecretType, endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

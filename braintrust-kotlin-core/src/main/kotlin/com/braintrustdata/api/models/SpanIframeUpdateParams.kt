@@ -34,6 +34,12 @@ constructor(
 
     fun url(): String? = url
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): SpanIframeUpdateBody {
         return SpanIframeUpdateBody(
             name,
@@ -155,25 +161,6 @@ constructor(
             "SpanIframeUpdateBody{name=$name, postMessage=$postMessage, url=$url, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is SpanIframeUpdateParams && spanIframeId == other.spanIframeId && name == other.name && postMessage == other.postMessage && url == other.url && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(spanIframeId, name, postMessage, url, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "SpanIframeUpdateParams{spanIframeId=$spanIframeId, name=$name, postMessage=$postMessage, url=$url, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -193,13 +180,14 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(spanIframeUpdateParams: SpanIframeUpdateParams) = apply {
-            this.spanIframeId = spanIframeUpdateParams.spanIframeId
-            this.name = spanIframeUpdateParams.name
-            this.postMessage = spanIframeUpdateParams.postMessage
-            this.url = spanIframeUpdateParams.url
-            additionalHeaders(spanIframeUpdateParams.additionalHeaders)
-            additionalQueryParams(spanIframeUpdateParams.additionalQueryParams)
-            additionalBodyProperties(spanIframeUpdateParams.additionalBodyProperties)
+            spanIframeId = spanIframeUpdateParams.spanIframeId
+            name = spanIframeUpdateParams.name
+            postMessage = spanIframeUpdateParams.postMessage
+            url = spanIframeUpdateParams.url
+            additionalHeaders = spanIframeUpdateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = spanIframeUpdateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties =
+                spanIframeUpdateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** SpanIframe id */
@@ -348,4 +336,17 @@ constructor(
                 additionalBodyProperties.toImmutable(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is SpanIframeUpdateParams && spanIframeId == other.spanIframeId && name == other.name && postMessage == other.postMessage && url == other.url && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(spanIframeId, name, postMessage, url, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "SpanIframeUpdateParams{spanIframeId=$spanIframeId, name=$name, postMessage=$postMessage, url=$url, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

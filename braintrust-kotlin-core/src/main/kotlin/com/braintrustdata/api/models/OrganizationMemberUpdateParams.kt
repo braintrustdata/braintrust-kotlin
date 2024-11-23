@@ -34,6 +34,12 @@ constructor(
 
     fun removeUsers(): RemoveUsers? = removeUsers
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): OrganizationMemberUpdateBody {
         return OrganizationMemberUpdateBody(
             inviteUsers,
@@ -173,25 +179,6 @@ constructor(
             "OrganizationMemberUpdateBody{inviteUsers=$inviteUsers, orgId=$orgId, orgName=$orgName, removeUsers=$removeUsers, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is OrganizationMemberUpdateParams && inviteUsers == other.inviteUsers && orgId == other.orgId && orgName == other.orgName && removeUsers == other.removeUsers && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(inviteUsers, orgId, orgName, removeUsers, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "OrganizationMemberUpdateParams{inviteUsers=$inviteUsers, orgId=$orgId, orgName=$orgName, removeUsers=$removeUsers, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -211,13 +198,14 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(organizationMemberUpdateParams: OrganizationMemberUpdateParams) = apply {
-            this.inviteUsers = organizationMemberUpdateParams.inviteUsers
-            this.orgId = organizationMemberUpdateParams.orgId
-            this.orgName = organizationMemberUpdateParams.orgName
-            this.removeUsers = organizationMemberUpdateParams.removeUsers
-            additionalHeaders(organizationMemberUpdateParams.additionalHeaders)
-            additionalQueryParams(organizationMemberUpdateParams.additionalQueryParams)
-            additionalBodyProperties(organizationMemberUpdateParams.additionalBodyProperties)
+            inviteUsers = organizationMemberUpdateParams.inviteUsers
+            orgId = organizationMemberUpdateParams.orgId
+            orgName = organizationMemberUpdateParams.orgName
+            removeUsers = organizationMemberUpdateParams.removeUsers
+            additionalHeaders = organizationMemberUpdateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = organizationMemberUpdateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties =
+                organizationMemberUpdateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Users to invite to the organization */
@@ -600,4 +588,17 @@ constructor(
         override fun toString() =
             "RemoveUsers{ids=$ids, emails=$emails, additionalProperties=$additionalProperties}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is OrganizationMemberUpdateParams && inviteUsers == other.inviteUsers && orgId == other.orgId && orgName == other.orgName && removeUsers == other.removeUsers && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(inviteUsers, orgId, orgName, removeUsers, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "OrganizationMemberUpdateParams{inviteUsers=$inviteUsers, orgId=$orgId, orgName=$orgName, removeUsers=$removeUsers, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

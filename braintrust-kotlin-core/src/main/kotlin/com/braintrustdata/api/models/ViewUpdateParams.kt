@@ -50,6 +50,12 @@ constructor(
 
     fun viewType(): ViewType? = viewType
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): ViewUpdateBody {
         return ViewUpdateBody(
             objectId,
@@ -213,25 +219,6 @@ constructor(
             "ViewUpdateBody{objectId=$objectId, objectType=$objectType, name=$name, options=$options, userId=$userId, viewData=$viewData, viewType=$viewType, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ViewUpdateParams && viewId == other.viewId && objectId == other.objectId && objectType == other.objectType && name == other.name && options == other.options && userId == other.userId && viewData == other.viewData && viewType == other.viewType && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(viewId, objectId, objectType, name, options, userId, viewData, viewType, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "ViewUpdateParams{viewId=$viewId, objectId=$objectId, objectType=$objectType, name=$name, options=$options, userId=$userId, viewData=$viewData, viewType=$viewType, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -255,17 +242,17 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(viewUpdateParams: ViewUpdateParams) = apply {
-            this.viewId = viewUpdateParams.viewId
-            this.objectId = viewUpdateParams.objectId
-            this.objectType = viewUpdateParams.objectType
-            this.name = viewUpdateParams.name
-            this.options = viewUpdateParams.options
-            this.userId = viewUpdateParams.userId
-            this.viewData = viewUpdateParams.viewData
-            this.viewType = viewUpdateParams.viewType
-            additionalHeaders(viewUpdateParams.additionalHeaders)
-            additionalQueryParams(viewUpdateParams.additionalQueryParams)
-            additionalBodyProperties(viewUpdateParams.additionalBodyProperties)
+            viewId = viewUpdateParams.viewId
+            objectId = viewUpdateParams.objectId
+            objectType = viewUpdateParams.objectType
+            name = viewUpdateParams.name
+            options = viewUpdateParams.options
+            userId = viewUpdateParams.userId
+            viewData = viewUpdateParams.viewData
+            viewType = viewUpdateParams.viewType
+            additionalHeaders = viewUpdateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = viewUpdateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = viewUpdateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** View id */
@@ -631,4 +618,17 @@ constructor(
 
         fun asString(): String = _value().asStringOrThrow()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ViewUpdateParams && viewId == other.viewId && objectId == other.objectId && objectType == other.objectType && name == other.name && options == other.options && userId == other.userId && viewData == other.viewData && viewType == other.viewType && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(viewId, objectId, objectType, name, options, userId, viewData, viewType, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "ViewUpdateParams{viewId=$viewId, objectId=$objectId, objectType=$objectType, name=$name, options=$options, userId=$userId, viewData=$viewData, viewType=$viewType, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

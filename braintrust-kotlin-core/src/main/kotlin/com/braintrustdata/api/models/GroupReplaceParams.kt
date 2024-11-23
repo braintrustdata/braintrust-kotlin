@@ -37,6 +37,12 @@ constructor(
 
     fun orgName(): String? = orgName
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): GroupReplaceBody {
         return GroupReplaceBody(
             name,
@@ -190,25 +196,6 @@ constructor(
             "GroupReplaceBody{name=$name, description=$description, memberGroups=$memberGroups, memberUsers=$memberUsers, orgName=$orgName, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is GroupReplaceParams && name == other.name && description == other.description && memberGroups == other.memberGroups && memberUsers == other.memberUsers && orgName == other.orgName && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, description, memberGroups, memberUsers, orgName, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "GroupReplaceParams{name=$name, description=$description, memberGroups=$memberGroups, memberUsers=$memberUsers, orgName=$orgName, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -229,14 +216,14 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(groupReplaceParams: GroupReplaceParams) = apply {
-            this.name = groupReplaceParams.name
-            this.description = groupReplaceParams.description
-            this.memberGroups(groupReplaceParams.memberGroups ?: listOf())
-            this.memberUsers(groupReplaceParams.memberUsers ?: listOf())
-            this.orgName = groupReplaceParams.orgName
-            additionalHeaders(groupReplaceParams.additionalHeaders)
-            additionalQueryParams(groupReplaceParams.additionalQueryParams)
-            additionalBodyProperties(groupReplaceParams.additionalBodyProperties)
+            name = groupReplaceParams.name
+            description = groupReplaceParams.description
+            memberGroups = groupReplaceParams.memberGroups?.toMutableList() ?: mutableListOf()
+            memberUsers = groupReplaceParams.memberUsers?.toMutableList() ?: mutableListOf()
+            orgName = groupReplaceParams.orgName
+            additionalHeaders = groupReplaceParams.additionalHeaders.toBuilder()
+            additionalQueryParams = groupReplaceParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = groupReplaceParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Name of the group */
@@ -404,12 +391,25 @@ constructor(
             GroupReplaceParams(
                 checkNotNull(name) { "`name` is required but was not set" },
                 description,
-                if (memberGroups.size == 0) null else memberGroups.toImmutable(),
-                if (memberUsers.size == 0) null else memberUsers.toImmutable(),
+                memberGroups.toImmutable().ifEmpty { null },
+                memberUsers.toImmutable().ifEmpty { null },
                 orgName,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is GroupReplaceParams && name == other.name && description == other.description && memberGroups == other.memberGroups && memberUsers == other.memberUsers && orgName == other.orgName && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, description, memberGroups, memberUsers, orgName, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "GroupReplaceParams{name=$name, description=$description, memberGroups=$memberGroups, memberUsers=$memberUsers, orgName=$orgName, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

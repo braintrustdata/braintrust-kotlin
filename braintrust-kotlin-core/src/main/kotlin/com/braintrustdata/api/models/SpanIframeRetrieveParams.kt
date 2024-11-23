@@ -17,6 +17,10 @@ constructor(
 
     fun spanIframeId(): String = spanIframeId
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams = additionalQueryParams
@@ -27,23 +31,6 @@ constructor(
             else -> ""
         }
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is SpanIframeRetrieveParams && spanIframeId == other.spanIframeId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(spanIframeId, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "SpanIframeRetrieveParams{spanIframeId=$spanIframeId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -60,9 +47,9 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(spanIframeRetrieveParams: SpanIframeRetrieveParams) = apply {
-            this.spanIframeId = spanIframeRetrieveParams.spanIframeId
-            additionalHeaders(spanIframeRetrieveParams.additionalHeaders)
-            additionalQueryParams(spanIframeRetrieveParams.additionalQueryParams)
+            spanIframeId = spanIframeRetrieveParams.spanIframeId
+            additionalHeaders = spanIframeRetrieveParams.additionalHeaders.toBuilder()
+            additionalQueryParams = spanIframeRetrieveParams.additionalQueryParams.toBuilder()
         }
 
         /** SpanIframe id */
@@ -173,4 +160,17 @@ constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is SpanIframeRetrieveParams && spanIframeId == other.spanIframeId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(spanIframeId, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "SpanIframeRetrieveParams{spanIframeId=$spanIframeId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

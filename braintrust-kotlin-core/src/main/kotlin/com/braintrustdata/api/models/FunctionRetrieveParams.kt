@@ -17,6 +17,10 @@ constructor(
 
     fun functionId(): String = functionId
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams = additionalQueryParams
@@ -27,23 +31,6 @@ constructor(
             else -> ""
         }
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is FunctionRetrieveParams && functionId == other.functionId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(functionId, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "FunctionRetrieveParams{functionId=$functionId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -60,9 +47,9 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(functionRetrieveParams: FunctionRetrieveParams) = apply {
-            this.functionId = functionRetrieveParams.functionId
-            additionalHeaders(functionRetrieveParams.additionalHeaders)
-            additionalQueryParams(functionRetrieveParams.additionalQueryParams)
+            functionId = functionRetrieveParams.functionId
+            additionalHeaders = functionRetrieveParams.additionalHeaders.toBuilder()
+            additionalQueryParams = functionRetrieveParams.additionalQueryParams.toBuilder()
         }
 
         /** Function id */
@@ -173,4 +160,17 @@ constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is FunctionRetrieveParams && functionId == other.functionId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(functionId, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "FunctionRetrieveParams{functionId=$functionId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

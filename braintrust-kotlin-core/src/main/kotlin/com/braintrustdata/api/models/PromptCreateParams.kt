@@ -47,6 +47,12 @@ constructor(
 
     fun tags(): List<String>? = tags
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): PromptCreateBody {
         return PromptCreateBody(
             name,
@@ -202,25 +208,6 @@ constructor(
             "PromptCreateBody{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is PromptCreateParams && name == other.name && projectId == other.projectId && slug == other.slug && description == other.description && functionType == other.functionType && promptData == other.promptData && tags == other.tags && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, projectId, slug, description, functionType, promptData, tags, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "PromptCreateParams{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -243,16 +230,16 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(promptCreateParams: PromptCreateParams) = apply {
-            this.name = promptCreateParams.name
-            this.projectId = promptCreateParams.projectId
-            this.slug = promptCreateParams.slug
-            this.description = promptCreateParams.description
-            this.functionType = promptCreateParams.functionType
-            this.promptData = promptCreateParams.promptData
-            this.tags(promptCreateParams.tags ?: listOf())
-            additionalHeaders(promptCreateParams.additionalHeaders)
-            additionalQueryParams(promptCreateParams.additionalQueryParams)
-            additionalBodyProperties(promptCreateParams.additionalBodyProperties)
+            name = promptCreateParams.name
+            projectId = promptCreateParams.projectId
+            slug = promptCreateParams.slug
+            description = promptCreateParams.description
+            functionType = promptCreateParams.functionType
+            promptData = promptCreateParams.promptData
+            tags = promptCreateParams.tags?.toMutableList() ?: mutableListOf()
+            additionalHeaders = promptCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = promptCreateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = promptCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Name of the prompt */
@@ -409,7 +396,7 @@ constructor(
                 description,
                 functionType,
                 promptData,
-                if (tags.size == 0) null else tags.toImmutable(),
+                tags.toImmutable().ifEmpty { null },
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -484,4 +471,17 @@ constructor(
 
         fun asString(): String = _value().asStringOrThrow()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is PromptCreateParams && name == other.name && projectId == other.projectId && slug == other.slug && description == other.description && functionType == other.functionType && promptData == other.promptData && tags == other.tags && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, projectId, slug, description, functionType, promptData, tags, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "PromptCreateParams{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }
