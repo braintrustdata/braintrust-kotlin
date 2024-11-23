@@ -54,6 +54,12 @@ constructor(
 
     fun tags(): List<String>? = tags
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): FunctionUpdateBody {
         return FunctionUpdateBody(
             description,
@@ -193,25 +199,6 @@ constructor(
             "FunctionUpdateBody{description=$description, functionData=$functionData, name=$name, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is FunctionUpdateParams && functionId == other.functionId && description == other.description && functionData == other.functionData && name == other.name && promptData == other.promptData && tags == other.tags && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(functionId, description, functionData, name, promptData, tags, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "FunctionUpdateParams{functionId=$functionId, description=$description, functionData=$functionData, name=$name, promptData=$promptData, tags=$tags, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -233,15 +220,15 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(functionUpdateParams: FunctionUpdateParams) = apply {
-            this.functionId = functionUpdateParams.functionId
-            this.description = functionUpdateParams.description
-            this.functionData = functionUpdateParams.functionData
-            this.name = functionUpdateParams.name
-            this.promptData = functionUpdateParams.promptData
-            this.tags(functionUpdateParams.tags ?: listOf())
-            additionalHeaders(functionUpdateParams.additionalHeaders)
-            additionalQueryParams(functionUpdateParams.additionalQueryParams)
-            additionalBodyProperties(functionUpdateParams.additionalBodyProperties)
+            functionId = functionUpdateParams.functionId
+            description = functionUpdateParams.description
+            functionData = functionUpdateParams.functionData
+            name = functionUpdateParams.name
+            promptData = functionUpdateParams.promptData
+            tags = functionUpdateParams.tags?.toMutableList() ?: mutableListOf()
+            additionalHeaders = functionUpdateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = functionUpdateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = functionUpdateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Function id */
@@ -410,7 +397,7 @@ constructor(
                 functionData,
                 name,
                 promptData,
-                if (tags.size == 0) null else tags.toImmutable(),
+                tags.toImmutable().ifEmpty { null },
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -1764,4 +1751,17 @@ constructor(
             override fun toString() = "NullableVariant{additionalProperties=$additionalProperties}"
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is FunctionUpdateParams && functionId == other.functionId && description == other.description && functionData == other.functionData && name == other.name && promptData == other.promptData && tags == other.tags && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(functionId, description, functionData, name, promptData, tags, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "FunctionUpdateParams{functionId=$functionId, description=$description, functionData=$functionData, name=$name, promptData=$promptData, tags=$tags, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

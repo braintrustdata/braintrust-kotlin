@@ -31,6 +31,12 @@ constructor(
 
     fun settings(): ProjectSettings? = settings
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): ProjectUpdateBody {
         return ProjectUpdateBody(
             name,
@@ -141,25 +147,6 @@ constructor(
             "ProjectUpdateBody{name=$name, settings=$settings, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ProjectUpdateParams && projectId == other.projectId && name == other.name && settings == other.settings && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(projectId, name, settings, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "ProjectUpdateParams{projectId=$projectId, name=$name, settings=$settings, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -178,12 +165,12 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(projectUpdateParams: ProjectUpdateParams) = apply {
-            this.projectId = projectUpdateParams.projectId
-            this.name = projectUpdateParams.name
-            this.settings = projectUpdateParams.settings
-            additionalHeaders(projectUpdateParams.additionalHeaders)
-            additionalQueryParams(projectUpdateParams.additionalQueryParams)
-            additionalBodyProperties(projectUpdateParams.additionalBodyProperties)
+            projectId = projectUpdateParams.projectId
+            name = projectUpdateParams.name
+            settings = projectUpdateParams.settings
+            additionalHeaders = projectUpdateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = projectUpdateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = projectUpdateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Project id */
@@ -328,4 +315,17 @@ constructor(
                 additionalBodyProperties.toImmutable(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ProjectUpdateParams && projectId == other.projectId && name == other.name && settings == other.settings && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(projectId, name, settings, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "ProjectUpdateParams{projectId=$projectId, name=$name, settings=$settings, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

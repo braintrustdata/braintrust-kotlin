@@ -56,6 +56,10 @@ constructor(
 
     fun startingAfter(): String? = startingAfter
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams {
@@ -72,23 +76,6 @@ constructor(
         queryParams.putAll(additionalQueryParams)
         return queryParams.build()
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ProjectScoreListParams && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && orgName == other.orgName && projectId == other.projectId && projectName == other.projectName && projectScoreName == other.projectScoreName && scoreType == other.scoreType && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(endingBefore, ids, limit, orgName, projectId, projectName, projectScoreName, scoreType, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "ProjectScoreListParams{endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, projectId=$projectId, projectName=$projectName, projectScoreName=$projectScoreName, scoreType=$scoreType, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -113,17 +100,17 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(projectScoreListParams: ProjectScoreListParams) = apply {
-            this.endingBefore = projectScoreListParams.endingBefore
-            this.ids = projectScoreListParams.ids
-            this.limit = projectScoreListParams.limit
-            this.orgName = projectScoreListParams.orgName
-            this.projectId = projectScoreListParams.projectId
-            this.projectName = projectScoreListParams.projectName
-            this.projectScoreName = projectScoreListParams.projectScoreName
-            this.scoreType = projectScoreListParams.scoreType
-            this.startingAfter = projectScoreListParams.startingAfter
-            additionalHeaders(projectScoreListParams.additionalHeaders)
-            additionalQueryParams(projectScoreListParams.additionalQueryParams)
+            endingBefore = projectScoreListParams.endingBefore
+            ids = projectScoreListParams.ids
+            limit = projectScoreListParams.limit
+            orgName = projectScoreListParams.orgName
+            projectId = projectScoreListParams.projectId
+            projectName = projectScoreListParams.projectName
+            projectScoreName = projectScoreListParams.projectScoreName
+            scoreType = projectScoreListParams.scoreType
+            startingAfter = projectScoreListParams.startingAfter
+            additionalHeaders = projectScoreListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = projectScoreListParams.additionalQueryParams.toBuilder()
         }
 
         /**
@@ -694,4 +681,17 @@ constructor(
             fun asString(): String = _value().asStringOrThrow()
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ProjectScoreListParams && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && orgName == other.orgName && projectId == other.projectId && projectName == other.projectName && projectScoreName == other.projectScoreName && scoreType == other.scoreType && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(endingBefore, ids, limit, orgName, projectId, projectName, projectScoreName, scoreType, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "ProjectScoreListParams{endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, projectId=$projectId, projectName=$projectName, projectScoreName=$projectScoreName, scoreType=$scoreType, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

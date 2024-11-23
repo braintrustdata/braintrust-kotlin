@@ -44,6 +44,10 @@ constructor(
 
     fun startingAfter(): String? = startingAfter
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams {
@@ -57,23 +61,6 @@ constructor(
         queryParams.putAll(additionalQueryParams)
         return queryParams.build()
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ApiKeyListParams && apiKeyName == other.apiKeyName && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && orgName == other.orgName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(apiKeyName, endingBefore, ids, limit, orgName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "ApiKeyListParams{apiKeyName=$apiKeyName, endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -95,14 +82,14 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(apiKeyListParams: ApiKeyListParams) = apply {
-            this.apiKeyName = apiKeyListParams.apiKeyName
-            this.endingBefore = apiKeyListParams.endingBefore
-            this.ids = apiKeyListParams.ids
-            this.limit = apiKeyListParams.limit
-            this.orgName = apiKeyListParams.orgName
-            this.startingAfter = apiKeyListParams.startingAfter
-            additionalHeaders(apiKeyListParams.additionalHeaders)
-            additionalQueryParams(apiKeyListParams.additionalQueryParams)
+            apiKeyName = apiKeyListParams.apiKeyName
+            endingBefore = apiKeyListParams.endingBefore
+            ids = apiKeyListParams.ids
+            limit = apiKeyListParams.limit
+            orgName = apiKeyListParams.orgName
+            startingAfter = apiKeyListParams.startingAfter
+            additionalHeaders = apiKeyListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = apiKeyListParams.additionalQueryParams.toBuilder()
         }
 
         /** Name of the api_key to search for */
@@ -371,4 +358,17 @@ constructor(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ApiKeyListParams && apiKeyName == other.apiKeyName && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && orgName == other.orgName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(apiKeyName, endingBefore, ids, limit, orgName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "ApiKeyListParams{apiKeyName=$apiKeyName, endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

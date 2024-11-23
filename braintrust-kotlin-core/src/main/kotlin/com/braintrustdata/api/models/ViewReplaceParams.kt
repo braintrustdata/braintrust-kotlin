@@ -51,6 +51,12 @@ constructor(
 
     fun viewData(): ViewData? = viewData
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): ViewReplaceBody {
         return ViewReplaceBody(
             name,
@@ -219,25 +225,6 @@ constructor(
             "ViewReplaceBody{name=$name, objectId=$objectId, objectType=$objectType, viewType=$viewType, deletedAt=$deletedAt, options=$options, userId=$userId, viewData=$viewData, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ViewReplaceParams && name == other.name && objectId == other.objectId && objectType == other.objectType && viewType == other.viewType && deletedAt == other.deletedAt && options == other.options && userId == other.userId && viewData == other.viewData && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, objectId, objectType, viewType, deletedAt, options, userId, viewData, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "ViewReplaceParams{name=$name, objectId=$objectId, objectType=$objectType, viewType=$viewType, deletedAt=$deletedAt, options=$options, userId=$userId, viewData=$viewData, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -261,17 +248,17 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(viewReplaceParams: ViewReplaceParams) = apply {
-            this.name = viewReplaceParams.name
-            this.objectId = viewReplaceParams.objectId
-            this.objectType = viewReplaceParams.objectType
-            this.viewType = viewReplaceParams.viewType
-            this.deletedAt = viewReplaceParams.deletedAt
-            this.options = viewReplaceParams.options
-            this.userId = viewReplaceParams.userId
-            this.viewData = viewReplaceParams.viewData
-            additionalHeaders(viewReplaceParams.additionalHeaders)
-            additionalQueryParams(viewReplaceParams.additionalQueryParams)
-            additionalBodyProperties(viewReplaceParams.additionalBodyProperties)
+            name = viewReplaceParams.name
+            objectId = viewReplaceParams.objectId
+            objectType = viewReplaceParams.objectType
+            viewType = viewReplaceParams.viewType
+            deletedAt = viewReplaceParams.deletedAt
+            options = viewReplaceParams.options
+            userId = viewReplaceParams.userId
+            viewData = viewReplaceParams.viewData
+            additionalHeaders = viewReplaceParams.additionalHeaders.toBuilder()
+            additionalQueryParams = viewReplaceParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = viewReplaceParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Name of the view */
@@ -637,4 +624,17 @@ constructor(
 
         fun asString(): String = _value().asStringOrThrow()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ViewReplaceParams && name == other.name && objectId == other.objectId && objectType == other.objectType && viewType == other.viewType && deletedAt == other.deletedAt && options == other.options && userId == other.userId && viewData == other.viewData && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, objectId, objectType, viewType, deletedAt, options, userId, viewData, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "ViewReplaceParams{name=$name, objectId=$objectId, objectType=$objectType, viewType=$viewType, deletedAt=$deletedAt, options=$options, userId=$userId, viewData=$viewData, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

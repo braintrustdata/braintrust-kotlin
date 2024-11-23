@@ -37,6 +37,12 @@ constructor(
 
     fun postMessage(): Boolean? = postMessage
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): SpanIframeReplaceBody {
         return SpanIframeReplaceBody(
             name,
@@ -175,25 +181,6 @@ constructor(
             "SpanIframeReplaceBody{name=$name, projectId=$projectId, url=$url, description=$description, postMessage=$postMessage, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is SpanIframeReplaceParams && name == other.name && projectId == other.projectId && url == other.url && description == other.description && postMessage == other.postMessage && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, projectId, url, description, postMessage, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "SpanIframeReplaceParams{name=$name, projectId=$projectId, url=$url, description=$description, postMessage=$postMessage, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -214,14 +201,15 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(spanIframeReplaceParams: SpanIframeReplaceParams) = apply {
-            this.name = spanIframeReplaceParams.name
-            this.projectId = spanIframeReplaceParams.projectId
-            this.url = spanIframeReplaceParams.url
-            this.description = spanIframeReplaceParams.description
-            this.postMessage = spanIframeReplaceParams.postMessage
-            additionalHeaders(spanIframeReplaceParams.additionalHeaders)
-            additionalQueryParams(spanIframeReplaceParams.additionalQueryParams)
-            additionalBodyProperties(spanIframeReplaceParams.additionalBodyProperties)
+            name = spanIframeReplaceParams.name
+            projectId = spanIframeReplaceParams.projectId
+            url = spanIframeReplaceParams.url
+            description = spanIframeReplaceParams.description
+            postMessage = spanIframeReplaceParams.postMessage
+            additionalHeaders = spanIframeReplaceParams.additionalHeaders.toBuilder()
+            additionalQueryParams = spanIframeReplaceParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties =
+                spanIframeReplaceParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Name of the span iframe */
@@ -374,4 +362,17 @@ constructor(
                 additionalBodyProperties.toImmutable(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is SpanIframeReplaceParams && name == other.name && projectId == other.projectId && url == other.url && description == other.description && postMessage == other.postMessage && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, projectId, url, description, postMessage, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "SpanIframeReplaceParams{name=$name, projectId=$projectId, url=$url, description=$description, postMessage=$postMessage, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

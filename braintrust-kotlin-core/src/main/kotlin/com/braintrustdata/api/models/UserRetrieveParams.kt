@@ -17,6 +17,10 @@ constructor(
 
     fun userId(): String = userId
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams = additionalQueryParams
@@ -27,23 +31,6 @@ constructor(
             else -> ""
         }
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is UserRetrieveParams && userId == other.userId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(userId, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "UserRetrieveParams{userId=$userId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -60,9 +47,9 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(userRetrieveParams: UserRetrieveParams) = apply {
-            this.userId = userRetrieveParams.userId
-            additionalHeaders(userRetrieveParams.additionalHeaders)
-            additionalQueryParams(userRetrieveParams.additionalQueryParams)
+            userId = userRetrieveParams.userId
+            additionalHeaders = userRetrieveParams.additionalHeaders.toBuilder()
+            additionalQueryParams = userRetrieveParams.additionalQueryParams.toBuilder()
         }
 
         /** User id */
@@ -173,4 +160,17 @@ constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is UserRetrieveParams && userId == other.userId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(userId, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "UserRetrieveParams{userId=$userId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

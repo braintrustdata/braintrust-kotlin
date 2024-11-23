@@ -50,6 +50,10 @@ constructor(
 
     fun startingAfter(): String? = startingAfter
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams {
@@ -65,23 +69,6 @@ constructor(
         queryParams.putAll(additionalQueryParams)
         return queryParams.build()
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is DatasetListParams && datasetName == other.datasetName && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && orgName == other.orgName && projectId == other.projectId && projectName == other.projectName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(datasetName, endingBefore, ids, limit, orgName, projectId, projectName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "DatasetListParams{datasetName=$datasetName, endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, projectId=$projectId, projectName=$projectName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -105,16 +92,16 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(datasetListParams: DatasetListParams) = apply {
-            this.datasetName = datasetListParams.datasetName
-            this.endingBefore = datasetListParams.endingBefore
-            this.ids = datasetListParams.ids
-            this.limit = datasetListParams.limit
-            this.orgName = datasetListParams.orgName
-            this.projectId = datasetListParams.projectId
-            this.projectName = datasetListParams.projectName
-            this.startingAfter = datasetListParams.startingAfter
-            additionalHeaders(datasetListParams.additionalHeaders)
-            additionalQueryParams(datasetListParams.additionalQueryParams)
+            datasetName = datasetListParams.datasetName
+            endingBefore = datasetListParams.endingBefore
+            ids = datasetListParams.ids
+            limit = datasetListParams.limit
+            orgName = datasetListParams.orgName
+            projectId = datasetListParams.projectId
+            projectName = datasetListParams.projectName
+            startingAfter = datasetListParams.startingAfter
+            additionalHeaders = datasetListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = datasetListParams.additionalQueryParams.toBuilder()
         }
 
         /** Name of the dataset to search for */
@@ -391,4 +378,17 @@ constructor(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is DatasetListParams && datasetName == other.datasetName && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && orgName == other.orgName && projectId == other.projectId && projectName == other.projectName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(datasetName, endingBefore, ids, limit, orgName, projectId, projectName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "DatasetListParams{datasetName=$datasetName, endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, projectId=$projectId, projectName=$projectName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

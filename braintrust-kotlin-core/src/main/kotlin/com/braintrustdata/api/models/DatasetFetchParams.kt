@@ -29,6 +29,10 @@ constructor(
 
     fun version(): String? = version
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams {
@@ -47,23 +51,6 @@ constructor(
             else -> ""
         }
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is DatasetFetchParams && datasetId == other.datasetId && limit == other.limit && maxRootSpanId == other.maxRootSpanId && maxXactId == other.maxXactId && version == other.version && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(datasetId, limit, maxRootSpanId, maxXactId, version, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "DatasetFetchParams{datasetId=$datasetId, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -84,13 +71,13 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(datasetFetchParams: DatasetFetchParams) = apply {
-            this.datasetId = datasetFetchParams.datasetId
-            this.limit = datasetFetchParams.limit
-            this.maxRootSpanId = datasetFetchParams.maxRootSpanId
-            this.maxXactId = datasetFetchParams.maxXactId
-            this.version = datasetFetchParams.version
-            additionalHeaders(datasetFetchParams.additionalHeaders)
-            additionalQueryParams(datasetFetchParams.additionalQueryParams)
+            datasetId = datasetFetchParams.datasetId
+            limit = datasetFetchParams.limit
+            maxRootSpanId = datasetFetchParams.maxRootSpanId
+            maxXactId = datasetFetchParams.maxXactId
+            version = datasetFetchParams.version
+            additionalHeaders = datasetFetchParams.additionalHeaders.toBuilder()
+            additionalQueryParams = datasetFetchParams.additionalQueryParams.toBuilder()
         }
 
         /** Dataset id */
@@ -258,4 +245,17 @@ constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is DatasetFetchParams && datasetId == other.datasetId && limit == other.limit && maxRootSpanId == other.maxRootSpanId && maxXactId == other.maxXactId && version == other.version && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(datasetId, limit, maxRootSpanId, maxXactId, version, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "DatasetFetchParams{datasetId=$datasetId, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
