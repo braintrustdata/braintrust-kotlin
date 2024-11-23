@@ -37,6 +37,12 @@ constructor(
 
     fun type(): String? = type
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): AiSecretUpdateBody {
         return AiSecretUpdateBody(
             metadata,
@@ -157,25 +163,6 @@ constructor(
             "AiSecretUpdateBody{metadata=$metadata, name=$name, secret=$secret, type=$type, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is AiSecretUpdateParams && aiSecretId == other.aiSecretId && metadata == other.metadata && name == other.name && secret == other.secret && type == other.type && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(aiSecretId, metadata, name, secret, type, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "AiSecretUpdateParams{aiSecretId=$aiSecretId, metadata=$metadata, name=$name, secret=$secret, type=$type, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -196,14 +183,14 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(aiSecretUpdateParams: AiSecretUpdateParams) = apply {
-            this.aiSecretId = aiSecretUpdateParams.aiSecretId
-            this.metadata = aiSecretUpdateParams.metadata
-            this.name = aiSecretUpdateParams.name
-            this.secret = aiSecretUpdateParams.secret
-            this.type = aiSecretUpdateParams.type
-            additionalHeaders(aiSecretUpdateParams.additionalHeaders)
-            additionalQueryParams(aiSecretUpdateParams.additionalQueryParams)
-            additionalBodyProperties(aiSecretUpdateParams.additionalBodyProperties)
+            aiSecretId = aiSecretUpdateParams.aiSecretId
+            metadata = aiSecretUpdateParams.metadata
+            name = aiSecretUpdateParams.name
+            secret = aiSecretUpdateParams.secret
+            type = aiSecretUpdateParams.type
+            additionalHeaders = aiSecretUpdateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = aiSecretUpdateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = aiSecretUpdateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** AiSecret id */
@@ -410,4 +397,17 @@ constructor(
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is AiSecretUpdateParams && aiSecretId == other.aiSecretId && metadata == other.metadata && name == other.name && secret == other.secret && type == other.type && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(aiSecretId, metadata, name, secret, type, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "AiSecretUpdateParams{aiSecretId=$aiSecretId, metadata=$metadata, name=$name, secret=$secret, type=$type, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

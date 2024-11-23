@@ -34,6 +34,12 @@ constructor(
 
     fun description(): String? = description
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): ProjectTagReplaceBody {
         return ProjectTagReplaceBody(
             name,
@@ -154,25 +160,6 @@ constructor(
             "ProjectTagReplaceBody{name=$name, projectId=$projectId, color=$color, description=$description, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ProjectTagReplaceParams && name == other.name && projectId == other.projectId && color == other.color && description == other.description && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, projectId, color, description, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "ProjectTagReplaceParams{name=$name, projectId=$projectId, color=$color, description=$description, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -192,13 +179,14 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(projectTagReplaceParams: ProjectTagReplaceParams) = apply {
-            this.name = projectTagReplaceParams.name
-            this.projectId = projectTagReplaceParams.projectId
-            this.color = projectTagReplaceParams.color
-            this.description = projectTagReplaceParams.description
-            additionalHeaders(projectTagReplaceParams.additionalHeaders)
-            additionalQueryParams(projectTagReplaceParams.additionalQueryParams)
-            additionalBodyProperties(projectTagReplaceParams.additionalBodyProperties)
+            name = projectTagReplaceParams.name
+            projectId = projectTagReplaceParams.projectId
+            color = projectTagReplaceParams.color
+            description = projectTagReplaceParams.description
+            additionalHeaders = projectTagReplaceParams.additionalHeaders.toBuilder()
+            additionalQueryParams = projectTagReplaceParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties =
+                projectTagReplaceParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Name of the project tag */
@@ -344,4 +332,17 @@ constructor(
                 additionalBodyProperties.toImmutable(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ProjectTagReplaceParams && name == other.name && projectId == other.projectId && color == other.color && description == other.description && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, projectId, color, description, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "ProjectTagReplaceParams{name=$name, projectId=$projectId, color=$color, description=$description, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

@@ -17,6 +17,10 @@ constructor(
 
     fun envVarId(): String = envVarId
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams = additionalQueryParams
@@ -27,23 +31,6 @@ constructor(
             else -> ""
         }
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is EnvVarRetrieveParams && envVarId == other.envVarId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(envVarId, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "EnvVarRetrieveParams{envVarId=$envVarId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -60,9 +47,9 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(envVarRetrieveParams: EnvVarRetrieveParams) = apply {
-            this.envVarId = envVarRetrieveParams.envVarId
-            additionalHeaders(envVarRetrieveParams.additionalHeaders)
-            additionalQueryParams(envVarRetrieveParams.additionalQueryParams)
+            envVarId = envVarRetrieveParams.envVarId
+            additionalHeaders = envVarRetrieveParams.additionalHeaders.toBuilder()
+            additionalQueryParams = envVarRetrieveParams.additionalQueryParams.toBuilder()
         }
 
         /** EnvVar id */
@@ -173,4 +160,17 @@ constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is EnvVarRetrieveParams && envVarId == other.envVarId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(envVarId, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "EnvVarRetrieveParams{envVarId=$envVarId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

@@ -50,6 +50,10 @@ constructor(
 
     fun startingAfter(): String? = startingAfter
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams {
@@ -65,23 +69,6 @@ constructor(
         queryParams.putAll(additionalQueryParams)
         return queryParams.build()
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ProjectTagListParams && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && orgName == other.orgName && projectId == other.projectId && projectName == other.projectName && projectTagName == other.projectTagName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(endingBefore, ids, limit, orgName, projectId, projectName, projectTagName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "ProjectTagListParams{endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, projectId=$projectId, projectName=$projectName, projectTagName=$projectTagName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -105,16 +92,16 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(projectTagListParams: ProjectTagListParams) = apply {
-            this.endingBefore = projectTagListParams.endingBefore
-            this.ids = projectTagListParams.ids
-            this.limit = projectTagListParams.limit
-            this.orgName = projectTagListParams.orgName
-            this.projectId = projectTagListParams.projectId
-            this.projectName = projectTagListParams.projectName
-            this.projectTagName = projectTagListParams.projectTagName
-            this.startingAfter = projectTagListParams.startingAfter
-            additionalHeaders(projectTagListParams.additionalHeaders)
-            additionalQueryParams(projectTagListParams.additionalQueryParams)
+            endingBefore = projectTagListParams.endingBefore
+            ids = projectTagListParams.ids
+            limit = projectTagListParams.limit
+            orgName = projectTagListParams.orgName
+            projectId = projectTagListParams.projectId
+            projectName = projectTagListParams.projectName
+            projectTagName = projectTagListParams.projectTagName
+            startingAfter = projectTagListParams.startingAfter
+            additionalHeaders = projectTagListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = projectTagListParams.additionalQueryParams.toBuilder()
         }
 
         /**
@@ -391,4 +378,17 @@ constructor(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ProjectTagListParams && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && orgName == other.orgName && projectId == other.projectId && projectName == other.projectName && projectTagName == other.projectTagName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(endingBefore, ids, limit, orgName, projectId, projectName, projectTagName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "ProjectTagListParams{endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, projectId=$projectId, projectName=$projectName, projectTagName=$projectTagName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

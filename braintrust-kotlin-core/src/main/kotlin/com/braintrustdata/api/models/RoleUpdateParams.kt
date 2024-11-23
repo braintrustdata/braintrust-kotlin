@@ -47,6 +47,12 @@ constructor(
 
     fun removeMemberRoles(): List<String>? = removeMemberRoles
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): RoleUpdateBody {
         return RoleUpdateBody(
             addMemberPermissions,
@@ -211,25 +217,6 @@ constructor(
             "RoleUpdateBody{addMemberPermissions=$addMemberPermissions, addMemberRoles=$addMemberRoles, description=$description, name=$name, removeMemberPermissions=$removeMemberPermissions, removeMemberRoles=$removeMemberRoles, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is RoleUpdateParams && roleId == other.roleId && addMemberPermissions == other.addMemberPermissions && addMemberRoles == other.addMemberRoles && description == other.description && name == other.name && removeMemberPermissions == other.removeMemberPermissions && removeMemberRoles == other.removeMemberRoles && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(roleId, addMemberPermissions, addMemberRoles, description, name, removeMemberPermissions, removeMemberRoles, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "RoleUpdateParams{roleId=$roleId, addMemberPermissions=$addMemberPermissions, addMemberRoles=$addMemberRoles, description=$description, name=$name, removeMemberPermissions=$removeMemberPermissions, removeMemberRoles=$removeMemberRoles, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -252,16 +239,19 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(roleUpdateParams: RoleUpdateParams) = apply {
-            this.roleId = roleUpdateParams.roleId
-            this.addMemberPermissions(roleUpdateParams.addMemberPermissions ?: listOf())
-            this.addMemberRoles(roleUpdateParams.addMemberRoles ?: listOf())
-            this.description = roleUpdateParams.description
-            this.name = roleUpdateParams.name
-            this.removeMemberPermissions(roleUpdateParams.removeMemberPermissions ?: listOf())
-            this.removeMemberRoles(roleUpdateParams.removeMemberRoles ?: listOf())
-            additionalHeaders(roleUpdateParams.additionalHeaders)
-            additionalQueryParams(roleUpdateParams.additionalQueryParams)
-            additionalBodyProperties(roleUpdateParams.additionalBodyProperties)
+            roleId = roleUpdateParams.roleId
+            addMemberPermissions =
+                roleUpdateParams.addMemberPermissions?.toMutableList() ?: mutableListOf()
+            addMemberRoles = roleUpdateParams.addMemberRoles?.toMutableList() ?: mutableListOf()
+            description = roleUpdateParams.description
+            name = roleUpdateParams.name
+            removeMemberPermissions =
+                roleUpdateParams.removeMemberPermissions?.toMutableList() ?: mutableListOf()
+            removeMemberRoles =
+                roleUpdateParams.removeMemberRoles?.toMutableList() ?: mutableListOf()
+            additionalHeaders = roleUpdateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = roleUpdateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = roleUpdateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Role id */
@@ -440,13 +430,12 @@ constructor(
         fun build(): RoleUpdateParams =
             RoleUpdateParams(
                 checkNotNull(roleId) { "`roleId` is required but was not set" },
-                if (addMemberPermissions.size == 0) null else addMemberPermissions.toImmutable(),
-                if (addMemberRoles.size == 0) null else addMemberRoles.toImmutable(),
+                addMemberPermissions.toImmutable().ifEmpty { null },
+                addMemberRoles.toImmutable().ifEmpty { null },
                 description,
                 name,
-                if (removeMemberPermissions.size == 0) null
-                else removeMemberPermissions.toImmutable(),
-                if (removeMemberRoles.size == 0) null else removeMemberRoles.toImmutable(),
+                removeMemberPermissions.toImmutable().ifEmpty { null },
+                removeMemberRoles.toImmutable().ifEmpty { null },
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -1058,4 +1047,17 @@ constructor(
         override fun toString() =
             "RemoveMemberPermission{permission=$permission, restrictObjectType=$restrictObjectType, additionalProperties=$additionalProperties}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is RoleUpdateParams && roleId == other.roleId && addMemberPermissions == other.addMemberPermissions && addMemberRoles == other.addMemberRoles && description == other.description && name == other.name && removeMemberPermissions == other.removeMemberPermissions && removeMemberRoles == other.removeMemberRoles && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(roleId, addMemberPermissions, addMemberRoles, description, name, removeMemberPermissions, removeMemberRoles, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "RoleUpdateParams{roleId=$roleId, addMemberPermissions=$addMemberPermissions, addMemberRoles=$addMemberRoles, description=$description, name=$name, removeMemberPermissions=$removeMemberPermissions, removeMemberRoles=$removeMemberRoles, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

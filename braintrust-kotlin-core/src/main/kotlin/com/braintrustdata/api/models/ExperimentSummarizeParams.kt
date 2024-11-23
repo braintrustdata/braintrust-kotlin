@@ -23,6 +23,10 @@ constructor(
 
     fun summarizeScores(): Boolean? = summarizeScores
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams {
@@ -42,23 +46,6 @@ constructor(
         }
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ExperimentSummarizeParams && experimentId == other.experimentId && comparisonExperimentId == other.comparisonExperimentId && summarizeScores == other.summarizeScores && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(experimentId, comparisonExperimentId, summarizeScores, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "ExperimentSummarizeParams{experimentId=$experimentId, comparisonExperimentId=$comparisonExperimentId, summarizeScores=$summarizeScores, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -76,11 +63,11 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(experimentSummarizeParams: ExperimentSummarizeParams) = apply {
-            this.experimentId = experimentSummarizeParams.experimentId
-            this.comparisonExperimentId = experimentSummarizeParams.comparisonExperimentId
-            this.summarizeScores = experimentSummarizeParams.summarizeScores
-            additionalHeaders(experimentSummarizeParams.additionalHeaders)
-            additionalQueryParams(experimentSummarizeParams.additionalQueryParams)
+            experimentId = experimentSummarizeParams.experimentId
+            comparisonExperimentId = experimentSummarizeParams.comparisonExperimentId
+            summarizeScores = experimentSummarizeParams.summarizeScores
+            additionalHeaders = experimentSummarizeParams.additionalHeaders.toBuilder()
+            additionalQueryParams = experimentSummarizeParams.additionalQueryParams.toBuilder()
         }
 
         /** Experiment id */
@@ -211,4 +198,17 @@ constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ExperimentSummarizeParams && experimentId == other.experimentId && comparisonExperimentId == other.comparisonExperimentId && summarizeScores == other.summarizeScores && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(experimentId, comparisonExperimentId, summarizeScores, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "ExperimentSummarizeParams{experimentId=$experimentId, comparisonExperimentId=$comparisonExperimentId, summarizeScores=$summarizeScores, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

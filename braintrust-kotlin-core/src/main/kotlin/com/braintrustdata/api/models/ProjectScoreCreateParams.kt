@@ -53,6 +53,12 @@ constructor(
 
     fun description(): String? = description
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): ProjectScoreCreateBody {
         return ProjectScoreCreateBody(
             name,
@@ -197,25 +203,6 @@ constructor(
             "ProjectScoreCreateBody{name=$name, projectId=$projectId, scoreType=$scoreType, categories=$categories, config=$config, description=$description, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ProjectScoreCreateParams && name == other.name && projectId == other.projectId && scoreType == other.scoreType && categories == other.categories && config == other.config && description == other.description && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, projectId, scoreType, categories, config, description, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "ProjectScoreCreateParams{name=$name, projectId=$projectId, scoreType=$scoreType, categories=$categories, config=$config, description=$description, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -237,15 +224,16 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(projectScoreCreateParams: ProjectScoreCreateParams) = apply {
-            this.name = projectScoreCreateParams.name
-            this.projectId = projectScoreCreateParams.projectId
-            this.scoreType = projectScoreCreateParams.scoreType
-            this.categories = projectScoreCreateParams.categories
-            this.config = projectScoreCreateParams.config
-            this.description = projectScoreCreateParams.description
-            additionalHeaders(projectScoreCreateParams.additionalHeaders)
-            additionalQueryParams(projectScoreCreateParams.additionalQueryParams)
-            additionalBodyProperties(projectScoreCreateParams.additionalBodyProperties)
+            name = projectScoreCreateParams.name
+            projectId = projectScoreCreateParams.projectId
+            scoreType = projectScoreCreateParams.scoreType
+            categories = projectScoreCreateParams.categories
+            config = projectScoreCreateParams.config
+            description = projectScoreCreateParams.description
+            additionalHeaders = projectScoreCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = projectScoreCreateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties =
+                projectScoreCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Name of the project score */
@@ -799,4 +787,17 @@ constructor(
             override fun toString() = "NullableVariant{additionalProperties=$additionalProperties}"
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ProjectScoreCreateParams && name == other.name && projectId == other.projectId && scoreType == other.scoreType && categories == other.categories && config == other.config && description == other.description && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(name, projectId, scoreType, categories, config, description, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "ProjectScoreCreateParams{name=$name, projectId=$projectId, scoreType=$scoreType, categories=$categories, config=$config, description=$description, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

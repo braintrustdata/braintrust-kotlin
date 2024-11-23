@@ -20,6 +20,12 @@ constructor(
 
     fun organizationId(): String = organizationId
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     internal fun getBody(): Map<String, JsonValue>? {
         return additionalBodyProperties.ifEmpty { null }
     }
@@ -34,25 +40,6 @@ constructor(
             else -> ""
         }
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is OrganizationDeleteParams && organizationId == other.organizationId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(organizationId, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "OrganizationDeleteParams{organizationId=$organizationId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -70,10 +57,11 @@ constructor(
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(organizationDeleteParams: OrganizationDeleteParams) = apply {
-            this.organizationId = organizationDeleteParams.organizationId
-            additionalHeaders(organizationDeleteParams.additionalHeaders)
-            additionalQueryParams(organizationDeleteParams.additionalQueryParams)
-            additionalBodyProperties(organizationDeleteParams.additionalBodyProperties)
+            organizationId = organizationDeleteParams.organizationId
+            additionalHeaders = organizationDeleteParams.additionalHeaders.toBuilder()
+            additionalQueryParams = organizationDeleteParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties =
+                organizationDeleteParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Organization id */
@@ -207,4 +195,17 @@ constructor(
                 additionalBodyProperties.toImmutable(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is OrganizationDeleteParams && organizationId == other.organizationId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(organizationId, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "OrganizationDeleteParams{organizationId=$organizationId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

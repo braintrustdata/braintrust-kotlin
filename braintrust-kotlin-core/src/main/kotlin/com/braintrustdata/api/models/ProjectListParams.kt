@@ -44,6 +44,10 @@ constructor(
 
     fun startingAfter(): String? = startingAfter
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams {
@@ -57,23 +61,6 @@ constructor(
         queryParams.putAll(additionalQueryParams)
         return queryParams.build()
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ProjectListParams && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && orgName == other.orgName && projectName == other.projectName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(endingBefore, ids, limit, orgName, projectName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "ProjectListParams{endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, projectName=$projectName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -95,14 +82,14 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(projectListParams: ProjectListParams) = apply {
-            this.endingBefore = projectListParams.endingBefore
-            this.ids = projectListParams.ids
-            this.limit = projectListParams.limit
-            this.orgName = projectListParams.orgName
-            this.projectName = projectListParams.projectName
-            this.startingAfter = projectListParams.startingAfter
-            additionalHeaders(projectListParams.additionalHeaders)
-            additionalQueryParams(projectListParams.additionalQueryParams)
+            endingBefore = projectListParams.endingBefore
+            ids = projectListParams.ids
+            limit = projectListParams.limit
+            orgName = projectListParams.orgName
+            projectName = projectListParams.projectName
+            startingAfter = projectListParams.startingAfter
+            additionalHeaders = projectListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = projectListParams.additionalQueryParams.toBuilder()
         }
 
         /**
@@ -371,4 +358,17 @@ constructor(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ProjectListParams && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && orgName == other.orgName && projectName == other.projectName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(endingBefore, ids, limit, orgName, projectName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "ProjectListParams{endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, projectName=$projectName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

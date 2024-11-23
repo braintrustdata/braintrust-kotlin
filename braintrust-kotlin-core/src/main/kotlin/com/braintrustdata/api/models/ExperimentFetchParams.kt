@@ -29,6 +29,10 @@ constructor(
 
     fun version(): String? = version
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams {
@@ -47,23 +51,6 @@ constructor(
             else -> ""
         }
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ExperimentFetchParams && experimentId == other.experimentId && limit == other.limit && maxRootSpanId == other.maxRootSpanId && maxXactId == other.maxXactId && version == other.version && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(experimentId, limit, maxRootSpanId, maxXactId, version, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "ExperimentFetchParams{experimentId=$experimentId, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -84,13 +71,13 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(experimentFetchParams: ExperimentFetchParams) = apply {
-            this.experimentId = experimentFetchParams.experimentId
-            this.limit = experimentFetchParams.limit
-            this.maxRootSpanId = experimentFetchParams.maxRootSpanId
-            this.maxXactId = experimentFetchParams.maxXactId
-            this.version = experimentFetchParams.version
-            additionalHeaders(experimentFetchParams.additionalHeaders)
-            additionalQueryParams(experimentFetchParams.additionalQueryParams)
+            experimentId = experimentFetchParams.experimentId
+            limit = experimentFetchParams.limit
+            maxRootSpanId = experimentFetchParams.maxRootSpanId
+            maxXactId = experimentFetchParams.maxXactId
+            version = experimentFetchParams.version
+            additionalHeaders = experimentFetchParams.additionalHeaders.toBuilder()
+            additionalQueryParams = experimentFetchParams.additionalQueryParams.toBuilder()
         }
 
         /** Experiment id */
@@ -258,4 +245,17 @@ constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ExperimentFetchParams && experimentId == other.experimentId && limit == other.limit && maxRootSpanId == other.maxRootSpanId && maxXactId == other.maxXactId && version == other.version && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(experimentId, limit, maxRootSpanId, maxXactId, version, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "ExperimentFetchParams{experimentId=$experimentId, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

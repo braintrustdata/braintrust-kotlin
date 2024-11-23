@@ -50,6 +50,10 @@ constructor(
 
     fun startingAfter(): String? = startingAfter
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     internal fun getHeaders(): Headers = additionalHeaders
 
     internal fun getQueryParams(): QueryParams {
@@ -65,23 +69,6 @@ constructor(
         queryParams.putAll(additionalQueryParams)
         return queryParams.build()
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ExperimentListParams && endingBefore == other.endingBefore && experimentName == other.experimentName && ids == other.ids && limit == other.limit && orgName == other.orgName && projectId == other.projectId && projectName == other.projectName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(endingBefore, experimentName, ids, limit, orgName, projectId, projectName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "ExperimentListParams{endingBefore=$endingBefore, experimentName=$experimentName, ids=$ids, limit=$limit, orgName=$orgName, projectId=$projectId, projectName=$projectName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -105,16 +92,16 @@ constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(experimentListParams: ExperimentListParams) = apply {
-            this.endingBefore = experimentListParams.endingBefore
-            this.experimentName = experimentListParams.experimentName
-            this.ids = experimentListParams.ids
-            this.limit = experimentListParams.limit
-            this.orgName = experimentListParams.orgName
-            this.projectId = experimentListParams.projectId
-            this.projectName = experimentListParams.projectName
-            this.startingAfter = experimentListParams.startingAfter
-            additionalHeaders(experimentListParams.additionalHeaders)
-            additionalQueryParams(experimentListParams.additionalQueryParams)
+            endingBefore = experimentListParams.endingBefore
+            experimentName = experimentListParams.experimentName
+            ids = experimentListParams.ids
+            limit = experimentListParams.limit
+            orgName = experimentListParams.orgName
+            projectId = experimentListParams.projectId
+            projectName = experimentListParams.projectName
+            startingAfter = experimentListParams.startingAfter
+            additionalHeaders = experimentListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = experimentListParams.additionalQueryParams.toBuilder()
         }
 
         /**
@@ -391,4 +378,17 @@ constructor(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ExperimentListParams && endingBefore == other.endingBefore && experimentName == other.experimentName && ids == other.ids && limit == other.limit && orgName == other.orgName && projectId == other.projectId && projectName == other.projectName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(endingBefore, experimentName, ids, limit, orgName, projectId, projectName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "ExperimentListParams{endingBefore=$endingBefore, experimentName=$experimentName, ids=$ids, limit=$limit, orgName=$orgName, projectId=$projectId, projectName=$projectName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
