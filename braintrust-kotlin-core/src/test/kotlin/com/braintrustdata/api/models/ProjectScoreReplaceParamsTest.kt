@@ -16,7 +16,7 @@ class ProjectScoreReplaceParamsTest {
             .scoreType(ProjectScoreReplaceParams.ScoreType.SLIDER)
             .categories(
                 ProjectScoreReplaceParams.Categories.ofCategorical(
-                    listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
+                    listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                 )
             )
             .config(
@@ -25,7 +25,7 @@ class ProjectScoreReplaceParamsTest {
                     .multiSelect(true)
                     .online(
                         OnlineScoreConfig.builder()
-                            .samplingRate(1.0)
+                            .samplingRate(0.0)
                             .scorers(
                                 listOf(
                                     OnlineScoreConfig.Scorer.ofFunction(
@@ -55,7 +55,7 @@ class ProjectScoreReplaceParamsTest {
                 .scoreType(ProjectScoreReplaceParams.ScoreType.SLIDER)
                 .categories(
                     ProjectScoreReplaceParams.Categories.ofCategorical(
-                        listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
+                        listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                     )
                 )
                 .config(
@@ -64,7 +64,7 @@ class ProjectScoreReplaceParamsTest {
                         .multiSelect(true)
                         .online(
                             OnlineScoreConfig.builder()
-                                .samplingRate(1.0)
+                                .samplingRate(0.0)
                                 .scorers(
                                     listOf(
                                         OnlineScoreConfig.Scorer.ofFunction(
@@ -93,7 +93,7 @@ class ProjectScoreReplaceParamsTest {
         assertThat(body.categories())
             .isEqualTo(
                 ProjectScoreReplaceParams.Categories.ofCategorical(
-                    listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
+                    listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                 )
             )
         assertThat(body.config())
@@ -103,7 +103,7 @@ class ProjectScoreReplaceParamsTest {
                     .multiSelect(true)
                     .online(
                         OnlineScoreConfig.builder()
-                            .samplingRate(1.0)
+                            .samplingRate(0.0)
                             .scorers(
                                 listOf(
                                     OnlineScoreConfig.Scorer.ofFunction(

@@ -19,7 +19,7 @@ class ProjectScoreTest {
                 .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .categories(
                     ProjectScore.Categories.ofCategorical(
-                        listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
+                        listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                     )
                 )
                 .config(
@@ -28,7 +28,7 @@ class ProjectScoreTest {
                         .multiSelect(true)
                         .online(
                             OnlineScoreConfig.builder()
-                                .samplingRate(1.0)
+                                .samplingRate(0.0)
                                 .scorers(
                                     listOf(
                                         OnlineScoreConfig.Scorer.ofFunction(
@@ -60,7 +60,7 @@ class ProjectScoreTest {
         assertThat(projectScore.categories())
             .isEqualTo(
                 ProjectScore.Categories.ofCategorical(
-                    listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
+                    listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                 )
             )
         assertThat(projectScore.config())
@@ -70,7 +70,7 @@ class ProjectScoreTest {
                     .multiSelect(true)
                     .online(
                         OnlineScoreConfig.builder()
-                            .samplingRate(1.0)
+                            .samplingRate(0.0)
                             .scorers(
                                 listOf(
                                     OnlineScoreConfig.Scorer.ofFunction(

@@ -15,7 +15,7 @@ class ProjectScoreConfigTest {
                 .multiSelect(true)
                 .online(
                     OnlineScoreConfig.builder()
-                        .samplingRate(1.0)
+                        .samplingRate(0.0)
                         .scorers(
                             listOf(
                                 OnlineScoreConfig.Scorer.ofFunction(
@@ -38,7 +38,7 @@ class ProjectScoreConfigTest {
         assertThat(projectScoreConfig.online())
             .isEqualTo(
                 OnlineScoreConfig.builder()
-                    .samplingRate(1.0)
+                    .samplingRate(0.0)
                     .scorers(
                         listOf(
                             OnlineScoreConfig.Scorer.ofFunction(
