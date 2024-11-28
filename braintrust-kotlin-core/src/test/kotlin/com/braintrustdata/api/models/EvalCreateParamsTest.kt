@@ -45,7 +45,7 @@ class EvalCreateParamsTest {
                     .build()
             )
             .isPublic(true)
-            .maxConcurrency(42.23)
+            .maxConcurrency(0.0)
             .metadata(EvalCreateParams.Metadata.builder().build())
             .repoInfo(
                 RepoInfo.builder()
@@ -61,8 +61,8 @@ class EvalCreateParamsTest {
                     .build()
             )
             .stream(true)
-            .timeout(42.23)
-            .trialCount(42.23)
+            .timeout(0.0)
+            .trialCount(0.0)
             .build()
     }
 
@@ -104,7 +104,7 @@ class EvalCreateParamsTest {
                         .build()
                 )
                 .isPublic(true)
-                .maxConcurrency(42.23)
+                .maxConcurrency(0.0)
                 .metadata(EvalCreateParams.Metadata.builder().build())
                 .repoInfo(
                     RepoInfo.builder()
@@ -120,8 +120,8 @@ class EvalCreateParamsTest {
                         .build()
                 )
                 .stream(true)
-                .timeout(42.23)
-                .trialCount(42.23)
+                .timeout(0.0)
+                .trialCount(0.0)
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
@@ -163,7 +163,7 @@ class EvalCreateParamsTest {
                     .build()
             )
         assertThat(body.isPublic()).isEqualTo(true)
-        assertThat(body.maxConcurrency()).isEqualTo(42.23)
+        assertThat(body.maxConcurrency()).isEqualTo(0.0)
         assertThat(body.metadata()).isEqualTo(EvalCreateParams.Metadata.builder().build())
         assertThat(body.repoInfo())
             .isEqualTo(
@@ -180,8 +180,8 @@ class EvalCreateParamsTest {
                     .build()
             )
         assertThat(body.stream()).isEqualTo(true)
-        assertThat(body.timeout()).isEqualTo(42.23)
-        assertThat(body.trialCount()).isEqualTo(42.23)
+        assertThat(body.timeout()).isEqualTo(0.0)
+        assertThat(body.trialCount()).isEqualTo(0.0)
     }
 
     @Test
