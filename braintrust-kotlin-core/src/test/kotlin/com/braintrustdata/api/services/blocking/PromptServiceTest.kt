@@ -36,7 +36,7 @@ class PromptServiceTest {
                                     .params(
                                         PromptOptions.Params.ofOpenAIModelParams(
                                             PromptOptions.Params.OpenAIModelParams.builder()
-                                                .frequencyPenalty(42.23)
+                                                .frequencyPenalty(0.0)
                                                 .functionCall(
                                                     PromptOptions.Params.OpenAIModelParams
                                                         .FunctionCall
@@ -47,9 +47,9 @@ class PromptServiceTest {
                                                                 .AUTO
                                                         )
                                                 )
-                                                .maxTokens(42.23)
-                                                .n(42.23)
-                                                .presencePenalty(42.23)
+                                                .maxTokens(0.0)
+                                                .n(0.0)
+                                                .presencePenalty(0.0)
                                                 .responseFormat(
                                                     PromptOptions.Params.OpenAIModelParams
                                                         .ResponseFormat
@@ -70,7 +70,7 @@ class PromptServiceTest {
                                                         )
                                                 )
                                                 .stop(listOf("string"))
-                                                .temperature(42.23)
+                                                .temperature(0.0)
                                                 .toolChoice(
                                                     PromptOptions.Params.OpenAIModelParams
                                                         .ToolChoice
@@ -81,7 +81,7 @@ class PromptServiceTest {
                                                                 .AUTO
                                                         )
                                                 )
-                                                .topP(42.23)
+                                                .topP(0.0)
                                                 .useCache(true)
                                                 .build()
                                         )
@@ -170,7 +170,7 @@ class PromptServiceTest {
                                     .params(
                                         PromptOptions.Params.ofOpenAIModelParams(
                                             PromptOptions.Params.OpenAIModelParams.builder()
-                                                .frequencyPenalty(42.23)
+                                                .frequencyPenalty(0.0)
                                                 .functionCall(
                                                     PromptOptions.Params.OpenAIModelParams
                                                         .FunctionCall
@@ -181,9 +181,9 @@ class PromptServiceTest {
                                                                 .AUTO
                                                         )
                                                 )
-                                                .maxTokens(42.23)
-                                                .n(42.23)
-                                                .presencePenalty(42.23)
+                                                .maxTokens(0.0)
+                                                .n(0.0)
+                                                .presencePenalty(0.0)
                                                 .responseFormat(
                                                     PromptOptions.Params.OpenAIModelParams
                                                         .ResponseFormat
@@ -204,7 +204,7 @@ class PromptServiceTest {
                                                         )
                                                 )
                                                 .stop(listOf("string"))
-                                                .temperature(42.23)
+                                                .temperature(0.0)
                                                 .toolChoice(
                                                     PromptOptions.Params.OpenAIModelParams
                                                         .ToolChoice
@@ -215,7 +215,7 @@ class PromptServiceTest {
                                                                 .AUTO
                                                         )
                                                 )
-                                                .topP(42.23)
+                                                .topP(0.0)
                                                 .useCache(true)
                                                 .build()
                                         )
@@ -320,7 +320,7 @@ class PromptServiceTest {
                                     .params(
                                         PromptOptions.Params.ofOpenAIModelParams(
                                             PromptOptions.Params.OpenAIModelParams.builder()
-                                                .frequencyPenalty(42.23)
+                                                .frequencyPenalty(0.0)
                                                 .functionCall(
                                                     PromptOptions.Params.OpenAIModelParams
                                                         .FunctionCall
@@ -331,9 +331,9 @@ class PromptServiceTest {
                                                                 .AUTO
                                                         )
                                                 )
-                                                .maxTokens(42.23)
-                                                .n(42.23)
-                                                .presencePenalty(42.23)
+                                                .maxTokens(0.0)
+                                                .n(0.0)
+                                                .presencePenalty(0.0)
                                                 .responseFormat(
                                                     PromptOptions.Params.OpenAIModelParams
                                                         .ResponseFormat
@@ -354,7 +354,7 @@ class PromptServiceTest {
                                                         )
                                                 )
                                                 .stop(listOf("string"))
-                                                .temperature(42.23)
+                                                .temperature(0.0)
                                                 .toolChoice(
                                                     PromptOptions.Params.OpenAIModelParams
                                                         .ToolChoice
@@ -365,7 +365,7 @@ class PromptServiceTest {
                                                                 .AUTO
                                                         )
                                                 )
-                                                .topP(42.23)
+                                                .topP(0.0)
                                                 .useCache(true)
                                                 .build()
                                         )

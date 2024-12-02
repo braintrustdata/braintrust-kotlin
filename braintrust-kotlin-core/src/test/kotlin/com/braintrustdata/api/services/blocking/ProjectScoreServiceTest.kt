@@ -28,7 +28,7 @@ class ProjectScoreServiceTest {
                     .scoreType(ProjectScoreCreateParams.ScoreType.SLIDER)
                     .categories(
                         ProjectScoreCreateParams.Categories.ofCategorical(
-                            listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
+                            listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                         )
                     )
                     .config(
@@ -37,7 +37,7 @@ class ProjectScoreServiceTest {
                             .multiSelect(true)
                             .online(
                                 OnlineScoreConfig.builder()
-                                    .samplingRate(1.0)
+                                    .samplingRate(0.0)
                                     .scorers(
                                         listOf(
                                             OnlineScoreConfig.Scorer.ofFunction(
@@ -96,7 +96,7 @@ class ProjectScoreServiceTest {
                     .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .categories(
                         ProjectScoreUpdateParams.Categories.ofCategorical(
-                            listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
+                            listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                         )
                     )
                     .config(
@@ -105,7 +105,7 @@ class ProjectScoreServiceTest {
                             .multiSelect(true)
                             .online(
                                 OnlineScoreConfig.builder()
-                                    .samplingRate(1.0)
+                                    .samplingRate(0.0)
                                     .scorers(
                                         listOf(
                                             OnlineScoreConfig.Scorer.ofFunction(
@@ -181,7 +181,7 @@ class ProjectScoreServiceTest {
                     .scoreType(ProjectScoreReplaceParams.ScoreType.SLIDER)
                     .categories(
                         ProjectScoreReplaceParams.Categories.ofCategorical(
-                            listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
+                            listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                         )
                     )
                     .config(
@@ -190,7 +190,7 @@ class ProjectScoreServiceTest {
                             .multiSelect(true)
                             .online(
                                 OnlineScoreConfig.builder()
-                                    .samplingRate(1.0)
+                                    .samplingRate(0.0)
                                     .scorers(
                                         listOf(
                                             OnlineScoreConfig.Scorer.ofFunction(
