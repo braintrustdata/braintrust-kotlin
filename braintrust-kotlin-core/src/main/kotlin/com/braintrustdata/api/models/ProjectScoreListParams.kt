@@ -8,11 +8,11 @@ import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
 import com.braintrustdata.api.core.getOrThrow
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.ObjectCodec
@@ -23,8 +23,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.util.Objects
 
+/**
+ * List out all project_scores. The project_scores are sorted by creation date, with the most
+ * recently-created project_scores coming first
+ */
 class ProjectScoreListParams
-constructor(
+private constructor(
     private val endingBefore: String?,
     private val ids: Ids?,
     private val limit: Long?,
@@ -36,33 +40,57 @@ constructor(
     private val startingAfter: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-) {
+) : Params {
 
+    /**
+     * Pagination cursor id.
+     *
+     * For example, if the initial item in the last page you fetched had an id of `foo`, pass
+     * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
+     * `starting_after` and `ending_before`
+     */
     fun endingBefore(): String? = endingBefore
 
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     fun ids(): Ids? = ids
 
+    /** Limit the number of objects to return */
     fun limit(): Long? = limit
 
+    /** Filter search results to within a particular organization */
     fun orgName(): String? = orgName
 
+    /** Project id */
     fun projectId(): String? = projectId
 
+    /** Name of the project to search for */
     fun projectName(): String? = projectName
 
+    /** Name of the project_score to search for */
     fun projectScoreName(): String? = projectScoreName
 
+    /** The type of the configured score */
     fun scoreType(): ScoreType? = scoreType
 
+    /**
+     * Pagination cursor id.
+     *
+     * For example, if the final item in the last page you fetched had an id of `foo`, pass
+     * `starting_after=foo` to fetch the next page. Note: you may only pass one of `starting_after`
+     * and `ending_before`
+     */
     fun startingAfter(): String? = startingAfter
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun getHeaders(): Headers = additionalHeaders
+    override fun _headers(): Headers = additionalHeaders
 
-    internal fun getQueryParams(): QueryParams {
+    override fun _queryParams(): QueryParams {
         val queryParams = QueryParams.builder()
         this.endingBefore?.let { queryParams.put("ending_before", listOf(it.toString())) }
         this.ids?.let { queryParams.put("ids", listOf(it.toString())) }
@@ -84,8 +112,9 @@ constructor(
         fun builder() = Builder()
     }
 
+    /** A builder for [ProjectScoreListParams]. */
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var endingBefore: String? = null
         private var ids: Ids? = null
@@ -120,55 +149,55 @@ constructor(
          * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun endingBefore(endingBefore: String) = apply { this.endingBefore = endingBefore }
+        fun endingBefore(endingBefore: String?) = apply { this.endingBefore = endingBefore }
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun ids(ids: Ids) = apply { this.ids = ids }
+        fun ids(ids: Ids?) = apply { this.ids = ids }
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun ids(string: String) = apply { this.ids = Ids.ofString(string) }
+        fun ids(string: String) = ids(Ids.ofString(string))
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun idsOfStrings(strings: List<String>) = apply { this.ids = Ids.ofStrings(strings) }
+        fun idsOfStrings(strings: List<String>) = ids(Ids.ofStrings(strings))
 
         /** Limit the number of objects to return */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long?) = apply { this.limit = limit }
+
+        /** Limit the number of objects to return */
+        fun limit(limit: Long) = limit(limit as Long?)
 
         /** Filter search results to within a particular organization */
-        fun orgName(orgName: String) = apply { this.orgName = orgName }
+        fun orgName(orgName: String?) = apply { this.orgName = orgName }
 
         /** Project id */
-        fun projectId(projectId: String) = apply { this.projectId = projectId }
+        fun projectId(projectId: String?) = apply { this.projectId = projectId }
 
         /** Name of the project to search for */
-        fun projectName(projectName: String) = apply { this.projectName = projectName }
+        fun projectName(projectName: String?) = apply { this.projectName = projectName }
 
         /** Name of the project_score to search for */
-        fun projectScoreName(projectScoreName: String) = apply {
+        fun projectScoreName(projectScoreName: String?) = apply {
             this.projectScoreName = projectScoreName
         }
 
         /** The type of the configured score */
-        fun scoreType(scoreType: ScoreType) = apply { this.scoreType = scoreType }
+        fun scoreType(scoreType: ScoreType?) = apply { this.scoreType = scoreType }
 
         /** The type of the configured score */
-        fun scoreType(projectScoreType: ScoreType.ProjectScoreType) = apply {
-            this.scoreType = ScoreType.ofProjectScoreType(projectScoreType)
-        }
+        fun scoreType(project: ScoreType.ProjectScoreType) = scoreType(ScoreType.ofProject(project))
 
         /** The type of the configured score */
-        fun scoreTypeOfProjectScoreTypes(projectScoreTypes: List<ProjectScoreType>) = apply {
-            this.scoreType = ScoreType.ofProjectScoreTypes(projectScoreTypes)
-        }
+        fun scoreTypeOfProjectScoreTypes(projectScoreTypes: List<ScoreType.ProjectScoreType>) =
+            scoreType(ScoreType.ofProjectScoreTypes(projectScoreTypes))
 
         /**
          * Pagination cursor id.
@@ -177,7 +206,7 @@ constructor(
          * `starting_after=foo` to fetch the next page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun startingAfter(startingAfter: String) = apply { this.startingAfter = startingAfter }
+        fun startingAfter(startingAfter: String?) = apply { this.startingAfter = startingAfter }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -293,6 +322,10 @@ constructor(
             )
     }
 
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     @JsonDeserialize(using = Ids.Deserializer::class)
     @JsonSerialize(using = Ids.Serializer::class)
     class Ids
@@ -301,8 +334,6 @@ constructor(
         private val strings: List<String>? = null,
         private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -323,15 +354,6 @@ constructor(
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
                 else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): Ids = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown Ids: $_json")
-                }
-                validated = true
             }
         }
 
@@ -360,18 +382,28 @@ constructor(
             fun ofStrings(strings: List<String>) = Ids(strings = strings)
         }
 
+        /** An interface that defines how to map each variant of [Ids] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
 
+            /**
+             * Maps an unknown variant of [Ids] to a value of type [T].
+             *
+             * An instance of [Ids] can contain an unknown variant if it was deserialized from data
+             * that doesn't match any known variant. For example, if the SDK is on an older version
+             * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * @throws BraintrustInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown Ids: $json")
             }
         }
 
-        class Deserializer : BaseDeserializer<Ids>(Ids::class) {
+        internal class Deserializer : BaseDeserializer<Ids>(Ids::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Ids {
                 val json = JsonValue.fromJsonNode(node)
@@ -387,7 +419,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<Ids>(Ids::class) {
+        internal class Serializer : BaseSerializer<Ids>(Ids::class) {
 
             override fun serialize(
                 value: Ids,
@@ -404,28 +436,30 @@ constructor(
         }
     }
 
+    /** The type of the configured score */
     @JsonDeserialize(using = ScoreType.Deserializer::class)
     @JsonSerialize(using = ScoreType.Serializer::class)
     class ScoreType
     private constructor(
-        private val projectScoreType: ProjectScoreType? = null,
+        private val project: ProjectScoreType? = null,
         private val projectScoreTypes: List<ProjectScoreType>? = null,
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         /** The type of the configured score */
-        fun projectScoreType(): ProjectScoreType? = projectScoreType
+        fun project(): ProjectScoreType? = project
+
         /** The type of the configured score */
         fun projectScoreTypes(): List<ProjectScoreType>? = projectScoreTypes
 
-        fun isProjectScoreType(): Boolean = projectScoreType != null
+        fun isProject(): Boolean = project != null
 
         fun isProjectScoreTypes(): Boolean = projectScoreTypes != null
 
-        fun asProjectScoreType(): ProjectScoreType = projectScoreType.getOrThrow("projectScoreType")
+        /** The type of the configured score */
+        fun asProject(): ProjectScoreType = project.getOrThrow("project")
 
+        /** The type of the configured score */
         fun asProjectScoreTypes(): List<ProjectScoreType> =
             projectScoreTypes.getOrThrow("projectScoreTypes")
 
@@ -433,18 +467,9 @@ constructor(
 
         fun <T> accept(visitor: Visitor<T>): T {
             return when {
-                projectScoreType != null -> visitor.visitProjectScoreType(projectScoreType)
+                project != null -> visitor.visitProject(project)
                 projectScoreTypes != null -> visitor.visitProjectScoreTypes(projectScoreTypes)
                 else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): ScoreType = apply {
-            if (!validated) {
-                if (projectScoreType == null && projectScoreTypes == null) {
-                    throw BraintrustInvalidDataException("Unknown ScoreType: $_json")
-                }
-                validated = true
             }
         }
 
@@ -453,14 +478,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ScoreType && projectScoreType == other.projectScoreType && projectScoreTypes == other.projectScoreTypes /* spotless:on */
+            return /* spotless:off */ other is ScoreType && project == other.project && projectScoreTypes == other.projectScoreTypes /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(projectScoreType, projectScoreTypes) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(project, projectScoreTypes) /* spotless:on */
 
         override fun toString(): String =
             when {
-                projectScoreType != null -> "ScoreType{projectScoreType=$projectScoreType}"
+                project != null -> "ScoreType{project=$project}"
                 projectScoreTypes != null -> "ScoreType{projectScoreTypes=$projectScoreTypes}"
                 _json != null -> "ScoreType{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid ScoreType")
@@ -468,31 +493,47 @@ constructor(
 
         companion object {
 
-            fun ofProjectScoreType(projectScoreType: ProjectScoreType) =
-                ScoreType(projectScoreType = projectScoreType)
+            /** The type of the configured score */
+            fun ofProject(project: ProjectScoreType) = ScoreType(project = project)
 
+            /** The type of the configured score */
             fun ofProjectScoreTypes(projectScoreTypes: List<ProjectScoreType>) =
                 ScoreType(projectScoreTypes = projectScoreTypes)
         }
 
+        /**
+         * An interface that defines how to map each variant of [ScoreType] to a value of type [T].
+         */
         interface Visitor<out T> {
 
-            fun visitProjectScoreType(projectScoreType: ProjectScoreType): T
+            /** The type of the configured score */
+            fun visitProject(project: ProjectScoreType): T
 
+            /** The type of the configured score */
             fun visitProjectScoreTypes(projectScoreTypes: List<ProjectScoreType>): T
 
+            /**
+             * Maps an unknown variant of [ScoreType] to a value of type [T].
+             *
+             * An instance of [ScoreType] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws BraintrustInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown ScoreType: $json")
             }
         }
 
-        class Deserializer : BaseDeserializer<ScoreType>(ScoreType::class) {
+        internal class Deserializer : BaseDeserializer<ScoreType>(ScoreType::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): ScoreType {
                 val json = JsonValue.fromJsonNode(node)
 
                 tryDeserialize(node, jacksonTypeRef<ProjectScoreType>())?.let {
-                    return ScoreType(projectScoreType = it, _json = json)
+                    return ScoreType(project = it, _json = json)
                 }
                 tryDeserialize(node, jacksonTypeRef<List<ProjectScoreType>>())?.let {
                     return ScoreType(projectScoreTypes = it, _json = json)
@@ -502,7 +543,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<ScoreType>(ScoreType::class) {
+        internal class Serializer : BaseSerializer<ScoreType>(ScoreType::class) {
 
             override fun serialize(
                 value: ScoreType,
@@ -510,7 +551,7 @@ constructor(
                 provider: SerializerProvider
             ) {
                 when {
-                    value.projectScoreType != null -> generator.writeObject(value.projectScoreType)
+                    value.project != null -> generator.writeObject(value.project)
                     value.projectScoreTypes != null ->
                         generator.writeObject(value.projectScoreTypes)
                     value._json != null -> generator.writeObject(value._json)
@@ -519,43 +560,41 @@ constructor(
             }
         }
 
+        /** The type of the configured score */
         class ProjectScoreType
         @JsonCreator
         private constructor(
             private val value: JsonField<String>,
         ) : Enum {
 
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
             @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is ProjectScoreType && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
 
             companion object {
 
-                val SLIDER = ProjectScoreType(JsonField.of("slider"))
+                val SLIDER = of("slider")
 
-                val CATEGORICAL = ProjectScoreType(JsonField.of("categorical"))
+                val CATEGORICAL = of("categorical")
 
-                val WEIGHTED = ProjectScoreType(JsonField.of("weighted"))
+                val WEIGHTED = of("weighted")
 
-                val MINIMUM = ProjectScoreType(JsonField.of("minimum"))
+                val MINIMUM = of("minimum")
 
-                val MAXIMUM = ProjectScoreType(JsonField.of("maximum"))
+                val MAXIMUM = of("maximum")
 
-                val ONLINE = ProjectScoreType(JsonField.of("online"))
+                val ONLINE = of("online")
 
                 fun of(value: String) = ProjectScoreType(JsonField.of(value))
             }
 
+            /** An enum containing [ProjectScoreType]'s known values. */
             enum class Known {
                 SLIDER,
                 CATEGORICAL,
@@ -565,6 +604,16 @@ constructor(
                 ONLINE,
             }
 
+            /**
+             * An enum containing [ProjectScoreType]'s known values, as well as an [_UNKNOWN]
+             * member.
+             *
+             * An instance of [ProjectScoreType] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 SLIDER,
                 CATEGORICAL,
@@ -572,9 +621,20 @@ constructor(
                 MINIMUM,
                 MAXIMUM,
                 ONLINE,
+                /**
+                 * An enum member indicating that [ProjectScoreType] was instantiated with an
+                 * unknown value.
+                 */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     SLIDER -> Value.SLIDER
@@ -586,6 +646,15 @@ constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     SLIDER -> Known.SLIDER
@@ -598,45 +667,55 @@ constructor(
                 }
 
             fun asString(): String = _value().asStringOrThrow()
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is ProjectScoreType && value == other.value /* spotless:on */
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
         }
 
+        /** The type of the configured score */
         class ProjectScoreType
         @JsonCreator
         private constructor(
             private val value: JsonField<String>,
         ) : Enum {
 
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
             @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is ProjectScoreType && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
 
             companion object {
 
-                val SLIDER = ProjectScoreType(JsonField.of("slider"))
+                val SLIDER = of("slider")
 
-                val CATEGORICAL = ProjectScoreType(JsonField.of("categorical"))
+                val CATEGORICAL = of("categorical")
 
-                val WEIGHTED = ProjectScoreType(JsonField.of("weighted"))
+                val WEIGHTED = of("weighted")
 
-                val MINIMUM = ProjectScoreType(JsonField.of("minimum"))
+                val MINIMUM = of("minimum")
 
-                val MAXIMUM = ProjectScoreType(JsonField.of("maximum"))
+                val MAXIMUM = of("maximum")
 
-                val ONLINE = ProjectScoreType(JsonField.of("online"))
+                val ONLINE = of("online")
 
                 fun of(value: String) = ProjectScoreType(JsonField.of(value))
             }
 
+            /** An enum containing [ProjectScoreType]'s known values. */
             enum class Known {
                 SLIDER,
                 CATEGORICAL,
@@ -646,6 +725,16 @@ constructor(
                 ONLINE,
             }
 
+            /**
+             * An enum containing [ProjectScoreType]'s known values, as well as an [_UNKNOWN]
+             * member.
+             *
+             * An instance of [ProjectScoreType] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 SLIDER,
                 CATEGORICAL,
@@ -653,9 +742,20 @@ constructor(
                 MINIMUM,
                 MAXIMUM,
                 ONLINE,
+                /**
+                 * An enum member indicating that [ProjectScoreType] was instantiated with an
+                 * unknown value.
+                 */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     SLIDER -> Value.SLIDER
@@ -667,6 +767,15 @@ constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     SLIDER -> Known.SLIDER
@@ -679,6 +788,18 @@ constructor(
                 }
 
             fun asString(): String = _value().asStringOrThrow()
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is ProjectScoreType && value == other.value /* spotless:on */
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
         }
     }
 

@@ -4,20 +4,23 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
-import com.braintrustdata.api.models.*
 import java.util.Objects
 
+/** Delete a prompt object by its id */
 class PromptDeleteParams
-constructor(
+private constructor(
     private val promptId: String,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+) : Params {
 
+    /** Prompt id */
     fun promptId(): String = promptId
 
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -26,13 +29,11 @@ constructor(
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
-    internal fun getBody(): Map<String, JsonValue>? {
-        return additionalBodyProperties.ifEmpty { null }
-    }
+    internal fun _body(): Map<String, JsonValue>? = additionalBodyProperties.ifEmpty { null }
 
-    internal fun getHeaders(): Headers = additionalHeaders
+    override fun _headers(): Headers = additionalHeaders
 
-    internal fun getQueryParams(): QueryParams = additionalQueryParams
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     fun getPathParam(index: Int): String {
         return when (index) {
@@ -48,8 +49,9 @@ constructor(
         fun builder() = Builder()
     }
 
+    /** A builder for [PromptDeleteParams]. */
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var promptId: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
@@ -188,7 +190,7 @@ constructor(
 
         fun build(): PromptDeleteParams =
             PromptDeleteParams(
-                checkNotNull(promptId) { "`promptId` is required but was not set" },
+                checkRequired("promptId", promptId),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),

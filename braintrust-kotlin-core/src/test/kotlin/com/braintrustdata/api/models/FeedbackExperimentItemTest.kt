@@ -2,7 +2,7 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -14,20 +14,37 @@ class FeedbackExperimentItemTest {
             FeedbackExperimentItem.builder()
                 .id("id")
                 .comment("comment")
-                .expected(JsonNull.of())
-                .metadata(FeedbackExperimentItem.Metadata.builder().build())
-                .scores(FeedbackExperimentItem.Scores.builder().build())
+                .expected(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    FeedbackExperimentItem.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
+                .scores(
+                    FeedbackExperimentItem.Scores.builder()
+                        .putAdditionalProperty("foo", JsonValue.from(0))
+                        .build()
+                )
                 .source(FeedbackExperimentItem.Source.APP)
-                .tags(listOf("string"))
+                .addTag("string")
                 .build()
         assertThat(feedbackExperimentItem).isNotNull
         assertThat(feedbackExperimentItem.id()).isEqualTo("id")
         assertThat(feedbackExperimentItem.comment()).isEqualTo("comment")
-        assertThat(feedbackExperimentItem._expected()).isEqualTo(JsonNull.of())
+        assertThat(feedbackExperimentItem._expected())
+            .isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(feedbackExperimentItem.metadata())
-            .isEqualTo(FeedbackExperimentItem.Metadata.builder().build())
+            .isEqualTo(
+                FeedbackExperimentItem.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
         assertThat(feedbackExperimentItem.scores())
-            .isEqualTo(FeedbackExperimentItem.Scores.builder().build())
+            .isEqualTo(
+                FeedbackExperimentItem.Scores.builder()
+                    .putAdditionalProperty("foo", JsonValue.from(0))
+                    .build()
+            )
         assertThat(feedbackExperimentItem.source()).isEqualTo(FeedbackExperimentItem.Source.APP)
         assertThat(feedbackExperimentItem.tags()).containsExactly("string")
     }

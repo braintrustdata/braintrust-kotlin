@@ -3,19 +3,18 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.http.QueryParams
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class AiSecretListParamsTest {
 
     @Test
-    fun createAiSecretListParams() {
+    fun create() {
         AiSecretListParams.builder()
             .aiSecretName("ai_secret_name")
-            .aiSecretType(AiSecretListParams.AiSecretType.ofString("string"))
+            .aiSecretType("string")
             .endingBefore("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-            .ids(AiSecretListParams.Ids.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+            .ids("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .limit(0L)
             .orgName("org_name")
             .startingAfter("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -23,13 +22,13 @@ class AiSecretListParamsTest {
     }
 
     @Test
-    fun getQueryParams() {
+    fun queryParams() {
         val params =
             AiSecretListParams.builder()
                 .aiSecretName("ai_secret_name")
-                .aiSecretType(AiSecretListParams.AiSecretType.ofString("string"))
+                .aiSecretType("string")
                 .endingBefore("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .ids(AiSecretListParams.Ids.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                .ids("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .limit(0L)
                 .orgName("org_name")
                 .startingAfter("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -48,13 +47,13 @@ class AiSecretListParamsTest {
         expected.put("limit", "0")
         expected.put("org_name", "org_name")
         expected.put("starting_after", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test
-    fun getQueryParamsWithoutOptionalFields() {
+    fun queryParamsWithoutOptionalFields() {
         val params = AiSecretListParams.builder().build()
         val expected = QueryParams.builder()
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 }

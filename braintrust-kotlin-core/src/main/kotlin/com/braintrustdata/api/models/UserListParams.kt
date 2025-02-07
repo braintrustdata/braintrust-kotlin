@@ -6,11 +6,11 @@ import com.braintrustdata.api.core.BaseDeserializer
 import com.braintrustdata.api.core.BaseSerializer
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
 import com.braintrustdata.api.core.getOrThrow
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.JsonNode
@@ -20,8 +20,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.util.Objects
 
+/**
+ * List out all users. The users are sorted by creation date, with the most recently-created users
+ * coming first
+ */
 class UserListParams
-constructor(
+private constructor(
     private val email: Email?,
     private val endingBefore: String?,
     private val familyName: FamilyName?,
@@ -32,31 +36,63 @@ constructor(
     private val startingAfter: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-) {
+) : Params {
 
+    /**
+     * Email of the user to search for. You may pass the param multiple times to filter for more
+     * than one email
+     */
     fun email(): Email? = email
 
+    /**
+     * Pagination cursor id.
+     *
+     * For example, if the initial item in the last page you fetched had an id of `foo`, pass
+     * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
+     * `starting_after` and `ending_before`
+     */
     fun endingBefore(): String? = endingBefore
 
+    /**
+     * Family name of the user to search for. You may pass the param multiple times to filter for
+     * more than one family name
+     */
     fun familyName(): FamilyName? = familyName
 
+    /**
+     * Given name of the user to search for. You may pass the param multiple times to filter for
+     * more than one given name
+     */
     fun givenName(): GivenName? = givenName
 
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     fun ids(): Ids? = ids
 
+    /** Limit the number of objects to return */
     fun limit(): Long? = limit
 
+    /** Filter search results to within a particular organization */
     fun orgName(): String? = orgName
 
+    /**
+     * Pagination cursor id.
+     *
+     * For example, if the final item in the last page you fetched had an id of `foo`, pass
+     * `starting_after=foo` to fetch the next page. Note: you may only pass one of `starting_after`
+     * and `ending_before`
+     */
     fun startingAfter(): String? = startingAfter
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun getHeaders(): Headers = additionalHeaders
+    override fun _headers(): Headers = additionalHeaders
 
-    internal fun getQueryParams(): QueryParams {
+    override fun _queryParams(): QueryParams {
         val queryParams = QueryParams.builder()
         this.email?.let { queryParams.put("email", listOf(it.toString())) }
         this.endingBefore?.let { queryParams.put("ending_before", listOf(it.toString())) }
@@ -77,8 +113,9 @@ constructor(
         fun builder() = Builder()
     }
 
+    /** A builder for [UserListParams]. */
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var email: Email? = null
         private var endingBefore: String? = null
@@ -108,19 +145,19 @@ constructor(
          * Email of the user to search for. You may pass the param multiple times to filter for more
          * than one email
          */
-        fun email(email: Email) = apply { this.email = email }
+        fun email(email: Email?) = apply { this.email = email }
 
         /**
          * Email of the user to search for. You may pass the param multiple times to filter for more
          * than one email
          */
-        fun email(string: String) = apply { this.email = Email.ofString(string) }
+        fun email(string: String) = email(Email.ofString(string))
 
         /**
          * Email of the user to search for. You may pass the param multiple times to filter for more
          * than one email
          */
-        fun emailOfStrings(strings: List<String>) = apply { this.email = Email.ofStrings(strings) }
+        fun emailOfStrings(strings: List<String>) = email(Email.ofStrings(strings))
 
         /**
          * Pagination cursor id.
@@ -129,71 +166,70 @@ constructor(
          * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun endingBefore(endingBefore: String) = apply { this.endingBefore = endingBefore }
+        fun endingBefore(endingBefore: String?) = apply { this.endingBefore = endingBefore }
 
         /**
          * Family name of the user to search for. You may pass the param multiple times to filter
          * for more than one family name
          */
-        fun familyName(familyName: FamilyName) = apply { this.familyName = familyName }
+        fun familyName(familyName: FamilyName?) = apply { this.familyName = familyName }
 
         /**
          * Family name of the user to search for. You may pass the param multiple times to filter
          * for more than one family name
          */
-        fun familyName(string: String) = apply { this.familyName = FamilyName.ofString(string) }
+        fun familyName(string: String) = familyName(FamilyName.ofString(string))
 
         /**
          * Family name of the user to search for. You may pass the param multiple times to filter
          * for more than one family name
          */
-        fun familyNameOfStrings(strings: List<String>) = apply {
-            this.familyName = FamilyName.ofStrings(strings)
-        }
+        fun familyNameOfStrings(strings: List<String>) = familyName(FamilyName.ofStrings(strings))
 
         /**
          * Given name of the user to search for. You may pass the param multiple times to filter for
          * more than one given name
          */
-        fun givenName(givenName: GivenName) = apply { this.givenName = givenName }
+        fun givenName(givenName: GivenName?) = apply { this.givenName = givenName }
 
         /**
          * Given name of the user to search for. You may pass the param multiple times to filter for
          * more than one given name
          */
-        fun givenName(string: String) = apply { this.givenName = GivenName.ofString(string) }
+        fun givenName(string: String) = givenName(GivenName.ofString(string))
 
         /**
          * Given name of the user to search for. You may pass the param multiple times to filter for
          * more than one given name
          */
-        fun givenNameOfStrings(strings: List<String>) = apply {
-            this.givenName = GivenName.ofStrings(strings)
-        }
+        fun givenNameOfStrings(strings: List<String>) = givenName(GivenName.ofStrings(strings))
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun ids(ids: Ids) = apply { this.ids = ids }
+        fun ids(ids: Ids?) = apply { this.ids = ids }
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun ids(string: String) = apply { this.ids = Ids.ofString(string) }
+        fun ids(string: String) = ids(Ids.ofString(string))
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun idsOfStrings(strings: List<String>) = apply { this.ids = Ids.ofStrings(strings) }
+        fun idsOfStrings(strings: List<String>) = ids(Ids.ofStrings(strings))
 
         /** Limit the number of objects to return */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long?) = apply { this.limit = limit }
+
+        /** Limit the number of objects to return */
+        fun limit(limit: Long) = limit(limit as Long?)
 
         /** Filter search results to within a particular organization */
-        fun orgName(orgName: String) = apply { this.orgName = orgName }
+        fun orgName(orgName: String?) = apply { this.orgName = orgName }
 
         /**
          * Pagination cursor id.
@@ -202,7 +238,7 @@ constructor(
          * `starting_after=foo` to fetch the next page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun startingAfter(startingAfter: String) = apply { this.startingAfter = startingAfter }
+        fun startingAfter(startingAfter: String?) = apply { this.startingAfter = startingAfter }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -317,6 +353,10 @@ constructor(
             )
     }
 
+    /**
+     * Email of the user to search for. You may pass the param multiple times to filter for more
+     * than one email
+     */
     @JsonDeserialize(using = Email.Deserializer::class)
     @JsonSerialize(using = Email.Serializer::class)
     class Email
@@ -325,8 +365,6 @@ constructor(
         private val strings: List<String>? = null,
         private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -347,15 +385,6 @@ constructor(
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
                 else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): Email = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown Email: $_json")
-                }
-                validated = true
             }
         }
 
@@ -384,18 +413,29 @@ constructor(
             fun ofStrings(strings: List<String>) = Email(strings = strings)
         }
 
+        /** An interface that defines how to map each variant of [Email] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
 
+            /**
+             * Maps an unknown variant of [Email] to a value of type [T].
+             *
+             * An instance of [Email] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws BraintrustInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown Email: $json")
             }
         }
 
-        class Deserializer : BaseDeserializer<Email>(Email::class) {
+        internal class Deserializer : BaseDeserializer<Email>(Email::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Email {
                 val json = JsonValue.fromJsonNode(node)
@@ -411,7 +451,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<Email>(Email::class) {
+        internal class Serializer : BaseSerializer<Email>(Email::class) {
 
             override fun serialize(
                 value: Email,
@@ -428,6 +468,10 @@ constructor(
         }
     }
 
+    /**
+     * Family name of the user to search for. You may pass the param multiple times to filter for
+     * more than one family name
+     */
     @JsonDeserialize(using = FamilyName.Deserializer::class)
     @JsonSerialize(using = FamilyName.Serializer::class)
     class FamilyName
@@ -436,8 +480,6 @@ constructor(
         private val strings: List<String>? = null,
         private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -458,15 +500,6 @@ constructor(
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
                 else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): FamilyName = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown FamilyName: $_json")
-                }
-                validated = true
             }
         }
 
@@ -495,18 +528,31 @@ constructor(
             fun ofStrings(strings: List<String>) = FamilyName(strings = strings)
         }
 
+        /**
+         * An interface that defines how to map each variant of [FamilyName] to a value of type [T].
+         */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
 
+            /**
+             * Maps an unknown variant of [FamilyName] to a value of type [T].
+             *
+             * An instance of [FamilyName] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws BraintrustInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown FamilyName: $json")
             }
         }
 
-        class Deserializer : BaseDeserializer<FamilyName>(FamilyName::class) {
+        internal class Deserializer : BaseDeserializer<FamilyName>(FamilyName::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): FamilyName {
                 val json = JsonValue.fromJsonNode(node)
@@ -522,7 +568,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<FamilyName>(FamilyName::class) {
+        internal class Serializer : BaseSerializer<FamilyName>(FamilyName::class) {
 
             override fun serialize(
                 value: FamilyName,
@@ -539,6 +585,10 @@ constructor(
         }
     }
 
+    /**
+     * Given name of the user to search for. You may pass the param multiple times to filter for
+     * more than one given name
+     */
     @JsonDeserialize(using = GivenName.Deserializer::class)
     @JsonSerialize(using = GivenName.Serializer::class)
     class GivenName
@@ -547,8 +597,6 @@ constructor(
         private val strings: List<String>? = null,
         private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -569,15 +617,6 @@ constructor(
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
                 else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): GivenName = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown GivenName: $_json")
-                }
-                validated = true
             }
         }
 
@@ -606,18 +645,31 @@ constructor(
             fun ofStrings(strings: List<String>) = GivenName(strings = strings)
         }
 
+        /**
+         * An interface that defines how to map each variant of [GivenName] to a value of type [T].
+         */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
 
+            /**
+             * Maps an unknown variant of [GivenName] to a value of type [T].
+             *
+             * An instance of [GivenName] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws BraintrustInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown GivenName: $json")
             }
         }
 
-        class Deserializer : BaseDeserializer<GivenName>(GivenName::class) {
+        internal class Deserializer : BaseDeserializer<GivenName>(GivenName::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): GivenName {
                 val json = JsonValue.fromJsonNode(node)
@@ -633,7 +685,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<GivenName>(GivenName::class) {
+        internal class Serializer : BaseSerializer<GivenName>(GivenName::class) {
 
             override fun serialize(
                 value: GivenName,
@@ -650,6 +702,10 @@ constructor(
         }
     }
 
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     @JsonDeserialize(using = Ids.Deserializer::class)
     @JsonSerialize(using = Ids.Serializer::class)
     class Ids
@@ -658,8 +714,6 @@ constructor(
         private val strings: List<String>? = null,
         private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -680,15 +734,6 @@ constructor(
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
                 else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): Ids = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown Ids: $_json")
-                }
-                validated = true
             }
         }
 
@@ -717,18 +762,28 @@ constructor(
             fun ofStrings(strings: List<String>) = Ids(strings = strings)
         }
 
+        /** An interface that defines how to map each variant of [Ids] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
 
+            /**
+             * Maps an unknown variant of [Ids] to a value of type [T].
+             *
+             * An instance of [Ids] can contain an unknown variant if it was deserialized from data
+             * that doesn't match any known variant. For example, if the SDK is on an older version
+             * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * @throws BraintrustInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown Ids: $json")
             }
         }
 
-        class Deserializer : BaseDeserializer<Ids>(Ids::class) {
+        internal class Deserializer : BaseDeserializer<Ids>(Ids::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Ids {
                 val json = JsonValue.fromJsonNode(node)
@@ -744,7 +799,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<Ids>(Ids::class) {
+        internal class Serializer : BaseSerializer<Ids>(Ids::class) {
 
             override fun serialize(
                 value: Ids,

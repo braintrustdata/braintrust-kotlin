@@ -12,18 +12,14 @@ class OnlineScoreConfigTest {
         val onlineScoreConfig =
             OnlineScoreConfig.builder()
                 .samplingRate(0.0)
-                .scorers(
-                    listOf(
-                        OnlineScoreConfig.Scorer.ofFunction(
-                            OnlineScoreConfig.Scorer.Function.builder()
-                                .id("id")
-                                .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
-                                .build()
-                        )
-                    )
+                .addScorer(
+                    OnlineScoreConfig.Scorer.Function.builder()
+                        .id("id")
+                        .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                        .build()
                 )
                 .applyToRootSpan(true)
-                .applyToSpanNames(listOf("string"))
+                .addApplyToSpanName("string")
                 .build()
         assertThat(onlineScoreConfig).isNotNull
         assertThat(onlineScoreConfig.samplingRate()).isEqualTo(0.0)

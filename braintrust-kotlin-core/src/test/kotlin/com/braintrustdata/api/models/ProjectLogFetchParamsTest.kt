@@ -3,14 +3,13 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.http.QueryParams
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class ProjectLogFetchParamsTest {
 
     @Test
-    fun createProjectLogFetchParams() {
+    fun create() {
         ProjectLogFetchParams.builder()
             .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .limit(0L)
@@ -21,7 +20,7 @@ class ProjectLogFetchParamsTest {
     }
 
     @Test
-    fun getQueryParams() {
+    fun queryParams() {
         val params =
             ProjectLogFetchParams.builder()
                 .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -35,17 +34,17 @@ class ProjectLogFetchParamsTest {
         expected.put("max_root_span_id", "max_root_span_id")
         expected.put("max_xact_id", "max_xact_id")
         expected.put("version", "version")
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test
-    fun getQueryParamsWithoutOptionalFields() {
+    fun queryParamsWithoutOptionalFields() {
         val params =
             ProjectLogFetchParams.builder()
                 .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
         val expected = QueryParams.builder()
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test

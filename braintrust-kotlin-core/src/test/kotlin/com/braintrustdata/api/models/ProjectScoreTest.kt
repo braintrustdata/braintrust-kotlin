@@ -17,10 +17,8 @@ class ProjectScoreTest {
                 .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .scoreType(ProjectScore.ScoreType.SLIDER)
                 .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .categories(
-                    ProjectScore.Categories.ofCategorical(
-                        listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
-                    )
+                .categoriesOfCategorical(
+                    listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                 )
                 .config(
                     ProjectScoreConfig.builder()
@@ -29,20 +27,14 @@ class ProjectScoreTest {
                         .online(
                             OnlineScoreConfig.builder()
                                 .samplingRate(0.0)
-                                .scorers(
-                                    listOf(
-                                        OnlineScoreConfig.Scorer.ofFunction(
-                                            OnlineScoreConfig.Scorer.Function.builder()
-                                                .id("id")
-                                                .type(
-                                                    OnlineScoreConfig.Scorer.Function.Type.FUNCTION
-                                                )
-                                                .build()
-                                        )
-                                    )
+                                .addScorer(
+                                    OnlineScoreConfig.Scorer.Function.builder()
+                                        .id("id")
+                                        .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                        .build()
                                 )
                                 .applyToRootSpan(true)
-                                .applyToSpanNames(listOf("string"))
+                                .addApplyToSpanName("string")
                                 .build()
                         )
                         .build()
@@ -71,18 +63,14 @@ class ProjectScoreTest {
                     .online(
                         OnlineScoreConfig.builder()
                             .samplingRate(0.0)
-                            .scorers(
-                                listOf(
-                                    OnlineScoreConfig.Scorer.ofFunction(
-                                        OnlineScoreConfig.Scorer.Function.builder()
-                                            .id("id")
-                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
-                                            .build()
-                                    )
-                                )
+                            .addScorer(
+                                OnlineScoreConfig.Scorer.Function.builder()
+                                    .id("id")
+                                    .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                    .build()
                             )
                             .applyToRootSpan(true)
-                            .applyToSpanNames(listOf("string"))
+                            .addApplyToSpanName("string")
                             .build()
                     )
                     .build()

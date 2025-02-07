@@ -3,63 +3,169 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
+/**
+ * Fetch the events in a dataset. Equivalent to the GET form of the same path, but with the
+ * parameters in the request body rather than in the URL query. For more complex queries, use the
+ * `POST /btql` endpoint.
+ */
 class DatasetFetchPostParams
-constructor(
+private constructor(
     private val datasetId: String,
-    private val cursor: String?,
-    private val limit: Long?,
-    private val maxRootSpanId: String?,
-    private val maxXactId: String?,
-    private val version: String?,
+    private val body: DatasetFetchPostBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+) : Params {
 
+    /** Dataset id */
     fun datasetId(): String = datasetId
 
-    fun cursor(): String? = cursor
+    /**
+     * An opaque string to be used as a cursor for the next page of results, in order from latest to
+     * earliest.
+     *
+     * The string can be obtained directly from the `cursor` property of the previous fetch query
+     */
+    fun cursor(): String? = body.cursor()
 
-    fun limit(): Long? = limit
+    /**
+     * limit the number of traces fetched
+     *
+     * Fetch queries may be paginated if the total result size is expected to be large (e.g.
+     * project_logs which accumulate over a long time). Note that fetch queries only support
+     * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore, later
+     * pages may return rows which showed up in earlier pages, except with an earlier `_xact_id`.
+     * This happens because pagination occurs over the whole version history of the event log. You
+     * will most likely want to exclude any such duplicate, outdated rows (by `id`) from your
+     * combined result set.
+     *
+     * The `limit` parameter controls the number of full traces to return. So you may end up with
+     * more individual rows than the specified limit if you are fetching events containing traces.
+     */
+    fun limit(): Long? = body.limit()
 
-    fun maxRootSpanId(): String? = maxRootSpanId
+    /**
+     * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of the
+     * explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor' argument
+     * going forwards.
+     *
+     * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+     *
+     * Since a paginated fetch query returns results in order from latest to earliest, the cursor
+     * for the next page can be found as the row with the minimum (earliest) value of the tuple
+     * `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of paginating
+     * fetch queries.
+     */
+    fun maxRootSpanId(): String? = body.maxRootSpanId()
 
-    fun maxXactId(): String? = maxXactId
+    /**
+     * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of the
+     * explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor' argument
+     * going forwards.
+     *
+     * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+     *
+     * Since a paginated fetch query returns results in order from latest to earliest, the cursor
+     * for the next page can be found as the row with the minimum (earliest) value of the tuple
+     * `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of paginating
+     * fetch queries.
+     */
+    fun maxXactId(): String? = body.maxXactId()
 
-    fun version(): String? = version
+    /**
+     * Retrieve a snapshot of events from a past time
+     *
+     * The version id is essentially a filter on the latest event transaction id. You can use the
+     * `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
+     */
+    fun version(): String? = body.version()
+
+    /**
+     * An opaque string to be used as a cursor for the next page of results, in order from latest to
+     * earliest.
+     *
+     * The string can be obtained directly from the `cursor` property of the previous fetch query
+     */
+    fun _cursor(): JsonField<String> = body._cursor()
+
+    /**
+     * limit the number of traces fetched
+     *
+     * Fetch queries may be paginated if the total result size is expected to be large (e.g.
+     * project_logs which accumulate over a long time). Note that fetch queries only support
+     * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore, later
+     * pages may return rows which showed up in earlier pages, except with an earlier `_xact_id`.
+     * This happens because pagination occurs over the whole version history of the event log. You
+     * will most likely want to exclude any such duplicate, outdated rows (by `id`) from your
+     * combined result set.
+     *
+     * The `limit` parameter controls the number of full traces to return. So you may end up with
+     * more individual rows than the specified limit if you are fetching events containing traces.
+     */
+    fun _limit(): JsonField<Long> = body._limit()
+
+    /**
+     * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of the
+     * explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor' argument
+     * going forwards.
+     *
+     * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+     *
+     * Since a paginated fetch query returns results in order from latest to earliest, the cursor
+     * for the next page can be found as the row with the minimum (earliest) value of the tuple
+     * `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of paginating
+     * fetch queries.
+     */
+    fun _maxRootSpanId(): JsonField<String> = body._maxRootSpanId()
+
+    /**
+     * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of the
+     * explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor' argument
+     * going forwards.
+     *
+     * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+     *
+     * Since a paginated fetch query returns results in order from latest to earliest, the cursor
+     * for the next page can be found as the row with the minimum (earliest) value of the tuple
+     * `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of paginating
+     * fetch queries.
+     */
+    fun _maxXactId(): JsonField<String> = body._maxXactId()
+
+    /**
+     * Retrieve a snapshot of events from a past time
+     *
+     * The version id is essentially a filter on the latest event transaction id. You can use the
+     * `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
+     */
+    fun _version(): JsonField<String> = body._version()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+    internal fun _body(): DatasetFetchPostBody = body
 
-    internal fun getBody(): DatasetFetchPostBody {
-        return DatasetFetchPostBody(
-            cursor,
-            limit,
-            maxRootSpanId,
-            maxXactId,
-            version,
-            additionalBodyProperties,
-        )
-    }
+    override fun _headers(): Headers = additionalHeaders
 
-    internal fun getHeaders(): Headers = additionalHeaders
-
-    internal fun getQueryParams(): QueryParams = additionalQueryParams
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     fun getPathParam(index: Int): String {
         return when (index) {
@@ -68,16 +174,27 @@ constructor(
         }
     }
 
-    @JsonDeserialize(builder = DatasetFetchPostBody.Builder::class)
     @NoAutoDetect
     class DatasetFetchPostBody
+    @JsonCreator
     internal constructor(
-        private val cursor: String?,
-        private val limit: Long?,
-        private val maxRootSpanId: String?,
-        private val maxXactId: String?,
-        private val version: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("cursor")
+        @ExcludeMissing
+        private val cursor: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("limit")
+        @ExcludeMissing
+        private val limit: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("max_root_span_id")
+        @ExcludeMissing
+        private val maxRootSpanId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("max_xact_id")
+        @ExcludeMissing
+        private val maxXactId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("version")
+        @ExcludeMissing
+        private val version: JsonField<String> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -87,7 +204,7 @@ constructor(
          * The string can be obtained directly from the `cursor` property of the previous fetch
          * query
          */
-        @JsonProperty("cursor") fun cursor(): String? = cursor
+        fun cursor(): String? = cursor.getNullable("cursor")
 
         /**
          * limit the number of traces fetched
@@ -104,7 +221,7 @@ constructor(
          * with more individual rows than the specified limit if you are fetching events containing
          * traces.
          */
-        @JsonProperty("limit") fun limit(): Long? = limit
+        fun limit(): Long? = limit.getNullable("limit")
 
         /**
          * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
@@ -118,7 +235,7 @@ constructor(
          * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
          * paginating fetch queries.
          */
-        @JsonProperty("max_root_span_id") fun maxRootSpanId(): String? = maxRootSpanId
+        fun maxRootSpanId(): String? = maxRootSpanId.getNullable("max_root_span_id")
 
         /**
          * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
@@ -132,7 +249,7 @@ constructor(
          * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
          * paginating fetch queries.
          */
-        @JsonProperty("max_xact_id") fun maxXactId(): String? = maxXactId
+        fun maxXactId(): String? = maxXactId.getNullable("max_xact_id")
 
         /**
          * Retrieve a snapshot of events from a past time
@@ -140,11 +257,90 @@ constructor(
          * The version id is essentially a filter on the latest event transaction id. You can use
          * the `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
          */
-        @JsonProperty("version") fun version(): String? = version
+        fun version(): String? = version.getNullable("version")
+
+        /**
+         * An opaque string to be used as a cursor for the next page of results, in order from
+         * latest to earliest.
+         *
+         * The string can be obtained directly from the `cursor` property of the previous fetch
+         * query
+         */
+        @JsonProperty("cursor") @ExcludeMissing fun _cursor(): JsonField<String> = cursor
+
+        /**
+         * limit the number of traces fetched
+         *
+         * Fetch queries may be paginated if the total result size is expected to be large (e.g.
+         * project_logs which accumulate over a long time). Note that fetch queries only support
+         * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore,
+         * later pages may return rows which showed up in earlier pages, except with an earlier
+         * `_xact_id`. This happens because pagination occurs over the whole version history of the
+         * event log. You will most likely want to exclude any such duplicate, outdated rows (by
+         * `id`) from your combined result set.
+         *
+         * The `limit` parameter controls the number of full traces to return. So you may end up
+         * with more individual rows than the specified limit if you are fetching events containing
+         * traces.
+         */
+        @JsonProperty("limit") @ExcludeMissing fun _limit(): JsonField<Long> = limit
+
+        /**
+         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
+         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
+         * argument going forwards.
+         *
+         * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+         *
+         * Since a paginated fetch query returns results in order from latest to earliest, the
+         * cursor for the next page can be found as the row with the minimum (earliest) value of the
+         * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
+         * paginating fetch queries.
+         */
+        @JsonProperty("max_root_span_id")
+        @ExcludeMissing
+        fun _maxRootSpanId(): JsonField<String> = maxRootSpanId
+
+        /**
+         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
+         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
+         * argument going forwards.
+         *
+         * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+         *
+         * Since a paginated fetch query returns results in order from latest to earliest, the
+         * cursor for the next page can be found as the row with the minimum (earliest) value of the
+         * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
+         * paginating fetch queries.
+         */
+        @JsonProperty("max_xact_id") @ExcludeMissing fun _maxXactId(): JsonField<String> = maxXactId
+
+        /**
+         * Retrieve a snapshot of events from a past time
+         *
+         * The version id is essentially a filter on the latest event transaction id. You can use
+         * the `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
+         */
+        @JsonProperty("version") @ExcludeMissing fun _version(): JsonField<String> = version
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): DatasetFetchPostBody = apply {
+            if (validated) {
+                return@apply
+            }
+
+            cursor()
+            limit()
+            maxRootSpanId()
+            maxXactId()
+            version()
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -153,22 +349,23 @@ constructor(
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [DatasetFetchPostBody]. */
+        class Builder internal constructor() {
 
-            private var cursor: String? = null
-            private var limit: Long? = null
-            private var maxRootSpanId: String? = null
-            private var maxXactId: String? = null
-            private var version: String? = null
+            private var cursor: JsonField<String> = JsonMissing.of()
+            private var limit: JsonField<Long> = JsonMissing.of()
+            private var maxRootSpanId: JsonField<String> = JsonMissing.of()
+            private var maxXactId: JsonField<String> = JsonMissing.of()
+            private var version: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(datasetFetchPostBody: DatasetFetchPostBody) = apply {
-                this.cursor = datasetFetchPostBody.cursor
-                this.limit = datasetFetchPostBody.limit
-                this.maxRootSpanId = datasetFetchPostBody.maxRootSpanId
-                this.maxXactId = datasetFetchPostBody.maxXactId
-                this.version = datasetFetchPostBody.version
-                additionalProperties(datasetFetchPostBody.additionalProperties)
+                cursor = datasetFetchPostBody.cursor
+                limit = datasetFetchPostBody.limit
+                maxRootSpanId = datasetFetchPostBody.maxRootSpanId
+                maxXactId = datasetFetchPostBody.maxXactId
+                version = datasetFetchPostBody.version
+                additionalProperties = datasetFetchPostBody.additionalProperties.toMutableMap()
             }
 
             /**
@@ -178,7 +375,16 @@ constructor(
              * The string can be obtained directly from the `cursor` property of the previous fetch
              * query
              */
-            @JsonProperty("cursor") fun cursor(cursor: String) = apply { this.cursor = cursor }
+            fun cursor(cursor: String?) = cursor(JsonField.ofNullable(cursor))
+
+            /**
+             * An opaque string to be used as a cursor for the next page of results, in order from
+             * latest to earliest.
+             *
+             * The string can be obtained directly from the `cursor` property of the previous fetch
+             * query
+             */
+            fun cursor(cursor: JsonField<String>) = apply { this.cursor = cursor }
 
             /**
              * limit the number of traces fetched
@@ -195,7 +401,41 @@ constructor(
              * with more individual rows than the specified limit if you are fetching events
              * containing traces.
              */
-            @JsonProperty("limit") fun limit(limit: Long) = apply { this.limit = limit }
+            fun limit(limit: Long?) = limit(JsonField.ofNullable(limit))
+
+            /**
+             * limit the number of traces fetched
+             *
+             * Fetch queries may be paginated if the total result size is expected to be large (e.g.
+             * project_logs which accumulate over a long time). Note that fetch queries only support
+             * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore,
+             * later pages may return rows which showed up in earlier pages, except with an earlier
+             * `_xact_id`. This happens because pagination occurs over the whole version history of
+             * the event log. You will most likely want to exclude any such duplicate, outdated rows
+             * (by `id`) from your combined result set.
+             *
+             * The `limit` parameter controls the number of full traces to return. So you may end up
+             * with more individual rows than the specified limit if you are fetching events
+             * containing traces.
+             */
+            fun limit(limit: Long) = limit(limit as Long?)
+
+            /**
+             * limit the number of traces fetched
+             *
+             * Fetch queries may be paginated if the total result size is expected to be large (e.g.
+             * project_logs which accumulate over a long time). Note that fetch queries only support
+             * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore,
+             * later pages may return rows which showed up in earlier pages, except with an earlier
+             * `_xact_id`. This happens because pagination occurs over the whole version history of
+             * the event log. You will most likely want to exclude any such duplicate, outdated rows
+             * (by `id`) from your combined result set.
+             *
+             * The `limit` parameter controls the number of full traces to return. So you may end up
+             * with more individual rows than the specified limit if you are fetching events
+             * containing traces.
+             */
+            fun limit(limit: JsonField<Long>) = apply { this.limit = limit }
 
             /**
              * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor
@@ -209,8 +449,8 @@ constructor(
              * the tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an
              * overview of paginating fetch queries.
              */
-            @JsonProperty("max_root_span_id")
-            fun maxRootSpanId(maxRootSpanId: String) = apply { this.maxRootSpanId = maxRootSpanId }
+            fun maxRootSpanId(maxRootSpanId: String?) =
+                maxRootSpanId(JsonField.ofNullable(maxRootSpanId))
 
             /**
              * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor
@@ -224,8 +464,37 @@ constructor(
              * the tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an
              * overview of paginating fetch queries.
              */
-            @JsonProperty("max_xact_id")
-            fun maxXactId(maxXactId: String) = apply { this.maxXactId = maxXactId }
+            fun maxRootSpanId(maxRootSpanId: JsonField<String>) = apply {
+                this.maxRootSpanId = maxRootSpanId
+            }
+
+            /**
+             * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor
+             * of the explicit 'cursor' returned by object fetch requests. Please prefer the
+             * 'cursor' argument going forwards.
+             *
+             * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+             *
+             * Since a paginated fetch query returns results in order from latest to earliest, the
+             * cursor for the next page can be found as the row with the minimum (earliest) value of
+             * the tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an
+             * overview of paginating fetch queries.
+             */
+            fun maxXactId(maxXactId: String?) = maxXactId(JsonField.ofNullable(maxXactId))
+
+            /**
+             * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor
+             * of the explicit 'cursor' returned by object fetch requests. Please prefer the
+             * 'cursor' argument going forwards.
+             *
+             * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+             *
+             * Since a paginated fetch query returns results in order from latest to earliest, the
+             * cursor for the next page can be found as the row with the minimum (earliest) value of
+             * the tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an
+             * overview of paginating fetch queries.
+             */
+            fun maxXactId(maxXactId: JsonField<String>) = apply { this.maxXactId = maxXactId }
 
             /**
              * Retrieve a snapshot of events from a past time
@@ -234,20 +503,34 @@ constructor(
              * use the `max_xact_id` returned by a past fetch as the version to reproduce that exact
              * fetch.
              */
-            @JsonProperty("version") fun version(version: String) = apply { this.version = version }
+            fun version(version: String?) = version(JsonField.ofNullable(version))
+
+            /**
+             * Retrieve a snapshot of events from a past time
+             *
+             * The version id is essentially a filter on the latest event transaction id. You can
+             * use the `max_xact_id` returned by a past fetch as the version to reproduce that exact
+             * fetch.
+             */
+            fun version(version: JsonField<String>) = apply { this.version = version }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): DatasetFetchPostBody =
@@ -286,30 +569,20 @@ constructor(
         fun builder() = Builder()
     }
 
+    /** A builder for [DatasetFetchPostParams]. */
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var datasetId: String? = null
-        private var cursor: String? = null
-        private var limit: Long? = null
-        private var maxRootSpanId: String? = null
-        private var maxXactId: String? = null
-        private var version: String? = null
+        private var body: DatasetFetchPostBody.Builder = DatasetFetchPostBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(datasetFetchPostParams: DatasetFetchPostParams) = apply {
             datasetId = datasetFetchPostParams.datasetId
-            cursor = datasetFetchPostParams.cursor
-            limit = datasetFetchPostParams.limit
-            maxRootSpanId = datasetFetchPostParams.maxRootSpanId
-            maxXactId = datasetFetchPostParams.maxXactId
-            version = datasetFetchPostParams.version
+            body = datasetFetchPostParams.body.toBuilder()
             additionalHeaders = datasetFetchPostParams.additionalHeaders.toBuilder()
             additionalQueryParams = datasetFetchPostParams.additionalQueryParams.toBuilder()
-            additionalBodyProperties =
-                datasetFetchPostParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Dataset id */
@@ -322,7 +595,16 @@ constructor(
          * The string can be obtained directly from the `cursor` property of the previous fetch
          * query
          */
-        fun cursor(cursor: String) = apply { this.cursor = cursor }
+        fun cursor(cursor: String?) = apply { body.cursor(cursor) }
+
+        /**
+         * An opaque string to be used as a cursor for the next page of results, in order from
+         * latest to earliest.
+         *
+         * The string can be obtained directly from the `cursor` property of the previous fetch
+         * query
+         */
+        fun cursor(cursor: JsonField<String>) = apply { body.cursor(cursor) }
 
         /**
          * limit the number of traces fetched
@@ -339,7 +621,41 @@ constructor(
          * with more individual rows than the specified limit if you are fetching events containing
          * traces.
          */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long?) = apply { body.limit(limit) }
+
+        /**
+         * limit the number of traces fetched
+         *
+         * Fetch queries may be paginated if the total result size is expected to be large (e.g.
+         * project_logs which accumulate over a long time). Note that fetch queries only support
+         * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore,
+         * later pages may return rows which showed up in earlier pages, except with an earlier
+         * `_xact_id`. This happens because pagination occurs over the whole version history of the
+         * event log. You will most likely want to exclude any such duplicate, outdated rows (by
+         * `id`) from your combined result set.
+         *
+         * The `limit` parameter controls the number of full traces to return. So you may end up
+         * with more individual rows than the specified limit if you are fetching events containing
+         * traces.
+         */
+        fun limit(limit: Long) = limit(limit as Long?)
+
+        /**
+         * limit the number of traces fetched
+         *
+         * Fetch queries may be paginated if the total result size is expected to be large (e.g.
+         * project_logs which accumulate over a long time). Note that fetch queries only support
+         * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore,
+         * later pages may return rows which showed up in earlier pages, except with an earlier
+         * `_xact_id`. This happens because pagination occurs over the whole version history of the
+         * event log. You will most likely want to exclude any such duplicate, outdated rows (by
+         * `id`) from your combined result set.
+         *
+         * The `limit` parameter controls the number of full traces to return. So you may end up
+         * with more individual rows than the specified limit if you are fetching events containing
+         * traces.
+         */
+        fun limit(limit: JsonField<Long>) = apply { body.limit(limit) }
 
         /**
          * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
@@ -353,7 +669,7 @@ constructor(
          * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
          * paginating fetch queries.
          */
-        fun maxRootSpanId(maxRootSpanId: String) = apply { this.maxRootSpanId = maxRootSpanId }
+        fun maxRootSpanId(maxRootSpanId: String?) = apply { body.maxRootSpanId(maxRootSpanId) }
 
         /**
          * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
@@ -367,7 +683,37 @@ constructor(
          * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
          * paginating fetch queries.
          */
-        fun maxXactId(maxXactId: String) = apply { this.maxXactId = maxXactId }
+        fun maxRootSpanId(maxRootSpanId: JsonField<String>) = apply {
+            body.maxRootSpanId(maxRootSpanId)
+        }
+
+        /**
+         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
+         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
+         * argument going forwards.
+         *
+         * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+         *
+         * Since a paginated fetch query returns results in order from latest to earliest, the
+         * cursor for the next page can be found as the row with the minimum (earliest) value of the
+         * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
+         * paginating fetch queries.
+         */
+        fun maxXactId(maxXactId: String?) = apply { body.maxXactId(maxXactId) }
+
+        /**
+         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
+         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
+         * argument going forwards.
+         *
+         * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+         *
+         * Since a paginated fetch query returns results in order from latest to earliest, the
+         * cursor for the next page can be found as the row with the minimum (earliest) value of the
+         * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
+         * paginating fetch queries.
+         */
+        fun maxXactId(maxXactId: JsonField<String>) = apply { body.maxXactId(maxXactId) }
 
         /**
          * Retrieve a snapshot of events from a past time
@@ -375,7 +721,34 @@ constructor(
          * The version id is essentially a filter on the latest event transaction id. You can use
          * the `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
          */
-        fun version(version: String) = apply { this.version = version }
+        fun version(version: String?) = apply { body.version(version) }
+
+        /**
+         * Retrieve a snapshot of events from a past time
+         *
+         * The version id is essentially a filter on the latest event transaction id. You can use
+         * the `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
+         */
+        fun version(version: JsonField<String>) = apply { body.version(version) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -475,39 +848,12 @@ constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            putAllAdditionalBodyProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply {
-            additionalBodyProperties.remove(key)
-        }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalBodyProperty)
-        }
-
         fun build(): DatasetFetchPostParams =
             DatasetFetchPostParams(
-                checkNotNull(datasetId) { "`datasetId` is required but was not set" },
-                cursor,
-                limit,
-                maxRootSpanId,
-                maxXactId,
-                version,
+                checkRequired("datasetId", datasetId),
+                body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
-                additionalBodyProperties.toImmutable(),
             )
     }
 
@@ -516,11 +862,11 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is DatasetFetchPostParams && datasetId == other.datasetId && cursor == other.cursor && limit == other.limit && maxRootSpanId == other.maxRootSpanId && maxXactId == other.maxXactId && version == other.version && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is DatasetFetchPostParams && datasetId == other.datasetId && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(datasetId, cursor, limit, maxRootSpanId, maxXactId, version, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(datasetId, body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "DatasetFetchPostParams{datasetId=$datasetId, cursor=$cursor, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "DatasetFetchPostParams{datasetId=$datasetId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

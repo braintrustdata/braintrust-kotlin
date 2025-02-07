@@ -2,20 +2,17 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class ProjectScoreUpdateParamsTest {
 
     @Test
-    fun createProjectScoreUpdateParams() {
+    fun create() {
         ProjectScoreUpdateParams.builder()
             .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-            .categories(
-                ProjectScoreUpdateParams.Categories.ofCategorical(
-                    listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
-                )
+            .categoriesOfCategorical(
+                listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
             )
             .config(
                 ProjectScoreConfig.builder()
@@ -24,18 +21,14 @@ class ProjectScoreUpdateParamsTest {
                     .online(
                         OnlineScoreConfig.builder()
                             .samplingRate(0.0)
-                            .scorers(
-                                listOf(
-                                    OnlineScoreConfig.Scorer.ofFunction(
-                                        OnlineScoreConfig.Scorer.Function.builder()
-                                            .id("id")
-                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
-                                            .build()
-                                    )
-                                )
+                            .addScorer(
+                                OnlineScoreConfig.Scorer.Function.builder()
+                                    .id("id")
+                                    .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                    .build()
                             )
                             .applyToRootSpan(true)
-                            .applyToSpanNames(listOf("string"))
+                            .addApplyToSpanName("string")
                             .build()
                     )
                     .build()
@@ -47,14 +40,12 @@ class ProjectScoreUpdateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             ProjectScoreUpdateParams.builder()
                 .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .categories(
-                    ProjectScoreUpdateParams.Categories.ofCategorical(
-                        listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
-                    )
+                .categoriesOfCategorical(
+                    listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                 )
                 .config(
                     ProjectScoreConfig.builder()
@@ -63,20 +54,14 @@ class ProjectScoreUpdateParamsTest {
                         .online(
                             OnlineScoreConfig.builder()
                                 .samplingRate(0.0)
-                                .scorers(
-                                    listOf(
-                                        OnlineScoreConfig.Scorer.ofFunction(
-                                            OnlineScoreConfig.Scorer.Function.builder()
-                                                .id("id")
-                                                .type(
-                                                    OnlineScoreConfig.Scorer.Function.Type.FUNCTION
-                                                )
-                                                .build()
-                                        )
-                                    )
+                                .addScorer(
+                                    OnlineScoreConfig.Scorer.Function.builder()
+                                        .id("id")
+                                        .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                        .build()
                                 )
                                 .applyToRootSpan(true)
-                                .applyToSpanNames(listOf("string"))
+                                .addApplyToSpanName("string")
                                 .build()
                         )
                         .build()
@@ -85,7 +70,7 @@ class ProjectScoreUpdateParamsTest {
                 .name("name")
                 .scoreType(ProjectScoreUpdateParams.ScoreType.SLIDER)
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.categories())
             .isEqualTo(
@@ -101,18 +86,14 @@ class ProjectScoreUpdateParamsTest {
                     .online(
                         OnlineScoreConfig.builder()
                             .samplingRate(0.0)
-                            .scorers(
-                                listOf(
-                                    OnlineScoreConfig.Scorer.ofFunction(
-                                        OnlineScoreConfig.Scorer.Function.builder()
-                                            .id("id")
-                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
-                                            .build()
-                                    )
-                                )
+                            .addScorer(
+                                OnlineScoreConfig.Scorer.Function.builder()
+                                    .id("id")
+                                    .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                    .build()
                             )
                             .applyToRootSpan(true)
-                            .applyToSpanNames(listOf("string"))
+                            .addApplyToSpanName("string")
                             .build()
                     )
                     .build()
@@ -123,12 +104,12 @@ class ProjectScoreUpdateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             ProjectScoreUpdateParams.builder()
                 .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
     }
 

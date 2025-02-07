@@ -2,14 +2,13 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class SpanIframeUpdateParamsTest {
 
     @Test
-    fun createSpanIframeUpdateParams() {
+    fun create() {
         SpanIframeUpdateParams.builder()
             .spanIframeId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .name("name")
@@ -19,7 +18,7 @@ class SpanIframeUpdateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             SpanIframeUpdateParams.builder()
                 .spanIframeId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -27,7 +26,7 @@ class SpanIframeUpdateParamsTest {
                 .postMessage(true)
                 .url("url")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.name()).isEqualTo("name")
         assertThat(body.postMessage()).isEqualTo(true)
@@ -35,12 +34,12 @@ class SpanIframeUpdateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             SpanIframeUpdateParams.builder()
                 .spanIframeId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
     }
 
