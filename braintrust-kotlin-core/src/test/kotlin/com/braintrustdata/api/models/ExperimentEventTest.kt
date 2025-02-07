@@ -2,7 +2,7 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonValue
 import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -28,16 +28,20 @@ class ExperimentEventTest {
                         .build()
                 )
                 .datasetRecordId("dataset_record_id")
-                .error(JsonNull.of())
-                .expected(JsonNull.of())
-                .input(JsonNull.of())
+                .error(JsonValue.from(mapOf<String, Any>()))
+                .expected(JsonValue.from(mapOf<String, Any>()))
+                .input(JsonValue.from(mapOf<String, Any>()))
                 .isRoot(true)
-                .metadata(ExperimentEvent.Metadata.builder().build())
+                .metadata(
+                    ExperimentEvent.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
                 .metrics(
                     ExperimentEvent.Metrics.builder()
-                        .callerFilename(JsonNull.of())
-                        .callerFunctionname(JsonNull.of())
-                        .callerLineno(JsonNull.of())
+                        .callerFilename(JsonValue.from(mapOf<String, Any>()))
+                        .callerFunctionname(JsonValue.from(mapOf<String, Any>()))
+                        .callerLineno(JsonValue.from(mapOf<String, Any>()))
                         .completionTokens(0L)
                         .end(0.0)
                         .promptTokens(0L)
@@ -53,13 +57,17 @@ class ExperimentEventTest {
                         .objectType(ExperimentEvent.Origin.ObjectType.EXPERIMENT)
                         .build()
                 )
-                .output(JsonNull.of())
-                .scores(ExperimentEvent.Scores.builder().build())
+                .output(JsonValue.from(mapOf<String, Any>()))
+                .scores(
+                    ExperimentEvent.Scores.builder()
+                        .putAdditionalProperty("foo", JsonValue.from(0))
+                        .build()
+                )
                 .spanAttributes(
                     SpanAttributes.builder().name("name").type(SpanAttributes.Type.LLM).build()
                 )
-                .spanParents(listOf("string"))
-                .tags(listOf("string"))
+                .addSpanParent("string")
+                .addTag("string")
                 .build()
         assertThat(experimentEvent).isNotNull
         assertThat(experimentEvent.id()).isEqualTo("id")
@@ -79,17 +87,22 @@ class ExperimentEventTest {
                     .build()
             )
         assertThat(experimentEvent.datasetRecordId()).isEqualTo("dataset_record_id")
-        assertThat(experimentEvent._error()).isEqualTo(JsonNull.of())
-        assertThat(experimentEvent._expected()).isEqualTo(JsonNull.of())
-        assertThat(experimentEvent._input()).isEqualTo(JsonNull.of())
+        assertThat(experimentEvent._error()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(experimentEvent._expected()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(experimentEvent._input()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(experimentEvent.isRoot()).isEqualTo(true)
-        assertThat(experimentEvent.metadata()).isEqualTo(ExperimentEvent.Metadata.builder().build())
+        assertThat(experimentEvent.metadata())
+            .isEqualTo(
+                ExperimentEvent.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
         assertThat(experimentEvent.metrics())
             .isEqualTo(
                 ExperimentEvent.Metrics.builder()
-                    .callerFilename(JsonNull.of())
-                    .callerFunctionname(JsonNull.of())
-                    .callerLineno(JsonNull.of())
+                    .callerFilename(JsonValue.from(mapOf<String, Any>()))
+                    .callerFunctionname(JsonValue.from(mapOf<String, Any>()))
+                    .callerLineno(JsonValue.from(mapOf<String, Any>()))
                     .completionTokens(0L)
                     .end(0.0)
                     .promptTokens(0L)
@@ -106,8 +119,13 @@ class ExperimentEventTest {
                     .objectType(ExperimentEvent.Origin.ObjectType.EXPERIMENT)
                     .build()
             )
-        assertThat(experimentEvent._output()).isEqualTo(JsonNull.of())
-        assertThat(experimentEvent.scores()).isEqualTo(ExperimentEvent.Scores.builder().build())
+        assertThat(experimentEvent._output()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(experimentEvent.scores())
+            .isEqualTo(
+                ExperimentEvent.Scores.builder()
+                    .putAdditionalProperty("foo", JsonValue.from(0))
+                    .build()
+            )
         assertThat(experimentEvent.spanAttributes())
             .isEqualTo(SpanAttributes.builder().name("name").type(SpanAttributes.Type.LLM).build())
         assertThat(experimentEvent.spanParents()).containsExactly("string")

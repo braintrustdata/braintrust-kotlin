@@ -2,8 +2,7 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.JsonValue
 import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -11,15 +10,72 @@ import org.junit.jupiter.api.Test
 class ProjectLogInsertParamsTest {
 
     @Test
-    fun createProjectLogInsertParams() {
+    fun create() {
         ProjectLogInsertParams.builder()
             .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-            .events(
-                listOf(
+            .addEvent(
+                InsertProjectLogsEvent.builder()
+                    .id("id")
+                    ._isMerge(true)
+                    .addMergePath(listOf("string"))
+                    ._objectDelete(true)
+                    ._parentId("_parent_id")
+                    .context(
+                        InsertProjectLogsEvent.Context.builder()
+                            .callerFilename("caller_filename")
+                            .callerFunctionname("caller_functionname")
+                            .callerLineno(0L)
+                            .build()
+                    )
+                    .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                    .error(JsonValue.from(mapOf<String, Any>()))
+                    .expected(JsonValue.from(mapOf<String, Any>()))
+                    .input(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        InsertProjectLogsEvent.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .metrics(
+                        InsertProjectLogsEvent.Metrics.builder()
+                            .callerFilename(JsonValue.from(mapOf<String, Any>()))
+                            .callerFunctionname(JsonValue.from(mapOf<String, Any>()))
+                            .callerLineno(JsonValue.from(mapOf<String, Any>()))
+                            .completionTokens(0L)
+                            .end(0.0)
+                            .promptTokens(0L)
+                            .start(0.0)
+                            .tokens(0L)
+                            .build()
+                    )
+                    .output(JsonValue.from(mapOf<String, Any>()))
+                    .rootSpanId("root_span_id")
+                    .scores(
+                        InsertProjectLogsEvent.Scores.builder()
+                            .putAdditionalProperty("foo", JsonValue.from(0))
+                            .build()
+                    )
+                    .spanAttributes(
+                        SpanAttributes.builder().name("name").type(SpanAttributes.Type.LLM).build()
+                    )
+                    .spanId("span_id")
+                    .addSpanParent("string")
+                    .addTag("string")
+                    .build()
+            )
+            .build()
+    }
+
+    @Test
+    fun body() {
+        val params =
+            ProjectLogInsertParams.builder()
+                .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .addEvent(
                     InsertProjectLogsEvent.builder()
                         .id("id")
                         ._isMerge(true)
-                        ._mergePaths(listOf(listOf("string")))
+                        .addMergePath(listOf("string"))
                         ._objectDelete(true)
                         ._parentId("_parent_id")
                         .context(
@@ -30,15 +86,19 @@ class ProjectLogInsertParamsTest {
                                 .build()
                         )
                         .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                        .error(JsonNull.of())
-                        .expected(JsonNull.of())
-                        .input(JsonNull.of())
-                        .metadata(InsertProjectLogsEvent.Metadata.builder().build())
+                        .error(JsonValue.from(mapOf<String, Any>()))
+                        .expected(JsonValue.from(mapOf<String, Any>()))
+                        .input(JsonValue.from(mapOf<String, Any>()))
+                        .metadata(
+                            InsertProjectLogsEvent.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .metrics(
                             InsertProjectLogsEvent.Metrics.builder()
-                                .callerFilename(JsonNull.of())
-                                .callerFunctionname(JsonNull.of())
-                                .callerLineno(JsonNull.of())
+                                .callerFilename(JsonValue.from(mapOf<String, Any>()))
+                                .callerFunctionname(JsonValue.from(mapOf<String, Any>()))
+                                .callerLineno(JsonValue.from(mapOf<String, Any>()))
                                 .completionTokens(0L)
                                 .end(0.0)
                                 .promptTokens(0L)
@@ -46,9 +106,13 @@ class ProjectLogInsertParamsTest {
                                 .tokens(0L)
                                 .build()
                         )
-                        .output(JsonNull.of())
+                        .output(JsonValue.from(mapOf<String, Any>()))
                         .rootSpanId("root_span_id")
-                        .scores(InsertProjectLogsEvent.Scores.builder().build())
+                        .scores(
+                            InsertProjectLogsEvent.Scores.builder()
+                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                .build()
+                        )
                         .spanAttributes(
                             SpanAttributes.builder()
                                 .name("name")
@@ -56,68 +120,12 @@ class ProjectLogInsertParamsTest {
                                 .build()
                         )
                         .spanId("span_id")
-                        .spanParents(listOf("string"))
-                        .tags(listOf("string"))
+                        .addSpanParent("string")
+                        .addTag("string")
                         .build()
                 )
-            )
-            .build()
-    }
-
-    @Test
-    fun getBody() {
-        val params =
-            ProjectLogInsertParams.builder()
-                .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .events(
-                    listOf(
-                        InsertProjectLogsEvent.builder()
-                            .id("id")
-                            ._isMerge(true)
-                            ._mergePaths(listOf(listOf("string")))
-                            ._objectDelete(true)
-                            ._parentId("_parent_id")
-                            .context(
-                                InsertProjectLogsEvent.Context.builder()
-                                    .callerFilename("caller_filename")
-                                    .callerFunctionname("caller_functionname")
-                                    .callerLineno(0L)
-                                    .build()
-                            )
-                            .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                            .error(JsonNull.of())
-                            .expected(JsonNull.of())
-                            .input(JsonNull.of())
-                            .metadata(InsertProjectLogsEvent.Metadata.builder().build())
-                            .metrics(
-                                InsertProjectLogsEvent.Metrics.builder()
-                                    .callerFilename(JsonNull.of())
-                                    .callerFunctionname(JsonNull.of())
-                                    .callerLineno(JsonNull.of())
-                                    .completionTokens(0L)
-                                    .end(0.0)
-                                    .promptTokens(0L)
-                                    .start(0.0)
-                                    .tokens(0L)
-                                    .build()
-                            )
-                            .output(JsonNull.of())
-                            .rootSpanId("root_span_id")
-                            .scores(InsertProjectLogsEvent.Scores.builder().build())
-                            .spanAttributes(
-                                SpanAttributes.builder()
-                                    .name("name")
-                                    .type(SpanAttributes.Type.LLM)
-                                    .build()
-                            )
-                            .spanId("span_id")
-                            .spanParents(listOf("string"))
-                            .tags(listOf("string"))
-                            .build()
-                    )
-                )
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.events())
             .isEqualTo(
@@ -125,7 +133,7 @@ class ProjectLogInsertParamsTest {
                     InsertProjectLogsEvent.builder()
                         .id("id")
                         ._isMerge(true)
-                        ._mergePaths(listOf(listOf("string")))
+                        .addMergePath(listOf("string"))
                         ._objectDelete(true)
                         ._parentId("_parent_id")
                         .context(
@@ -136,15 +144,19 @@ class ProjectLogInsertParamsTest {
                                 .build()
                         )
                         .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                        .error(JsonNull.of())
-                        .expected(JsonNull.of())
-                        .input(JsonNull.of())
-                        .metadata(InsertProjectLogsEvent.Metadata.builder().build())
+                        .error(JsonValue.from(mapOf<String, Any>()))
+                        .expected(JsonValue.from(mapOf<String, Any>()))
+                        .input(JsonValue.from(mapOf<String, Any>()))
+                        .metadata(
+                            InsertProjectLogsEvent.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .metrics(
                             InsertProjectLogsEvent.Metrics.builder()
-                                .callerFilename(JsonNull.of())
-                                .callerFunctionname(JsonNull.of())
-                                .callerLineno(JsonNull.of())
+                                .callerFilename(JsonValue.from(mapOf<String, Any>()))
+                                .callerFunctionname(JsonValue.from(mapOf<String, Any>()))
+                                .callerLineno(JsonValue.from(mapOf<String, Any>()))
                                 .completionTokens(0L)
                                 .end(0.0)
                                 .promptTokens(0L)
@@ -152,9 +164,13 @@ class ProjectLogInsertParamsTest {
                                 .tokens(0L)
                                 .build()
                         )
-                        .output(JsonNull.of())
+                        .output(JsonValue.from(mapOf<String, Any>()))
                         .rootSpanId("root_span_id")
-                        .scores(InsertProjectLogsEvent.Scores.builder().build())
+                        .scores(
+                            InsertProjectLogsEvent.Scores.builder()
+                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                .build()
+                        )
                         .spanAttributes(
                             SpanAttributes.builder()
                                 .name("name")
@@ -162,21 +178,21 @@ class ProjectLogInsertParamsTest {
                                 .build()
                         )
                         .spanId("span_id")
-                        .spanParents(listOf("string"))
-                        .tags(listOf("string"))
+                        .addSpanParent("string")
+                        .addTag("string")
                         .build()
                 )
             )
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             ProjectLogInsertParams.builder()
                 .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .events(listOf(InsertProjectLogsEvent.builder().build()))
+                .addEvent(InsertProjectLogsEvent.builder().build())
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.events()).isEqualTo(listOf(InsertProjectLogsEvent.builder().build()))
     }
@@ -186,7 +202,7 @@ class ProjectLogInsertParamsTest {
         val params =
             ProjectLogInsertParams.builder()
                 .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .events(listOf(InsertProjectLogsEvent.builder().build()))
+                .addEvent(InsertProjectLogsEvent.builder().build())
                 .build()
         assertThat(params).isNotNull
         // path param "projectId"

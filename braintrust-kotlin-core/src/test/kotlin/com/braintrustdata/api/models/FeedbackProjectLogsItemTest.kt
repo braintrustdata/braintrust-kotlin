@@ -2,7 +2,7 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -14,20 +14,37 @@ class FeedbackProjectLogsItemTest {
             FeedbackProjectLogsItem.builder()
                 .id("id")
                 .comment("comment")
-                .expected(JsonNull.of())
-                .metadata(FeedbackProjectLogsItem.Metadata.builder().build())
-                .scores(FeedbackProjectLogsItem.Scores.builder().build())
+                .expected(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    FeedbackProjectLogsItem.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
+                .scores(
+                    FeedbackProjectLogsItem.Scores.builder()
+                        .putAdditionalProperty("foo", JsonValue.from(0))
+                        .build()
+                )
                 .source(FeedbackProjectLogsItem.Source.APP)
-                .tags(listOf("string"))
+                .addTag("string")
                 .build()
         assertThat(feedbackProjectLogsItem).isNotNull
         assertThat(feedbackProjectLogsItem.id()).isEqualTo("id")
         assertThat(feedbackProjectLogsItem.comment()).isEqualTo("comment")
-        assertThat(feedbackProjectLogsItem._expected()).isEqualTo(JsonNull.of())
+        assertThat(feedbackProjectLogsItem._expected())
+            .isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(feedbackProjectLogsItem.metadata())
-            .isEqualTo(FeedbackProjectLogsItem.Metadata.builder().build())
+            .isEqualTo(
+                FeedbackProjectLogsItem.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
         assertThat(feedbackProjectLogsItem.scores())
-            .isEqualTo(FeedbackProjectLogsItem.Scores.builder().build())
+            .isEqualTo(
+                FeedbackProjectLogsItem.Scores.builder()
+                    .putAdditionalProperty("foo", JsonValue.from(0))
+                    .build()
+            )
         assertThat(feedbackProjectLogsItem.source()).isEqualTo(FeedbackProjectLogsItem.Source.APP)
         assertThat(feedbackProjectLogsItem.tags()).containsExactly("string")
     }

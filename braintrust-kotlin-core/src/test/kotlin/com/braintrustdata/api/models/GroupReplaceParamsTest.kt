@@ -2,34 +2,33 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class GroupReplaceParamsTest {
 
     @Test
-    fun createGroupReplaceParams() {
+    fun create() {
         GroupReplaceParams.builder()
             .name("x")
             .description("description")
-            .memberGroups(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-            .memberUsers(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+            .addMemberGroup("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .addMemberUser("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .orgName("org_name")
             .build()
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             GroupReplaceParams.builder()
                 .name("x")
                 .description("description")
-                .memberGroups(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-                .memberUsers(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                .addMemberGroup("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .addMemberUser("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .orgName("org_name")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.name()).isEqualTo("x")
         assertThat(body.description()).isEqualTo("description")
@@ -39,9 +38,9 @@ class GroupReplaceParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params = GroupReplaceParams.builder().name("x").build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.name()).isEqualTo("x")
     }

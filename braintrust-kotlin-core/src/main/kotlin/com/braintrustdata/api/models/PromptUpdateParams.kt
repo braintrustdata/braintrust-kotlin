@@ -3,63 +3,79 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
+/**
+ * Partially update a prompt object. Specify the fields to update in the payload. Any object-type
+ * fields will be deep-merged with existing content. Currently we do not support removing fields or
+ * setting them to null.
+ */
 class PromptUpdateParams
-constructor(
+private constructor(
     private val promptId: String,
-    private val description: String?,
-    private val name: String?,
-    private val promptData: PromptData?,
-    private val slug: String?,
-    private val tags: List<String>?,
+    private val body: PromptUpdateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+) : Params {
 
+    /** Prompt id */
     fun promptId(): String = promptId
 
-    fun description(): String? = description
+    /** Textual description of the prompt */
+    fun description(): String? = body.description()
 
-    fun name(): String? = name
+    /** Name of the prompt */
+    fun name(): String? = body.name()
 
-    fun promptData(): PromptData? = promptData
+    /** The prompt, model, and its parameters */
+    fun promptData(): PromptData? = body.promptData()
 
-    fun slug(): String? = slug
+    /** Unique identifier for the prompt */
+    fun slug(): String? = body.slug()
 
-    fun tags(): List<String>? = tags
+    /** A list of tags for the prompt */
+    fun tags(): List<String>? = body.tags()
+
+    /** Textual description of the prompt */
+    fun _description(): JsonField<String> = body._description()
+
+    /** Name of the prompt */
+    fun _name(): JsonField<String> = body._name()
+
+    /** The prompt, model, and its parameters */
+    fun _promptData(): JsonField<PromptData> = body._promptData()
+
+    /** Unique identifier for the prompt */
+    fun _slug(): JsonField<String> = body._slug()
+
+    /** A list of tags for the prompt */
+    fun _tags(): JsonField<List<String>> = body._tags()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+    internal fun _body(): PromptUpdateBody = body
 
-    internal fun getBody(): PromptUpdateBody {
-        return PromptUpdateBody(
-            description,
-            name,
-            promptData,
-            slug,
-            tags,
-            additionalBodyProperties,
-        )
-    }
+    override fun _headers(): Headers = additionalHeaders
 
-    internal fun getHeaders(): Headers = additionalHeaders
-
-    internal fun getQueryParams(): QueryParams = additionalQueryParams
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     fun getPathParam(index: Int): String {
         return when (index) {
@@ -68,36 +84,81 @@ constructor(
         }
     }
 
-    @JsonDeserialize(builder = PromptUpdateBody.Builder::class)
     @NoAutoDetect
     class PromptUpdateBody
+    @JsonCreator
     internal constructor(
-        private val description: String?,
-        private val name: String?,
-        private val promptData: PromptData?,
-        private val slug: String?,
-        private val tags: List<String>?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("description")
+        @ExcludeMissing
+        private val description: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name")
+        @ExcludeMissing
+        private val name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("prompt_data")
+        @ExcludeMissing
+        private val promptData: JsonField<PromptData> = JsonMissing.of(),
+        @JsonProperty("slug")
+        @ExcludeMissing
+        private val slug: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("tags")
+        @ExcludeMissing
+        private val tags: JsonField<List<String>> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** Textual description of the prompt */
-        @JsonProperty("description") fun description(): String? = description
+        fun description(): String? = description.getNullable("description")
 
         /** Name of the prompt */
-        @JsonProperty("name") fun name(): String? = name
+        fun name(): String? = name.getNullable("name")
 
         /** The prompt, model, and its parameters */
-        @JsonProperty("prompt_data") fun promptData(): PromptData? = promptData
+        fun promptData(): PromptData? = promptData.getNullable("prompt_data")
 
         /** Unique identifier for the prompt */
-        @JsonProperty("slug") fun slug(): String? = slug
+        fun slug(): String? = slug.getNullable("slug")
 
         /** A list of tags for the prompt */
-        @JsonProperty("tags") fun tags(): List<String>? = tags
+        fun tags(): List<String>? = tags.getNullable("tags")
+
+        /** Textual description of the prompt */
+        @JsonProperty("description")
+        @ExcludeMissing
+        fun _description(): JsonField<String> = description
+
+        /** Name of the prompt */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+        /** The prompt, model, and its parameters */
+        @JsonProperty("prompt_data")
+        @ExcludeMissing
+        fun _promptData(): JsonField<PromptData> = promptData
+
+        /** Unique identifier for the prompt */
+        @JsonProperty("slug") @ExcludeMissing fun _slug(): JsonField<String> = slug
+
+        /** A list of tags for the prompt */
+        @JsonProperty("tags") @ExcludeMissing fun _tags(): JsonField<List<String>> = tags
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): PromptUpdateBody = apply {
+            if (validated) {
+                return@apply
+            }
+
+            description()
+            name()
+            promptData()?.validate()
+            slug()
+            tags()
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -106,53 +167,90 @@ constructor(
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [PromptUpdateBody]. */
+        class Builder internal constructor() {
 
-            private var description: String? = null
-            private var name: String? = null
-            private var promptData: PromptData? = null
-            private var slug: String? = null
-            private var tags: List<String>? = null
+            private var description: JsonField<String> = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
+            private var promptData: JsonField<PromptData> = JsonMissing.of()
+            private var slug: JsonField<String> = JsonMissing.of()
+            private var tags: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(promptUpdateBody: PromptUpdateBody) = apply {
-                this.description = promptUpdateBody.description
-                this.name = promptUpdateBody.name
-                this.promptData = promptUpdateBody.promptData
-                this.slug = promptUpdateBody.slug
-                this.tags = promptUpdateBody.tags
-                additionalProperties(promptUpdateBody.additionalProperties)
+                description = promptUpdateBody.description
+                name = promptUpdateBody.name
+                promptData = promptUpdateBody.promptData
+                slug = promptUpdateBody.slug
+                tags = promptUpdateBody.tags.map { it.toMutableList() }
+                additionalProperties = promptUpdateBody.additionalProperties.toMutableMap()
             }
 
             /** Textual description of the prompt */
-            @JsonProperty("description")
-            fun description(description: String) = apply { this.description = description }
+            fun description(description: String?) = description(JsonField.ofNullable(description))
+
+            /** Textual description of the prompt */
+            fun description(description: JsonField<String>) = apply {
+                this.description = description
+            }
 
             /** Name of the prompt */
-            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+            fun name(name: String?) = name(JsonField.ofNullable(name))
+
+            /** Name of the prompt */
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /** The prompt, model, and its parameters */
-            @JsonProperty("prompt_data")
-            fun promptData(promptData: PromptData) = apply { this.promptData = promptData }
+            fun promptData(promptData: PromptData?) = promptData(JsonField.ofNullable(promptData))
+
+            /** The prompt, model, and its parameters */
+            fun promptData(promptData: JsonField<PromptData>) = apply {
+                this.promptData = promptData
+            }
 
             /** Unique identifier for the prompt */
-            @JsonProperty("slug") fun slug(slug: String) = apply { this.slug = slug }
+            fun slug(slug: String?) = slug(JsonField.ofNullable(slug))
+
+            /** Unique identifier for the prompt */
+            fun slug(slug: JsonField<String>) = apply { this.slug = slug }
 
             /** A list of tags for the prompt */
-            @JsonProperty("tags") fun tags(tags: List<String>) = apply { this.tags = tags }
+            fun tags(tags: List<String>?) = tags(JsonField.ofNullable(tags))
+
+            /** A list of tags for the prompt */
+            fun tags(tags: JsonField<List<String>>) = apply {
+                this.tags = tags.map { it.toMutableList() }
+            }
+
+            /** A list of tags for the prompt */
+            fun addTag(tag: String) = apply {
+                tags =
+                    (tags ?: JsonField.of(mutableListOf())).apply {
+                        (asKnown()
+                                ?: throw IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                ))
+                            .add(tag)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): PromptUpdateBody =
@@ -161,7 +259,7 @@ constructor(
                     name,
                     promptData,
                     slug,
-                    tags?.toImmutable(),
+                    (tags ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -191,54 +289,76 @@ constructor(
         fun builder() = Builder()
     }
 
+    /** A builder for [PromptUpdateParams]. */
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var promptId: String? = null
-        private var description: String? = null
-        private var name: String? = null
-        private var promptData: PromptData? = null
-        private var slug: String? = null
-        private var tags: MutableList<String> = mutableListOf()
+        private var body: PromptUpdateBody.Builder = PromptUpdateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(promptUpdateParams: PromptUpdateParams) = apply {
             promptId = promptUpdateParams.promptId
-            description = promptUpdateParams.description
-            name = promptUpdateParams.name
-            promptData = promptUpdateParams.promptData
-            slug = promptUpdateParams.slug
-            tags = promptUpdateParams.tags?.toMutableList() ?: mutableListOf()
+            body = promptUpdateParams.body.toBuilder()
             additionalHeaders = promptUpdateParams.additionalHeaders.toBuilder()
             additionalQueryParams = promptUpdateParams.additionalQueryParams.toBuilder()
-            additionalBodyProperties = promptUpdateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Prompt id */
         fun promptId(promptId: String) = apply { this.promptId = promptId }
 
         /** Textual description of the prompt */
-        fun description(description: String) = apply { this.description = description }
+        fun description(description: String?) = apply { body.description(description) }
+
+        /** Textual description of the prompt */
+        fun description(description: JsonField<String>) = apply { body.description(description) }
 
         /** Name of the prompt */
-        fun name(name: String) = apply { this.name = name }
+        fun name(name: String?) = apply { body.name(name) }
+
+        /** Name of the prompt */
+        fun name(name: JsonField<String>) = apply { body.name(name) }
 
         /** The prompt, model, and its parameters */
-        fun promptData(promptData: PromptData) = apply { this.promptData = promptData }
+        fun promptData(promptData: PromptData?) = apply { body.promptData(promptData) }
+
+        /** The prompt, model, and its parameters */
+        fun promptData(promptData: JsonField<PromptData>) = apply { body.promptData(promptData) }
 
         /** Unique identifier for the prompt */
-        fun slug(slug: String) = apply { this.slug = slug }
+        fun slug(slug: String?) = apply { body.slug(slug) }
+
+        /** Unique identifier for the prompt */
+        fun slug(slug: JsonField<String>) = apply { body.slug(slug) }
 
         /** A list of tags for the prompt */
-        fun tags(tags: List<String>) = apply {
-            this.tags.clear()
-            this.tags.addAll(tags)
+        fun tags(tags: List<String>?) = apply { body.tags(tags) }
+
+        /** A list of tags for the prompt */
+        fun tags(tags: JsonField<List<String>>) = apply { body.tags(tags) }
+
+        /** A list of tags for the prompt */
+        fun addTag(tag: String) = apply { body.addTag(tag) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
         }
 
-        /** A list of tags for the prompt */
-        fun addTag(tag: String) = apply { this.tags.add(tag) }
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -338,39 +458,12 @@ constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            putAllAdditionalBodyProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply {
-            additionalBodyProperties.remove(key)
-        }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalBodyProperty)
-        }
-
         fun build(): PromptUpdateParams =
             PromptUpdateParams(
-                checkNotNull(promptId) { "`promptId` is required but was not set" },
-                description,
-                name,
-                promptData,
-                slug,
-                tags.toImmutable().ifEmpty { null },
+                checkRequired("promptId", promptId),
+                body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
-                additionalBodyProperties.toImmutable(),
             )
     }
 
@@ -379,11 +472,11 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is PromptUpdateParams && promptId == other.promptId && description == other.description && name == other.name && promptData == other.promptData && slug == other.slug && tags == other.tags && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is PromptUpdateParams && promptId == other.promptId && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(promptId, description, name, promptData, slug, tags, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(promptId, body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "PromptUpdateParams{promptId=$promptId, description=$description, name=$name, promptData=$promptData, slug=$slug, tags=$tags, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "PromptUpdateParams{promptId=$promptId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

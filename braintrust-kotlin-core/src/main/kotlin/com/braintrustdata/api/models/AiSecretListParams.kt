@@ -6,11 +6,11 @@ import com.braintrustdata.api.core.BaseDeserializer
 import com.braintrustdata.api.core.BaseSerializer
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
 import com.braintrustdata.api.core.getOrThrow
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.JsonNode
@@ -20,8 +20,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.util.Objects
 
+/**
+ * List out all ai_secrets. The ai_secrets are sorted by creation date, with the most
+ * recently-created ai_secrets coming first
+ */
 class AiSecretListParams
-constructor(
+private constructor(
     private val aiSecretName: String?,
     private val aiSecretType: AiSecretType?,
     private val endingBefore: String?,
@@ -31,29 +35,50 @@ constructor(
     private val startingAfter: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-) {
+) : Params {
 
+    /** Name of the ai_secret to search for */
     fun aiSecretName(): String? = aiSecretName
 
     fun aiSecretType(): AiSecretType? = aiSecretType
 
+    /**
+     * Pagination cursor id.
+     *
+     * For example, if the initial item in the last page you fetched had an id of `foo`, pass
+     * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
+     * `starting_after` and `ending_before`
+     */
     fun endingBefore(): String? = endingBefore
 
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     fun ids(): Ids? = ids
 
+    /** Limit the number of objects to return */
     fun limit(): Long? = limit
 
+    /** Filter search results to within a particular organization */
     fun orgName(): String? = orgName
 
+    /**
+     * Pagination cursor id.
+     *
+     * For example, if the final item in the last page you fetched had an id of `foo`, pass
+     * `starting_after=foo` to fetch the next page. Note: you may only pass one of `starting_after`
+     * and `ending_before`
+     */
     fun startingAfter(): String? = startingAfter
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun getHeaders(): Headers = additionalHeaders
+    override fun _headers(): Headers = additionalHeaders
 
-    internal fun getQueryParams(): QueryParams {
+    override fun _queryParams(): QueryParams {
         val queryParams = QueryParams.builder()
         this.aiSecretName?.let { queryParams.put("ai_secret_name", listOf(it.toString())) }
         this.aiSecretType?.let { queryParams.put("ai_secret_type", listOf(it.toString())) }
@@ -73,8 +98,9 @@ constructor(
         fun builder() = Builder()
     }
 
+    /** A builder for [AiSecretListParams]. */
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var aiSecretName: String? = null
         private var aiSecretType: AiSecretType? = null
@@ -99,17 +125,14 @@ constructor(
         }
 
         /** Name of the ai_secret to search for */
-        fun aiSecretName(aiSecretName: String) = apply { this.aiSecretName = aiSecretName }
+        fun aiSecretName(aiSecretName: String?) = apply { this.aiSecretName = aiSecretName }
 
-        fun aiSecretType(aiSecretType: AiSecretType) = apply { this.aiSecretType = aiSecretType }
+        fun aiSecretType(aiSecretType: AiSecretType?) = apply { this.aiSecretType = aiSecretType }
 
-        fun aiSecretType(string: String) = apply {
-            this.aiSecretType = AiSecretType.ofString(string)
-        }
+        fun aiSecretType(string: String) = aiSecretType(AiSecretType.ofString(string))
 
-        fun aiSecretTypeOfStrings(strings: List<String>) = apply {
-            this.aiSecretType = AiSecretType.ofStrings(strings)
-        }
+        fun aiSecretTypeOfStrings(strings: List<String>) =
+            aiSecretType(AiSecretType.ofStrings(strings))
 
         /**
          * Pagination cursor id.
@@ -118,31 +141,34 @@ constructor(
          * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun endingBefore(endingBefore: String) = apply { this.endingBefore = endingBefore }
+        fun endingBefore(endingBefore: String?) = apply { this.endingBefore = endingBefore }
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun ids(ids: Ids) = apply { this.ids = ids }
+        fun ids(ids: Ids?) = apply { this.ids = ids }
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun ids(string: String) = apply { this.ids = Ids.ofString(string) }
+        fun ids(string: String) = ids(Ids.ofString(string))
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun idsOfStrings(strings: List<String>) = apply { this.ids = Ids.ofStrings(strings) }
+        fun idsOfStrings(strings: List<String>) = ids(Ids.ofStrings(strings))
 
         /** Limit the number of objects to return */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long?) = apply { this.limit = limit }
+
+        /** Limit the number of objects to return */
+        fun limit(limit: Long) = limit(limit as Long?)
 
         /** Filter search results to within a particular organization */
-        fun orgName(orgName: String) = apply { this.orgName = orgName }
+        fun orgName(orgName: String?) = apply { this.orgName = orgName }
 
         /**
          * Pagination cursor id.
@@ -151,7 +177,7 @@ constructor(
          * `starting_after=foo` to fetch the next page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun startingAfter(startingAfter: String) = apply { this.startingAfter = startingAfter }
+        fun startingAfter(startingAfter: String?) = apply { this.startingAfter = startingAfter }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -274,8 +300,6 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         fun string(): String? = string
 
         fun strings(): List<String>? = strings
@@ -295,15 +319,6 @@ constructor(
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
                 else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): AiSecretType = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown AiSecretType: $_json")
-                }
-                validated = true
             }
         }
 
@@ -332,18 +347,32 @@ constructor(
             fun ofStrings(strings: List<String>) = AiSecretType(strings = strings)
         }
 
+        /**
+         * An interface that defines how to map each variant of [AiSecretType] to a value of type
+         * [T].
+         */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
 
+            /**
+             * Maps an unknown variant of [AiSecretType] to a value of type [T].
+             *
+             * An instance of [AiSecretType] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws BraintrustInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown AiSecretType: $json")
             }
         }
 
-        class Deserializer : BaseDeserializer<AiSecretType>(AiSecretType::class) {
+        internal class Deserializer : BaseDeserializer<AiSecretType>(AiSecretType::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): AiSecretType {
                 val json = JsonValue.fromJsonNode(node)
@@ -359,7 +388,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<AiSecretType>(AiSecretType::class) {
+        internal class Serializer : BaseSerializer<AiSecretType>(AiSecretType::class) {
 
             override fun serialize(
                 value: AiSecretType,
@@ -376,6 +405,10 @@ constructor(
         }
     }
 
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     @JsonDeserialize(using = Ids.Deserializer::class)
     @JsonSerialize(using = Ids.Serializer::class)
     class Ids
@@ -384,8 +417,6 @@ constructor(
         private val strings: List<String>? = null,
         private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -406,15 +437,6 @@ constructor(
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
                 else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): Ids = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown Ids: $_json")
-                }
-                validated = true
             }
         }
 
@@ -443,18 +465,28 @@ constructor(
             fun ofStrings(strings: List<String>) = Ids(strings = strings)
         }
 
+        /** An interface that defines how to map each variant of [Ids] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
 
+            /**
+             * Maps an unknown variant of [Ids] to a value of type [T].
+             *
+             * An instance of [Ids] can contain an unknown variant if it was deserialized from data
+             * that doesn't match any known variant. For example, if the SDK is on an older version
+             * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * @throws BraintrustInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown Ids: $json")
             }
         }
 
-        class Deserializer : BaseDeserializer<Ids>(Ids::class) {
+        internal class Deserializer : BaseDeserializer<Ids>(Ids::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Ids {
                 val json = JsonValue.fromJsonNode(node)
@@ -470,7 +502,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<Ids>(Ids::class) {
+        internal class Serializer : BaseSerializer<Ids>(Ids::class) {
 
             override fun serialize(
                 value: Ids,

@@ -13,41 +13,12 @@ class PromptOptionsTest {
             PromptOptions.builder()
                 .model("model")
                 .params(
-                    PromptOptions.Params.ofOpenAIModelParams(
-                        PromptOptions.Params.OpenAIModelParams.builder()
-                            .frequencyPenalty(0.0)
-                            .functionCall(
-                                PromptOptions.Params.OpenAIModelParams.FunctionCall.ofAuto(
-                                    PromptOptions.Params.OpenAIModelParams.FunctionCall.Auto.AUTO
-                                )
-                            )
-                            .maxTokens(0.0)
-                            .n(0.0)
-                            .presencePenalty(0.0)
-                            .responseFormat(
-                                PromptOptions.Params.OpenAIModelParams.ResponseFormat.ofJsonObject(
-                                    PromptOptions.Params.OpenAIModelParams.ResponseFormat.JsonObject
-                                        .builder()
-                                        .type(
-                                            PromptOptions.Params.OpenAIModelParams.ResponseFormat
-                                                .JsonObject
-                                                .Type
-                                                .JSON_OBJECT
-                                        )
-                                        .build()
-                                )
-                            )
-                            .stop(listOf("string"))
-                            .temperature(0.0)
-                            .toolChoice(
-                                PromptOptions.Params.OpenAIModelParams.ToolChoice.ofAuto(
-                                    PromptOptions.Params.OpenAIModelParams.ToolChoice.Auto.AUTO
-                                )
-                            )
-                            .topP(0.0)
-                            .useCache(true)
-                            .build()
-                    )
+                    PromptOptions.Params.AnthropicModelParams.builder()
+                        .maxTokens(0.0)
+                        .temperature(0.0)
+                        .topP(0.0)
+                        .useCache(true)
+                        .build()
                 )
                 .position("position")
                 .build()
@@ -55,37 +26,10 @@ class PromptOptionsTest {
         assertThat(promptOptions.model()).isEqualTo("model")
         assertThat(promptOptions.params())
             .isEqualTo(
-                PromptOptions.Params.ofOpenAIModelParams(
-                    PromptOptions.Params.OpenAIModelParams.builder()
-                        .frequencyPenalty(0.0)
-                        .functionCall(
-                            PromptOptions.Params.OpenAIModelParams.FunctionCall.ofAuto(
-                                PromptOptions.Params.OpenAIModelParams.FunctionCall.Auto.AUTO
-                            )
-                        )
+                PromptOptions.Params.ofAnthropicModel(
+                    PromptOptions.Params.AnthropicModelParams.builder()
                         .maxTokens(0.0)
-                        .n(0.0)
-                        .presencePenalty(0.0)
-                        .responseFormat(
-                            PromptOptions.Params.OpenAIModelParams.ResponseFormat.ofJsonObject(
-                                PromptOptions.Params.OpenAIModelParams.ResponseFormat.JsonObject
-                                    .builder()
-                                    .type(
-                                        PromptOptions.Params.OpenAIModelParams.ResponseFormat
-                                            .JsonObject
-                                            .Type
-                                            .JSON_OBJECT
-                                    )
-                                    .build()
-                            )
-                        )
-                        .stop(listOf("string"))
                         .temperature(0.0)
-                        .toolChoice(
-                            PromptOptions.Params.OpenAIModelParams.ToolChoice.ofAuto(
-                                PromptOptions.Params.OpenAIModelParams.ToolChoice.Auto.AUTO
-                            )
-                        )
                         .topP(0.0)
                         .useCache(true)
                         .build()

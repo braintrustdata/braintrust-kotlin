@@ -3,13 +3,19 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
-import com.braintrustdata.api.models.*
 import java.util.Objects
 
+/**
+ * Fetch the events in a project logs. Equivalent to the POST form of the same path, but with the
+ * parameters in the URL query rather than in the request body. For more complex queries, use the
+ * `POST /btql` endpoint.
+ */
 class ProjectLogFetchParams
-constructor(
+private constructor(
     private val projectId: String,
     private val limit: Long?,
     private val maxRootSpanId: String?,
@@ -17,25 +23,70 @@ constructor(
     private val version: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-) {
+) : Params {
 
+    /** Project id */
     fun projectId(): String = projectId
 
+    /**
+     * limit the number of traces fetched
+     *
+     * Fetch queries may be paginated if the total result size is expected to be large (e.g.
+     * project_logs which accumulate over a long time). Note that fetch queries only support
+     * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore, later
+     * pages may return rows which showed up in earlier pages, except with an earlier `_xact_id`.
+     * This happens because pagination occurs over the whole version history of the event log. You
+     * will most likely want to exclude any such duplicate, outdated rows (by `id`) from your
+     * combined result set.
+     *
+     * The `limit` parameter controls the number of full traces to return. So you may end up with
+     * more individual rows than the specified limit if you are fetching events containing traces.
+     */
     fun limit(): Long? = limit
 
+    /**
+     * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of the
+     * explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor' argument
+     * going forwards.
+     *
+     * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+     *
+     * Since a paginated fetch query returns results in order from latest to earliest, the cursor
+     * for the next page can be found as the row with the minimum (earliest) value of the tuple
+     * `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of paginating
+     * fetch queries.
+     */
     fun maxRootSpanId(): String? = maxRootSpanId
 
+    /**
+     * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of the
+     * explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor' argument
+     * going forwards.
+     *
+     * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+     *
+     * Since a paginated fetch query returns results in order from latest to earliest, the cursor
+     * for the next page can be found as the row with the minimum (earliest) value of the tuple
+     * `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of paginating
+     * fetch queries.
+     */
     fun maxXactId(): String? = maxXactId
 
+    /**
+     * Retrieve a snapshot of events from a past time
+     *
+     * The version id is essentially a filter on the latest event transaction id. You can use the
+     * `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
+     */
     fun version(): String? = version
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun getHeaders(): Headers = additionalHeaders
+    override fun _headers(): Headers = additionalHeaders
 
-    internal fun getQueryParams(): QueryParams {
+    override fun _queryParams(): QueryParams {
         val queryParams = QueryParams.builder()
         this.limit?.let { queryParams.put("limit", listOf(it.toString())) }
         this.maxRootSpanId?.let { queryParams.put("max_root_span_id", listOf(it.toString())) }
@@ -59,8 +110,9 @@ constructor(
         fun builder() = Builder()
     }
 
+    /** A builder for [ProjectLogFetchParams]. */
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var projectId: String? = null
         private var limit: Long? = null
@@ -98,7 +150,24 @@ constructor(
          * with more individual rows than the specified limit if you are fetching events containing
          * traces.
          */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long?) = apply { this.limit = limit }
+
+        /**
+         * limit the number of traces fetched
+         *
+         * Fetch queries may be paginated if the total result size is expected to be large (e.g.
+         * project_logs which accumulate over a long time). Note that fetch queries only support
+         * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore,
+         * later pages may return rows which showed up in earlier pages, except with an earlier
+         * `_xact_id`. This happens because pagination occurs over the whole version history of the
+         * event log. You will most likely want to exclude any such duplicate, outdated rows (by
+         * `id`) from your combined result set.
+         *
+         * The `limit` parameter controls the number of full traces to return. So you may end up
+         * with more individual rows than the specified limit if you are fetching events containing
+         * traces.
+         */
+        fun limit(limit: Long) = limit(limit as Long?)
 
         /**
          * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
@@ -112,7 +181,7 @@ constructor(
          * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
          * paginating fetch queries.
          */
-        fun maxRootSpanId(maxRootSpanId: String) = apply { this.maxRootSpanId = maxRootSpanId }
+        fun maxRootSpanId(maxRootSpanId: String?) = apply { this.maxRootSpanId = maxRootSpanId }
 
         /**
          * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
@@ -126,7 +195,7 @@ constructor(
          * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
          * paginating fetch queries.
          */
-        fun maxXactId(maxXactId: String) = apply { this.maxXactId = maxXactId }
+        fun maxXactId(maxXactId: String?) = apply { this.maxXactId = maxXactId }
 
         /**
          * Retrieve a snapshot of events from a past time
@@ -134,7 +203,7 @@ constructor(
          * The version id is essentially a filter on the latest event transaction id. You can use
          * the `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
          */
-        fun version(version: String) = apply { this.version = version }
+        fun version(version: String?) = apply { this.version = version }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -236,7 +305,7 @@ constructor(
 
         fun build(): ProjectLogFetchParams =
             ProjectLogFetchParams(
-                checkNotNull(projectId) { "`projectId` is required but was not set" },
+                checkRequired("projectId", projectId),
                 limit,
                 maxRootSpanId,
                 maxXactId,
