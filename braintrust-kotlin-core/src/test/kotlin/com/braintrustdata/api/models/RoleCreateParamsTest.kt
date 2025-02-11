@@ -2,19 +2,36 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class RoleCreateParamsTest {
 
     @Test
-    fun createRoleCreateParams() {
+    fun create() {
         RoleCreateParams.builder()
             .name("x")
             .description("description")
-            .memberPermissions(
-                listOf(
+            .addMemberPermission(
+                RoleCreateParams.MemberPermission.builder()
+                    .permission(RoleCreateParams.MemberPermission.Permission.CREATE)
+                    .restrictObjectType(
+                        RoleCreateParams.MemberPermission.RestrictObjectType.ORGANIZATION
+                    )
+                    .build()
+            )
+            .addMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .orgName("org_name")
+            .build()
+    }
+
+    @Test
+    fun body() {
+        val params =
+            RoleCreateParams.builder()
+                .name("x")
+                .description("description")
+                .addMemberPermission(
                     RoleCreateParams.MemberPermission.builder()
                         .permission(RoleCreateParams.MemberPermission.Permission.CREATE)
                         .restrictObjectType(
@@ -22,32 +39,10 @@ class RoleCreateParamsTest {
                         )
                         .build()
                 )
-            )
-            .memberRoles(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-            .orgName("org_name")
-            .build()
-    }
-
-    @Test
-    fun getBody() {
-        val params =
-            RoleCreateParams.builder()
-                .name("x")
-                .description("description")
-                .memberPermissions(
-                    listOf(
-                        RoleCreateParams.MemberPermission.builder()
-                            .permission(RoleCreateParams.MemberPermission.Permission.CREATE)
-                            .restrictObjectType(
-                                RoleCreateParams.MemberPermission.RestrictObjectType.ORGANIZATION
-                            )
-                            .build()
-                    )
-                )
-                .memberRoles(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                .addMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .orgName("org_name")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.name()).isEqualTo("x")
         assertThat(body.description()).isEqualTo("description")
@@ -67,9 +62,9 @@ class RoleCreateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params = RoleCreateParams.builder().name("x").build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.name()).isEqualTo("x")
     }

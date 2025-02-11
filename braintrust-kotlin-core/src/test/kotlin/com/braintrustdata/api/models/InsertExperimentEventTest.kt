@@ -2,7 +2,7 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonValue
 import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -15,7 +15,7 @@ class InsertExperimentEventTest {
             InsertExperimentEvent.builder()
                 .id("id")
                 ._isMerge(true)
-                ._mergePaths(listOf(listOf("string")))
+                .addMergePath(listOf("string"))
                 ._objectDelete(true)
                 ._parentId("_parent_id")
                 .context(
@@ -27,15 +27,19 @@ class InsertExperimentEventTest {
                 )
                 .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .datasetRecordId("dataset_record_id")
-                .error(JsonNull.of())
-                .expected(JsonNull.of())
-                .input(JsonNull.of())
-                .metadata(InsertExperimentEvent.Metadata.builder().build())
+                .error(JsonValue.from(mapOf<String, Any>()))
+                .expected(JsonValue.from(mapOf<String, Any>()))
+                .input(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    InsertExperimentEvent.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
                 .metrics(
                     InsertExperimentEvent.Metrics.builder()
-                        .callerFilename(JsonNull.of())
-                        .callerFunctionname(JsonNull.of())
-                        .callerLineno(JsonNull.of())
+                        .callerFilename(JsonValue.from(mapOf<String, Any>()))
+                        .callerFunctionname(JsonValue.from(mapOf<String, Any>()))
+                        .callerLineno(JsonValue.from(mapOf<String, Any>()))
                         .completionTokens(0L)
                         .end(0.0)
                         .promptTokens(0L)
@@ -43,15 +47,19 @@ class InsertExperimentEventTest {
                         .tokens(0L)
                         .build()
                 )
-                .output(JsonNull.of())
+                .output(JsonValue.from(mapOf<String, Any>()))
                 .rootSpanId("root_span_id")
-                .scores(InsertExperimentEvent.Scores.builder().build())
+                .scores(
+                    InsertExperimentEvent.Scores.builder()
+                        .putAdditionalProperty("foo", JsonValue.from(0))
+                        .build()
+                )
                 .spanAttributes(
                     SpanAttributes.builder().name("name").type(SpanAttributes.Type.LLM).build()
                 )
                 .spanId("span_id")
-                .spanParents(listOf("string"))
-                .tags(listOf("string"))
+                .addSpanParent("string")
+                .addTag("string")
                 .build()
         assertThat(insertExperimentEvent).isNotNull
         assertThat(insertExperimentEvent.id()).isEqualTo("id")
@@ -70,17 +78,22 @@ class InsertExperimentEventTest {
         assertThat(insertExperimentEvent.created())
             .isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(insertExperimentEvent.datasetRecordId()).isEqualTo("dataset_record_id")
-        assertThat(insertExperimentEvent._error()).isEqualTo(JsonNull.of())
-        assertThat(insertExperimentEvent._expected()).isEqualTo(JsonNull.of())
-        assertThat(insertExperimentEvent._input()).isEqualTo(JsonNull.of())
+        assertThat(insertExperimentEvent._error()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(insertExperimentEvent._expected())
+            .isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(insertExperimentEvent._input()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(insertExperimentEvent.metadata())
-            .isEqualTo(InsertExperimentEvent.Metadata.builder().build())
+            .isEqualTo(
+                InsertExperimentEvent.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
         assertThat(insertExperimentEvent.metrics())
             .isEqualTo(
                 InsertExperimentEvent.Metrics.builder()
-                    .callerFilename(JsonNull.of())
-                    .callerFunctionname(JsonNull.of())
-                    .callerLineno(JsonNull.of())
+                    .callerFilename(JsonValue.from(mapOf<String, Any>()))
+                    .callerFunctionname(JsonValue.from(mapOf<String, Any>()))
+                    .callerLineno(JsonValue.from(mapOf<String, Any>()))
                     .completionTokens(0L)
                     .end(0.0)
                     .promptTokens(0L)
@@ -88,10 +101,14 @@ class InsertExperimentEventTest {
                     .tokens(0L)
                     .build()
             )
-        assertThat(insertExperimentEvent._output()).isEqualTo(JsonNull.of())
+        assertThat(insertExperimentEvent._output()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(insertExperimentEvent.rootSpanId()).isEqualTo("root_span_id")
         assertThat(insertExperimentEvent.scores())
-            .isEqualTo(InsertExperimentEvent.Scores.builder().build())
+            .isEqualTo(
+                InsertExperimentEvent.Scores.builder()
+                    .putAdditionalProperty("foo", JsonValue.from(0))
+                    .build()
+            )
         assertThat(insertExperimentEvent.spanAttributes())
             .isEqualTo(SpanAttributes.builder().name("name").type(SpanAttributes.Type.LLM).build())
         assertThat(insertExperimentEvent.spanId()).isEqualTo("span_id")

@@ -7,23 +7,27 @@ import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
-@JsonDeserialize(builder = FetchProjectLogsEventsResponse.Builder::class)
 @NoAutoDetect
 class FetchProjectLogsEventsResponse
+@JsonCreator
 private constructor(
-    private val events: JsonField<List<ProjectLogsEvent>>,
-    private val cursor: JsonField<String>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("events")
+    @ExcludeMissing
+    private val events: JsonField<List<ProjectLogsEvent>> = JsonMissing.of(),
+    @JsonProperty("cursor")
+    @ExcludeMissing
+    private val cursor: JsonField<String> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    private var validated: Boolean = false
 
     /** A list of fetched events */
     fun events(): List<ProjectLogsEvent> = events.getRequired("events")
@@ -37,7 +41,9 @@ private constructor(
     fun cursor(): String? = cursor.getNullable("cursor")
 
     /** A list of fetched events */
-    @JsonProperty("events") @ExcludeMissing fun _events() = events
+    @JsonProperty("events")
+    @ExcludeMissing
+    fun _events(): JsonField<List<ProjectLogsEvent>> = events
 
     /**
      * Pagination cursor
@@ -45,18 +51,22 @@ private constructor(
      * Pass this string directly as the `cursor` param to your next fetch request to get the next
      * page of results. Not provided if the returned result set is empty.
      */
-    @JsonProperty("cursor") @ExcludeMissing fun _cursor() = cursor
+    @JsonProperty("cursor") @ExcludeMissing fun _cursor(): JsonField<String> = cursor
 
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): FetchProjectLogsEventsResponse = apply {
-        if (!validated) {
-            events().forEach { it.validate() }
-            cursor()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        events().forEach { it.validate() }
+        cursor()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -66,25 +76,39 @@ private constructor(
         fun builder() = Builder()
     }
 
-    class Builder {
+    /** A builder for [FetchProjectLogsEventsResponse]. */
+    class Builder internal constructor() {
 
-        private var events: JsonField<List<ProjectLogsEvent>> = JsonMissing.of()
+        private var events: JsonField<MutableList<ProjectLogsEvent>>? = null
         private var cursor: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(fetchProjectLogsEventsResponse: FetchProjectLogsEventsResponse) = apply {
-            this.events = fetchProjectLogsEventsResponse.events
-            this.cursor = fetchProjectLogsEventsResponse.cursor
-            additionalProperties(fetchProjectLogsEventsResponse.additionalProperties)
+            events = fetchProjectLogsEventsResponse.events.map { it.toMutableList() }
+            cursor = fetchProjectLogsEventsResponse.cursor
+            additionalProperties =
+                fetchProjectLogsEventsResponse.additionalProperties.toMutableMap()
         }
 
         /** A list of fetched events */
         fun events(events: List<ProjectLogsEvent>) = events(JsonField.of(events))
 
         /** A list of fetched events */
-        @JsonProperty("events")
-        @ExcludeMissing
-        fun events(events: JsonField<List<ProjectLogsEvent>>) = apply { this.events = events }
+        fun events(events: JsonField<List<ProjectLogsEvent>>) = apply {
+            this.events = events.map { it.toMutableList() }
+        }
+
+        /** A list of fetched events */
+        fun addEvent(event: ProjectLogsEvent) = apply {
+            events =
+                (events ?: JsonField.of(mutableListOf())).apply {
+                    (asKnown()
+                            ?: throw IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            ))
+                        .add(event)
+                }
+        }
 
         /**
          * Pagination cursor
@@ -92,7 +116,7 @@ private constructor(
          * Pass this string directly as the `cursor` param to your next fetch request to get the
          * next page of results. Not provided if the returned result set is empty.
          */
-        fun cursor(cursor: String) = cursor(JsonField.of(cursor))
+        fun cursor(cursor: String?) = cursor(JsonField.ofNullable(cursor))
 
         /**
          * Pagination cursor
@@ -100,27 +124,30 @@ private constructor(
          * Pass this string directly as the `cursor` param to your next fetch request to get the
          * next page of results. Not provided if the returned result set is empty.
          */
-        @JsonProperty("cursor")
-        @ExcludeMissing
         fun cursor(cursor: JsonField<String>) = apply { this.cursor = cursor }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
         }
 
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
         fun build(): FetchProjectLogsEventsResponse =
             FetchProjectLogsEventsResponse(
-                events.map { it.toImmutable() },
+                checkRequired("events", events).map { it.toImmutable() },
                 cursor,
                 additionalProperties.toImmutable(),
             )

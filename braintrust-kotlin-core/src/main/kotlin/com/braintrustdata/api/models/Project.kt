@@ -7,38 +7,46 @@ import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.time.OffsetDateTime
 import java.util.Objects
 
-@JsonDeserialize(builder = Project.Builder::class)
 @NoAutoDetect
 class Project
+@JsonCreator
 private constructor(
-    private val id: JsonField<String>,
-    private val orgId: JsonField<String>,
-    private val name: JsonField<String>,
-    private val created: JsonField<OffsetDateTime>,
-    private val deletedAt: JsonField<OffsetDateTime>,
-    private val userId: JsonField<String>,
-    private val settings: JsonField<ProjectSettings>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("org_id") @ExcludeMissing private val orgId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("created")
+    @ExcludeMissing
+    private val created: JsonField<OffsetDateTime> = JsonMissing.of(),
+    @JsonProperty("deleted_at")
+    @ExcludeMissing
+    private val deletedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
+    @JsonProperty("settings")
+    @ExcludeMissing
+    private val settings: JsonField<ProjectSettings> = JsonMissing.of(),
+    @JsonProperty("user_id")
+    @ExcludeMissing
+    private val userId: JsonField<String> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    private var validated: Boolean = false
 
     /** Unique identifier for the project */
     fun id(): String = id.getRequired("id")
 
-    /** Unique id for the organization that the project belongs under */
-    fun orgId(): String = orgId.getRequired("org_id")
-
     /** Name of the project */
     fun name(): String = name.getRequired("name")
+
+    /** Unique id for the organization that the project belongs under */
+    fun orgId(): String = orgId.getRequired("org_id")
 
     /** Date of project creation */
     fun created(): OffsetDateTime? = created.getNullable("created")
@@ -46,46 +54,52 @@ private constructor(
     /** Date of project deletion, or null if the project is still active */
     fun deletedAt(): OffsetDateTime? = deletedAt.getNullable("deleted_at")
 
+    fun settings(): ProjectSettings? = settings.getNullable("settings")
+
     /** Identifies the user who created the project */
     fun userId(): String? = userId.getNullable("user_id")
 
-    fun settings(): ProjectSettings? = settings.getNullable("settings")
-
     /** Unique identifier for the project */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
-
-    /** Unique id for the organization that the project belongs under */
-    @JsonProperty("org_id") @ExcludeMissing fun _orgId() = orgId
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** Name of the project */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+    /** Unique id for the organization that the project belongs under */
+    @JsonProperty("org_id") @ExcludeMissing fun _orgId(): JsonField<String> = orgId
 
     /** Date of project creation */
-    @JsonProperty("created") @ExcludeMissing fun _created() = created
+    @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<OffsetDateTime> = created
 
     /** Date of project deletion, or null if the project is still active */
-    @JsonProperty("deleted_at") @ExcludeMissing fun _deletedAt() = deletedAt
+    @JsonProperty("deleted_at")
+    @ExcludeMissing
+    fun _deletedAt(): JsonField<OffsetDateTime> = deletedAt
+
+    @JsonProperty("settings") @ExcludeMissing fun _settings(): JsonField<ProjectSettings> = settings
 
     /** Identifies the user who created the project */
-    @JsonProperty("user_id") @ExcludeMissing fun _userId() = userId
-
-    @JsonProperty("settings") @ExcludeMissing fun _settings() = settings
+    @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
 
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): Project = apply {
-        if (!validated) {
-            id()
-            orgId()
-            name()
-            created()
-            deletedAt()
-            userId()
-            settings()?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        name()
+        orgId()
+        created()
+        deletedAt()
+        settings()?.validate()
+        userId()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -95,103 +109,97 @@ private constructor(
         fun builder() = Builder()
     }
 
-    class Builder {
+    /** A builder for [Project]. */
+    class Builder internal constructor() {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var orgId: JsonField<String> = JsonMissing.of()
-        private var name: JsonField<String> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var name: JsonField<String>? = null
+        private var orgId: JsonField<String>? = null
         private var created: JsonField<OffsetDateTime> = JsonMissing.of()
         private var deletedAt: JsonField<OffsetDateTime> = JsonMissing.of()
-        private var userId: JsonField<String> = JsonMissing.of()
         private var settings: JsonField<ProjectSettings> = JsonMissing.of()
+        private var userId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(project: Project) = apply {
-            this.id = project.id
-            this.orgId = project.orgId
-            this.name = project.name
-            this.created = project.created
-            this.deletedAt = project.deletedAt
-            this.userId = project.userId
-            this.settings = project.settings
-            additionalProperties(project.additionalProperties)
+            id = project.id
+            name = project.name
+            orgId = project.orgId
+            created = project.created
+            deletedAt = project.deletedAt
+            settings = project.settings
+            userId = project.userId
+            additionalProperties = project.additionalProperties.toMutableMap()
         }
 
         /** Unique identifier for the project */
         fun id(id: String) = id(JsonField.of(id))
 
         /** Unique identifier for the project */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
-
-        /** Unique id for the organization that the project belongs under */
-        fun orgId(orgId: String) = orgId(JsonField.of(orgId))
-
-        /** Unique id for the organization that the project belongs under */
-        @JsonProperty("org_id")
-        @ExcludeMissing
-        fun orgId(orgId: JsonField<String>) = apply { this.orgId = orgId }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** Name of the project */
         fun name(name: String) = name(JsonField.of(name))
 
         /** Name of the project */
-        @JsonProperty("name")
-        @ExcludeMissing
         fun name(name: JsonField<String>) = apply { this.name = name }
 
-        /** Date of project creation */
-        fun created(created: OffsetDateTime) = created(JsonField.of(created))
+        /** Unique id for the organization that the project belongs under */
+        fun orgId(orgId: String) = orgId(JsonField.of(orgId))
+
+        /** Unique id for the organization that the project belongs under */
+        fun orgId(orgId: JsonField<String>) = apply { this.orgId = orgId }
 
         /** Date of project creation */
-        @JsonProperty("created")
-        @ExcludeMissing
+        fun created(created: OffsetDateTime?) = created(JsonField.ofNullable(created))
+
+        /** Date of project creation */
         fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
 
         /** Date of project deletion, or null if the project is still active */
-        fun deletedAt(deletedAt: OffsetDateTime) = deletedAt(JsonField.of(deletedAt))
+        fun deletedAt(deletedAt: OffsetDateTime?) = deletedAt(JsonField.ofNullable(deletedAt))
 
         /** Date of project deletion, or null if the project is still active */
-        @JsonProperty("deleted_at")
-        @ExcludeMissing
         fun deletedAt(deletedAt: JsonField<OffsetDateTime>) = apply { this.deletedAt = deletedAt }
 
-        /** Identifies the user who created the project */
-        fun userId(userId: String) = userId(JsonField.of(userId))
+        fun settings(settings: ProjectSettings?) = settings(JsonField.ofNullable(settings))
 
-        /** Identifies the user who created the project */
-        @JsonProperty("user_id")
-        @ExcludeMissing
-        fun userId(userId: JsonField<String>) = apply { this.userId = userId }
-
-        fun settings(settings: ProjectSettings) = settings(JsonField.of(settings))
-
-        @JsonProperty("settings")
-        @ExcludeMissing
         fun settings(settings: JsonField<ProjectSettings>) = apply { this.settings = settings }
+
+        /** Identifies the user who created the project */
+        fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+        /** Identifies the user who created the project */
+        fun userId(userId: JsonField<String>) = apply { this.userId = userId }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
         }
 
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
         fun build(): Project =
             Project(
-                id,
-                orgId,
-                name,
+                checkRequired("id", id),
+                checkRequired("name", name),
+                checkRequired("orgId", orgId),
                 created,
                 deletedAt,
-                userId,
                 settings,
+                userId,
                 additionalProperties.toImmutable(),
             )
     }
@@ -201,15 +209,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Project && id == other.id && orgId == other.orgId && name == other.name && created == other.created && deletedAt == other.deletedAt && userId == other.userId && settings == other.settings && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Project && id == other.id && name == other.name && orgId == other.orgId && created == other.created && deletedAt == other.deletedAt && settings == other.settings && userId == other.userId && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, orgId, name, created, deletedAt, userId, settings, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, name, orgId, created, deletedAt, settings, userId, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Project{id=$id, orgId=$orgId, name=$name, created=$created, deletedAt=$deletedAt, userId=$userId, settings=$settings, additionalProperties=$additionalProperties}"
+        "Project{id=$id, name=$name, orgId=$orgId, created=$created, deletedAt=$deletedAt, settings=$settings, userId=$userId, additionalProperties=$additionalProperties}"
 }

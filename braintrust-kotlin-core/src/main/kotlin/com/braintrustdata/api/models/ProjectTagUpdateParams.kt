@@ -3,55 +3,67 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
+/**
+ * Partially update a project_tag object. Specify the fields to update in the payload. Any
+ * object-type fields will be deep-merged with existing content. Currently we do not support
+ * removing fields or setting them to null.
+ */
 class ProjectTagUpdateParams
-constructor(
+private constructor(
     private val projectTagId: String,
-    private val color: String?,
-    private val description: String?,
-    private val name: String?,
+    private val body: ProjectTagUpdateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+) : Params {
 
+    /** ProjectTag id */
     fun projectTagId(): String = projectTagId
 
-    fun color(): String? = color
+    /** Color of the tag for the UI */
+    fun color(): String? = body.color()
 
-    fun description(): String? = description
+    /** Textual description of the project tag */
+    fun description(): String? = body.description()
 
-    fun name(): String? = name
+    /** Name of the project tag */
+    fun name(): String? = body.name()
+
+    /** Color of the tag for the UI */
+    fun _color(): JsonField<String> = body._color()
+
+    /** Textual description of the project tag */
+    fun _description(): JsonField<String> = body._description()
+
+    /** Name of the project tag */
+    fun _name(): JsonField<String> = body._name()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+    internal fun _body(): ProjectTagUpdateBody = body
 
-    internal fun getBody(): ProjectTagUpdateBody {
-        return ProjectTagUpdateBody(
-            color,
-            description,
-            name,
-            additionalBodyProperties,
-        )
-    }
+    override fun _headers(): Headers = additionalHeaders
 
-    internal fun getHeaders(): Headers = additionalHeaders
-
-    internal fun getQueryParams(): QueryParams = additionalQueryParams
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     fun getPathParam(index: Int): String {
         return when (index) {
@@ -60,28 +72,59 @@ constructor(
         }
     }
 
-    @JsonDeserialize(builder = ProjectTagUpdateBody.Builder::class)
     @NoAutoDetect
     class ProjectTagUpdateBody
+    @JsonCreator
     internal constructor(
-        private val color: String?,
-        private val description: String?,
-        private val name: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("color")
+        @ExcludeMissing
+        private val color: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("description")
+        @ExcludeMissing
+        private val description: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name")
+        @ExcludeMissing
+        private val name: JsonField<String> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** Color of the tag for the UI */
-        @JsonProperty("color") fun color(): String? = color
+        fun color(): String? = color.getNullable("color")
 
         /** Textual description of the project tag */
-        @JsonProperty("description") fun description(): String? = description
+        fun description(): String? = description.getNullable("description")
 
         /** Name of the project tag */
-        @JsonProperty("name") fun name(): String? = name
+        fun name(): String? = name.getNullable("name")
+
+        /** Color of the tag for the UI */
+        @JsonProperty("color") @ExcludeMissing fun _color(): JsonField<String> = color
+
+        /** Textual description of the project tag */
+        @JsonProperty("description")
+        @ExcludeMissing
+        fun _description(): JsonField<String> = description
+
+        /** Name of the project tag */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): ProjectTagUpdateBody = apply {
+            if (validated) {
+                return@apply
+            }
+
+            color()
+            description()
+            name()
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -90,42 +133,58 @@ constructor(
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [ProjectTagUpdateBody]. */
+        class Builder internal constructor() {
 
-            private var color: String? = null
-            private var description: String? = null
-            private var name: String? = null
+            private var color: JsonField<String> = JsonMissing.of()
+            private var description: JsonField<String> = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(projectTagUpdateBody: ProjectTagUpdateBody) = apply {
-                this.color = projectTagUpdateBody.color
-                this.description = projectTagUpdateBody.description
-                this.name = projectTagUpdateBody.name
-                additionalProperties(projectTagUpdateBody.additionalProperties)
+                color = projectTagUpdateBody.color
+                description = projectTagUpdateBody.description
+                name = projectTagUpdateBody.name
+                additionalProperties = projectTagUpdateBody.additionalProperties.toMutableMap()
             }
 
             /** Color of the tag for the UI */
-            @JsonProperty("color") fun color(color: String) = apply { this.color = color }
+            fun color(color: String?) = color(JsonField.ofNullable(color))
+
+            /** Color of the tag for the UI */
+            fun color(color: JsonField<String>) = apply { this.color = color }
 
             /** Textual description of the project tag */
-            @JsonProperty("description")
-            fun description(description: String) = apply { this.description = description }
+            fun description(description: String?) = description(JsonField.ofNullable(description))
+
+            /** Textual description of the project tag */
+            fun description(description: JsonField<String>) = apply {
+                this.description = description
+            }
 
             /** Name of the project tag */
-            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+            fun name(name: String?) = name(JsonField.ofNullable(name))
+
+            /** Name of the project tag */
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): ProjectTagUpdateBody =
@@ -162,39 +221,61 @@ constructor(
         fun builder() = Builder()
     }
 
+    /** A builder for [ProjectTagUpdateParams]. */
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var projectTagId: String? = null
-        private var color: String? = null
-        private var description: String? = null
-        private var name: String? = null
+        private var body: ProjectTagUpdateBody.Builder = ProjectTagUpdateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(projectTagUpdateParams: ProjectTagUpdateParams) = apply {
             projectTagId = projectTagUpdateParams.projectTagId
-            color = projectTagUpdateParams.color
-            description = projectTagUpdateParams.description
-            name = projectTagUpdateParams.name
+            body = projectTagUpdateParams.body.toBuilder()
             additionalHeaders = projectTagUpdateParams.additionalHeaders.toBuilder()
             additionalQueryParams = projectTagUpdateParams.additionalQueryParams.toBuilder()
-            additionalBodyProperties =
-                projectTagUpdateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** ProjectTag id */
         fun projectTagId(projectTagId: String) = apply { this.projectTagId = projectTagId }
 
         /** Color of the tag for the UI */
-        fun color(color: String) = apply { this.color = color }
+        fun color(color: String?) = apply { body.color(color) }
+
+        /** Color of the tag for the UI */
+        fun color(color: JsonField<String>) = apply { body.color(color) }
 
         /** Textual description of the project tag */
-        fun description(description: String) = apply { this.description = description }
+        fun description(description: String?) = apply { body.description(description) }
+
+        /** Textual description of the project tag */
+        fun description(description: JsonField<String>) = apply { body.description(description) }
 
         /** Name of the project tag */
-        fun name(name: String) = apply { this.name = name }
+        fun name(name: String?) = apply { body.name(name) }
+
+        /** Name of the project tag */
+        fun name(name: JsonField<String>) = apply { body.name(name) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -294,37 +375,12 @@ constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            putAllAdditionalBodyProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply {
-            additionalBodyProperties.remove(key)
-        }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalBodyProperty)
-        }
-
         fun build(): ProjectTagUpdateParams =
             ProjectTagUpdateParams(
-                checkNotNull(projectTagId) { "`projectTagId` is required but was not set" },
-                color,
-                description,
-                name,
+                checkRequired("projectTagId", projectTagId),
+                body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
-                additionalBodyProperties.toImmutable(),
             )
     }
 
@@ -333,11 +389,11 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is ProjectTagUpdateParams && projectTagId == other.projectTagId && color == other.color && description == other.description && name == other.name && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is ProjectTagUpdateParams && projectTagId == other.projectTagId && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(projectTagId, color, description, name, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(projectTagId, body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "ProjectTagUpdateParams{projectTagId=$projectTagId, color=$color, description=$description, name=$name, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "ProjectTagUpdateParams{projectTagId=$projectTagId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

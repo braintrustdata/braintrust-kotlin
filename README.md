@@ -1,30 +1,30 @@
 # Braintrust Kotlin API Library
 
-The Braintrust Kotlin SDK provides convenient access to the Braintrust REST API from applications written in Kotlin. It includes helper classes with helpful types and documentation for every request and response property.
+<!-- x-release-please-start-version -->
+
+[![Maven Central](https://img.shields.io/maven-central/v/com.braintrustdata.api/braintrust-kotlin)](https://central.sonatype.com/artifact/com.braintrustdata.api/braintrust-kotlin/0.3.0)
+
+<!-- x-release-please-end -->
+
+The Braintrust Kotlin SDK provides convenient access to the Braintrust REST API from applications written in Kotlin.
 
 The Braintrust Kotlin SDK is similar to the Braintrust Java SDK but with minor differences that make it more ergonomic for use in Kotlin, such as nullable values instead of `Optional`, `Sequence` instead of `Stream`, and suspend functions instead of `CompletableFuture`.
 
 It is generated with [Stainless](https://www.stainlessapi.com/).
 
-## Documentation
+The REST API documentation can be found on [www.braintrustdata.com](https://www.braintrustdata.com/docs/api/spec).
 
-The REST API documentation can be found on [www.braintrustdata.com](https://www.braintrustdata.com/docs/api/spec).
-
----
-
-## Getting started
-
-### Install dependencies
-
-#### Gradle
+## Installation
 
 <!-- x-release-please-start-version -->
+
+### Gradle
 
 ```kotlin
 implementation("com.braintrustdata.api:braintrust-kotlin:0.3.0")
 ```
 
-#### Maven
+### Maven
 
 ```xml
 <dependency>
@@ -36,6 +36,12 @@ implementation("com.braintrustdata.api:braintrust-kotlin:0.3.0")
 
 <!-- x-release-please-end -->
 
+## Requirements
+
+This library requires Java 8 or later.
+
+## Usage
+
 ### Configure the client
 
 Use `BraintrustOkHttpClient.builder()` to configure the client.
@@ -43,10 +49,13 @@ Use `BraintrustOkHttpClient.builder()` to configure the client.
 Alternately, set the environment with `BRAINTRUST_API_KEY`, and use `BraintrustOkHttpClient.fromEnv()` to read from the environment.
 
 ```kotlin
-val client = BraintrustOkHttpClient.fromEnv()
+import com.braintrustdata.api.client.BraintrustClient
+import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
+
+val client: BraintrustClient = BraintrustOkHttpClient.fromEnv()
 
 // Note: you can also call fromEnv() from the client builder, for example if you need to set additional properties
-val client = BraintrustOkHttpClient.builder()
+val client: BraintrustClient = BraintrustOkHttpClient.builder()
     .fromEnv()
     // ... set properties on the builder
     .build()
@@ -62,32 +71,55 @@ Read the documentation for more configuration options.
 
 ### Example: creating a resource
 
-To create a new project, first use the `ProjectCreateParams` builder to specify attributes,
-then pass that to the `create` method of the `projects` service.
+To create a new project, first use the `ProjectCreateParams` builder to specify attributes, then pass that to the `create` method of the `projects` service.
 
 ```kotlin
 import com.braintrustdata.api.models.Project
 import com.braintrustdata.api.models.ProjectCreateParams
 
-val params = ProjectCreateParams.builder()
+val params: ProjectCreateParams = ProjectCreateParams.builder()
     .name("foobar")
     .build()
-val project = client.projects().create(params)
+val project: Project = client.projects().create(params)
 ```
 
 ### Example: listing resources
 
-The Braintrust API provides a `list` method to get a paginated list of projects.
-You can retrieve the first page by:
+The Braintrust API provides a `list` method to get a paginated list of projects. You can retrieve the first page by:
 
 ```kotlin
-import com.braintrustdata.api.models.Page
 import com.braintrustdata.api.models.Project
+import com.braintrustdata.api.models.ProjectListPage
 
-val page = client.projects().list()
+val page: ProjectListPage = client.projects().list()
 for (project: Project in page.objects()) {
     print(project)
 }
+```
+
+Use the `ProjectListParams` builder to set parameters:
+
+```kotlin
+import com.braintrustdata.api.models.ProjectListPage
+import com.braintrustdata.api.models.ProjectListParams
+
+val params: ProjectListParams = ProjectListParams.builder()
+    .endingBefore("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+    .ids("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+    .limit(0L)
+    .orgName("org_name")
+    .projectName("project_name")
+    .startingAfter("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+    .build()
+val page1: ProjectListPage = client.projects().list(params)
+
+// Using the `from` method of the builder you can reuse previous params values:
+val page2: ProjectListPage = client.projects().list(ProjectListParams.builder()
+    .from(params)
+    .build())
+
+// Or easily get params for the next page by using the helper `getNextPageParams`:
+val page3: ProjectListPage = client.projects().list(params.getNextPageParams(page2))
 ```
 
 See [Pagination](#pagination) below for more information on transparently working with lists of objects without worrying about fetching each page.
@@ -100,19 +132,7 @@ See [Pagination](#pagination) below for more information on transparently workin
 
 To make a request to the Braintrust API, you generally build an instance of the appropriate `Params` class.
 
-In [Example: creating a resource](#example-creating-a-resource) above, we used the `ProjectCreateParams.builder()` to pass to
-the `create` method of the `projects` service.
-
-Sometimes, the API may support other properties that are not yet supported in the Kotlin SDK types. In that case,
-you can attach them using the `putAdditionalProperty` method.
-
-```kotlin
-import com.braintrustdata.api.models.core.JsonValue
-val params = ProjectCreateParams.builder()
-    // ... normal properties
-    .putAdditionalProperty("secret_param", JsonValue.from("4242"))
-    .build()
-```
+See [Undocumented request params](#undocumented-request-params) for how to send arbitrary parameters.
 
 ## Responses
 
@@ -121,16 +141,20 @@ val params = ProjectCreateParams.builder()
 When receiving a response, the Braintrust Kotlin SDK will deserialize it into instances of the typed model classes. In rare cases, the API may return a response property that doesn't match the expected Kotlin type. If you directly access the mistaken property, the SDK will throw an unchecked `BraintrustInvalidDataException` at runtime. If you would prefer to check in advance that that response is completely well-typed, call `.validate()` on the returned model.
 
 ```kotlin
-val project = client.projects().create().validate()
+import com.braintrustdata.api.models.Project
+
+val project: Project = client.projects().create().validate()
 ```
 
 ### Response properties as JSON
 
-In rare cases, you may want to access the underlying JSON value for a response property rather than using the typed version provided by
-this SDK. Each model property has a corresponding JSON version, with an underscore before the method name, which returns a `JsonField` value.
+In rare cases, you may want to access the underlying JSON value for a response property rather than using the typed version provided by this SDK. Each model property has a corresponding JSON version, with an underscore before the method name, which returns a `JsonField` value.
 
 ```kotlin
-val field = responseObj._field
+import com.braintrustdata.api.core.JsonField
+import java.util.Optional
+
+val field: JsonField = responseObj._field
 
 if (field.isMissing()) {
   // Value was not specified in the JSON response
@@ -142,7 +166,7 @@ if (field.isMissing()) {
 
   // If the value given by the API did not match the shape that the SDK expects
   // you can deserialise into a custom type
-  val myObj = responseObj._field.asUnknown()?.convert(MyClass.class)
+  val myObj: MyClass = responseObj._field.asUnknown()?.convert(MyClass.class)
 }
 ```
 
@@ -151,24 +175,27 @@ if (field.isMissing()) {
 Sometimes, the server response may include additional properties that are not yet available in this library's types. You can access them using the model's `_additionalProperties` method:
 
 ```kotlin
-val secret = aISecret._additionalProperties().get("secret_field")
+import com.braintrustdata.api.core.JsonValue
+
+val secret: JsonValue = aISecret._additionalProperties().get("secret_field")
 ```
 
 ---
 
 ## Pagination
 
-For methods that return a paginated list of results, this library provides convenient ways access
-the results either one page at a time, or item-by-item across all pages.
+For methods that return a paginated list of results, this library provides convenient ways access the results either one page at a time, or item-by-item across all pages.
 
 ### Auto-pagination
 
-To iterate through all results across all pages, you can use `autoPager`,
-which automatically handles fetching more pages for you:
+To iterate through all results across all pages, you can use `autoPager`, which automatically handles fetching more pages for you:
 
 ### Synchronous
 
 ```kotlin
+import com.braintrustdata.api.models.Project
+import com.braintrustdata.api.models.ProjectListPage
+
 // As a Sequence:
 client.projects().list(params).autoPager()
     .take(50)
@@ -186,12 +213,12 @@ asyncClient.projects().list(params).autoPager()
 
 ### Manual pagination
 
-If none of the above helpers meet your needs, you can also manually request pages one-by-one.
-A page of results has a `data()` method to fetch the list of objects, as well as top-level
-`response` and other methods to fetch top-level data about the page. It also has methods
-`hasNextPage`, `getNextPage`, and `getNextPageParams` methods to help with pagination.
+If none of the above helpers meet your needs, you can also manually request pages one-by-one. A page of results has a `data()` method to fetch the list of objects, as well as top-level `response` and other methods to fetch top-level data about the page. It also has methods `hasNextPage`, `getNextPage`, and `getNextPageParams` methods to help with pagination.
 
 ```kotlin
+import com.braintrustdata.api.models.Project
+import com.braintrustdata.api.models.ProjectListPage
+
 val page = client.projects().list(params)
 while (page != null) {
     for (project in page.objects) {
@@ -210,32 +237,34 @@ This library throws exceptions in a single hierarchy for easy handling:
 
 - **`BraintrustException`** - Base exception for all exceptions
 
-  - **`BraintrustServiceException`** - HTTP errors with a well-formed response body we were able to parse. The exception message and the `.debuggingRequestId()` will be set by the server.
+- **`BraintrustServiceException`** - HTTP errors with a well-formed response body we were able to parse. The exception message and the `.debuggingRequestId()` will be set by the server.
 
-    | 400    | BadRequestException           |
-    | ------ | ----------------------------- |
-    | 401    | AuthenticationException       |
-    | 403    | PermissionDeniedException     |
-    | 404    | NotFoundException             |
-    | 422    | UnprocessableEntityException  |
-    | 429    | RateLimitException            |
-    | 5xx    | InternalServerException       |
-    | others | UnexpectedStatusCodeException |
+  | 400    | BadRequestException           |
+  | ------ | ----------------------------- |
+  | 401    | AuthenticationException       |
+  | 403    | PermissionDeniedException     |
+  | 404    | NotFoundException             |
+  | 422    | UnprocessableEntityException  |
+  | 429    | RateLimitException            |
+  | 5xx    | InternalServerException       |
+  | others | UnexpectedStatusCodeException |
 
-  - **`BraintrustIoException`** - I/O networking errors
-  - **`BraintrustInvalidDataException`** - any other exceptions on the client side, e.g.:
-    - We failed to serialize the request body
-    - We failed to parse the response body (has access to response code and body)
+- **`BraintrustIoException`** - I/O networking errors
+- **`BraintrustInvalidDataException`** - any other exceptions on the client side, e.g.:
+  - We failed to serialize the request body
+  - We failed to parse the response body (has access to response code and body)
 
 ## Network options
 
 ### Retries
 
-Requests that experience certain errors are automatically retried 2 times by default, with a short exponential backoff. Connection errors (for example, due to a network connectivity problem), 408 Request Timeout, 409 Conflict, 429 Rate Limit, and >=500 Internal errors will all be retried by default.
-You can provide a `maxRetries` on the client builder to configure this:
+Requests that experience certain errors are automatically retried 2 times by default, with a short exponential backoff. Connection errors (for example, due to a network connectivity problem), 408 Request Timeout, 409 Conflict, 429 Rate Limit, and >=500 Internal errors will all be retried by default. You can provide a `maxRetries` on the client builder to configure this:
 
 ```kotlin
-val client = BraintrustOkHttpClient.builder()
+import com.braintrustdata.api.client.BraintrustClient
+import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
+
+val client: BraintrustClient = BraintrustOkHttpClient.builder()
     .fromEnv()
     .maxRetries(4)
     .build()
@@ -246,7 +275,11 @@ val client = BraintrustOkHttpClient.builder()
 Requests time out after 1 minute by default. You can configure this on the client builder:
 
 ```kotlin
-val client = BraintrustOkHttpClient.builder()
+import com.braintrustdata.api.client.BraintrustClient
+import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
+import java.time.Duration
+
+val client: BraintrustClient = BraintrustOkHttpClient.builder()
     .fromEnv()
     .timeout(Duration.ofSeconds(30))
     .build()
@@ -257,14 +290,43 @@ val client = BraintrustOkHttpClient.builder()
 Requests can be routed through a proxy. You can configure this on the client builder:
 
 ```kotlin
-val client = BraintrustOkHttpClient.builder()
+import com.braintrustdata.api.client.BraintrustClient
+import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
+import java.net.InetSocketAddress
+import java.net.Proxy
+
+val client: BraintrustClient = BraintrustOkHttpClient.builder()
     .fromEnv()
-    .proxy(new Proxy(
-        Type.HTTP,
-        new InetSocketAddress("proxy.com", 8080)
-    ))
+    .proxy(Proxy(Proxy.Type.HTTP, InetSocketAddress("example.com", 8080)))
     .build()
 ```
+
+## Making custom/undocumented requests
+
+This library is typed for convenient access to the documented API. If you need to access undocumented params or response properties, the library can still be used.
+
+### Undocumented request params
+
+In [Example: creating a resource](#example-creating-a-resource) above, we used the `ProjectCreateParams.builder()` to pass to the `create` method of the `projects` service.
+
+Sometimes, the API may support other properties that are not yet supported in the Kotlin SDK types. In that case, you can attach them using raw setters:
+
+```kotlin
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.models.ProjectCreateParams
+
+val params: ProjectCreateParams = ProjectCreateParams.builder()
+    .putAdditionalHeader("Secret-Header", "42")
+    .putAdditionalQueryParam("secret_query_param", "42")
+    .putAdditionalBodyProperty("secretProperty", JsonValue.from("42"))
+    .build()
+```
+
+You can also use the `putAdditionalProperty` method on nested headers, query params, or body objects.
+
+### Undocumented response properties
+
+To access undocumented response properties, you can use `res._additionalProperties()` on a response object to get a map of untyped fields of type `Map<String, JsonValue>`. You can then access fields like `res._additionalProperties().get("secret_prop").asString()` or use other helpers defined on the `JsonValue` class to extract it to a desired type.
 
 ## Logging
 
@@ -286,13 +348,9 @@ $ export BRAINTRUST_LOG=debug
 
 This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) conventions, though certain backwards-incompatible changes may be released as minor versions:
 
-1. Changes to library internals which are technically public but not intended or documented for external use. _(Please open a GitHub issue to let us know if you are relying on such internals)_.
+1. Changes to library internals which are technically public but not intended or documented for external use. _(Please open a GitHub issue to let us know if you are relying on such internals.)_
 2. Changes that we do not expect to impact the vast majority of users in practice.
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
 We are keen for your feedback; please open an [issue](https://www.github.com/braintrustdata/braintrust-kotlin/issues) with questions, bugs, or suggestions.
-
-## Requirements
-
-This library requires Java 8 or later.

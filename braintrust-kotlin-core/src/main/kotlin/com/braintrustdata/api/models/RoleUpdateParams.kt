@@ -5,69 +5,86 @@ package com.braintrustdata.api.models
 import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
+/**
+ * Partially update a role object. Specify the fields to update in the payload. Any object-type
+ * fields will be deep-merged with existing content. Currently we do not support removing fields or
+ * setting them to null.
+ */
 class RoleUpdateParams
-constructor(
+private constructor(
     private val roleId: String,
-    private val addMemberPermissions: List<AddMemberPermission>?,
-    private val addMemberRoles: List<String>?,
-    private val description: String?,
-    private val name: String?,
-    private val removeMemberPermissions: List<RemoveMemberPermission>?,
-    private val removeMemberRoles: List<String>?,
+    private val body: RoleUpdateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+) : Params {
 
+    /** Role id */
     fun roleId(): String = roleId
 
-    fun addMemberPermissions(): List<AddMemberPermission>? = addMemberPermissions
+    /** A list of permissions to add to the role */
+    fun addMemberPermissions(): List<AddMemberPermission>? = body.addMemberPermissions()
 
-    fun addMemberRoles(): List<String>? = addMemberRoles
+    /** A list of role IDs to add to the role's inheriting-from set */
+    fun addMemberRoles(): List<String>? = body.addMemberRoles()
 
-    fun description(): String? = description
+    /** Textual description of the role */
+    fun description(): String? = body.description()
 
-    fun name(): String? = name
+    /** Name of the role */
+    fun name(): String? = body.name()
 
-    fun removeMemberPermissions(): List<RemoveMemberPermission>? = removeMemberPermissions
+    /** A list of permissions to remove from the role */
+    fun removeMemberPermissions(): List<RemoveMemberPermission>? = body.removeMemberPermissions()
 
-    fun removeMemberRoles(): List<String>? = removeMemberRoles
+    /** A list of role IDs to remove from the role's inheriting-from set */
+    fun removeMemberRoles(): List<String>? = body.removeMemberRoles()
+
+    /** A list of permissions to add to the role */
+    fun _addMemberPermissions(): JsonField<List<AddMemberPermission>> = body._addMemberPermissions()
+
+    /** A list of role IDs to add to the role's inheriting-from set */
+    fun _addMemberRoles(): JsonField<List<String>> = body._addMemberRoles()
+
+    /** Textual description of the role */
+    fun _description(): JsonField<String> = body._description()
+
+    /** Name of the role */
+    fun _name(): JsonField<String> = body._name()
+
+    /** A list of permissions to remove from the role */
+    fun _removeMemberPermissions(): JsonField<List<RemoveMemberPermission>> =
+        body._removeMemberPermissions()
+
+    /** A list of role IDs to remove from the role's inheriting-from set */
+    fun _removeMemberRoles(): JsonField<List<String>> = body._removeMemberRoles()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+    internal fun _body(): RoleUpdateBody = body
 
-    internal fun getBody(): RoleUpdateBody {
-        return RoleUpdateBody(
-            addMemberPermissions,
-            addMemberRoles,
-            description,
-            name,
-            removeMemberPermissions,
-            removeMemberRoles,
-            additionalBodyProperties,
-        )
-    }
+    override fun _headers(): Headers = additionalHeaders
 
-    internal fun getHeaders(): Headers = additionalHeaders
-
-    internal fun getQueryParams(): QueryParams = additionalQueryParams
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     fun getPathParam(index: Int): String {
         return when (index) {
@@ -76,43 +93,102 @@ constructor(
         }
     }
 
-    @JsonDeserialize(builder = RoleUpdateBody.Builder::class)
     @NoAutoDetect
     class RoleUpdateBody
+    @JsonCreator
     internal constructor(
-        private val addMemberPermissions: List<AddMemberPermission>?,
-        private val addMemberRoles: List<String>?,
-        private val description: String?,
-        private val name: String?,
-        private val removeMemberPermissions: List<RemoveMemberPermission>?,
-        private val removeMemberRoles: List<String>?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("add_member_permissions")
+        @ExcludeMissing
+        private val addMemberPermissions: JsonField<List<AddMemberPermission>> = JsonMissing.of(),
+        @JsonProperty("add_member_roles")
+        @ExcludeMissing
+        private val addMemberRoles: JsonField<List<String>> = JsonMissing.of(),
+        @JsonProperty("description")
+        @ExcludeMissing
+        private val description: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name")
+        @ExcludeMissing
+        private val name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("remove_member_permissions")
+        @ExcludeMissing
+        private val removeMemberPermissions: JsonField<List<RemoveMemberPermission>> =
+            JsonMissing.of(),
+        @JsonProperty("remove_member_roles")
+        @ExcludeMissing
+        private val removeMemberRoles: JsonField<List<String>> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** A list of permissions to add to the role */
-        @JsonProperty("add_member_permissions")
-        fun addMemberPermissions(): List<AddMemberPermission>? = addMemberPermissions
+        fun addMemberPermissions(): List<AddMemberPermission>? =
+            addMemberPermissions.getNullable("add_member_permissions")
 
         /** A list of role IDs to add to the role's inheriting-from set */
-        @JsonProperty("add_member_roles") fun addMemberRoles(): List<String>? = addMemberRoles
+        fun addMemberRoles(): List<String>? = addMemberRoles.getNullable("add_member_roles")
 
         /** Textual description of the role */
-        @JsonProperty("description") fun description(): String? = description
+        fun description(): String? = description.getNullable("description")
 
         /** Name of the role */
-        @JsonProperty("name") fun name(): String? = name
+        fun name(): String? = name.getNullable("name")
+
+        /** A list of permissions to remove from the role */
+        fun removeMemberPermissions(): List<RemoveMemberPermission>? =
+            removeMemberPermissions.getNullable("remove_member_permissions")
+
+        /** A list of role IDs to remove from the role's inheriting-from set */
+        fun removeMemberRoles(): List<String>? =
+            removeMemberRoles.getNullable("remove_member_roles")
+
+        /** A list of permissions to add to the role */
+        @JsonProperty("add_member_permissions")
+        @ExcludeMissing
+        fun _addMemberPermissions(): JsonField<List<AddMemberPermission>> = addMemberPermissions
+
+        /** A list of role IDs to add to the role's inheriting-from set */
+        @JsonProperty("add_member_roles")
+        @ExcludeMissing
+        fun _addMemberRoles(): JsonField<List<String>> = addMemberRoles
+
+        /** Textual description of the role */
+        @JsonProperty("description")
+        @ExcludeMissing
+        fun _description(): JsonField<String> = description
+
+        /** Name of the role */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         /** A list of permissions to remove from the role */
         @JsonProperty("remove_member_permissions")
-        fun removeMemberPermissions(): List<RemoveMemberPermission>? = removeMemberPermissions
+        @ExcludeMissing
+        fun _removeMemberPermissions(): JsonField<List<RemoveMemberPermission>> =
+            removeMemberPermissions
 
         /** A list of role IDs to remove from the role's inheriting-from set */
         @JsonProperty("remove_member_roles")
-        fun removeMemberRoles(): List<String>? = removeMemberRoles
+        @ExcludeMissing
+        fun _removeMemberRoles(): JsonField<List<String>> = removeMemberRoles
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): RoleUpdateBody = apply {
+            if (validated) {
+                return@apply
+            }
+
+            addMemberPermissions()?.forEach { it.validate() }
+            addMemberRoles()
+            description()
+            name()
+            removeMemberPermissions()?.forEach { it.validate() }
+            removeMemberRoles()
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -121,80 +197,158 @@ constructor(
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [RoleUpdateBody]. */
+        class Builder internal constructor() {
 
-            private var addMemberPermissions: List<AddMemberPermission>? = null
-            private var addMemberRoles: List<String>? = null
-            private var description: String? = null
-            private var name: String? = null
-            private var removeMemberPermissions: List<RemoveMemberPermission>? = null
-            private var removeMemberRoles: List<String>? = null
+            private var addMemberPermissions: JsonField<MutableList<AddMemberPermission>>? = null
+            private var addMemberRoles: JsonField<MutableList<String>>? = null
+            private var description: JsonField<String> = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
+            private var removeMemberPermissions: JsonField<MutableList<RemoveMemberPermission>>? =
+                null
+            private var removeMemberRoles: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(roleUpdateBody: RoleUpdateBody) = apply {
-                this.addMemberPermissions = roleUpdateBody.addMemberPermissions
-                this.addMemberRoles = roleUpdateBody.addMemberRoles
-                this.description = roleUpdateBody.description
-                this.name = roleUpdateBody.name
-                this.removeMemberPermissions = roleUpdateBody.removeMemberPermissions
-                this.removeMemberRoles = roleUpdateBody.removeMemberRoles
-                additionalProperties(roleUpdateBody.additionalProperties)
+                addMemberPermissions =
+                    roleUpdateBody.addMemberPermissions.map { it.toMutableList() }
+                addMemberRoles = roleUpdateBody.addMemberRoles.map { it.toMutableList() }
+                description = roleUpdateBody.description
+                name = roleUpdateBody.name
+                removeMemberPermissions =
+                    roleUpdateBody.removeMemberPermissions.map { it.toMutableList() }
+                removeMemberRoles = roleUpdateBody.removeMemberRoles.map { it.toMutableList() }
+                additionalProperties = roleUpdateBody.additionalProperties.toMutableMap()
             }
 
             /** A list of permissions to add to the role */
-            @JsonProperty("add_member_permissions")
-            fun addMemberPermissions(addMemberPermissions: List<AddMemberPermission>) = apply {
-                this.addMemberPermissions = addMemberPermissions
+            fun addMemberPermissions(addMemberPermissions: List<AddMemberPermission>?) =
+                addMemberPermissions(JsonField.ofNullable(addMemberPermissions))
+
+            /** A list of permissions to add to the role */
+            fun addMemberPermissions(addMemberPermissions: JsonField<List<AddMemberPermission>>) =
+                apply {
+                    this.addMemberPermissions = addMemberPermissions.map { it.toMutableList() }
+                }
+
+            /** A list of permissions to add to the role */
+            fun addAddMemberPermission(addMemberPermission: AddMemberPermission) = apply {
+                addMemberPermissions =
+                    (addMemberPermissions ?: JsonField.of(mutableListOf())).apply {
+                        (asKnown()
+                                ?: throw IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                ))
+                            .add(addMemberPermission)
+                    }
             }
 
             /** A list of role IDs to add to the role's inheriting-from set */
-            @JsonProperty("add_member_roles")
-            fun addMemberRoles(addMemberRoles: List<String>) = apply {
-                this.addMemberRoles = addMemberRoles
+            fun addMemberRoles(addMemberRoles: List<String>?) =
+                addMemberRoles(JsonField.ofNullable(addMemberRoles))
+
+            /** A list of role IDs to add to the role's inheriting-from set */
+            fun addMemberRoles(addMemberRoles: JsonField<List<String>>) = apply {
+                this.addMemberRoles = addMemberRoles.map { it.toMutableList() }
+            }
+
+            /** A list of role IDs to add to the role's inheriting-from set */
+            fun addAddMemberRole(addMemberRole: String) = apply {
+                addMemberRoles =
+                    (addMemberRoles ?: JsonField.of(mutableListOf())).apply {
+                        (asKnown()
+                                ?: throw IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                ))
+                            .add(addMemberRole)
+                    }
             }
 
             /** Textual description of the role */
-            @JsonProperty("description")
-            fun description(description: String) = apply { this.description = description }
+            fun description(description: String?) = description(JsonField.ofNullable(description))
+
+            /** Textual description of the role */
+            fun description(description: JsonField<String>) = apply {
+                this.description = description
+            }
 
             /** Name of the role */
-            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+            fun name(name: String?) = name(JsonField.ofNullable(name))
+
+            /** Name of the role */
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /** A list of permissions to remove from the role */
-            @JsonProperty("remove_member_permissions")
-            fun removeMemberPermissions(removeMemberPermissions: List<RemoveMemberPermission>) =
-                apply {
-                    this.removeMemberPermissions = removeMemberPermissions
-                }
+            fun removeMemberPermissions(removeMemberPermissions: List<RemoveMemberPermission>?) =
+                removeMemberPermissions(JsonField.ofNullable(removeMemberPermissions))
+
+            /** A list of permissions to remove from the role */
+            fun removeMemberPermissions(
+                removeMemberPermissions: JsonField<List<RemoveMemberPermission>>
+            ) = apply {
+                this.removeMemberPermissions = removeMemberPermissions.map { it.toMutableList() }
+            }
+
+            /** A list of permissions to remove from the role */
+            fun addRemoveMemberPermission(removeMemberPermission: RemoveMemberPermission) = apply {
+                removeMemberPermissions =
+                    (removeMemberPermissions ?: JsonField.of(mutableListOf())).apply {
+                        (asKnown()
+                                ?: throw IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                ))
+                            .add(removeMemberPermission)
+                    }
+            }
 
             /** A list of role IDs to remove from the role's inheriting-from set */
-            @JsonProperty("remove_member_roles")
-            fun removeMemberRoles(removeMemberRoles: List<String>) = apply {
-                this.removeMemberRoles = removeMemberRoles
+            fun removeMemberRoles(removeMemberRoles: List<String>?) =
+                removeMemberRoles(JsonField.ofNullable(removeMemberRoles))
+
+            /** A list of role IDs to remove from the role's inheriting-from set */
+            fun removeMemberRoles(removeMemberRoles: JsonField<List<String>>) = apply {
+                this.removeMemberRoles = removeMemberRoles.map { it.toMutableList() }
+            }
+
+            /** A list of role IDs to remove from the role's inheriting-from set */
+            fun addRemoveMemberRole(removeMemberRole: String) = apply {
+                removeMemberRoles =
+                    (removeMemberRoles ?: JsonField.of(mutableListOf())).apply {
+                        (asKnown()
+                                ?: throw IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                ))
+                            .add(removeMemberRole)
+                    }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             fun build(): RoleUpdateBody =
                 RoleUpdateBody(
-                    addMemberPermissions?.toImmutable(),
-                    addMemberRoles?.toImmutable(),
+                    (addMemberPermissions ?: JsonMissing.of()).map { it.toImmutable() },
+                    (addMemberRoles ?: JsonMissing.of()).map { it.toImmutable() },
                     description,
                     name,
-                    removeMemberPermissions?.toImmutable(),
-                    removeMemberRoles?.toImmutable(),
+                    (removeMemberPermissions ?: JsonMissing.of()).map { it.toImmutable() },
+                    (removeMemberRoles ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -224,87 +378,114 @@ constructor(
         fun builder() = Builder()
     }
 
+    /** A builder for [RoleUpdateParams]. */
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var roleId: String? = null
-        private var addMemberPermissions: MutableList<AddMemberPermission> = mutableListOf()
-        private var addMemberRoles: MutableList<String> = mutableListOf()
-        private var description: String? = null
-        private var name: String? = null
-        private var removeMemberPermissions: MutableList<RemoveMemberPermission> = mutableListOf()
-        private var removeMemberRoles: MutableList<String> = mutableListOf()
+        private var body: RoleUpdateBody.Builder = RoleUpdateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(roleUpdateParams: RoleUpdateParams) = apply {
             roleId = roleUpdateParams.roleId
-            addMemberPermissions =
-                roleUpdateParams.addMemberPermissions?.toMutableList() ?: mutableListOf()
-            addMemberRoles = roleUpdateParams.addMemberRoles?.toMutableList() ?: mutableListOf()
-            description = roleUpdateParams.description
-            name = roleUpdateParams.name
-            removeMemberPermissions =
-                roleUpdateParams.removeMemberPermissions?.toMutableList() ?: mutableListOf()
-            removeMemberRoles =
-                roleUpdateParams.removeMemberRoles?.toMutableList() ?: mutableListOf()
+            body = roleUpdateParams.body.toBuilder()
             additionalHeaders = roleUpdateParams.additionalHeaders.toBuilder()
             additionalQueryParams = roleUpdateParams.additionalQueryParams.toBuilder()
-            additionalBodyProperties = roleUpdateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** Role id */
         fun roleId(roleId: String) = apply { this.roleId = roleId }
 
         /** A list of permissions to add to the role */
-        fun addMemberPermissions(addMemberPermissions: List<AddMemberPermission>) = apply {
-            this.addMemberPermissions.clear()
-            this.addMemberPermissions.addAll(addMemberPermissions)
+        fun addMemberPermissions(addMemberPermissions: List<AddMemberPermission>?) = apply {
+            body.addMemberPermissions(addMemberPermissions)
         }
 
         /** A list of permissions to add to the role */
+        fun addMemberPermissions(addMemberPermissions: JsonField<List<AddMemberPermission>>) =
+            apply {
+                body.addMemberPermissions(addMemberPermissions)
+            }
+
+        /** A list of permissions to add to the role */
         fun addAddMemberPermission(addMemberPermission: AddMemberPermission) = apply {
-            this.addMemberPermissions.add(addMemberPermission)
+            body.addAddMemberPermission(addMemberPermission)
         }
 
         /** A list of role IDs to add to the role's inheriting-from set */
-        fun addMemberRoles(addMemberRoles: List<String>) = apply {
-            this.addMemberRoles.clear()
-            this.addMemberRoles.addAll(addMemberRoles)
+        fun addMemberRoles(addMemberRoles: List<String>?) = apply {
+            body.addMemberRoles(addMemberRoles)
         }
 
         /** A list of role IDs to add to the role's inheriting-from set */
-        fun addAddMemberRole(addMemberRole: String) = apply {
-            this.addMemberRoles.add(addMemberRole)
+        fun addMemberRoles(addMemberRoles: JsonField<List<String>>) = apply {
+            body.addMemberRoles(addMemberRoles)
         }
+
+        /** A list of role IDs to add to the role's inheriting-from set */
+        fun addAddMemberRole(addMemberRole: String) = apply { body.addAddMemberRole(addMemberRole) }
 
         /** Textual description of the role */
-        fun description(description: String) = apply { this.description = description }
+        fun description(description: String?) = apply { body.description(description) }
+
+        /** Textual description of the role */
+        fun description(description: JsonField<String>) = apply { body.description(description) }
 
         /** Name of the role */
-        fun name(name: String) = apply { this.name = name }
+        fun name(name: String?) = apply { body.name(name) }
+
+        /** Name of the role */
+        fun name(name: JsonField<String>) = apply { body.name(name) }
 
         /** A list of permissions to remove from the role */
-        fun removeMemberPermissions(removeMemberPermissions: List<RemoveMemberPermission>) = apply {
-            this.removeMemberPermissions.clear()
-            this.removeMemberPermissions.addAll(removeMemberPermissions)
-        }
+        fun removeMemberPermissions(removeMemberPermissions: List<RemoveMemberPermission>?) =
+            apply {
+                body.removeMemberPermissions(removeMemberPermissions)
+            }
+
+        /** A list of permissions to remove from the role */
+        fun removeMemberPermissions(
+            removeMemberPermissions: JsonField<List<RemoveMemberPermission>>
+        ) = apply { body.removeMemberPermissions(removeMemberPermissions) }
 
         /** A list of permissions to remove from the role */
         fun addRemoveMemberPermission(removeMemberPermission: RemoveMemberPermission) = apply {
-            this.removeMemberPermissions.add(removeMemberPermission)
+            body.addRemoveMemberPermission(removeMemberPermission)
         }
 
         /** A list of role IDs to remove from the role's inheriting-from set */
-        fun removeMemberRoles(removeMemberRoles: List<String>) = apply {
-            this.removeMemberRoles.clear()
-            this.removeMemberRoles.addAll(removeMemberRoles)
+        fun removeMemberRoles(removeMemberRoles: List<String>?) = apply {
+            body.removeMemberRoles(removeMemberRoles)
+        }
+
+        /** A list of role IDs to remove from the role's inheriting-from set */
+        fun removeMemberRoles(removeMemberRoles: JsonField<List<String>>) = apply {
+            body.removeMemberRoles(removeMemberRoles)
         }
 
         /** A list of role IDs to remove from the role's inheriting-from set */
         fun addRemoveMemberRole(removeMemberRole: String) = apply {
-            this.removeMemberRoles.add(removeMemberRole)
+            body.addRemoveMemberRole(removeMemberRole)
+        }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
         }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
@@ -405,50 +586,27 @@ constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            putAllAdditionalBodyProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply {
-            additionalBodyProperties.remove(key)
-        }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalBodyProperty)
-        }
-
         fun build(): RoleUpdateParams =
             RoleUpdateParams(
-                checkNotNull(roleId) { "`roleId` is required but was not set" },
-                addMemberPermissions.toImmutable().ifEmpty { null },
-                addMemberRoles.toImmutable().ifEmpty { null },
-                description,
-                name,
-                removeMemberPermissions.toImmutable().ifEmpty { null },
-                removeMemberRoles.toImmutable().ifEmpty { null },
+                checkRequired("roleId", roleId),
+                body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
-                additionalBodyProperties.toImmutable(),
             )
     }
 
-    @JsonDeserialize(builder = AddMemberPermission.Builder::class)
     @NoAutoDetect
     class AddMemberPermission
+    @JsonCreator
     private constructor(
-        private val permission: Permission?,
-        private val restrictObjectType: RestrictObjectType?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("permission")
+        @ExcludeMissing
+        private val permission: JsonField<Permission> = JsonMissing.of(),
+        @JsonProperty("restrict_object_type")
+        @ExcludeMissing
+        private val restrictObjectType: JsonField<RestrictObjectType> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -456,15 +614,41 @@ constructor(
          *
          * Permissions can be assigned to to objects on an individual basis, or grouped into roles
          */
-        @JsonProperty("permission") fun permission(): Permission? = permission
+        fun permission(): Permission = permission.getRequired("permission")
+
+        /** The object type that the ACL applies to */
+        fun restrictObjectType(): RestrictObjectType? =
+            restrictObjectType.getNullable("restrict_object_type")
+
+        /**
+         * Each permission permits a certain type of operation on an object in the system
+         *
+         * Permissions can be assigned to to objects on an individual basis, or grouped into roles
+         */
+        @JsonProperty("permission")
+        @ExcludeMissing
+        fun _permission(): JsonField<Permission> = permission
 
         /** The object type that the ACL applies to */
         @JsonProperty("restrict_object_type")
-        fun restrictObjectType(): RestrictObjectType? = restrictObjectType
+        @ExcludeMissing
+        fun _restrictObjectType(): JsonField<RestrictObjectType> = restrictObjectType
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): AddMemberPermission = apply {
+            if (validated) {
+                return@apply
+            }
+
+            permission()
+            restrictObjectType()
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -473,16 +657,17 @@ constructor(
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [AddMemberPermission]. */
+        class Builder internal constructor() {
 
-            private var permission: Permission? = null
-            private var restrictObjectType: RestrictObjectType? = null
+            private var permission: JsonField<Permission>? = null
+            private var restrictObjectType: JsonField<RestrictObjectType> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(addMemberPermission: AddMemberPermission) = apply {
-                this.permission = addMemberPermission.permission
-                this.restrictObjectType = addMemberPermission.restrictObjectType
-                additionalProperties(addMemberPermission.additionalProperties)
+                permission = addMemberPermission.permission
+                restrictObjectType = addMemberPermission.restrictObjectType
+                additionalProperties = addMemberPermission.additionalProperties.toMutableMap()
             }
 
             /**
@@ -491,78 +676,97 @@ constructor(
              * Permissions can be assigned to to objects on an individual basis, or grouped into
              * roles
              */
-            @JsonProperty("permission")
-            fun permission(permission: Permission) = apply { this.permission = permission }
+            fun permission(permission: Permission) = permission(JsonField.of(permission))
+
+            /**
+             * Each permission permits a certain type of operation on an object in the system
+             *
+             * Permissions can be assigned to to objects on an individual basis, or grouped into
+             * roles
+             */
+            fun permission(permission: JsonField<Permission>) = apply {
+                this.permission = permission
+            }
 
             /** The object type that the ACL applies to */
-            @JsonProperty("restrict_object_type")
-            fun restrictObjectType(restrictObjectType: RestrictObjectType) = apply {
+            fun restrictObjectType(restrictObjectType: RestrictObjectType?) =
+                restrictObjectType(JsonField.ofNullable(restrictObjectType))
+
+            /** The object type that the ACL applies to */
+            fun restrictObjectType(restrictObjectType: JsonField<RestrictObjectType>) = apply {
                 this.restrictObjectType = restrictObjectType
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             fun build(): AddMemberPermission =
                 AddMemberPermission(
-                    checkNotNull(permission) { "`permission` is required but was not set" },
+                    checkRequired("permission", permission),
                     restrictObjectType,
                     additionalProperties.toImmutable(),
                 )
         }
 
+        /**
+         * Each permission permits a certain type of operation on an object in the system
+         *
+         * Permissions can be assigned to to objects on an individual basis, or grouped into roles
+         */
         class Permission
         @JsonCreator
         private constructor(
             private val value: JsonField<String>,
         ) : Enum {
 
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
             @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Permission && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
 
             companion object {
 
-                val CREATE = Permission(JsonField.of("create"))
+                val CREATE = of("create")
 
-                val READ = Permission(JsonField.of("read"))
+                val READ = of("read")
 
-                val UPDATE = Permission(JsonField.of("update"))
+                val UPDATE = of("update")
 
-                val DELETE = Permission(JsonField.of("delete"))
+                val DELETE = of("delete")
 
-                val CREATE_ACLS = Permission(JsonField.of("create_acls"))
+                val CREATE_ACLS = of("create_acls")
 
-                val READ_ACLS = Permission(JsonField.of("read_acls"))
+                val READ_ACLS = of("read_acls")
 
-                val UPDATE_ACLS = Permission(JsonField.of("update_acls"))
+                val UPDATE_ACLS = of("update_acls")
 
-                val DELETE_ACLS = Permission(JsonField.of("delete_acls"))
+                val DELETE_ACLS = of("delete_acls")
 
                 fun of(value: String) = Permission(JsonField.of(value))
             }
 
+            /** An enum containing [Permission]'s known values. */
             enum class Known {
                 CREATE,
                 READ,
@@ -574,6 +778,15 @@ constructor(
                 DELETE_ACLS,
             }
 
+            /**
+             * An enum containing [Permission]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Permission] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 CREATE,
                 READ,
@@ -583,9 +796,20 @@ constructor(
                 READ_ACLS,
                 UPDATE_ACLS,
                 DELETE_ACLS,
+                /**
+                 * An enum member indicating that [Permission] was instantiated with an unknown
+                 * value.
+                 */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     CREATE -> Value.CREATE
@@ -599,6 +823,15 @@ constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     CREATE -> Known.CREATE
@@ -613,55 +846,65 @@ constructor(
                 }
 
             fun asString(): String = _value().asStringOrThrow()
-        }
-
-        class RestrictObjectType
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return /* spotless:off */ other is RestrictObjectType && value == other.value /* spotless:on */
+                return /* spotless:off */ other is Permission && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
 
             override fun toString() = value.toString()
+        }
+
+        /** The object type that the ACL applies to */
+        class RestrictObjectType
+        @JsonCreator
+        private constructor(
+            private val value: JsonField<String>,
+        ) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
 
-                val ORGANIZATION = RestrictObjectType(JsonField.of("organization"))
+                val ORGANIZATION = of("organization")
 
-                val PROJECT = RestrictObjectType(JsonField.of("project"))
+                val PROJECT = of("project")
 
-                val EXPERIMENT = RestrictObjectType(JsonField.of("experiment"))
+                val EXPERIMENT = of("experiment")
 
-                val DATASET = RestrictObjectType(JsonField.of("dataset"))
+                val DATASET = of("dataset")
 
-                val PROMPT = RestrictObjectType(JsonField.of("prompt"))
+                val PROMPT = of("prompt")
 
-                val PROMPT_SESSION = RestrictObjectType(JsonField.of("prompt_session"))
+                val PROMPT_SESSION = of("prompt_session")
 
-                val GROUP = RestrictObjectType(JsonField.of("group"))
+                val GROUP = of("group")
 
-                val ROLE = RestrictObjectType(JsonField.of("role"))
+                val ROLE = of("role")
 
-                val ORG_MEMBER = RestrictObjectType(JsonField.of("org_member"))
+                val ORG_MEMBER = of("org_member")
 
-                val PROJECT_LOG = RestrictObjectType(JsonField.of("project_log"))
+                val PROJECT_LOG = of("project_log")
 
-                val ORG_PROJECT = RestrictObjectType(JsonField.of("org_project"))
+                val ORG_PROJECT = of("org_project")
 
                 fun of(value: String) = RestrictObjectType(JsonField.of(value))
             }
 
+            /** An enum containing [RestrictObjectType]'s known values. */
             enum class Known {
                 ORGANIZATION,
                 PROJECT,
@@ -676,6 +919,17 @@ constructor(
                 ORG_PROJECT,
             }
 
+            /**
+             * An enum containing [RestrictObjectType]'s known values, as well as an [_UNKNOWN]
+             * member.
+             *
+             * An instance of [RestrictObjectType] can contain an unknown value in a couple of
+             * cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 ORGANIZATION,
                 PROJECT,
@@ -688,9 +942,20 @@ constructor(
                 ORG_MEMBER,
                 PROJECT_LOG,
                 ORG_PROJECT,
+                /**
+                 * An enum member indicating that [RestrictObjectType] was instantiated with an
+                 * unknown value.
+                 */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     ORGANIZATION -> Value.ORGANIZATION
@@ -707,6 +972,15 @@ constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     ORGANIZATION -> Known.ORGANIZATION
@@ -725,6 +999,18 @@ constructor(
                 }
 
             fun asString(): String = _value().asStringOrThrow()
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is RestrictObjectType && value == other.value /* spotless:on */
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -745,13 +1031,18 @@ constructor(
             "AddMemberPermission{permission=$permission, restrictObjectType=$restrictObjectType, additionalProperties=$additionalProperties}"
     }
 
-    @JsonDeserialize(builder = RemoveMemberPermission.Builder::class)
     @NoAutoDetect
     class RemoveMemberPermission
+    @JsonCreator
     private constructor(
-        private val permission: Permission?,
-        private val restrictObjectType: RestrictObjectType?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("permission")
+        @ExcludeMissing
+        private val permission: JsonField<Permission> = JsonMissing.of(),
+        @JsonProperty("restrict_object_type")
+        @ExcludeMissing
+        private val restrictObjectType: JsonField<RestrictObjectType> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -759,15 +1050,41 @@ constructor(
          *
          * Permissions can be assigned to to objects on an individual basis, or grouped into roles
          */
-        @JsonProperty("permission") fun permission(): Permission? = permission
+        fun permission(): Permission = permission.getRequired("permission")
+
+        /** The object type that the ACL applies to */
+        fun restrictObjectType(): RestrictObjectType? =
+            restrictObjectType.getNullable("restrict_object_type")
+
+        /**
+         * Each permission permits a certain type of operation on an object in the system
+         *
+         * Permissions can be assigned to to objects on an individual basis, or grouped into roles
+         */
+        @JsonProperty("permission")
+        @ExcludeMissing
+        fun _permission(): JsonField<Permission> = permission
 
         /** The object type that the ACL applies to */
         @JsonProperty("restrict_object_type")
-        fun restrictObjectType(): RestrictObjectType? = restrictObjectType
+        @ExcludeMissing
+        fun _restrictObjectType(): JsonField<RestrictObjectType> = restrictObjectType
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): RemoveMemberPermission = apply {
+            if (validated) {
+                return@apply
+            }
+
+            permission()
+            restrictObjectType()
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -776,16 +1093,17 @@ constructor(
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [RemoveMemberPermission]. */
+        class Builder internal constructor() {
 
-            private var permission: Permission? = null
-            private var restrictObjectType: RestrictObjectType? = null
+            private var permission: JsonField<Permission>? = null
+            private var restrictObjectType: JsonField<RestrictObjectType> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(removeMemberPermission: RemoveMemberPermission) = apply {
-                this.permission = removeMemberPermission.permission
-                this.restrictObjectType = removeMemberPermission.restrictObjectType
-                additionalProperties(removeMemberPermission.additionalProperties)
+                permission = removeMemberPermission.permission
+                restrictObjectType = removeMemberPermission.restrictObjectType
+                additionalProperties = removeMemberPermission.additionalProperties.toMutableMap()
             }
 
             /**
@@ -794,78 +1112,97 @@ constructor(
              * Permissions can be assigned to to objects on an individual basis, or grouped into
              * roles
              */
-            @JsonProperty("permission")
-            fun permission(permission: Permission) = apply { this.permission = permission }
+            fun permission(permission: Permission) = permission(JsonField.of(permission))
+
+            /**
+             * Each permission permits a certain type of operation on an object in the system
+             *
+             * Permissions can be assigned to to objects on an individual basis, or grouped into
+             * roles
+             */
+            fun permission(permission: JsonField<Permission>) = apply {
+                this.permission = permission
+            }
 
             /** The object type that the ACL applies to */
-            @JsonProperty("restrict_object_type")
-            fun restrictObjectType(restrictObjectType: RestrictObjectType) = apply {
+            fun restrictObjectType(restrictObjectType: RestrictObjectType?) =
+                restrictObjectType(JsonField.ofNullable(restrictObjectType))
+
+            /** The object type that the ACL applies to */
+            fun restrictObjectType(restrictObjectType: JsonField<RestrictObjectType>) = apply {
                 this.restrictObjectType = restrictObjectType
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             fun build(): RemoveMemberPermission =
                 RemoveMemberPermission(
-                    checkNotNull(permission) { "`permission` is required but was not set" },
+                    checkRequired("permission", permission),
                     restrictObjectType,
                     additionalProperties.toImmutable(),
                 )
         }
 
+        /**
+         * Each permission permits a certain type of operation on an object in the system
+         *
+         * Permissions can be assigned to to objects on an individual basis, or grouped into roles
+         */
         class Permission
         @JsonCreator
         private constructor(
             private val value: JsonField<String>,
         ) : Enum {
 
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
             @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Permission && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
 
             companion object {
 
-                val CREATE = Permission(JsonField.of("create"))
+                val CREATE = of("create")
 
-                val READ = Permission(JsonField.of("read"))
+                val READ = of("read")
 
-                val UPDATE = Permission(JsonField.of("update"))
+                val UPDATE = of("update")
 
-                val DELETE = Permission(JsonField.of("delete"))
+                val DELETE = of("delete")
 
-                val CREATE_ACLS = Permission(JsonField.of("create_acls"))
+                val CREATE_ACLS = of("create_acls")
 
-                val READ_ACLS = Permission(JsonField.of("read_acls"))
+                val READ_ACLS = of("read_acls")
 
-                val UPDATE_ACLS = Permission(JsonField.of("update_acls"))
+                val UPDATE_ACLS = of("update_acls")
 
-                val DELETE_ACLS = Permission(JsonField.of("delete_acls"))
+                val DELETE_ACLS = of("delete_acls")
 
                 fun of(value: String) = Permission(JsonField.of(value))
             }
 
+            /** An enum containing [Permission]'s known values. */
             enum class Known {
                 CREATE,
                 READ,
@@ -877,6 +1214,15 @@ constructor(
                 DELETE_ACLS,
             }
 
+            /**
+             * An enum containing [Permission]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Permission] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 CREATE,
                 READ,
@@ -886,9 +1232,20 @@ constructor(
                 READ_ACLS,
                 UPDATE_ACLS,
                 DELETE_ACLS,
+                /**
+                 * An enum member indicating that [Permission] was instantiated with an unknown
+                 * value.
+                 */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     CREATE -> Value.CREATE
@@ -902,6 +1259,15 @@ constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     CREATE -> Known.CREATE
@@ -916,55 +1282,65 @@ constructor(
                 }
 
             fun asString(): String = _value().asStringOrThrow()
-        }
-
-        class RestrictObjectType
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return /* spotless:off */ other is RestrictObjectType && value == other.value /* spotless:on */
+                return /* spotless:off */ other is Permission && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
 
             override fun toString() = value.toString()
+        }
+
+        /** The object type that the ACL applies to */
+        class RestrictObjectType
+        @JsonCreator
+        private constructor(
+            private val value: JsonField<String>,
+        ) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
 
-                val ORGANIZATION = RestrictObjectType(JsonField.of("organization"))
+                val ORGANIZATION = of("organization")
 
-                val PROJECT = RestrictObjectType(JsonField.of("project"))
+                val PROJECT = of("project")
 
-                val EXPERIMENT = RestrictObjectType(JsonField.of("experiment"))
+                val EXPERIMENT = of("experiment")
 
-                val DATASET = RestrictObjectType(JsonField.of("dataset"))
+                val DATASET = of("dataset")
 
-                val PROMPT = RestrictObjectType(JsonField.of("prompt"))
+                val PROMPT = of("prompt")
 
-                val PROMPT_SESSION = RestrictObjectType(JsonField.of("prompt_session"))
+                val PROMPT_SESSION = of("prompt_session")
 
-                val GROUP = RestrictObjectType(JsonField.of("group"))
+                val GROUP = of("group")
 
-                val ROLE = RestrictObjectType(JsonField.of("role"))
+                val ROLE = of("role")
 
-                val ORG_MEMBER = RestrictObjectType(JsonField.of("org_member"))
+                val ORG_MEMBER = of("org_member")
 
-                val PROJECT_LOG = RestrictObjectType(JsonField.of("project_log"))
+                val PROJECT_LOG = of("project_log")
 
-                val ORG_PROJECT = RestrictObjectType(JsonField.of("org_project"))
+                val ORG_PROJECT = of("org_project")
 
                 fun of(value: String) = RestrictObjectType(JsonField.of(value))
             }
 
+            /** An enum containing [RestrictObjectType]'s known values. */
             enum class Known {
                 ORGANIZATION,
                 PROJECT,
@@ -979,6 +1355,17 @@ constructor(
                 ORG_PROJECT,
             }
 
+            /**
+             * An enum containing [RestrictObjectType]'s known values, as well as an [_UNKNOWN]
+             * member.
+             *
+             * An instance of [RestrictObjectType] can contain an unknown value in a couple of
+             * cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 ORGANIZATION,
                 PROJECT,
@@ -991,9 +1378,20 @@ constructor(
                 ORG_MEMBER,
                 PROJECT_LOG,
                 ORG_PROJECT,
+                /**
+                 * An enum member indicating that [RestrictObjectType] was instantiated with an
+                 * unknown value.
+                 */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     ORGANIZATION -> Value.ORGANIZATION
@@ -1010,6 +1408,15 @@ constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     ORGANIZATION -> Known.ORGANIZATION
@@ -1028,6 +1435,18 @@ constructor(
                 }
 
             fun asString(): String = _value().asStringOrThrow()
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is RestrictObjectType && value == other.value /* spotless:on */
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1053,11 +1472,11 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is RoleUpdateParams && roleId == other.roleId && addMemberPermissions == other.addMemberPermissions && addMemberRoles == other.addMemberRoles && description == other.description && name == other.name && removeMemberPermissions == other.removeMemberPermissions && removeMemberRoles == other.removeMemberRoles && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is RoleUpdateParams && roleId == other.roleId && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(roleId, addMemberPermissions, addMemberRoles, description, name, removeMemberPermissions, removeMemberRoles, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(roleId, body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "RoleUpdateParams{roleId=$roleId, addMemberPermissions=$addMemberPermissions, addMemberRoles=$addMemberRoles, description=$description, name=$name, removeMemberPermissions=$removeMemberPermissions, removeMemberRoles=$removeMemberRoles, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "RoleUpdateParams{roleId=$roleId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

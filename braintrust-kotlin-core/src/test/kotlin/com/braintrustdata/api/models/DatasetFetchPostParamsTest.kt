@@ -2,14 +2,13 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class DatasetFetchPostParamsTest {
 
     @Test
-    fun createDatasetFetchPostParams() {
+    fun create() {
         DatasetFetchPostParams.builder()
             .datasetId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .cursor("cursor")
@@ -21,7 +20,7 @@ class DatasetFetchPostParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             DatasetFetchPostParams.builder()
                 .datasetId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -31,7 +30,7 @@ class DatasetFetchPostParamsTest {
                 .maxXactId("max_xact_id")
                 .version("version")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.cursor()).isEqualTo("cursor")
         assertThat(body.limit()).isEqualTo(0L)
@@ -41,12 +40,12 @@ class DatasetFetchPostParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             DatasetFetchPostParams.builder()
                 .datasetId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
     }
 

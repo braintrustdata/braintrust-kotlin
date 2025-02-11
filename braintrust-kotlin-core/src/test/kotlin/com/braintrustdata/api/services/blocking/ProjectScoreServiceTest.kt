@@ -4,8 +4,15 @@ package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.models.OnlineScoreConfig
+import com.braintrustdata.api.models.ProjectScoreCategory
+import com.braintrustdata.api.models.ProjectScoreConfig
+import com.braintrustdata.api.models.ProjectScoreCreateParams
+import com.braintrustdata.api.models.ProjectScoreDeleteParams
 import com.braintrustdata.api.models.ProjectScoreListParams
+import com.braintrustdata.api.models.ProjectScoreReplaceParams
+import com.braintrustdata.api.models.ProjectScoreRetrieveParams
+import com.braintrustdata.api.models.ProjectScoreUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -26,10 +33,8 @@ class ProjectScoreServiceTest {
                     .name("name")
                     .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .scoreType(ProjectScoreCreateParams.ScoreType.SLIDER)
-                    .categories(
-                        ProjectScoreCreateParams.Categories.ofCategorical(
-                            listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
-                        )
+                    .categoriesOfCategorical(
+                        listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                     )
                     .config(
                         ProjectScoreConfig.builder()
@@ -38,21 +43,14 @@ class ProjectScoreServiceTest {
                             .online(
                                 OnlineScoreConfig.builder()
                                     .samplingRate(0.0)
-                                    .scorers(
-                                        listOf(
-                                            OnlineScoreConfig.Scorer.ofFunction(
-                                                OnlineScoreConfig.Scorer.Function.builder()
-                                                    .id("id")
-                                                    .type(
-                                                        OnlineScoreConfig.Scorer.Function.Type
-                                                            .FUNCTION
-                                                    )
-                                                    .build()
-                                            )
-                                        )
+                                    .addScorer(
+                                        OnlineScoreConfig.Scorer.Function.builder()
+                                            .id("id")
+                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                            .build()
                                     )
                                     .applyToRootSpan(true)
-                                    .applyToSpanNames(listOf("string"))
+                                    .addApplyToSpanName("string")
                                     .build()
                             )
                             .build()
@@ -94,10 +92,8 @@ class ProjectScoreServiceTest {
             projectScoreService.update(
                 ProjectScoreUpdateParams.builder()
                     .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .categories(
-                        ProjectScoreUpdateParams.Categories.ofCategorical(
-                            listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
-                        )
+                    .categoriesOfCategorical(
+                        listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                     )
                     .config(
                         ProjectScoreConfig.builder()
@@ -106,21 +102,14 @@ class ProjectScoreServiceTest {
                             .online(
                                 OnlineScoreConfig.builder()
                                     .samplingRate(0.0)
-                                    .scorers(
-                                        listOf(
-                                            OnlineScoreConfig.Scorer.ofFunction(
-                                                OnlineScoreConfig.Scorer.Function.builder()
-                                                    .id("id")
-                                                    .type(
-                                                        OnlineScoreConfig.Scorer.Function.Type
-                                                            .FUNCTION
-                                                    )
-                                                    .build()
-                                            )
-                                        )
+                                    .addScorer(
+                                        OnlineScoreConfig.Scorer.Function.builder()
+                                            .id("id")
+                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                            .build()
                                     )
                                     .applyToRootSpan(true)
-                                    .applyToSpanNames(listOf("string"))
+                                    .addApplyToSpanName("string")
                                     .build()
                             )
                             .build()
@@ -179,10 +168,8 @@ class ProjectScoreServiceTest {
                     .name("name")
                     .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .scoreType(ProjectScoreReplaceParams.ScoreType.SLIDER)
-                    .categories(
-                        ProjectScoreReplaceParams.Categories.ofCategorical(
-                            listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
-                        )
+                    .categoriesOfCategorical(
+                        listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                     )
                     .config(
                         ProjectScoreConfig.builder()
@@ -191,21 +178,14 @@ class ProjectScoreServiceTest {
                             .online(
                                 OnlineScoreConfig.builder()
                                     .samplingRate(0.0)
-                                    .scorers(
-                                        listOf(
-                                            OnlineScoreConfig.Scorer.ofFunction(
-                                                OnlineScoreConfig.Scorer.Function.builder()
-                                                    .id("id")
-                                                    .type(
-                                                        OnlineScoreConfig.Scorer.Function.Type
-                                                            .FUNCTION
-                                                    )
-                                                    .build()
-                                            )
-                                        )
+                                    .addScorer(
+                                        OnlineScoreConfig.Scorer.Function.builder()
+                                            .id("id")
+                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                            .build()
                                     )
                                     .applyToRootSpan(true)
-                                    .applyToSpanNames(listOf("string"))
+                                    .addApplyToSpanName("string")
                                     .build()
                             )
                             .build()

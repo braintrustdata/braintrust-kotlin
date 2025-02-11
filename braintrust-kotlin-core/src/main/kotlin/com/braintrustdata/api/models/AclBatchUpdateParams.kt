@@ -5,58 +5,105 @@ package com.braintrustdata.api.models
 import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
+/**
+ * Batch update acls. This operation is idempotent, so adding acls which already exist will have no
+ * effect, and removing acls which do not exist will have no effect.
+ */
 class AclBatchUpdateParams
-constructor(
-    private val addAcls: List<AddAcl>?,
-    private val removeAcls: List<RemoveAcl>?,
+private constructor(
+    private val body: AclBatchUpdateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+) : Params {
 
-    fun addAcls(): List<AddAcl>? = addAcls
+    /**
+     * An ACL grants a certain permission or role to a certain user or group on an object.
+     *
+     * ACLs are inherited across the object hierarchy. So for example, if a user has read
+     * permissions on a project, they will also have read permissions on any experiment, dataset,
+     * etc. created within that project.
+     *
+     * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in the
+     * ACL, as part of a direct permission grant or as part of a role.
+     */
+    fun addAcls(): List<AddAcl>? = body.addAcls()
 
-    fun removeAcls(): List<RemoveAcl>? = removeAcls
+    /**
+     * An ACL grants a certain permission or role to a certain user or group on an object.
+     *
+     * ACLs are inherited across the object hierarchy. So for example, if a user has read
+     * permissions on a project, they will also have read permissions on any experiment, dataset,
+     * etc. created within that project.
+     *
+     * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in the
+     * ACL, as part of a direct permission grant or as part of a role.
+     */
+    fun removeAcls(): List<RemoveAcl>? = body.removeAcls()
+
+    /**
+     * An ACL grants a certain permission or role to a certain user or group on an object.
+     *
+     * ACLs are inherited across the object hierarchy. So for example, if a user has read
+     * permissions on a project, they will also have read permissions on any experiment, dataset,
+     * etc. created within that project.
+     *
+     * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in the
+     * ACL, as part of a direct permission grant or as part of a role.
+     */
+    fun _addAcls(): JsonField<List<AddAcl>> = body._addAcls()
+
+    /**
+     * An ACL grants a certain permission or role to a certain user or group on an object.
+     *
+     * ACLs are inherited across the object hierarchy. So for example, if a user has read
+     * permissions on a project, they will also have read permissions on any experiment, dataset,
+     * etc. created within that project.
+     *
+     * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in the
+     * ACL, as part of a direct permission grant or as part of a role.
+     */
+    fun _removeAcls(): JsonField<List<RemoveAcl>> = body._removeAcls()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+    internal fun _body(): AclBatchUpdateBody = body
 
-    internal fun getBody(): AclBatchUpdateBody {
-        return AclBatchUpdateBody(
-            addAcls,
-            removeAcls,
-            additionalBodyProperties,
-        )
-    }
+    override fun _headers(): Headers = additionalHeaders
 
-    internal fun getHeaders(): Headers = additionalHeaders
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
-    internal fun getQueryParams(): QueryParams = additionalQueryParams
-
-    @JsonDeserialize(builder = AclBatchUpdateBody.Builder::class)
     @NoAutoDetect
     class AclBatchUpdateBody
+    @JsonCreator
     internal constructor(
-        private val addAcls: List<AddAcl>?,
-        private val removeAcls: List<RemoveAcl>?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("add_acls")
+        @ExcludeMissing
+        private val addAcls: JsonField<List<AddAcl>> = JsonMissing.of(),
+        @JsonProperty("remove_acls")
+        @ExcludeMissing
+        private val removeAcls: JsonField<List<RemoveAcl>> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -69,7 +116,7 @@ constructor(
          * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
          * the ACL, as part of a direct permission grant or as part of a role.
          */
-        @JsonProperty("add_acls") fun addAcls(): List<AddAcl>? = addAcls
+        fun addAcls(): List<AddAcl>? = addAcls.getNullable("add_acls")
 
         /**
          * An ACL grants a certain permission or role to a certain user or group on an object.
@@ -81,11 +128,49 @@ constructor(
          * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
          * the ACL, as part of a direct permission grant or as part of a role.
          */
-        @JsonProperty("remove_acls") fun removeAcls(): List<RemoveAcl>? = removeAcls
+        fun removeAcls(): List<RemoveAcl>? = removeAcls.getNullable("remove_acls")
+
+        /**
+         * An ACL grants a certain permission or role to a certain user or group on an object.
+         *
+         * ACLs are inherited across the object hierarchy. So for example, if a user has read
+         * permissions on a project, they will also have read permissions on any experiment,
+         * dataset, etc. created within that project.
+         *
+         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
+         * the ACL, as part of a direct permission grant or as part of a role.
+         */
+        @JsonProperty("add_acls") @ExcludeMissing fun _addAcls(): JsonField<List<AddAcl>> = addAcls
+
+        /**
+         * An ACL grants a certain permission or role to a certain user or group on an object.
+         *
+         * ACLs are inherited across the object hierarchy. So for example, if a user has read
+         * permissions on a project, they will also have read permissions on any experiment,
+         * dataset, etc. created within that project.
+         *
+         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
+         * the ACL, as part of a direct permission grant or as part of a role.
+         */
+        @JsonProperty("remove_acls")
+        @ExcludeMissing
+        fun _removeAcls(): JsonField<List<RemoveAcl>> = removeAcls
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): AclBatchUpdateBody = apply {
+            if (validated) {
+                return@apply
+            }
+
+            addAcls()?.forEach { it.validate() }
+            removeAcls()?.forEach { it.validate() }
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -94,16 +179,17 @@ constructor(
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [AclBatchUpdateBody]. */
+        class Builder internal constructor() {
 
-            private var addAcls: List<AddAcl>? = null
-            private var removeAcls: List<RemoveAcl>? = null
+            private var addAcls: JsonField<MutableList<AddAcl>>? = null
+            private var removeAcls: JsonField<MutableList<RemoveAcl>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(aclBatchUpdateBody: AclBatchUpdateBody) = apply {
-                this.addAcls = aclBatchUpdateBody.addAcls
-                this.removeAcls = aclBatchUpdateBody.removeAcls
-                additionalProperties(aclBatchUpdateBody.additionalProperties)
+                addAcls = aclBatchUpdateBody.addAcls.map { it.toMutableList() }
+                removeAcls = aclBatchUpdateBody.removeAcls.map { it.toMutableList() }
+                additionalProperties = aclBatchUpdateBody.additionalProperties.toMutableMap()
             }
 
             /**
@@ -117,8 +203,7 @@ constructor(
              * `restrict_object_type` in the ACL, as part of a direct permission grant or as part of
              * a role.
              */
-            @JsonProperty("add_acls")
-            fun addAcls(addAcls: List<AddAcl>) = apply { this.addAcls = addAcls }
+            fun addAcls(addAcls: List<AddAcl>?) = addAcls(JsonField.ofNullable(addAcls))
 
             /**
              * An ACL grants a certain permission or role to a certain user or group on an object.
@@ -131,27 +216,106 @@ constructor(
              * `restrict_object_type` in the ACL, as part of a direct permission grant or as part of
              * a role.
              */
-            @JsonProperty("remove_acls")
-            fun removeAcls(removeAcls: List<RemoveAcl>) = apply { this.removeAcls = removeAcls }
+            fun addAcls(addAcls: JsonField<List<AddAcl>>) = apply {
+                this.addAcls = addAcls.map { it.toMutableList() }
+            }
+
+            /**
+             * An ACL grants a certain permission or role to a certain user or group on an object.
+             *
+             * ACLs are inherited across the object hierarchy. So for example, if a user has read
+             * permissions on a project, they will also have read permissions on any experiment,
+             * dataset, etc. created within that project.
+             *
+             * To restrict a grant to a particular sub-object, you may specify
+             * `restrict_object_type` in the ACL, as part of a direct permission grant or as part of
+             * a role.
+             */
+            fun addAddAcl(addAcl: AddAcl) = apply {
+                addAcls =
+                    (addAcls ?: JsonField.of(mutableListOf())).apply {
+                        (asKnown()
+                                ?: throw IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                ))
+                            .add(addAcl)
+                    }
+            }
+
+            /**
+             * An ACL grants a certain permission or role to a certain user or group on an object.
+             *
+             * ACLs are inherited across the object hierarchy. So for example, if a user has read
+             * permissions on a project, they will also have read permissions on any experiment,
+             * dataset, etc. created within that project.
+             *
+             * To restrict a grant to a particular sub-object, you may specify
+             * `restrict_object_type` in the ACL, as part of a direct permission grant or as part of
+             * a role.
+             */
+            fun removeAcls(removeAcls: List<RemoveAcl>?) =
+                removeAcls(JsonField.ofNullable(removeAcls))
+
+            /**
+             * An ACL grants a certain permission or role to a certain user or group on an object.
+             *
+             * ACLs are inherited across the object hierarchy. So for example, if a user has read
+             * permissions on a project, they will also have read permissions on any experiment,
+             * dataset, etc. created within that project.
+             *
+             * To restrict a grant to a particular sub-object, you may specify
+             * `restrict_object_type` in the ACL, as part of a direct permission grant or as part of
+             * a role.
+             */
+            fun removeAcls(removeAcls: JsonField<List<RemoveAcl>>) = apply {
+                this.removeAcls = removeAcls.map { it.toMutableList() }
+            }
+
+            /**
+             * An ACL grants a certain permission or role to a certain user or group on an object.
+             *
+             * ACLs are inherited across the object hierarchy. So for example, if a user has read
+             * permissions on a project, they will also have read permissions on any experiment,
+             * dataset, etc. created within that project.
+             *
+             * To restrict a grant to a particular sub-object, you may specify
+             * `restrict_object_type` in the ACL, as part of a direct permission grant or as part of
+             * a role.
+             */
+            fun addRemoveAcl(removeAcl: RemoveAcl) = apply {
+                removeAcls =
+                    (removeAcls ?: JsonField.of(mutableListOf())).apply {
+                        (asKnown()
+                                ?: throw IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                ))
+                            .add(removeAcl)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             fun build(): AclBatchUpdateBody =
                 AclBatchUpdateBody(
-                    addAcls?.toImmutable(),
-                    removeAcls?.toImmutable(),
+                    (addAcls ?: JsonMissing.of()).map { it.toImmutable() },
+                    (removeAcls ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -181,21 +345,18 @@ constructor(
         fun builder() = Builder()
     }
 
+    /** A builder for [AclBatchUpdateParams]. */
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
-        private var addAcls: MutableList<AddAcl> = mutableListOf()
-        private var removeAcls: MutableList<RemoveAcl> = mutableListOf()
+        private var body: AclBatchUpdateBody.Builder = AclBatchUpdateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(aclBatchUpdateParams: AclBatchUpdateParams) = apply {
-            addAcls = aclBatchUpdateParams.addAcls?.toMutableList() ?: mutableListOf()
-            removeAcls = aclBatchUpdateParams.removeAcls?.toMutableList() ?: mutableListOf()
+            body = aclBatchUpdateParams.body.toBuilder()
             additionalHeaders = aclBatchUpdateParams.additionalHeaders.toBuilder()
             additionalQueryParams = aclBatchUpdateParams.additionalQueryParams.toBuilder()
-            additionalBodyProperties = aclBatchUpdateParams.additionalBodyProperties.toMutableMap()
         }
 
         /**
@@ -208,9 +369,56 @@ constructor(
          * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
          * the ACL, as part of a direct permission grant or as part of a role.
          */
-        fun addAcls(addAcls: List<AddAcl>) = apply {
-            this.addAcls.clear()
-            this.addAcls.addAll(addAcls)
+        fun addAcls(addAcls: List<AddAcl>?) = apply { body.addAcls(addAcls) }
+
+        /**
+         * An ACL grants a certain permission or role to a certain user or group on an object.
+         *
+         * ACLs are inherited across the object hierarchy. So for example, if a user has read
+         * permissions on a project, they will also have read permissions on any experiment,
+         * dataset, etc. created within that project.
+         *
+         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
+         * the ACL, as part of a direct permission grant or as part of a role.
+         */
+        fun addAcls(addAcls: JsonField<List<AddAcl>>) = apply { body.addAcls(addAcls) }
+
+        /**
+         * An ACL grants a certain permission or role to a certain user or group on an object.
+         *
+         * ACLs are inherited across the object hierarchy. So for example, if a user has read
+         * permissions on a project, they will also have read permissions on any experiment,
+         * dataset, etc. created within that project.
+         *
+         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
+         * the ACL, as part of a direct permission grant or as part of a role.
+         */
+        fun addAddAcl(addAcl: AddAcl) = apply { body.addAddAcl(addAcl) }
+
+        /**
+         * An ACL grants a certain permission or role to a certain user or group on an object.
+         *
+         * ACLs are inherited across the object hierarchy. So for example, if a user has read
+         * permissions on a project, they will also have read permissions on any experiment,
+         * dataset, etc. created within that project.
+         *
+         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
+         * the ACL, as part of a direct permission grant or as part of a role.
+         */
+        fun removeAcls(removeAcls: List<RemoveAcl>?) = apply { body.removeAcls(removeAcls) }
+
+        /**
+         * An ACL grants a certain permission or role to a certain user or group on an object.
+         *
+         * ACLs are inherited across the object hierarchy. So for example, if a user has read
+         * permissions on a project, they will also have read permissions on any experiment,
+         * dataset, etc. created within that project.
+         *
+         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
+         * the ACL, as part of a direct permission grant or as part of a role.
+         */
+        fun removeAcls(removeAcls: JsonField<List<RemoveAcl>>) = apply {
+            body.removeAcls(removeAcls)
         }
 
         /**
@@ -223,34 +431,26 @@ constructor(
          * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
          * the ACL, as part of a direct permission grant or as part of a role.
          */
-        fun addAddAcl(addAcl: AddAcl) = apply { this.addAcls.add(addAcl) }
+        fun addRemoveAcl(removeAcl: RemoveAcl) = apply { body.addRemoveAcl(removeAcl) }
 
-        /**
-         * An ACL grants a certain permission or role to a certain user or group on an object.
-         *
-         * ACLs are inherited across the object hierarchy. So for example, if a user has read
-         * permissions on a project, they will also have read permissions on any experiment,
-         * dataset, etc. created within that project.
-         *
-         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
-         * the ACL, as part of a direct permission grant or as part of a role.
-         */
-        fun removeAcls(removeAcls: List<RemoveAcl>) = apply {
-            this.removeAcls.clear()
-            this.removeAcls.addAll(removeAcls)
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
         }
 
-        /**
-         * An ACL grants a certain permission or role to a certain user or group on an object.
-         *
-         * ACLs are inherited across the object hierarchy. So for example, if a user has read
-         * permissions on a project, they will also have read permissions on any experiment,
-         * dataset, etc. created within that project.
-         *
-         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
-         * the ACL, as part of a direct permission grant or as part of a role.
-         */
-        fun addRemoveAcl(removeAcl: RemoveAcl) = apply { this.removeAcls.add(removeAcl) }
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -350,35 +550,11 @@ constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            putAllAdditionalBodyProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply {
-            additionalBodyProperties.remove(key)
-        }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalBodyProperty)
-        }
-
         fun build(): AclBatchUpdateParams =
             AclBatchUpdateParams(
-                addAcls.toImmutable().ifEmpty { null },
-                removeAcls.toImmutable().ifEmpty { null },
+                body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
-                additionalBodyProperties.toImmutable(),
             )
     }
 
@@ -392,56 +568,126 @@ constructor(
      * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in the
      * ACL, as part of a direct permission grant or as part of a role.
      */
-    @JsonDeserialize(builder = AddAcl.Builder::class)
     @NoAutoDetect
     class AddAcl
+    @JsonCreator
     private constructor(
-        private val objectType: ObjectType?,
-        private val objectId: String?,
-        private val userId: String?,
-        private val groupId: String?,
-        private val permission: Permission?,
-        private val restrictObjectType: RestrictObjectType?,
-        private val roleId: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("object_id")
+        @ExcludeMissing
+        private val objectId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object_type")
+        @ExcludeMissing
+        private val objectType: JsonField<ObjectType> = JsonMissing.of(),
+        @JsonProperty("group_id")
+        @ExcludeMissing
+        private val groupId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("permission")
+        @ExcludeMissing
+        private val permission: JsonField<Permission> = JsonMissing.of(),
+        @JsonProperty("restrict_object_type")
+        @ExcludeMissing
+        private val restrictObjectType: JsonField<RestrictObjectType> = JsonMissing.of(),
+        @JsonProperty("role_id")
+        @ExcludeMissing
+        private val roleId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("user_id")
+        @ExcludeMissing
+        private val userId: JsonField<String> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The object type that the ACL applies to */
-        @JsonProperty("object_type") fun objectType(): ObjectType? = objectType
-
         /** The id of the object the ACL applies to */
-        @JsonProperty("object_id") fun objectId(): String? = objectId
+        fun objectId(): String = objectId.getRequired("object_id")
 
-        /**
-         * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
-         * provided
-         */
-        @JsonProperty("user_id") fun userId(): String? = userId
+        /** The object type that the ACL applies to */
+        fun objectType(): ObjectType = objectType.getRequired("object_type")
 
         /**
          * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
          * provided
          */
-        @JsonProperty("group_id") fun groupId(): String? = groupId
+        fun groupId(): String? = groupId.getNullable("group_id")
 
         /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
-        @JsonProperty("permission") fun permission(): Permission? = permission
+        fun permission(): Permission? = permission.getNullable("permission")
+
+        /**
+         * When setting a permission directly, optionally restricts the permission grant to just the
+         * specified object type. Cannot be set alongside a `role_id`.
+         */
+        fun restrictObjectType(): RestrictObjectType? =
+            restrictObjectType.getNullable("restrict_object_type")
+
+        /**
+         * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided
+         */
+        fun roleId(): String? = roleId.getNullable("role_id")
+
+        /**
+         * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
+         * provided
+         */
+        fun userId(): String? = userId.getNullable("user_id")
+
+        /** The id of the object the ACL applies to */
+        @JsonProperty("object_id") @ExcludeMissing fun _objectId(): JsonField<String> = objectId
+
+        /** The object type that the ACL applies to */
+        @JsonProperty("object_type")
+        @ExcludeMissing
+        fun _objectType(): JsonField<ObjectType> = objectType
+
+        /**
+         * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
+         * provided
+         */
+        @JsonProperty("group_id") @ExcludeMissing fun _groupId(): JsonField<String> = groupId
+
+        /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
+        @JsonProperty("permission")
+        @ExcludeMissing
+        fun _permission(): JsonField<Permission> = permission
 
         /**
          * When setting a permission directly, optionally restricts the permission grant to just the
          * specified object type. Cannot be set alongside a `role_id`.
          */
         @JsonProperty("restrict_object_type")
-        fun restrictObjectType(): RestrictObjectType? = restrictObjectType
+        @ExcludeMissing
+        fun _restrictObjectType(): JsonField<RestrictObjectType> = restrictObjectType
 
         /**
          * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided
          */
-        @JsonProperty("role_id") fun roleId(): String? = roleId
+        @JsonProperty("role_id") @ExcludeMissing fun _roleId(): JsonField<String> = roleId
+
+        /**
+         * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
+         * provided
+         */
+        @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): AddAcl = apply {
+            if (validated) {
+                return@apply
+            }
+
+            objectId()
+            objectType()
+            groupId()
+            permission()
+            restrictObjectType()
+            roleId()
+            userId()
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -450,61 +696,79 @@ constructor(
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [AddAcl]. */
+        class Builder internal constructor() {
 
-            private var objectType: ObjectType? = null
-            private var objectId: String? = null
-            private var userId: String? = null
-            private var groupId: String? = null
-            private var permission: Permission? = null
-            private var restrictObjectType: RestrictObjectType? = null
-            private var roleId: String? = null
+            private var objectId: JsonField<String>? = null
+            private var objectType: JsonField<ObjectType>? = null
+            private var groupId: JsonField<String> = JsonMissing.of()
+            private var permission: JsonField<Permission> = JsonMissing.of()
+            private var restrictObjectType: JsonField<RestrictObjectType> = JsonMissing.of()
+            private var roleId: JsonField<String> = JsonMissing.of()
+            private var userId: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(addAcl: AddAcl) = apply {
-                this.objectType = addAcl.objectType
-                this.objectId = addAcl.objectId
-                this.userId = addAcl.userId
-                this.groupId = addAcl.groupId
-                this.permission = addAcl.permission
-                this.restrictObjectType = addAcl.restrictObjectType
-                this.roleId = addAcl.roleId
-                additionalProperties(addAcl.additionalProperties)
+                objectId = addAcl.objectId
+                objectType = addAcl.objectType
+                groupId = addAcl.groupId
+                permission = addAcl.permission
+                restrictObjectType = addAcl.restrictObjectType
+                roleId = addAcl.roleId
+                userId = addAcl.userId
+                additionalProperties = addAcl.additionalProperties.toMutableMap()
             }
 
-            /** The object type that the ACL applies to */
-            @JsonProperty("object_type")
-            fun objectType(objectType: ObjectType) = apply { this.objectType = objectType }
+            /** The id of the object the ACL applies to */
+            fun objectId(objectId: String) = objectId(JsonField.of(objectId))
 
             /** The id of the object the ACL applies to */
-            @JsonProperty("object_id")
-            fun objectId(objectId: String) = apply { this.objectId = objectId }
+            fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
 
-            /**
-             * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
-             * provided
-             */
-            @JsonProperty("user_id") fun userId(userId: String) = apply { this.userId = userId }
+            /** The object type that the ACL applies to */
+            fun objectType(objectType: ObjectType) = objectType(JsonField.of(objectType))
+
+            /** The object type that the ACL applies to */
+            fun objectType(objectType: JsonField<ObjectType>) = apply {
+                this.objectType = objectType
+            }
 
             /**
              * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
              * provided
              */
-            @JsonProperty("group_id")
-            fun groupId(groupId: String) = apply { this.groupId = groupId }
+            fun groupId(groupId: String?) = groupId(JsonField.ofNullable(groupId))
+
+            /**
+             * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
+             * provided
+             */
+            fun groupId(groupId: JsonField<String>) = apply { this.groupId = groupId }
 
             /**
              * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
              */
-            @JsonProperty("permission")
-            fun permission(permission: Permission) = apply { this.permission = permission }
+            fun permission(permission: Permission?) = permission(JsonField.ofNullable(permission))
+
+            /**
+             * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
+             */
+            fun permission(permission: JsonField<Permission>) = apply {
+                this.permission = permission
+            }
 
             /**
              * When setting a permission directly, optionally restricts the permission grant to just
              * the specified object type. Cannot be set alongside a `role_id`.
              */
-            @JsonProperty("restrict_object_type")
-            fun restrictObjectType(restrictObjectType: RestrictObjectType) = apply {
+            fun restrictObjectType(restrictObjectType: RestrictObjectType?) =
+                restrictObjectType(JsonField.ofNullable(restrictObjectType))
+
+            /**
+             * When setting a permission directly, optionally restricts the permission grant to just
+             * the specified object type. Cannot be set alongside a `role_id`.
+             */
+            fun restrictObjectType(restrictObjectType: JsonField<RestrictObjectType>) = apply {
                 this.restrictObjectType = restrictObjectType
             }
 
@@ -512,82 +776,103 @@ constructor(
              * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be
              * provided
              */
-            @JsonProperty("role_id") fun roleId(roleId: String) = apply { this.roleId = roleId }
+            fun roleId(roleId: String?) = roleId(JsonField.ofNullable(roleId))
+
+            /**
+             * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be
+             * provided
+             */
+            fun roleId(roleId: JsonField<String>) = apply { this.roleId = roleId }
+
+            /**
+             * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
+             * provided
+             */
+            fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+            /**
+             * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
+             * provided
+             */
+            fun userId(userId: JsonField<String>) = apply { this.userId = userId }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             fun build(): AddAcl =
                 AddAcl(
-                    checkNotNull(objectType) { "`objectType` is required but was not set" },
-                    checkNotNull(objectId) { "`objectId` is required but was not set" },
-                    userId,
+                    checkRequired("objectId", objectId),
+                    checkRequired("objectType", objectType),
                     groupId,
                     permission,
                     restrictObjectType,
                     roleId,
+                    userId,
                     additionalProperties.toImmutable(),
                 )
         }
 
+        /** The object type that the ACL applies to */
         class ObjectType
         @JsonCreator
         private constructor(
             private val value: JsonField<String>,
         ) : Enum {
 
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
             @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is ObjectType && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
 
             companion object {
 
-                val ORGANIZATION = ObjectType(JsonField.of("organization"))
+                val ORGANIZATION = of("organization")
 
-                val PROJECT = ObjectType(JsonField.of("project"))
+                val PROJECT = of("project")
 
-                val EXPERIMENT = ObjectType(JsonField.of("experiment"))
+                val EXPERIMENT = of("experiment")
 
-                val DATASET = ObjectType(JsonField.of("dataset"))
+                val DATASET = of("dataset")
 
-                val PROMPT = ObjectType(JsonField.of("prompt"))
+                val PROMPT = of("prompt")
 
-                val PROMPT_SESSION = ObjectType(JsonField.of("prompt_session"))
+                val PROMPT_SESSION = of("prompt_session")
 
-                val GROUP = ObjectType(JsonField.of("group"))
+                val GROUP = of("group")
 
-                val ROLE = ObjectType(JsonField.of("role"))
+                val ROLE = of("role")
 
-                val ORG_MEMBER = ObjectType(JsonField.of("org_member"))
+                val ORG_MEMBER = of("org_member")
 
-                val PROJECT_LOG = ObjectType(JsonField.of("project_log"))
+                val PROJECT_LOG = of("project_log")
 
-                val ORG_PROJECT = ObjectType(JsonField.of("org_project"))
+                val ORG_PROJECT = of("org_project")
 
                 fun of(value: String) = ObjectType(JsonField.of(value))
             }
 
+            /** An enum containing [ObjectType]'s known values. */
             enum class Known {
                 ORGANIZATION,
                 PROJECT,
@@ -602,6 +887,15 @@ constructor(
                 ORG_PROJECT,
             }
 
+            /**
+             * An enum containing [ObjectType]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [ObjectType] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 ORGANIZATION,
                 PROJECT,
@@ -614,9 +908,20 @@ constructor(
                 ORG_MEMBER,
                 PROJECT_LOG,
                 ORG_PROJECT,
+                /**
+                 * An enum member indicating that [ObjectType] was instantiated with an unknown
+                 * value.
+                 */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     ORGANIZATION -> Value.ORGANIZATION
@@ -633,6 +938,15 @@ constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     ORGANIZATION -> Known.ORGANIZATION
@@ -650,49 +964,59 @@ constructor(
                 }
 
             fun asString(): String = _value().asStringOrThrow()
-        }
-
-        class Permission
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return /* spotless:off */ other is Permission && value == other.value /* spotless:on */
+                return /* spotless:off */ other is ObjectType && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
 
             override fun toString() = value.toString()
+        }
+
+        /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
+        class Permission
+        @JsonCreator
+        private constructor(
+            private val value: JsonField<String>,
+        ) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
 
-                val CREATE = Permission(JsonField.of("create"))
+                val CREATE = of("create")
 
-                val READ = Permission(JsonField.of("read"))
+                val READ = of("read")
 
-                val UPDATE = Permission(JsonField.of("update"))
+                val UPDATE = of("update")
 
-                val DELETE = Permission(JsonField.of("delete"))
+                val DELETE = of("delete")
 
-                val CREATE_ACLS = Permission(JsonField.of("create_acls"))
+                val CREATE_ACLS = of("create_acls")
 
-                val READ_ACLS = Permission(JsonField.of("read_acls"))
+                val READ_ACLS = of("read_acls")
 
-                val UPDATE_ACLS = Permission(JsonField.of("update_acls"))
+                val UPDATE_ACLS = of("update_acls")
 
-                val DELETE_ACLS = Permission(JsonField.of("delete_acls"))
+                val DELETE_ACLS = of("delete_acls")
 
                 fun of(value: String) = Permission(JsonField.of(value))
             }
 
+            /** An enum containing [Permission]'s known values. */
             enum class Known {
                 CREATE,
                 READ,
@@ -704,6 +1028,15 @@ constructor(
                 DELETE_ACLS,
             }
 
+            /**
+             * An enum containing [Permission]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Permission] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 CREATE,
                 READ,
@@ -713,9 +1046,20 @@ constructor(
                 READ_ACLS,
                 UPDATE_ACLS,
                 DELETE_ACLS,
+                /**
+                 * An enum member indicating that [Permission] was instantiated with an unknown
+                 * value.
+                 */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     CREATE -> Value.CREATE
@@ -729,6 +1073,15 @@ constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     CREATE -> Known.CREATE
@@ -743,55 +1096,68 @@ constructor(
                 }
 
             fun asString(): String = _value().asStringOrThrow()
-        }
-
-        class RestrictObjectType
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return /* spotless:off */ other is RestrictObjectType && value == other.value /* spotless:on */
+                return /* spotless:off */ other is Permission && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
 
             override fun toString() = value.toString()
+        }
+
+        /**
+         * When setting a permission directly, optionally restricts the permission grant to just the
+         * specified object type. Cannot be set alongside a `role_id`.
+         */
+        class RestrictObjectType
+        @JsonCreator
+        private constructor(
+            private val value: JsonField<String>,
+        ) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
 
-                val ORGANIZATION = RestrictObjectType(JsonField.of("organization"))
+                val ORGANIZATION = of("organization")
 
-                val PROJECT = RestrictObjectType(JsonField.of("project"))
+                val PROJECT = of("project")
 
-                val EXPERIMENT = RestrictObjectType(JsonField.of("experiment"))
+                val EXPERIMENT = of("experiment")
 
-                val DATASET = RestrictObjectType(JsonField.of("dataset"))
+                val DATASET = of("dataset")
 
-                val PROMPT = RestrictObjectType(JsonField.of("prompt"))
+                val PROMPT = of("prompt")
 
-                val PROMPT_SESSION = RestrictObjectType(JsonField.of("prompt_session"))
+                val PROMPT_SESSION = of("prompt_session")
 
-                val GROUP = RestrictObjectType(JsonField.of("group"))
+                val GROUP = of("group")
 
-                val ROLE = RestrictObjectType(JsonField.of("role"))
+                val ROLE = of("role")
 
-                val ORG_MEMBER = RestrictObjectType(JsonField.of("org_member"))
+                val ORG_MEMBER = of("org_member")
 
-                val PROJECT_LOG = RestrictObjectType(JsonField.of("project_log"))
+                val PROJECT_LOG = of("project_log")
 
-                val ORG_PROJECT = RestrictObjectType(JsonField.of("org_project"))
+                val ORG_PROJECT = of("org_project")
 
                 fun of(value: String) = RestrictObjectType(JsonField.of(value))
             }
 
+            /** An enum containing [RestrictObjectType]'s known values. */
             enum class Known {
                 ORGANIZATION,
                 PROJECT,
@@ -806,6 +1172,17 @@ constructor(
                 ORG_PROJECT,
             }
 
+            /**
+             * An enum containing [RestrictObjectType]'s known values, as well as an [_UNKNOWN]
+             * member.
+             *
+             * An instance of [RestrictObjectType] can contain an unknown value in a couple of
+             * cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 ORGANIZATION,
                 PROJECT,
@@ -818,9 +1195,20 @@ constructor(
                 ORG_MEMBER,
                 PROJECT_LOG,
                 ORG_PROJECT,
+                /**
+                 * An enum member indicating that [RestrictObjectType] was instantiated with an
+                 * unknown value.
+                 */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     ORGANIZATION -> Value.ORGANIZATION
@@ -837,6 +1225,15 @@ constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     ORGANIZATION -> Known.ORGANIZATION
@@ -855,6 +1252,18 @@ constructor(
                 }
 
             fun asString(): String = _value().asStringOrThrow()
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is RestrictObjectType && value == other.value /* spotless:on */
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -862,17 +1271,17 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is AddAcl && objectType == other.objectType && objectId == other.objectId && userId == other.userId && groupId == other.groupId && permission == other.permission && restrictObjectType == other.restrictObjectType && roleId == other.roleId && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is AddAcl && objectId == other.objectId && objectType == other.objectType && groupId == other.groupId && permission == other.permission && restrictObjectType == other.restrictObjectType && roleId == other.roleId && userId == other.userId && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(objectType, objectId, userId, groupId, permission, restrictObjectType, roleId, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(objectId, objectType, groupId, permission, restrictObjectType, roleId, userId, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "AddAcl{objectType=$objectType, objectId=$objectId, userId=$userId, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, additionalProperties=$additionalProperties}"
+            "AddAcl{objectId=$objectId, objectType=$objectType, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, userId=$userId, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -885,56 +1294,126 @@ constructor(
      * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in the
      * ACL, as part of a direct permission grant or as part of a role.
      */
-    @JsonDeserialize(builder = RemoveAcl.Builder::class)
     @NoAutoDetect
     class RemoveAcl
+    @JsonCreator
     private constructor(
-        private val objectType: ObjectType?,
-        private val objectId: String?,
-        private val userId: String?,
-        private val groupId: String?,
-        private val permission: Permission?,
-        private val restrictObjectType: RestrictObjectType?,
-        private val roleId: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("object_id")
+        @ExcludeMissing
+        private val objectId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object_type")
+        @ExcludeMissing
+        private val objectType: JsonField<ObjectType> = JsonMissing.of(),
+        @JsonProperty("group_id")
+        @ExcludeMissing
+        private val groupId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("permission")
+        @ExcludeMissing
+        private val permission: JsonField<Permission> = JsonMissing.of(),
+        @JsonProperty("restrict_object_type")
+        @ExcludeMissing
+        private val restrictObjectType: JsonField<RestrictObjectType> = JsonMissing.of(),
+        @JsonProperty("role_id")
+        @ExcludeMissing
+        private val roleId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("user_id")
+        @ExcludeMissing
+        private val userId: JsonField<String> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The object type that the ACL applies to */
-        @JsonProperty("object_type") fun objectType(): ObjectType? = objectType
-
         /** The id of the object the ACL applies to */
-        @JsonProperty("object_id") fun objectId(): String? = objectId
+        fun objectId(): String = objectId.getRequired("object_id")
 
-        /**
-         * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
-         * provided
-         */
-        @JsonProperty("user_id") fun userId(): String? = userId
+        /** The object type that the ACL applies to */
+        fun objectType(): ObjectType = objectType.getRequired("object_type")
 
         /**
          * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
          * provided
          */
-        @JsonProperty("group_id") fun groupId(): String? = groupId
+        fun groupId(): String? = groupId.getNullable("group_id")
 
         /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
-        @JsonProperty("permission") fun permission(): Permission? = permission
+        fun permission(): Permission? = permission.getNullable("permission")
+
+        /**
+         * When setting a permission directly, optionally restricts the permission grant to just the
+         * specified object type. Cannot be set alongside a `role_id`.
+         */
+        fun restrictObjectType(): RestrictObjectType? =
+            restrictObjectType.getNullable("restrict_object_type")
+
+        /**
+         * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided
+         */
+        fun roleId(): String? = roleId.getNullable("role_id")
+
+        /**
+         * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
+         * provided
+         */
+        fun userId(): String? = userId.getNullable("user_id")
+
+        /** The id of the object the ACL applies to */
+        @JsonProperty("object_id") @ExcludeMissing fun _objectId(): JsonField<String> = objectId
+
+        /** The object type that the ACL applies to */
+        @JsonProperty("object_type")
+        @ExcludeMissing
+        fun _objectType(): JsonField<ObjectType> = objectType
+
+        /**
+         * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
+         * provided
+         */
+        @JsonProperty("group_id") @ExcludeMissing fun _groupId(): JsonField<String> = groupId
+
+        /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
+        @JsonProperty("permission")
+        @ExcludeMissing
+        fun _permission(): JsonField<Permission> = permission
 
         /**
          * When setting a permission directly, optionally restricts the permission grant to just the
          * specified object type. Cannot be set alongside a `role_id`.
          */
         @JsonProperty("restrict_object_type")
-        fun restrictObjectType(): RestrictObjectType? = restrictObjectType
+        @ExcludeMissing
+        fun _restrictObjectType(): JsonField<RestrictObjectType> = restrictObjectType
 
         /**
          * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided
          */
-        @JsonProperty("role_id") fun roleId(): String? = roleId
+        @JsonProperty("role_id") @ExcludeMissing fun _roleId(): JsonField<String> = roleId
+
+        /**
+         * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
+         * provided
+         */
+        @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): RemoveAcl = apply {
+            if (validated) {
+                return@apply
+            }
+
+            objectId()
+            objectType()
+            groupId()
+            permission()
+            restrictObjectType()
+            roleId()
+            userId()
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -943,61 +1422,79 @@ constructor(
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [RemoveAcl]. */
+        class Builder internal constructor() {
 
-            private var objectType: ObjectType? = null
-            private var objectId: String? = null
-            private var userId: String? = null
-            private var groupId: String? = null
-            private var permission: Permission? = null
-            private var restrictObjectType: RestrictObjectType? = null
-            private var roleId: String? = null
+            private var objectId: JsonField<String>? = null
+            private var objectType: JsonField<ObjectType>? = null
+            private var groupId: JsonField<String> = JsonMissing.of()
+            private var permission: JsonField<Permission> = JsonMissing.of()
+            private var restrictObjectType: JsonField<RestrictObjectType> = JsonMissing.of()
+            private var roleId: JsonField<String> = JsonMissing.of()
+            private var userId: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(removeAcl: RemoveAcl) = apply {
-                this.objectType = removeAcl.objectType
-                this.objectId = removeAcl.objectId
-                this.userId = removeAcl.userId
-                this.groupId = removeAcl.groupId
-                this.permission = removeAcl.permission
-                this.restrictObjectType = removeAcl.restrictObjectType
-                this.roleId = removeAcl.roleId
-                additionalProperties(removeAcl.additionalProperties)
+                objectId = removeAcl.objectId
+                objectType = removeAcl.objectType
+                groupId = removeAcl.groupId
+                permission = removeAcl.permission
+                restrictObjectType = removeAcl.restrictObjectType
+                roleId = removeAcl.roleId
+                userId = removeAcl.userId
+                additionalProperties = removeAcl.additionalProperties.toMutableMap()
             }
 
-            /** The object type that the ACL applies to */
-            @JsonProperty("object_type")
-            fun objectType(objectType: ObjectType) = apply { this.objectType = objectType }
+            /** The id of the object the ACL applies to */
+            fun objectId(objectId: String) = objectId(JsonField.of(objectId))
 
             /** The id of the object the ACL applies to */
-            @JsonProperty("object_id")
-            fun objectId(objectId: String) = apply { this.objectId = objectId }
+            fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
 
-            /**
-             * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
-             * provided
-             */
-            @JsonProperty("user_id") fun userId(userId: String) = apply { this.userId = userId }
+            /** The object type that the ACL applies to */
+            fun objectType(objectType: ObjectType) = objectType(JsonField.of(objectType))
+
+            /** The object type that the ACL applies to */
+            fun objectType(objectType: JsonField<ObjectType>) = apply {
+                this.objectType = objectType
+            }
 
             /**
              * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
              * provided
              */
-            @JsonProperty("group_id")
-            fun groupId(groupId: String) = apply { this.groupId = groupId }
+            fun groupId(groupId: String?) = groupId(JsonField.ofNullable(groupId))
+
+            /**
+             * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
+             * provided
+             */
+            fun groupId(groupId: JsonField<String>) = apply { this.groupId = groupId }
 
             /**
              * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
              */
-            @JsonProperty("permission")
-            fun permission(permission: Permission) = apply { this.permission = permission }
+            fun permission(permission: Permission?) = permission(JsonField.ofNullable(permission))
+
+            /**
+             * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
+             */
+            fun permission(permission: JsonField<Permission>) = apply {
+                this.permission = permission
+            }
 
             /**
              * When setting a permission directly, optionally restricts the permission grant to just
              * the specified object type. Cannot be set alongside a `role_id`.
              */
-            @JsonProperty("restrict_object_type")
-            fun restrictObjectType(restrictObjectType: RestrictObjectType) = apply {
+            fun restrictObjectType(restrictObjectType: RestrictObjectType?) =
+                restrictObjectType(JsonField.ofNullable(restrictObjectType))
+
+            /**
+             * When setting a permission directly, optionally restricts the permission grant to just
+             * the specified object type. Cannot be set alongside a `role_id`.
+             */
+            fun restrictObjectType(restrictObjectType: JsonField<RestrictObjectType>) = apply {
                 this.restrictObjectType = restrictObjectType
             }
 
@@ -1005,82 +1502,103 @@ constructor(
              * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be
              * provided
              */
-            @JsonProperty("role_id") fun roleId(roleId: String) = apply { this.roleId = roleId }
+            fun roleId(roleId: String?) = roleId(JsonField.ofNullable(roleId))
+
+            /**
+             * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be
+             * provided
+             */
+            fun roleId(roleId: JsonField<String>) = apply { this.roleId = roleId }
+
+            /**
+             * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
+             * provided
+             */
+            fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+            /**
+             * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
+             * provided
+             */
+            fun userId(userId: JsonField<String>) = apply { this.userId = userId }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             fun build(): RemoveAcl =
                 RemoveAcl(
-                    checkNotNull(objectType) { "`objectType` is required but was not set" },
-                    checkNotNull(objectId) { "`objectId` is required but was not set" },
-                    userId,
+                    checkRequired("objectId", objectId),
+                    checkRequired("objectType", objectType),
                     groupId,
                     permission,
                     restrictObjectType,
                     roleId,
+                    userId,
                     additionalProperties.toImmutable(),
                 )
         }
 
+        /** The object type that the ACL applies to */
         class ObjectType
         @JsonCreator
         private constructor(
             private val value: JsonField<String>,
         ) : Enum {
 
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
             @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is ObjectType && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
 
             companion object {
 
-                val ORGANIZATION = ObjectType(JsonField.of("organization"))
+                val ORGANIZATION = of("organization")
 
-                val PROJECT = ObjectType(JsonField.of("project"))
+                val PROJECT = of("project")
 
-                val EXPERIMENT = ObjectType(JsonField.of("experiment"))
+                val EXPERIMENT = of("experiment")
 
-                val DATASET = ObjectType(JsonField.of("dataset"))
+                val DATASET = of("dataset")
 
-                val PROMPT = ObjectType(JsonField.of("prompt"))
+                val PROMPT = of("prompt")
 
-                val PROMPT_SESSION = ObjectType(JsonField.of("prompt_session"))
+                val PROMPT_SESSION = of("prompt_session")
 
-                val GROUP = ObjectType(JsonField.of("group"))
+                val GROUP = of("group")
 
-                val ROLE = ObjectType(JsonField.of("role"))
+                val ROLE = of("role")
 
-                val ORG_MEMBER = ObjectType(JsonField.of("org_member"))
+                val ORG_MEMBER = of("org_member")
 
-                val PROJECT_LOG = ObjectType(JsonField.of("project_log"))
+                val PROJECT_LOG = of("project_log")
 
-                val ORG_PROJECT = ObjectType(JsonField.of("org_project"))
+                val ORG_PROJECT = of("org_project")
 
                 fun of(value: String) = ObjectType(JsonField.of(value))
             }
 
+            /** An enum containing [ObjectType]'s known values. */
             enum class Known {
                 ORGANIZATION,
                 PROJECT,
@@ -1095,6 +1613,15 @@ constructor(
                 ORG_PROJECT,
             }
 
+            /**
+             * An enum containing [ObjectType]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [ObjectType] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 ORGANIZATION,
                 PROJECT,
@@ -1107,9 +1634,20 @@ constructor(
                 ORG_MEMBER,
                 PROJECT_LOG,
                 ORG_PROJECT,
+                /**
+                 * An enum member indicating that [ObjectType] was instantiated with an unknown
+                 * value.
+                 */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     ORGANIZATION -> Value.ORGANIZATION
@@ -1126,6 +1664,15 @@ constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     ORGANIZATION -> Known.ORGANIZATION
@@ -1143,49 +1690,59 @@ constructor(
                 }
 
             fun asString(): String = _value().asStringOrThrow()
-        }
-
-        class Permission
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return /* spotless:off */ other is Permission && value == other.value /* spotless:on */
+                return /* spotless:off */ other is ObjectType && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
 
             override fun toString() = value.toString()
+        }
+
+        /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
+        class Permission
+        @JsonCreator
+        private constructor(
+            private val value: JsonField<String>,
+        ) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
 
-                val CREATE = Permission(JsonField.of("create"))
+                val CREATE = of("create")
 
-                val READ = Permission(JsonField.of("read"))
+                val READ = of("read")
 
-                val UPDATE = Permission(JsonField.of("update"))
+                val UPDATE = of("update")
 
-                val DELETE = Permission(JsonField.of("delete"))
+                val DELETE = of("delete")
 
-                val CREATE_ACLS = Permission(JsonField.of("create_acls"))
+                val CREATE_ACLS = of("create_acls")
 
-                val READ_ACLS = Permission(JsonField.of("read_acls"))
+                val READ_ACLS = of("read_acls")
 
-                val UPDATE_ACLS = Permission(JsonField.of("update_acls"))
+                val UPDATE_ACLS = of("update_acls")
 
-                val DELETE_ACLS = Permission(JsonField.of("delete_acls"))
+                val DELETE_ACLS = of("delete_acls")
 
                 fun of(value: String) = Permission(JsonField.of(value))
             }
 
+            /** An enum containing [Permission]'s known values. */
             enum class Known {
                 CREATE,
                 READ,
@@ -1197,6 +1754,15 @@ constructor(
                 DELETE_ACLS,
             }
 
+            /**
+             * An enum containing [Permission]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Permission] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 CREATE,
                 READ,
@@ -1206,9 +1772,20 @@ constructor(
                 READ_ACLS,
                 UPDATE_ACLS,
                 DELETE_ACLS,
+                /**
+                 * An enum member indicating that [Permission] was instantiated with an unknown
+                 * value.
+                 */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     CREATE -> Value.CREATE
@@ -1222,6 +1799,15 @@ constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     CREATE -> Known.CREATE
@@ -1236,55 +1822,68 @@ constructor(
                 }
 
             fun asString(): String = _value().asStringOrThrow()
-        }
-
-        class RestrictObjectType
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return /* spotless:off */ other is RestrictObjectType && value == other.value /* spotless:on */
+                return /* spotless:off */ other is Permission && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
 
             override fun toString() = value.toString()
+        }
+
+        /**
+         * When setting a permission directly, optionally restricts the permission grant to just the
+         * specified object type. Cannot be set alongside a `role_id`.
+         */
+        class RestrictObjectType
+        @JsonCreator
+        private constructor(
+            private val value: JsonField<String>,
+        ) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
 
-                val ORGANIZATION = RestrictObjectType(JsonField.of("organization"))
+                val ORGANIZATION = of("organization")
 
-                val PROJECT = RestrictObjectType(JsonField.of("project"))
+                val PROJECT = of("project")
 
-                val EXPERIMENT = RestrictObjectType(JsonField.of("experiment"))
+                val EXPERIMENT = of("experiment")
 
-                val DATASET = RestrictObjectType(JsonField.of("dataset"))
+                val DATASET = of("dataset")
 
-                val PROMPT = RestrictObjectType(JsonField.of("prompt"))
+                val PROMPT = of("prompt")
 
-                val PROMPT_SESSION = RestrictObjectType(JsonField.of("prompt_session"))
+                val PROMPT_SESSION = of("prompt_session")
 
-                val GROUP = RestrictObjectType(JsonField.of("group"))
+                val GROUP = of("group")
 
-                val ROLE = RestrictObjectType(JsonField.of("role"))
+                val ROLE = of("role")
 
-                val ORG_MEMBER = RestrictObjectType(JsonField.of("org_member"))
+                val ORG_MEMBER = of("org_member")
 
-                val PROJECT_LOG = RestrictObjectType(JsonField.of("project_log"))
+                val PROJECT_LOG = of("project_log")
 
-                val ORG_PROJECT = RestrictObjectType(JsonField.of("org_project"))
+                val ORG_PROJECT = of("org_project")
 
                 fun of(value: String) = RestrictObjectType(JsonField.of(value))
             }
 
+            /** An enum containing [RestrictObjectType]'s known values. */
             enum class Known {
                 ORGANIZATION,
                 PROJECT,
@@ -1299,6 +1898,17 @@ constructor(
                 ORG_PROJECT,
             }
 
+            /**
+             * An enum containing [RestrictObjectType]'s known values, as well as an [_UNKNOWN]
+             * member.
+             *
+             * An instance of [RestrictObjectType] can contain an unknown value in a couple of
+             * cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 ORGANIZATION,
                 PROJECT,
@@ -1311,9 +1921,20 @@ constructor(
                 ORG_MEMBER,
                 PROJECT_LOG,
                 ORG_PROJECT,
+                /**
+                 * An enum member indicating that [RestrictObjectType] was instantiated with an
+                 * unknown value.
+                 */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     ORGANIZATION -> Value.ORGANIZATION
@@ -1330,6 +1951,15 @@ constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     ORGANIZATION -> Known.ORGANIZATION
@@ -1348,6 +1978,18 @@ constructor(
                 }
 
             fun asString(): String = _value().asStringOrThrow()
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is RestrictObjectType && value == other.value /* spotless:on */
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1355,17 +1997,17 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is RemoveAcl && objectType == other.objectType && objectId == other.objectId && userId == other.userId && groupId == other.groupId && permission == other.permission && restrictObjectType == other.restrictObjectType && roleId == other.roleId && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is RemoveAcl && objectId == other.objectId && objectType == other.objectType && groupId == other.groupId && permission == other.permission && restrictObjectType == other.restrictObjectType && roleId == other.roleId && userId == other.userId && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(objectType, objectId, userId, groupId, permission, restrictObjectType, roleId, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(objectId, objectType, groupId, permission, restrictObjectType, roleId, userId, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "RemoveAcl{objectType=$objectType, objectId=$objectId, userId=$userId, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, additionalProperties=$additionalProperties}"
+            "RemoveAcl{objectId=$objectId, objectType=$objectType, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, userId=$userId, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -1373,11 +2015,11 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is AclBatchUpdateParams && addAcls == other.addAcls && removeAcls == other.removeAcls && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is AclBatchUpdateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(addAcls, removeAcls, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "AclBatchUpdateParams{addAcls=$addAcls, removeAcls=$removeAcls, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "AclBatchUpdateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

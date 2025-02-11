@@ -7,14 +7,19 @@ import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.services.blocking.DatasetService
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
+/**
+ * List out all datasets. The datasets are sorted by creation date, with the most recently-created
+ * datasets coming first
+ */
 class DatasetListPage
 private constructor(
     private val datasetsService: DatasetService,
@@ -71,15 +76,14 @@ private constructor(
             )
     }
 
-    @JsonDeserialize(builder = Response.Builder::class)
     @NoAutoDetect
     class Response
+    @JsonCreator
     constructor(
-        private val objects: JsonField<List<Dataset>>,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("objects") private val objects: JsonField<List<Dataset>> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
-
-        private var validated: Boolean = false
 
         fun objects(): List<Dataset> = objects.getNullable("objects") ?: listOf()
 
@@ -89,11 +93,15 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): Response = apply {
-            if (!validated) {
-                objects().map { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            objects().map { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -128,10 +136,8 @@ private constructor(
 
             fun objects(objects: List<Dataset>) = objects(JsonField.of(objects))
 
-            @JsonProperty("objects")
             fun objects(objects: JsonField<List<Dataset>>) = apply { this.objects = objects }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 this.additionalProperties.put(key, value)
             }
@@ -140,8 +146,7 @@ private constructor(
         }
     }
 
-    class AutoPager
-    constructor(
+    class AutoPager(
         private val firstPage: DatasetListPage,
     ) : Sequence<Dataset> {
 
