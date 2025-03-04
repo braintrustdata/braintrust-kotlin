@@ -22,10 +22,8 @@ import com.braintrustdata.api.models.ProjectTagReplaceParams
 import com.braintrustdata.api.models.ProjectTagRetrieveParams
 import com.braintrustdata.api.models.ProjectTagUpdateParams
 
-class ProjectTagServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ProjectTagServiceAsync {
+class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    ProjectTagServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -38,7 +36,7 @@ internal constructor(
      */
     override suspend fun create(
         params: ProjectTagCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ProjectTag {
         val request =
             HttpRequest.builder()
@@ -63,7 +61,7 @@ internal constructor(
     /** Get a project_tag object by its id */
     override suspend fun retrieve(
         params: ProjectTagRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ProjectTag {
         val request =
             HttpRequest.builder()
@@ -91,7 +89,7 @@ internal constructor(
      */
     override suspend fun update(
         params: ProjectTagUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ProjectTag {
         val request =
             HttpRequest.builder()
@@ -120,7 +118,7 @@ internal constructor(
      */
     override suspend fun list(
         params: ProjectTagListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ProjectTagListPageAsync {
         val request =
             HttpRequest.builder()
@@ -145,7 +143,7 @@ internal constructor(
     /** Delete a project_tag object by its id */
     override suspend fun delete(
         params: ProjectTagDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ProjectTag {
         val request =
             HttpRequest.builder()
@@ -174,7 +172,7 @@ internal constructor(
      */
     override suspend fun replace(
         params: ProjectTagReplaceParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ProjectTag {
         val request =
             HttpRequest.builder()

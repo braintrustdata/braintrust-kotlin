@@ -96,7 +96,7 @@ private constructor(
         fun build(): DataSummary =
             DataSummary(
                 checkRequired("totalRecords", totalRecords),
-                additionalProperties.toImmutable()
+                additionalProperties.toImmutable(),
             )
     }
 

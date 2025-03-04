@@ -22,13 +22,13 @@ interface FunctionService {
      */
     fun create(
         params: FunctionCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
     /** Get a function object by its id */
     fun retrieve(
         params: FunctionRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
     /**
@@ -38,7 +38,7 @@ interface FunctionService {
      */
     fun update(
         params: FunctionUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
     /**
@@ -46,20 +46,27 @@ interface FunctionService {
      * recently-created functions coming first
      */
     fun list(
-        params: FunctionListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: FunctionListParams = FunctionListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FunctionListPage
+
+    /**
+     * List out all functions. The functions are sorted by creation date, with the most
+     * recently-created functions coming first
+     */
+    fun list(requestOptions: RequestOptions): FunctionListPage =
+        list(FunctionListParams.none(), requestOptions)
 
     /** Delete a function object by its id */
     fun delete(
         params: FunctionDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
     /** Invoke a function. */
     fun invoke(
         params: FunctionInvokeParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FunctionInvokeResponse?
 
     /**
@@ -69,6 +76,6 @@ interface FunctionService {
      */
     fun replace(
         params: FunctionReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 }

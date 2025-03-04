@@ -22,10 +22,8 @@ import com.braintrustdata.api.models.EnvVarReplaceParams
 import com.braintrustdata.api.models.EnvVarRetrieveParams
 import com.braintrustdata.api.models.EnvVarUpdateParams
 
-class EnvVarServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : EnvVarServiceAsync {
+class EnvVarServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    EnvVarServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -38,7 +36,7 @@ internal constructor(
      */
     override suspend fun create(
         params: EnvVarCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): EnvVar {
         val request =
             HttpRequest.builder()
@@ -63,7 +61,7 @@ internal constructor(
     /** Get an env_var object by its id */
     override suspend fun retrieve(
         params: EnvVarRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): EnvVar {
         val request =
             HttpRequest.builder()
@@ -91,7 +89,7 @@ internal constructor(
      */
     override suspend fun update(
         params: EnvVarUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): EnvVar {
         val request =
             HttpRequest.builder()
@@ -119,7 +117,7 @@ internal constructor(
      */
     override suspend fun list(
         params: EnvVarListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): EnvVarListResponse {
         val request =
             HttpRequest.builder()
@@ -143,7 +141,7 @@ internal constructor(
     /** Delete an env_var object by its id */
     override suspend fun delete(
         params: EnvVarDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): EnvVar {
         val request =
             HttpRequest.builder()
@@ -171,7 +169,7 @@ internal constructor(
      */
     override suspend fun replace(
         params: EnvVarReplaceParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): EnvVar {
         val request =
             HttpRequest.builder()

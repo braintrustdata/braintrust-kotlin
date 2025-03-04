@@ -25,7 +25,7 @@ import java.util.Objects
  */
 class ExperimentCreateParams
 private constructor(
-    private val body: ExperimentCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -116,16 +116,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): ExperimentCreateBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class ExperimentCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("project_id")
         @ExcludeMissing
         private val projectId: JsonField<String> = JsonMissing.of(),
@@ -254,7 +254,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): ExperimentCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -279,7 +279,7 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [ExperimentCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var projectId: JsonField<String>? = null
@@ -294,18 +294,18 @@ private constructor(
             private var repoInfo: JsonField<RepoInfo> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(experimentCreateBody: ExperimentCreateBody) = apply {
-                projectId = experimentCreateBody.projectId
-                baseExpId = experimentCreateBody.baseExpId
-                datasetId = experimentCreateBody.datasetId
-                datasetVersion = experimentCreateBody.datasetVersion
-                description = experimentCreateBody.description
-                ensureNew = experimentCreateBody.ensureNew
-                metadata = experimentCreateBody.metadata
-                name = experimentCreateBody.name
-                public_ = experimentCreateBody.public_
-                repoInfo = experimentCreateBody.repoInfo
-                additionalProperties = experimentCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                projectId = body.projectId
+                baseExpId = body.baseExpId
+                datasetId = body.datasetId
+                datasetVersion = body.datasetVersion
+                description = body.description
+                ensureNew = body.ensureNew
+                metadata = body.metadata
+                name = body.name
+                public_ = body.public_
+                repoInfo = body.repoInfo
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** Unique identifier for the project that the experiment belongs under */
@@ -431,8 +431,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): ExperimentCreateBody =
-                ExperimentCreateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("projectId", projectId),
                     baseExpId,
                     datasetId,
@@ -452,7 +452,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ExperimentCreateBody && projectId == other.projectId && baseExpId == other.baseExpId && datasetId == other.datasetId && datasetVersion == other.datasetVersion && description == other.description && ensureNew == other.ensureNew && metadata == other.metadata && name == other.name && public_ == other.public_ && repoInfo == other.repoInfo && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && projectId == other.projectId && baseExpId == other.baseExpId && datasetId == other.datasetId && datasetVersion == other.datasetVersion && description == other.description && ensureNew == other.ensureNew && metadata == other.metadata && name == other.name && public_ == other.public_ && repoInfo == other.repoInfo && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -462,7 +462,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ExperimentCreateBody{projectId=$projectId, baseExpId=$baseExpId, datasetId=$datasetId, datasetVersion=$datasetVersion, description=$description, ensureNew=$ensureNew, metadata=$metadata, name=$name, public_=$public_, repoInfo=$repoInfo, additionalProperties=$additionalProperties}"
+            "Body{projectId=$projectId, baseExpId=$baseExpId, datasetId=$datasetId, datasetVersion=$datasetVersion, description=$description, ensureNew=$ensureNew, metadata=$metadata, name=$name, public_=$public_, repoInfo=$repoInfo, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -476,7 +476,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: ExperimentCreateBody.Builder = ExperimentCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -716,7 +716,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
     ) {
 
         @JsonAnyGetter

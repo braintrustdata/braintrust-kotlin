@@ -20,13 +20,13 @@ interface PromptService {
      */
     fun create(
         params: PromptCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 
     /** Get a prompt object by its id */
     fun retrieve(
         params: PromptRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 
     /**
@@ -36,7 +36,7 @@ interface PromptService {
      */
     fun update(
         params: PromptUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 
     /**
@@ -44,14 +44,21 @@ interface PromptService {
      * prompts coming first
      */
     fun list(
-        params: PromptListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: PromptListParams = PromptListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): PromptListPage
+
+    /**
+     * List out all prompts. The prompts are sorted by creation date, with the most recently-created
+     * prompts coming first
+     */
+    fun list(requestOptions: RequestOptions): PromptListPage =
+        list(PromptListParams.none(), requestOptions)
 
     /** Delete a prompt object by its id */
     fun delete(
         params: PromptDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 
     /**
@@ -60,6 +67,6 @@ interface PromptService {
      */
     fun replace(
         params: PromptReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 }

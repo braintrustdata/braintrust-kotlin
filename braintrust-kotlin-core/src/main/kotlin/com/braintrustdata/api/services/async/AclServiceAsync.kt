@@ -21,13 +21,13 @@ interface AclServiceAsync {
      */
     suspend fun create(
         params: AclCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Acl
 
     /** Get an acl object by its id */
     suspend fun retrieve(
         params: AclRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Acl
 
     /**
@@ -36,13 +36,13 @@ interface AclServiceAsync {
      */
     suspend fun list(
         params: AclListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AclListPageAsync
 
     /** Delete an acl object by its id */
     suspend fun delete(
         params: AclDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Acl
 
     /**
@@ -50,13 +50,20 @@ interface AclServiceAsync {
      * no effect, and removing acls which do not exist will have no effect.
      */
     suspend fun batchUpdate(
-        params: AclBatchUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: AclBatchUpdateParams = AclBatchUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AclBatchUpdateResponse
+
+    /**
+     * Batch update acls. This operation is idempotent, so adding acls which already exist will have
+     * no effect, and removing acls which do not exist will have no effect.
+     */
+    suspend fun batchUpdate(requestOptions: RequestOptions): AclBatchUpdateResponse =
+        batchUpdate(AclBatchUpdateParams.none(), requestOptions)
 
     /** Delete a single acl */
     suspend fun findAndDelete(
         params: AclFindAndDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Acl
 }

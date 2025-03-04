@@ -73,13 +73,8 @@ private constructor(
         fun of(
             spanIframesService: SpanIframeServiceAsync,
             params: SpanIframeListParams,
-            response: Response
-        ) =
-            SpanIframeListPageAsync(
-                spanIframesService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = SpanIframeListPageAsync(spanIframesService, params, response)
     }
 
     @NoAutoDetect
@@ -153,9 +148,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: SpanIframeListPageAsync,
-    ) : Flow<SpanIFrame> {
+    class AutoPager(private val firstPage: SpanIframeListPageAsync) : Flow<SpanIFrame> {
 
         override suspend fun collect(collector: FlowCollector<SpanIFrame>) {
             var page = firstPage

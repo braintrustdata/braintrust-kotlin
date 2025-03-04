@@ -73,13 +73,8 @@ private constructor(
         fun of(
             datasetsService: DatasetServiceAsync,
             params: DatasetListParams,
-            response: Response
-        ) =
-            DatasetListPageAsync(
-                datasetsService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = DatasetListPageAsync(datasetsService, params, response)
     }
 
     @NoAutoDetect
@@ -152,9 +147,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: DatasetListPageAsync,
-    ) : Flow<Dataset> {
+    class AutoPager(private val firstPage: DatasetListPageAsync) : Flow<Dataset> {
 
         override suspend fun collect(collector: FlowCollector<Dataset>) {
             var page = firstPage

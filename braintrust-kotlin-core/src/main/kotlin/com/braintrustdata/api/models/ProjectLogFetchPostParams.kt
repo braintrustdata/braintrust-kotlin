@@ -27,7 +27,7 @@ import java.util.Objects
 class ProjectLogFetchPostParams
 private constructor(
     private val projectId: String,
-    private val body: ProjectLogFetchPostBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -161,7 +161,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): ProjectLogFetchPostBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -175,9 +175,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class ProjectLogFetchPostBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("cursor")
         @ExcludeMissing
         private val cursor: JsonField<String> = JsonMissing.of(),
@@ -329,7 +329,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): ProjectLogFetchPostBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -349,7 +349,7 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [ProjectLogFetchPostBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var cursor: JsonField<String> = JsonMissing.of()
@@ -359,13 +359,13 @@ private constructor(
             private var version: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(projectLogFetchPostBody: ProjectLogFetchPostBody) = apply {
-                cursor = projectLogFetchPostBody.cursor
-                limit = projectLogFetchPostBody.limit
-                maxRootSpanId = projectLogFetchPostBody.maxRootSpanId
-                maxXactId = projectLogFetchPostBody.maxXactId
-                version = projectLogFetchPostBody.version
-                additionalProperties = projectLogFetchPostBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                cursor = body.cursor
+                limit = body.limit
+                maxRootSpanId = body.maxRootSpanId
+                maxXactId = body.maxXactId
+                version = body.version
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -533,8 +533,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): ProjectLogFetchPostBody =
-                ProjectLogFetchPostBody(
+            fun build(): Body =
+                Body(
                     cursor,
                     limit,
                     maxRootSpanId,
@@ -549,7 +549,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ProjectLogFetchPostBody && cursor == other.cursor && limit == other.limit && maxRootSpanId == other.maxRootSpanId && maxXactId == other.maxXactId && version == other.version && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && cursor == other.cursor && limit == other.limit && maxRootSpanId == other.maxRootSpanId && maxXactId == other.maxXactId && version == other.version && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -559,7 +559,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ProjectLogFetchPostBody{cursor=$cursor, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalProperties=$additionalProperties}"
+            "Body{cursor=$cursor, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -574,7 +574,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var projectId: String? = null
-        private var body: ProjectLogFetchPostBody.Builder = ProjectLogFetchPostBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

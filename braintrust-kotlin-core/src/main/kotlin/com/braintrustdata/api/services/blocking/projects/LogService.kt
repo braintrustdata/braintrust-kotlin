@@ -16,7 +16,7 @@ interface LogService {
     /** Log feedback for a set of project logs events */
     fun feedback(
         params: ProjectLogFeedbackParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FeedbackResponseSchema
 
     /**
@@ -26,7 +26,7 @@ interface LogService {
      */
     fun fetch(
         params: ProjectLogFetchParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchProjectLogsEventsResponse
 
     /**
@@ -36,12 +36,12 @@ interface LogService {
      */
     fun fetchPost(
         params: ProjectLogFetchPostParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchProjectLogsEventsResponse
 
     /** Insert a set of events into the project logs */
     fun insert(
         params: ProjectLogInsertParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): InsertEventsResponse
 }

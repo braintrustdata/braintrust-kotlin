@@ -35,7 +35,7 @@ import java.util.Objects
 class FunctionInvokeParams
 private constructor(
     private val functionId: String,
-    private val body: FunctionInvokeBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -88,7 +88,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): FunctionInvokeBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -103,9 +103,9 @@ private constructor(
 
     /** The request to invoke a function */
     @NoAutoDetect
-    class FunctionInvokeBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("input") @ExcludeMissing private val input: JsonValue = JsonMissing.of(),
         @JsonProperty("messages")
         @ExcludeMissing
@@ -171,7 +171,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): FunctionInvokeBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -191,7 +191,7 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [FunctionInvokeBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var input: JsonValue = JsonMissing.of()
@@ -202,14 +202,14 @@ private constructor(
             private var version: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(functionInvokeBody: FunctionInvokeBody) = apply {
-                input = functionInvokeBody.input
-                messages = functionInvokeBody.messages.map { it.toMutableList() }
-                mode = functionInvokeBody.mode
-                parent = functionInvokeBody.parent
-                stream = functionInvokeBody.stream
-                version = functionInvokeBody.version
-                additionalProperties = functionInvokeBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                input = body.input
+                messages = body.messages.map { it.toMutableList() }
+                mode = body.mode
+                parent = body.parent
+                stream = body.stream
+                version = body.version
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** Argument to the function, which can be any JSON serializable value */
@@ -316,8 +316,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): FunctionInvokeBody =
-                FunctionInvokeBody(
+            fun build(): Body =
+                Body(
                     input,
                     (messages ?: JsonMissing.of()).map { it.toImmutable() },
                     mode,
@@ -333,7 +333,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FunctionInvokeBody && input == other.input && messages == other.messages && mode == other.mode && parent == other.parent && stream == other.stream && version == other.version && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && input == other.input && messages == other.messages && mode == other.mode && parent == other.parent && stream == other.stream && version == other.version && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -343,7 +343,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "FunctionInvokeBody{input=$input, messages=$messages, mode=$mode, parent=$parent, stream=$stream, version=$version, additionalProperties=$additionalProperties}"
+            "Body{input=$input, messages=$messages, mode=$mode, parent=$parent, stream=$stream, version=$version, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -358,7 +358,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var functionId: String? = null
-        private var body: FunctionInvokeBody.Builder = FunctionInvokeBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -780,7 +780,7 @@ private constructor(
             override fun serialize(
                 value: Message,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.system != null -> generator.writeObject(value.system)
@@ -906,11 +906,8 @@ private constructor(
                     )
             }
 
-            class Role
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Role @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
 
                 /**
                  * Returns this class instance's raw value.
@@ -931,7 +928,7 @@ private constructor(
 
                 /** An enum containing [Role]'s known values. */
                 enum class Known {
-                    SYSTEM,
+                    SYSTEM
                 }
 
                 /**
@@ -979,7 +976,18 @@ private constructor(
                         else -> throw BraintrustInvalidDataException("Unknown Role: $value")
                     }
 
-                fun asString(): String = _value().asStringOrThrow()
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -1128,11 +1136,8 @@ private constructor(
                     )
             }
 
-            class Role
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Role @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
 
                 /**
                  * Returns this class instance's raw value.
@@ -1153,7 +1158,7 @@ private constructor(
 
                 /** An enum containing [Role]'s known values. */
                 enum class Known {
-                    USER,
+                    USER
                 }
 
                 /**
@@ -1201,7 +1206,18 @@ private constructor(
                         else -> throw BraintrustInvalidDataException("Unknown Role: $value")
                     }
 
-                fun asString(): String = _value().asStringOrThrow()
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -1340,7 +1356,7 @@ private constructor(
                     override fun serialize(
                         value: Content,
                         generator: JsonGenerator,
-                        provider: SerializerProvider
+                        provider: SerializerProvider,
                     ) {
                         when {
                             value.text != null -> generator.writeObject(value.text)
@@ -1493,7 +1509,7 @@ private constructor(
                         override fun serialize(
                             value: ChatCompletionContentPart,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.text != null -> generator.writeObject(value.text)
@@ -1689,11 +1705,8 @@ private constructor(
                     )
             }
 
-            class Role
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Role @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
 
                 /**
                  * Returns this class instance's raw value.
@@ -1714,7 +1727,7 @@ private constructor(
 
                 /** An enum containing [Role]'s known values. */
                 enum class Known {
-                    ASSISTANT,
+                    ASSISTANT
                 }
 
                 /**
@@ -1762,7 +1775,18 @@ private constructor(
                         else -> throw BraintrustInvalidDataException("Unknown Role: $value")
                     }
 
-                fun asString(): String = _value().asStringOrThrow()
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -2028,11 +2052,8 @@ private constructor(
                     )
             }
 
-            class Role
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Role @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
 
                 /**
                  * Returns this class instance's raw value.
@@ -2053,7 +2074,7 @@ private constructor(
 
                 /** An enum containing [Role]'s known values. */
                 enum class Known {
-                    TOOL,
+                    TOOL
                 }
 
                 /**
@@ -2101,7 +2122,18 @@ private constructor(
                         else -> throw BraintrustInvalidDataException("Unknown Role: $value")
                     }
 
-                fun asString(): String = _value().asStringOrThrow()
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -2245,11 +2277,8 @@ private constructor(
                     )
             }
 
-            class Role
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Role @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
 
                 /**
                  * Returns this class instance's raw value.
@@ -2270,7 +2299,7 @@ private constructor(
 
                 /** An enum containing [Role]'s known values. */
                 enum class Known {
-                    FUNCTION,
+                    FUNCTION
                 }
 
                 /**
@@ -2318,7 +2347,18 @@ private constructor(
                         else -> throw BraintrustInvalidDataException("Unknown Role: $value")
                     }
 
-                fun asString(): String = _value().asStringOrThrow()
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -2447,11 +2487,8 @@ private constructor(
                     )
             }
 
-            class Role
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Role @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
 
                 /**
                  * Returns this class instance's raw value.
@@ -2472,7 +2509,7 @@ private constructor(
 
                 /** An enum containing [Role]'s known values. */
                 enum class Known {
-                    MODEL,
+                    MODEL
                 }
 
                 /**
@@ -2520,7 +2557,18 @@ private constructor(
                         else -> throw BraintrustInvalidDataException("Unknown Role: $value")
                     }
 
-                fun asString(): String = _value().asStringOrThrow()
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -2555,11 +2603,7 @@ private constructor(
     }
 
     /** The mode format of the returned value (defaults to 'auto') */
-    class Mode
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Mode @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -2632,7 +2676,17 @@ private constructor(
                 else -> throw BraintrustInvalidDataException("Unknown Mode: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -2776,7 +2830,7 @@ private constructor(
             override fun serialize(
                 value: Parent,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.spanParentStruct != null -> generator.writeObject(value.spanParentStruct)
@@ -2938,9 +2992,7 @@ private constructor(
 
             class ObjectType
             @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            private constructor(private val value: JsonField<String>) : Enum {
 
                 /**
                  * Returns this class instance's raw value.
@@ -3016,7 +3068,18 @@ private constructor(
                         else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
                     }
 
-                fun asString(): String = _value().asStringOrThrow()
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -3037,7 +3100,7 @@ private constructor(
             @JsonCreator
             private constructor(
                 @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
             ) {
 
                 @JsonAnyGetter

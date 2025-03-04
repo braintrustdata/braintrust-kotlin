@@ -22,13 +22,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 class ViewServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val viewService = client.views()
+
         val view =
             viewService.create(
                 ViewCreateParams.builder()
@@ -67,18 +68,19 @@ class ViewServiceTest {
                     )
                     .build()
             )
-        println(view)
+
         view.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val viewService = client.views()
+
         val view =
             viewService.retrieve(
                 ViewRetrieveParams.builder()
@@ -87,18 +89,19 @@ class ViewServiceTest {
                     .objectType(ViewRetrieveParams.ObjectType.ORGANIZATION)
                     .build()
             )
-        println(view)
+
         view.validate()
     }
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val viewService = client.views()
+
         val view =
             viewService.update(
                 ViewUpdateParams.builder()
@@ -137,37 +140,39 @@ class ViewServiceTest {
                     .viewType(ViewUpdateParams.ViewType.PROJECTS)
                     .build()
             )
-        println(view)
+
         view.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val viewService = client.views()
-        val response =
+
+        val page =
             viewService.list(
                 ViewListParams.builder()
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .objectType(ViewListParams.ObjectType.ORGANIZATION)
                     .build()
             )
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val viewService = client.views()
+
         val view =
             viewService.delete(
                 ViewDeleteParams.builder()
@@ -176,18 +181,19 @@ class ViewServiceTest {
                     .objectType(ViewDeleteParams.ObjectType.ORGANIZATION)
                     .build()
             )
-        println(view)
+
         view.validate()
     }
 
     @Test
-    fun callReplace() {
+    fun replace() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val viewService = client.views()
+
         val view =
             viewService.replace(
                 ViewReplaceParams.builder()
@@ -226,7 +232,7 @@ class ViewServiceTest {
                     )
                     .build()
             )
-        println(view)
+
         view.validate()
     }
 }

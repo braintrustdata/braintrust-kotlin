@@ -71,11 +71,7 @@ private constructor(
     companion object {
 
         fun of(aclsService: AclServiceAsync, params: AclListParams, response: Response) =
-            AclListPageAsync(
-                aclsService,
-                params,
-                response,
-            )
+            AclListPageAsync(aclsService, params, response)
     }
 
     @NoAutoDetect
@@ -148,9 +144,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: AclListPageAsync,
-    ) : Flow<Acl> {
+    class AutoPager(private val firstPage: AclListPageAsync) : Flow<Acl> {
 
         override suspend fun collect(collector: FlowCollector<Acl>) {
             var page = firstPage

@@ -3,6 +3,7 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -37,8 +38,10 @@ class AiSecretCreateParamsTest {
                 .secret("secret")
                 .type("type")
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.name()).isEqualTo("name")
         assertThat(body.metadata())
             .isEqualTo(
@@ -54,8 +57,10 @@ class AiSecretCreateParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = AiSecretCreateParams.builder().name("name").build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.name()).isEqualTo("name")
     }
 }

@@ -18,7 +18,7 @@ interface OrganizationServiceAsync {
     /** Get an organization object by its id */
     suspend fun retrieve(
         params: OrganizationRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
 
     /**
@@ -28,7 +28,7 @@ interface OrganizationServiceAsync {
      */
     suspend fun update(
         params: OrganizationUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
 
     /**
@@ -36,13 +36,20 @@ interface OrganizationServiceAsync {
      * recently-created organizations coming first
      */
     suspend fun list(
-        params: OrganizationListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: OrganizationListParams = OrganizationListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): OrganizationListPageAsync
+
+    /**
+     * List out all organizations. The organizations are sorted by creation date, with the most
+     * recently-created organizations coming first
+     */
+    suspend fun list(requestOptions: RequestOptions): OrganizationListPageAsync =
+        list(OrganizationListParams.none(), requestOptions)
 
     /** Delete an organization object by its id */
     suspend fun delete(
         params: OrganizationDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
 }

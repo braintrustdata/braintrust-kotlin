@@ -71,11 +71,7 @@ private constructor(
     companion object {
 
         fun of(rolesService: RoleServiceAsync, params: RoleListParams, response: Response) =
-            RoleListPageAsync(
-                rolesService,
-                params,
-                response,
-            )
+            RoleListPageAsync(rolesService, params, response)
     }
 
     @NoAutoDetect
@@ -148,9 +144,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: RoleListPageAsync,
-    ) : Flow<Role> {
+    class AutoPager(private val firstPage: RoleListPageAsync) : Flow<Role> {
 
         override suspend fun collect(collector: FlowCollector<Role>) {
             var page = firstPage

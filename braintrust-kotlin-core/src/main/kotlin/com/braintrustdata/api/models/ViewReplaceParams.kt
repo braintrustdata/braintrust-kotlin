@@ -28,7 +28,7 @@ import java.util.Objects
  */
 class ViewReplaceParams
 private constructor(
-    private val body: ViewReplaceBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -87,16 +87,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): ViewReplaceBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class ViewReplaceBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("name")
         @ExcludeMissing
         private val name: JsonField<String> = JsonMissing.of(),
@@ -183,7 +183,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): ViewReplaceBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -206,7 +206,7 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [ViewReplaceBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var name: JsonField<String>? = null
@@ -219,16 +219,16 @@ private constructor(
             private var viewData: JsonField<ViewData> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(viewReplaceBody: ViewReplaceBody) = apply {
-                name = viewReplaceBody.name
-                objectId = viewReplaceBody.objectId
-                objectType = viewReplaceBody.objectType
-                viewType = viewReplaceBody.viewType
-                deletedAt = viewReplaceBody.deletedAt
-                options = viewReplaceBody.options
-                userId = viewReplaceBody.userId
-                viewData = viewReplaceBody.viewData
-                additionalProperties = viewReplaceBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                name = body.name
+                objectId = body.objectId
+                objectType = body.objectType
+                viewType = body.viewType
+                deletedAt = body.deletedAt
+                options = body.options
+                userId = body.userId
+                viewData = body.viewData
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** Name of the view */
@@ -302,8 +302,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): ViewReplaceBody =
-                ViewReplaceBody(
+            fun build(): Body =
+                Body(
                     checkRequired("name", name),
                     checkRequired("objectId", objectId),
                     checkRequired("objectType", objectType),
@@ -321,7 +321,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ViewReplaceBody && name == other.name && objectId == other.objectId && objectType == other.objectType && viewType == other.viewType && deletedAt == other.deletedAt && options == other.options && userId == other.userId && viewData == other.viewData && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && name == other.name && objectId == other.objectId && objectType == other.objectType && viewType == other.viewType && deletedAt == other.deletedAt && options == other.options && userId == other.userId && viewData == other.viewData && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -331,7 +331,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ViewReplaceBody{name=$name, objectId=$objectId, objectType=$objectType, viewType=$viewType, deletedAt=$deletedAt, options=$options, userId=$userId, viewData=$viewData, additionalProperties=$additionalProperties}"
+            "Body{name=$name, objectId=$objectId, objectType=$objectType, viewType=$viewType, deletedAt=$deletedAt, options=$options, userId=$userId, viewData=$viewData, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -345,7 +345,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: ViewReplaceBody.Builder = ViewReplaceBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -529,11 +529,7 @@ private constructor(
     }
 
     /** The object type that the ACL applies to */
-    class ObjectType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class ObjectType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -662,7 +658,17 @@ private constructor(
                 else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -678,11 +684,7 @@ private constructor(
     }
 
     /** Type of table that the view corresponds to. */
-    class ViewType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class ViewType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -791,7 +793,17 @@ private constructor(
                 else -> throw BraintrustInvalidDataException("Unknown ViewType: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

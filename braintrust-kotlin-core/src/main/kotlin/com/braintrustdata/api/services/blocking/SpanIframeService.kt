@@ -20,13 +20,13 @@ interface SpanIframeService {
      */
     fun create(
         params: SpanIframeCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIFrame
 
     /** Get a span_iframe object by its id */
     fun retrieve(
         params: SpanIframeRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIFrame
 
     /**
@@ -36,7 +36,7 @@ interface SpanIframeService {
      */
     fun update(
         params: SpanIframeUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIFrame
 
     /**
@@ -44,14 +44,21 @@ interface SpanIframeService {
      * recently-created span_iframes coming first
      */
     fun list(
-        params: SpanIframeListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: SpanIframeListParams = SpanIframeListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIframeListPage
+
+    /**
+     * List out all span_iframes. The span_iframes are sorted by creation date, with the most
+     * recently-created span_iframes coming first
+     */
+    fun list(requestOptions: RequestOptions): SpanIframeListPage =
+        list(SpanIframeListParams.none(), requestOptions)
 
     /** Delete a span_iframe object by its id */
     fun delete(
         params: SpanIframeDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIFrame
 
     /**
@@ -60,6 +67,6 @@ interface SpanIframeService {
      */
     fun replace(
         params: SpanIframeReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIFrame
 }

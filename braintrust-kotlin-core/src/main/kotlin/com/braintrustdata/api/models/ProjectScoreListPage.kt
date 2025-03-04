@@ -77,13 +77,8 @@ private constructor(
         fun of(
             projectScoresService: ProjectScoreService,
             params: ProjectScoreListParams,
-            response: Response
-        ) =
-            ProjectScoreListPage(
-                projectScoresService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = ProjectScoreListPage(projectScoresService, params, response)
     }
 
     @NoAutoDetect
@@ -157,9 +152,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: ProjectScoreListPage,
-    ) : Sequence<ProjectScore> {
+    class AutoPager(private val firstPage: ProjectScoreListPage) : Sequence<ProjectScore> {
 
         override fun iterator(): Iterator<ProjectScore> = iterator {
             var page = firstPage

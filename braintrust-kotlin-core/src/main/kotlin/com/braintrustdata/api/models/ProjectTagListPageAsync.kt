@@ -73,13 +73,8 @@ private constructor(
         fun of(
             projectTagsService: ProjectTagServiceAsync,
             params: ProjectTagListParams,
-            response: Response
-        ) =
-            ProjectTagListPageAsync(
-                projectTagsService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = ProjectTagListPageAsync(projectTagsService, params, response)
     }
 
     @NoAutoDetect
@@ -153,9 +148,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: ProjectTagListPageAsync,
-    ) : Flow<ProjectTag> {
+    class AutoPager(private val firstPage: ProjectTagListPageAsync) : Flow<ProjectTag> {
 
         override suspend fun collect(collector: FlowCollector<ProjectTag>) {
             var page = firstPage

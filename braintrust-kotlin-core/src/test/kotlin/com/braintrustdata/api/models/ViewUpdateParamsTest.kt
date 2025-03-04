@@ -3,6 +3,7 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -85,8 +86,10 @@ class ViewUpdateParamsTest {
                 )
                 .viewType(ViewUpdateParams.ViewType.PROJECTS)
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.objectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(body.objectType()).isEqualTo(ViewUpdateParams.ObjectType.ORGANIZATION)
         assertThat(body.name()).isEqualTo("name")
@@ -131,8 +134,10 @@ class ViewUpdateParamsTest {
                 .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .objectType(ViewUpdateParams.ObjectType.ORGANIZATION)
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.objectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(body.objectType()).isEqualTo(ViewUpdateParams.ObjectType.ORGANIZATION)
     }

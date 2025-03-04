@@ -101,6 +101,8 @@ private constructor(
 
     companion object {
 
+        fun none(): ProjectTagListParams = builder().build()
+
         fun builder() = Builder()
     }
 
@@ -401,7 +403,7 @@ private constructor(
             override fun serialize(
                 value: Ids,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.string != null -> generator.writeObject(value.string)

@@ -27,7 +27,7 @@ import java.util.Objects
 class DatasetUpdateParams
 private constructor(
     private val datasetId: String,
-    private val body: DatasetUpdateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -59,7 +59,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): DatasetUpdateBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -73,9 +73,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class DatasetUpdateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("description")
         @ExcludeMissing
         private val description: JsonField<String> = JsonMissing.of(),
@@ -115,7 +115,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): DatasetUpdateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -133,7 +133,7 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [DatasetUpdateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var description: JsonField<String> = JsonMissing.of()
@@ -141,11 +141,11 @@ private constructor(
             private var name: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(datasetUpdateBody: DatasetUpdateBody) = apply {
-                description = datasetUpdateBody.description
-                metadata = datasetUpdateBody.metadata
-                name = datasetUpdateBody.name
-                additionalProperties = datasetUpdateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                description = body.description
+                metadata = body.metadata
+                name = body.name
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** Textual description of the dataset */
@@ -187,13 +187,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): DatasetUpdateBody =
-                DatasetUpdateBody(
-                    description,
-                    metadata,
-                    name,
-                    additionalProperties.toImmutable(),
-                )
+            fun build(): Body =
+                Body(description, metadata, name, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -201,7 +196,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is DatasetUpdateBody && description == other.description && metadata == other.metadata && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && description == other.description && metadata == other.metadata && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -211,7 +206,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "DatasetUpdateBody{description=$description, metadata=$metadata, name=$name, additionalProperties=$additionalProperties}"
+            "Body{description=$description, metadata=$metadata, name=$name, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -226,7 +221,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var datasetId: String? = null
-        private var body: DatasetUpdateBody.Builder = DatasetUpdateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -390,7 +385,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
     ) {
 
         @JsonAnyGetter

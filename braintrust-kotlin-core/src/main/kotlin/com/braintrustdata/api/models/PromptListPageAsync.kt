@@ -71,11 +71,7 @@ private constructor(
     companion object {
 
         fun of(promptsService: PromptServiceAsync, params: PromptListParams, response: Response) =
-            PromptListPageAsync(
-                promptsService,
-                params,
-                response,
-            )
+            PromptListPageAsync(promptsService, params, response)
     }
 
     @NoAutoDetect
@@ -148,9 +144,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: PromptListPageAsync,
-    ) : Flow<Prompt> {
+    class AutoPager(private val firstPage: PromptListPageAsync) : Flow<Prompt> {
 
         override suspend fun collect(collector: FlowCollector<Prompt>) {
             var page = firstPage

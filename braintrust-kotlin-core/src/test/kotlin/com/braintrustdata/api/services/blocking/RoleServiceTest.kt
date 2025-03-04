@@ -6,7 +6,6 @@ import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
 import com.braintrustdata.api.models.RoleCreateParams
 import com.braintrustdata.api.models.RoleDeleteParams
-import com.braintrustdata.api.models.RoleListParams
 import com.braintrustdata.api.models.RoleReplaceParams
 import com.braintrustdata.api.models.RoleRetrieveParams
 import com.braintrustdata.api.models.RoleUpdateParams
@@ -17,13 +16,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 class RoleServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val roleService = client.roles()
+
         val role =
             roleService.create(
                 RoleCreateParams.builder()
@@ -41,34 +41,36 @@ class RoleServiceTest {
                     .orgName("org_name")
                     .build()
             )
-        println(role)
+
         role.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val roleService = client.roles()
+
         val role =
             roleService.retrieve(
                 RoleRetrieveParams.builder().roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
             )
-        println(role)
+
         role.validate()
     }
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val roleService = client.roles()
+
         val role =
             roleService.update(
                 RoleUpdateParams.builder()
@@ -96,47 +98,50 @@ class RoleServiceTest {
                     .addRemoveMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .build()
             )
-        println(role)
+
         role.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val roleService = client.roles()
-        val response = roleService.list(RoleListParams.builder().build())
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        val page = roleService.list()
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val roleService = client.roles()
+
         val role =
             roleService.delete(
                 RoleDeleteParams.builder().roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
             )
-        println(role)
+
         role.validate()
     }
 
     @Test
-    fun callReplace() {
+    fun replace() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val roleService = client.roles()
+
         val role =
             roleService.replace(
                 RoleReplaceParams.builder()
@@ -154,7 +159,7 @@ class RoleServiceTest {
                     .orgName("org_name")
                     .build()
             )
-        println(role)
+
         role.validate()
     }
 }

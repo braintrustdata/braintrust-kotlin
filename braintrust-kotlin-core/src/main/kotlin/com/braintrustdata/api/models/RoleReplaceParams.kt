@@ -27,7 +27,7 @@ import java.util.Objects
  */
 class RoleReplaceParams
 private constructor(
-    private val body: RoleReplaceBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -86,16 +86,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): RoleReplaceBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class RoleReplaceBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("name")
         @ExcludeMissing
         private val name: JsonField<String> = JsonMissing.of(),
@@ -176,7 +176,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): RoleReplaceBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -196,7 +196,7 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [RoleReplaceBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var name: JsonField<String>? = null
@@ -206,13 +206,13 @@ private constructor(
             private var orgName: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(roleReplaceBody: RoleReplaceBody) = apply {
-                name = roleReplaceBody.name
-                description = roleReplaceBody.description
-                memberPermissions = roleReplaceBody.memberPermissions.map { it.toMutableList() }
-                memberRoles = roleReplaceBody.memberRoles.map { it.toMutableList() }
-                orgName = roleReplaceBody.orgName
-                additionalProperties = roleReplaceBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                name = body.name
+                description = body.description
+                memberPermissions = body.memberPermissions.map { it.toMutableList() }
+                memberRoles = body.memberRoles.map { it.toMutableList() }
+                orgName = body.orgName
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** Name of the role */
@@ -319,8 +319,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): RoleReplaceBody =
-                RoleReplaceBody(
+            fun build(): Body =
+                Body(
                     checkRequired("name", name),
                     description,
                     (memberPermissions ?: JsonMissing.of()).map { it.toImmutable() },
@@ -335,7 +335,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is RoleReplaceBody && name == other.name && description == other.description && memberPermissions == other.memberPermissions && memberRoles == other.memberRoles && orgName == other.orgName && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && name == other.name && description == other.description && memberPermissions == other.memberPermissions && memberRoles == other.memberRoles && orgName == other.orgName && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -345,7 +345,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "RoleReplaceBody{name=$name, description=$description, memberPermissions=$memberPermissions, memberRoles=$memberRoles, orgName=$orgName, additionalProperties=$additionalProperties}"
+            "Body{name=$name, description=$description, memberPermissions=$memberPermissions, memberRoles=$memberRoles, orgName=$orgName, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -359,7 +359,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: RoleReplaceBody.Builder = RoleReplaceBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -695,11 +695,8 @@ private constructor(
          *
          * Permissions can be assigned to to objects on an individual basis, or grouped into roles
          */
-        class Permission
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Permission @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -811,7 +808,17 @@ private constructor(
                     else -> throw BraintrustInvalidDataException("Unknown Permission: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value does not have
+             *   the expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -829,9 +836,7 @@ private constructor(
         /** The object type that the ACL applies to */
         class RestrictObjectType
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -964,7 +969,17 @@ private constructor(
                         throw BraintrustInvalidDataException("Unknown RestrictObjectType: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value does not have
+             *   the expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {

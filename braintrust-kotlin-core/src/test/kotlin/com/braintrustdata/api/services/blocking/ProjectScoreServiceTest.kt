@@ -9,7 +9,6 @@ import com.braintrustdata.api.models.ProjectScoreCategory
 import com.braintrustdata.api.models.ProjectScoreConfig
 import com.braintrustdata.api.models.ProjectScoreCreateParams
 import com.braintrustdata.api.models.ProjectScoreDeleteParams
-import com.braintrustdata.api.models.ProjectScoreListParams
 import com.braintrustdata.api.models.ProjectScoreReplaceParams
 import com.braintrustdata.api.models.ProjectScoreRetrieveParams
 import com.braintrustdata.api.models.ProjectScoreUpdateParams
@@ -20,13 +19,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 class ProjectScoreServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectScoreService = client.projectScores()
+
         val projectScore =
             projectScoreService.create(
                 ProjectScoreCreateParams.builder()
@@ -58,36 +58,38 @@ class ProjectScoreServiceTest {
                     .description("description")
                     .build()
             )
-        println(projectScore)
+
         projectScore.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectScoreService = client.projectScores()
+
         val projectScore =
             projectScoreService.retrieve(
                 ProjectScoreRetrieveParams.builder()
                     .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .build()
             )
-        println(projectScore)
+
         projectScore.validate()
     }
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectScoreService = client.projectScores()
+
         val projectScore =
             projectScoreService.update(
                 ProjectScoreUpdateParams.builder()
@@ -119,49 +121,52 @@ class ProjectScoreServiceTest {
                     .scoreType(ProjectScoreUpdateParams.ScoreType.SLIDER)
                     .build()
             )
-        println(projectScore)
+
         projectScore.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectScoreService = client.projectScores()
-        val response = projectScoreService.list(ProjectScoreListParams.builder().build())
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        val page = projectScoreService.list()
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectScoreService = client.projectScores()
+
         val projectScore =
             projectScoreService.delete(
                 ProjectScoreDeleteParams.builder()
                     .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .build()
             )
-        println(projectScore)
+
         projectScore.validate()
     }
 
     @Test
-    fun callReplace() {
+    fun replace() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectScoreService = client.projectScores()
+
         val projectScore =
             projectScoreService.replace(
                 ProjectScoreReplaceParams.builder()
@@ -193,7 +198,7 @@ class ProjectScoreServiceTest {
                     .description("description")
                     .build()
             )
-        println(projectScore)
+
         projectScore.validate()
     }
 }

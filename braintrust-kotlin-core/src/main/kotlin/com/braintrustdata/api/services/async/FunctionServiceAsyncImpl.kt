@@ -24,10 +24,8 @@ import com.braintrustdata.api.models.FunctionReplaceParams
 import com.braintrustdata.api.models.FunctionRetrieveParams
 import com.braintrustdata.api.models.FunctionUpdateParams
 
-class FunctionServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : FunctionServiceAsync {
+class FunctionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    FunctionServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -40,7 +38,7 @@ internal constructor(
      */
     override suspend fun create(
         params: FunctionCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Function {
         val request =
             HttpRequest.builder()
@@ -65,7 +63,7 @@ internal constructor(
     /** Get a function object by its id */
     override suspend fun retrieve(
         params: FunctionRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Function {
         val request =
             HttpRequest.builder()
@@ -93,7 +91,7 @@ internal constructor(
      */
     override suspend fun update(
         params: FunctionUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Function {
         val request =
             HttpRequest.builder()
@@ -122,7 +120,7 @@ internal constructor(
      */
     override suspend fun list(
         params: FunctionListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FunctionListPageAsync {
         val request =
             HttpRequest.builder()
@@ -147,7 +145,7 @@ internal constructor(
     /** Delete a function object by its id */
     override suspend fun delete(
         params: FunctionDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Function {
         val request =
             HttpRequest.builder()
@@ -173,7 +171,7 @@ internal constructor(
     /** Invoke a function. */
     override suspend fun invoke(
         params: FunctionInvokeParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FunctionInvokeResponse? {
         val request =
             HttpRequest.builder()
@@ -202,7 +200,7 @@ internal constructor(
      */
     override suspend fun replace(
         params: FunctionReplaceParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Function {
         val request =
             HttpRequest.builder()

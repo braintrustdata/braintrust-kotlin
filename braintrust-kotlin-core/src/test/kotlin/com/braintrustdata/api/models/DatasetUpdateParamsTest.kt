@@ -3,6 +3,7 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -35,8 +36,10 @@ class DatasetUpdateParamsTest {
                 )
                 .name("name")
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.description()).isEqualTo("description")
         assertThat(body.metadata())
             .isEqualTo(
@@ -51,8 +54,10 @@ class DatasetUpdateParamsTest {
     fun bodyWithoutOptionalFields() {
         val params =
             DatasetUpdateParams.builder().datasetId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
     }
 
     @Test

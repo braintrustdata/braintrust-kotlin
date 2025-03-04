@@ -9,7 +9,11 @@ interface TopLevelServiceAsync {
 
     /** Default endpoint. Simply replies with 'Hello, World!'. Authorization is not required */
     suspend fun helloWorld(
-        params: TopLevelHelloWorldParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: TopLevelHelloWorldParams = TopLevelHelloWorldParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): String
+
+    /** Default endpoint. Simply replies with 'Hello, World!'. Authorization is not required */
+    suspend fun helloWorld(requestOptions: RequestOptions): String =
+        helloWorld(TopLevelHelloWorldParams.none(), requestOptions)
 }

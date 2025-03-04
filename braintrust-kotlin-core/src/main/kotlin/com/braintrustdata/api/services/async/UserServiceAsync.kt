@@ -13,7 +13,7 @@ interface UserServiceAsync {
     /** Get a user object by its id */
     suspend fun retrieve(
         params: UserRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): User
 
     /**
@@ -21,7 +21,14 @@ interface UserServiceAsync {
      * users coming first
      */
     suspend fun list(
-        params: UserListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: UserListParams = UserListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): UserListPageAsync
+
+    /**
+     * List out all users. The users are sorted by creation date, with the most recently-created
+     * users coming first
+     */
+    suspend fun list(requestOptions: RequestOptions): UserListPageAsync =
+        list(UserListParams.none(), requestOptions)
 }

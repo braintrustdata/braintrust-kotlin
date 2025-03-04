@@ -17,6 +17,6 @@ interface EvalServiceAsync {
      */
     suspend fun create(
         params: EvalCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): SummarizeExperimentResponse
 }

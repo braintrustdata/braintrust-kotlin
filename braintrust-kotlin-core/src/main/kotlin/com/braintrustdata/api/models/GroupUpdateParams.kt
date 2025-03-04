@@ -27,7 +27,7 @@ import java.util.Objects
 class GroupUpdateParams
 private constructor(
     private val groupId: String,
-    private val body: GroupUpdateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -77,7 +77,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): GroupUpdateBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -91,9 +91,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class GroupUpdateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("add_member_groups")
         @ExcludeMissing
         private val addMemberGroups: JsonField<List<String>> = JsonMissing.of(),
@@ -170,7 +170,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): GroupUpdateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -191,7 +191,7 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [GroupUpdateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var addMemberGroups: JsonField<MutableList<String>>? = null
@@ -202,14 +202,14 @@ private constructor(
             private var removeMemberUsers: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(groupUpdateBody: GroupUpdateBody) = apply {
-                addMemberGroups = groupUpdateBody.addMemberGroups.map { it.toMutableList() }
-                addMemberUsers = groupUpdateBody.addMemberUsers.map { it.toMutableList() }
-                description = groupUpdateBody.description
-                name = groupUpdateBody.name
-                removeMemberGroups = groupUpdateBody.removeMemberGroups.map { it.toMutableList() }
-                removeMemberUsers = groupUpdateBody.removeMemberUsers.map { it.toMutableList() }
-                additionalProperties = groupUpdateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                addMemberGroups = body.addMemberGroups.map { it.toMutableList() }
+                addMemberUsers = body.addMemberUsers.map { it.toMutableList() }
+                description = body.description
+                name = body.name
+                removeMemberGroups = body.removeMemberGroups.map { it.toMutableList() }
+                removeMemberUsers = body.removeMemberUsers.map { it.toMutableList() }
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** A list of group IDs to add to the group's inheriting-from set */
@@ -329,8 +329,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): GroupUpdateBody =
-                GroupUpdateBody(
+            fun build(): Body =
+                Body(
                     (addMemberGroups ?: JsonMissing.of()).map { it.toImmutable() },
                     (addMemberUsers ?: JsonMissing.of()).map { it.toImmutable() },
                     description,
@@ -346,7 +346,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is GroupUpdateBody && addMemberGroups == other.addMemberGroups && addMemberUsers == other.addMemberUsers && description == other.description && name == other.name && removeMemberGroups == other.removeMemberGroups && removeMemberUsers == other.removeMemberUsers && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && addMemberGroups == other.addMemberGroups && addMemberUsers == other.addMemberUsers && description == other.description && name == other.name && removeMemberGroups == other.removeMemberGroups && removeMemberUsers == other.removeMemberUsers && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -356,7 +356,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "GroupUpdateBody{addMemberGroups=$addMemberGroups, addMemberUsers=$addMemberUsers, description=$description, name=$name, removeMemberGroups=$removeMemberGroups, removeMemberUsers=$removeMemberUsers, additionalProperties=$additionalProperties}"
+            "Body{addMemberGroups=$addMemberGroups, addMemberUsers=$addMemberUsers, description=$description, name=$name, removeMemberGroups=$removeMemberGroups, removeMemberUsers=$removeMemberUsers, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -371,7 +371,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var groupId: String? = null
-        private var body: GroupUpdateBody.Builder = GroupUpdateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

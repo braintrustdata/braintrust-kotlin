@@ -27,7 +27,7 @@ import java.util.Objects
 class ProjectUpdateParams
 private constructor(
     private val projectId: String,
-    private val body: ProjectUpdateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -59,7 +59,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): ProjectUpdateBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -73,9 +73,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class ProjectUpdateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("name")
         @ExcludeMissing
         private val name: JsonField<String> = JsonMissing.of(),
@@ -112,7 +112,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): ProjectUpdateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -129,17 +129,17 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [ProjectUpdateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var name: JsonField<String> = JsonMissing.of()
             private var settings: JsonField<ProjectSettings> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(projectUpdateBody: ProjectUpdateBody) = apply {
-                name = projectUpdateBody.name
-                settings = projectUpdateBody.settings
-                additionalProperties = projectUpdateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                name = body.name
+                settings = body.settings
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** Name of the project */
@@ -179,12 +179,7 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): ProjectUpdateBody =
-                ProjectUpdateBody(
-                    name,
-                    settings,
-                    additionalProperties.toImmutable(),
-                )
+            fun build(): Body = Body(name, settings, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -192,7 +187,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ProjectUpdateBody && name == other.name && settings == other.settings && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && name == other.name && settings == other.settings && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -202,7 +197,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ProjectUpdateBody{name=$name, settings=$settings, additionalProperties=$additionalProperties}"
+            "Body{name=$name, settings=$settings, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -217,7 +212,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var projectId: String? = null
-        private var body: ProjectUpdateBody.Builder = ProjectUpdateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

@@ -28,13 +28,13 @@ interface DatasetService {
      */
     fun create(
         params: DatasetCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Dataset
 
     /** Get a dataset object by its id */
     fun retrieve(
         params: DatasetRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Dataset
 
     /**
@@ -44,7 +44,7 @@ interface DatasetService {
      */
     fun update(
         params: DatasetUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Dataset
 
     /**
@@ -52,20 +52,27 @@ interface DatasetService {
      * recently-created datasets coming first
      */
     fun list(
-        params: DatasetListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: DatasetListParams = DatasetListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): DatasetListPage
+
+    /**
+     * List out all datasets. The datasets are sorted by creation date, with the most
+     * recently-created datasets coming first
+     */
+    fun list(requestOptions: RequestOptions): DatasetListPage =
+        list(DatasetListParams.none(), requestOptions)
 
     /** Delete a dataset object by its id */
     fun delete(
         params: DatasetDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Dataset
 
     /** Log feedback for a set of dataset events */
     fun feedback(
         params: DatasetFeedbackParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FeedbackResponseSchema
 
     /**
@@ -75,7 +82,7 @@ interface DatasetService {
      */
     fun fetch(
         params: DatasetFetchParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchDatasetEventsResponse
 
     /**
@@ -85,18 +92,18 @@ interface DatasetService {
      */
     fun fetchPost(
         params: DatasetFetchPostParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchDatasetEventsResponse
 
     /** Insert a set of events into the dataset */
     fun insert(
         params: DatasetInsertParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): InsertEventsResponse
 
     /** Summarize dataset */
     fun summarize(
         params: DatasetSummarizeParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): SummarizeDatasetResponse
 }

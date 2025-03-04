@@ -71,13 +71,8 @@ private constructor(
         fun of(
             experimentsService: ExperimentService,
             params: ExperimentListParams,
-            response: Response
-        ) =
-            ExperimentListPage(
-                experimentsService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = ExperimentListPage(experimentsService, params, response)
     }
 
     @NoAutoDetect
@@ -151,9 +146,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: ExperimentListPage,
-    ) : Sequence<Experiment> {
+    class AutoPager(private val firstPage: ExperimentListPage) : Sequence<Experiment> {
 
         override fun iterator(): Iterator<Experiment> = iterator {
             var page = firstPage
