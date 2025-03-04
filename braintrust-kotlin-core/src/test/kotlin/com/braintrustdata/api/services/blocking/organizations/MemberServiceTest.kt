@@ -12,13 +12,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 class MemberServiceTest {
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val memberService = client.organizations().members()
+
         val patchOrganizationMembersOutput =
             memberService.update(
                 OrganizationMemberUpdateParams.builder()
@@ -43,7 +44,7 @@ class MemberServiceTest {
                     )
                     .build()
             )
-        println(patchOrganizationMembersOutput)
+
         patchOrganizationMembersOutput.validate()
     }
 }

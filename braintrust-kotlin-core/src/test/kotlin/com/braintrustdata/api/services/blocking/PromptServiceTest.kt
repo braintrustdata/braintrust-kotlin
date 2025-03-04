@@ -8,7 +8,6 @@ import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.models.PromptCreateParams
 import com.braintrustdata.api.models.PromptData
 import com.braintrustdata.api.models.PromptDeleteParams
-import com.braintrustdata.api.models.PromptListParams
 import com.braintrustdata.api.models.PromptOptions
 import com.braintrustdata.api.models.PromptReplaceParams
 import com.braintrustdata.api.models.PromptRetrieveParams
@@ -20,13 +19,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 class PromptServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val promptService = client.prompts()
+
         val prompt =
             promptService.create(
                 PromptCreateParams.builder()
@@ -114,36 +114,38 @@ class PromptServiceTest {
                     .addTag("string")
                     .build()
             )
-        println(prompt)
+
         prompt.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val promptService = client.prompts()
+
         val prompt =
             promptService.retrieve(
                 PromptRetrieveParams.builder()
                     .promptId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .build()
             )
-        println(prompt)
+
         prompt.validate()
     }
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val promptService = client.prompts()
+
         val prompt =
             promptService.update(
                 PromptUpdateParams.builder()
@@ -230,49 +232,52 @@ class PromptServiceTest {
                     .addTag("string")
                     .build()
             )
-        println(prompt)
+
         prompt.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val promptService = client.prompts()
-        val response = promptService.list(PromptListParams.builder().build())
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        val page = promptService.list()
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val promptService = client.prompts()
+
         val prompt =
             promptService.delete(
                 PromptDeleteParams.builder()
                     .promptId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .build()
             )
-        println(prompt)
+
         prompt.validate()
     }
 
     @Test
-    fun callReplace() {
+    fun replace() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val promptService = client.prompts()
+
         val prompt =
             promptService.replace(
                 PromptReplaceParams.builder()
@@ -360,7 +365,7 @@ class PromptServiceTest {
                     .addTag("string")
                     .build()
             )
-        println(prompt)
+
         prompt.validate()
     }
 }

@@ -22,13 +22,13 @@ interface FunctionServiceAsync {
      */
     suspend fun create(
         params: FunctionCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
     /** Get a function object by its id */
     suspend fun retrieve(
         params: FunctionRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
     /**
@@ -38,7 +38,7 @@ interface FunctionServiceAsync {
      */
     suspend fun update(
         params: FunctionUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
     /**
@@ -46,20 +46,27 @@ interface FunctionServiceAsync {
      * recently-created functions coming first
      */
     suspend fun list(
-        params: FunctionListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: FunctionListParams = FunctionListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FunctionListPageAsync
+
+    /**
+     * List out all functions. The functions are sorted by creation date, with the most
+     * recently-created functions coming first
+     */
+    suspend fun list(requestOptions: RequestOptions): FunctionListPageAsync =
+        list(FunctionListParams.none(), requestOptions)
 
     /** Delete a function object by its id */
     suspend fun delete(
         params: FunctionDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
     /** Invoke a function. */
     suspend fun invoke(
         params: FunctionInvokeParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FunctionInvokeResponse?
 
     /**
@@ -69,6 +76,6 @@ interface FunctionServiceAsync {
      */
     suspend fun replace(
         params: FunctionReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 }

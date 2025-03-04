@@ -30,10 +30,8 @@ import com.braintrustdata.api.models.FetchExperimentEventsResponse
 import com.braintrustdata.api.models.InsertEventsResponse
 import com.braintrustdata.api.models.SummarizeExperimentResponse
 
-class ExperimentServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ExperimentServiceAsync {
+class ExperimentServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    ExperimentServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -46,7 +44,7 @@ internal constructor(
      */
     override suspend fun create(
         params: ExperimentCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Experiment {
         val request =
             HttpRequest.builder()
@@ -71,7 +69,7 @@ internal constructor(
     /** Get an experiment object by its id */
     override suspend fun retrieve(
         params: ExperimentRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Experiment {
         val request =
             HttpRequest.builder()
@@ -99,7 +97,7 @@ internal constructor(
      */
     override suspend fun update(
         params: ExperimentUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Experiment {
         val request =
             HttpRequest.builder()
@@ -128,7 +126,7 @@ internal constructor(
      */
     override suspend fun list(
         params: ExperimentListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ExperimentListPageAsync {
         val request =
             HttpRequest.builder()
@@ -153,7 +151,7 @@ internal constructor(
     /** Delete an experiment object by its id */
     override suspend fun delete(
         params: ExperimentDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Experiment {
         val request =
             HttpRequest.builder()
@@ -178,7 +176,7 @@ internal constructor(
     /** Log feedback for a set of experiment events */
     override suspend fun feedback(
         params: ExperimentFeedbackParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FeedbackResponseSchema {
         val request =
             HttpRequest.builder()
@@ -208,7 +206,7 @@ internal constructor(
      */
     override suspend fun fetch(
         params: ExperimentFetchParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FetchExperimentEventsResponse {
         val request =
             HttpRequest.builder()
@@ -237,7 +235,7 @@ internal constructor(
      */
     override suspend fun fetchPost(
         params: ExperimentFetchPostParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FetchExperimentEventsResponse {
         val request =
             HttpRequest.builder()
@@ -262,7 +260,7 @@ internal constructor(
     /** Insert a set of events into the experiment */
     override suspend fun insert(
         params: ExperimentInsertParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): InsertEventsResponse {
         val request =
             HttpRequest.builder()
@@ -288,7 +286,7 @@ internal constructor(
     /** Summarize experiment */
     override suspend fun summarize(
         params: ExperimentSummarizeParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): SummarizeExperimentResponse {
         val request =
             HttpRequest.builder()

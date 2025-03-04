@@ -21,10 +21,8 @@ import com.braintrustdata.api.models.ApiKeyListParams
 import com.braintrustdata.api.models.ApiKeyRetrieveParams
 import com.braintrustdata.api.models.CreateApiKeyOutput
 
-class ApiKeyServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ApiKeyServiceAsync {
+class ApiKeyServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    ApiKeyServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -37,7 +35,7 @@ internal constructor(
      */
     override suspend fun create(
         params: ApiKeyCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CreateApiKeyOutput {
         val request =
             HttpRequest.builder()
@@ -62,7 +60,7 @@ internal constructor(
     /** Get an api_key object by its id */
     override suspend fun retrieve(
         params: ApiKeyRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ApiKey {
         val request =
             HttpRequest.builder()
@@ -90,7 +88,7 @@ internal constructor(
      */
     override suspend fun list(
         params: ApiKeyListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ApiKeyListPageAsync {
         val request =
             HttpRequest.builder()
@@ -115,7 +113,7 @@ internal constructor(
     /** Delete an api_key object by its id */
     override suspend fun delete(
         params: ApiKeyDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ApiKey {
         val request =
             HttpRequest.builder()

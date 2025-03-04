@@ -2,6 +2,7 @@
 
 package com.braintrustdata.api.models
 
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -28,8 +29,10 @@ class GroupReplaceParamsTest {
                 .addMemberUser("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .orgName("org_name")
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.name()).isEqualTo("x")
         assertThat(body.description()).isEqualTo("description")
         assertThat(body.memberGroups()).isEqualTo(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
@@ -40,8 +43,10 @@ class GroupReplaceParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = GroupReplaceParams.builder().name("x").build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.name()).isEqualTo("x")
     }
 }

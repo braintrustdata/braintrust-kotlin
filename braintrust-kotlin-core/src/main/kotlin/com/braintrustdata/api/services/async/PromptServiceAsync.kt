@@ -20,13 +20,13 @@ interface PromptServiceAsync {
      */
     suspend fun create(
         params: PromptCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 
     /** Get a prompt object by its id */
     suspend fun retrieve(
         params: PromptRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 
     /**
@@ -36,7 +36,7 @@ interface PromptServiceAsync {
      */
     suspend fun update(
         params: PromptUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 
     /**
@@ -44,14 +44,21 @@ interface PromptServiceAsync {
      * prompts coming first
      */
     suspend fun list(
-        params: PromptListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: PromptListParams = PromptListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): PromptListPageAsync
+
+    /**
+     * List out all prompts. The prompts are sorted by creation date, with the most recently-created
+     * prompts coming first
+     */
+    suspend fun list(requestOptions: RequestOptions): PromptListPageAsync =
+        list(PromptListParams.none(), requestOptions)
 
     /** Delete a prompt object by its id */
     suspend fun delete(
         params: PromptDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 
     /**
@@ -60,6 +67,6 @@ interface PromptServiceAsync {
      */
     suspend fun replace(
         params: PromptReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 }

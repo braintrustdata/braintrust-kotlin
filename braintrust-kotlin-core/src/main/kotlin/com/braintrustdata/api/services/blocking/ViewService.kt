@@ -20,13 +20,13 @@ interface ViewService {
      */
     fun create(
         params: ViewCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 
     /** Get a view object by its id */
     fun retrieve(
         params: ViewRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 
     /**
@@ -36,7 +36,7 @@ interface ViewService {
      */
     fun update(
         params: ViewUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 
     /**
@@ -45,13 +45,13 @@ interface ViewService {
      */
     fun list(
         params: ViewListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ViewListPage
 
     /** Delete a view object by its id */
     fun delete(
         params: ViewDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 
     /**
@@ -60,6 +60,6 @@ interface ViewService {
      */
     fun replace(
         params: ViewReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 }

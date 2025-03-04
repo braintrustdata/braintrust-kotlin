@@ -22,10 +22,8 @@ import com.braintrustdata.api.models.ViewReplaceParams
 import com.braintrustdata.api.models.ViewRetrieveParams
 import com.braintrustdata.api.models.ViewUpdateParams
 
-class ViewServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ViewServiceAsync {
+class ViewServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    ViewServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -60,7 +58,7 @@ internal constructor(
     /** Get a view object by its id */
     override suspend fun retrieve(
         params: ViewRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): View {
         val request =
             HttpRequest.builder()
@@ -114,7 +112,7 @@ internal constructor(
      */
     override suspend fun list(
         params: ViewListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ViewListPageAsync {
         val request =
             HttpRequest.builder()

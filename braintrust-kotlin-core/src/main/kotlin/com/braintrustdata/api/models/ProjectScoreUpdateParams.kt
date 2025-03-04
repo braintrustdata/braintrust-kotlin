@@ -39,7 +39,7 @@ import java.util.Objects
 class ProjectScoreUpdateParams
 private constructor(
     private val projectScoreId: String,
-    private val body: ProjectScoreUpdateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -81,7 +81,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): ProjectScoreUpdateBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -96,9 +96,9 @@ private constructor(
 
     /** A project score is a user-configured score, which can be manually-labeled through the UI */
     @NoAutoDetect
-    class ProjectScoreUpdateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("categories")
         @ExcludeMissing
         private val categories: JsonField<Categories> = JsonMissing.of(),
@@ -160,7 +160,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): ProjectScoreUpdateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -180,7 +180,7 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [ProjectScoreUpdateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var categories: JsonField<Categories> = JsonMissing.of()
@@ -190,13 +190,13 @@ private constructor(
             private var scoreType: JsonField<ScoreType> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(projectScoreUpdateBody: ProjectScoreUpdateBody) = apply {
-                categories = projectScoreUpdateBody.categories
-                config = projectScoreUpdateBody.config
-                description = projectScoreUpdateBody.description
-                name = projectScoreUpdateBody.name
-                scoreType = projectScoreUpdateBody.scoreType
-                additionalProperties = projectScoreUpdateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                categories = body.categories
+                config = body.config
+                description = body.description
+                name = body.name
+                scoreType = body.scoreType
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** For categorical-type project scores, the list of all categories */
@@ -266,8 +266,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): ProjectScoreUpdateBody =
-                ProjectScoreUpdateBody(
+            fun build(): Body =
+                Body(
                     categories,
                     config,
                     description,
@@ -282,7 +282,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ProjectScoreUpdateBody && categories == other.categories && config == other.config && description == other.description && name == other.name && scoreType == other.scoreType && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && categories == other.categories && config == other.config && description == other.description && name == other.name && scoreType == other.scoreType && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -292,7 +292,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ProjectScoreUpdateBody{categories=$categories, config=$config, description=$description, name=$name, scoreType=$scoreType, additionalProperties=$additionalProperties}"
+            "Body{categories=$categories, config=$config, description=$description, name=$name, scoreType=$scoreType, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -307,7 +307,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var projectScoreId: String? = null
-        private var body: ProjectScoreUpdateBody.Builder = ProjectScoreUpdateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -671,7 +671,7 @@ private constructor(
             override fun serialize(
                 value: Categories,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.categorical != null -> generator.writeObject(value.categorical)
@@ -690,7 +690,7 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
         ) {
 
             @JsonAnyGetter
@@ -770,7 +770,7 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
         ) {
 
             @JsonAnyGetter
@@ -847,11 +847,7 @@ private constructor(
     }
 
     /** The type of the configured score */
-    class ScoreType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class ScoreType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -950,7 +946,17 @@ private constructor(
                 else -> throw BraintrustInvalidDataException("Unknown ScoreType: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

@@ -16,7 +16,7 @@ interface LogServiceAsync {
     /** Log feedback for a set of project logs events */
     suspend fun feedback(
         params: ProjectLogFeedbackParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FeedbackResponseSchema
 
     /**
@@ -26,7 +26,7 @@ interface LogServiceAsync {
      */
     suspend fun fetch(
         params: ProjectLogFetchParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchProjectLogsEventsResponse
 
     /**
@@ -36,12 +36,12 @@ interface LogServiceAsync {
      */
     suspend fun fetchPost(
         params: ProjectLogFetchPostParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchProjectLogsEventsResponse
 
     /** Insert a set of events into the project logs */
     suspend fun insert(
         params: ProjectLogInsertParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): InsertEventsResponse
 }

@@ -20,13 +20,13 @@ interface ProjectTagServiceAsync {
      */
     suspend fun create(
         params: ProjectTagCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
 
     /** Get a project_tag object by its id */
     suspend fun retrieve(
         params: ProjectTagRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
 
     /**
@@ -36,7 +36,7 @@ interface ProjectTagServiceAsync {
      */
     suspend fun update(
         params: ProjectTagUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
 
     /**
@@ -44,14 +44,21 @@ interface ProjectTagServiceAsync {
      * recently-created project_tags coming first
      */
     suspend fun list(
-        params: ProjectTagListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: ProjectTagListParams = ProjectTagListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTagListPageAsync
+
+    /**
+     * List out all project_tags. The project_tags are sorted by creation date, with the most
+     * recently-created project_tags coming first
+     */
+    suspend fun list(requestOptions: RequestOptions): ProjectTagListPageAsync =
+        list(ProjectTagListParams.none(), requestOptions)
 
     /** Delete a project_tag object by its id */
     suspend fun delete(
         params: ProjectTagDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
 
     /**
@@ -61,6 +68,6 @@ interface ProjectTagServiceAsync {
      */
     suspend fun replace(
         params: ProjectTagReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
 }

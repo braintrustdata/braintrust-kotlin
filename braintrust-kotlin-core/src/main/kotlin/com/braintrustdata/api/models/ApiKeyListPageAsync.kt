@@ -71,11 +71,7 @@ private constructor(
     companion object {
 
         fun of(apiKeysService: ApiKeyServiceAsync, params: ApiKeyListParams, response: Response) =
-            ApiKeyListPageAsync(
-                apiKeysService,
-                params,
-                response,
-            )
+            ApiKeyListPageAsync(apiKeysService, params, response)
     }
 
     @NoAutoDetect
@@ -148,9 +144,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: ApiKeyListPageAsync,
-    ) : Flow<ApiKey> {
+    class AutoPager(private val firstPage: ApiKeyListPageAsync) : Flow<ApiKey> {
 
         override suspend fun collect(collector: FlowCollector<ApiKey>) {
             var page = firstPage

@@ -1,0 +1,24 @@
+// File generated from our OpenAPI spec by Stainless.
+
+package com.braintrustdata.api.services.async
+
+import com.braintrustdata.api.TestServerExtension
+import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClientAsync
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+
+@ExtendWith(TestServerExtension::class)
+class TopLevelServiceAsyncTest {
+
+    @Test
+    suspend fun helloWorld() {
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val topLevelServiceAsync = client.topLevel()
+
+        topLevelServiceAsync.helloWorld()
+    }
+}

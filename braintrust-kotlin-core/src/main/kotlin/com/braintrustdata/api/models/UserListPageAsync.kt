@@ -71,11 +71,7 @@ private constructor(
     companion object {
 
         fun of(usersService: UserServiceAsync, params: UserListParams, response: Response) =
-            UserListPageAsync(
-                usersService,
-                params,
-                response,
-            )
+            UserListPageAsync(usersService, params, response)
     }
 
     @NoAutoDetect
@@ -148,9 +144,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: UserListPageAsync,
-    ) : Flow<User> {
+    class AutoPager(private val firstPage: UserListPageAsync) : Flow<User> {
 
         override suspend fun collect(collector: FlowCollector<User>) {
             var page = firstPage

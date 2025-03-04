@@ -27,7 +27,7 @@ import java.util.Objects
 class OrganizationUpdateParams
 private constructor(
     private val organizationId: String,
-    private val body: OrganizationUpdateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -63,7 +63,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): OrganizationUpdateBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -77,9 +77,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class OrganizationUpdateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("api_url")
         @ExcludeMissing
         private val apiUrl: JsonField<String> = JsonMissing.of(),
@@ -131,7 +131,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): OrganizationUpdateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -151,7 +151,7 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [OrganizationUpdateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var apiUrl: JsonField<String> = JsonMissing.of()
@@ -161,13 +161,13 @@ private constructor(
             private var realtimeUrl: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(organizationUpdateBody: OrganizationUpdateBody) = apply {
-                apiUrl = organizationUpdateBody.apiUrl
-                isUniversalApi = organizationUpdateBody.isUniversalApi
-                name = organizationUpdateBody.name
-                proxyUrl = organizationUpdateBody.proxyUrl
-                realtimeUrl = organizationUpdateBody.realtimeUrl
-                additionalProperties = organizationUpdateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                apiUrl = body.apiUrl
+                isUniversalApi = body.isUniversalApi
+                name = body.name
+                proxyUrl = body.proxyUrl
+                realtimeUrl = body.realtimeUrl
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             fun apiUrl(apiUrl: String?) = apiUrl(JsonField.ofNullable(apiUrl))
@@ -218,8 +218,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): OrganizationUpdateBody =
-                OrganizationUpdateBody(
+            fun build(): Body =
+                Body(
                     apiUrl,
                     isUniversalApi,
                     name,
@@ -234,7 +234,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is OrganizationUpdateBody && apiUrl == other.apiUrl && isUniversalApi == other.isUniversalApi && name == other.name && proxyUrl == other.proxyUrl && realtimeUrl == other.realtimeUrl && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && apiUrl == other.apiUrl && isUniversalApi == other.isUniversalApi && name == other.name && proxyUrl == other.proxyUrl && realtimeUrl == other.realtimeUrl && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -244,7 +244,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "OrganizationUpdateBody{apiUrl=$apiUrl, isUniversalApi=$isUniversalApi, name=$name, proxyUrl=$proxyUrl, realtimeUrl=$realtimeUrl, additionalProperties=$additionalProperties}"
+            "Body{apiUrl=$apiUrl, isUniversalApi=$isUniversalApi, name=$name, proxyUrl=$proxyUrl, realtimeUrl=$realtimeUrl, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -259,7 +259,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var organizationId: String? = null
-        private var body: OrganizationUpdateBody.Builder = OrganizationUpdateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

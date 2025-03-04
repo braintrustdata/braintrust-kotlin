@@ -22,10 +22,8 @@ import com.braintrustdata.api.models.GroupReplaceParams
 import com.braintrustdata.api.models.GroupRetrieveParams
 import com.braintrustdata.api.models.GroupUpdateParams
 
-class GroupServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : GroupServiceAsync {
+class GroupServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    GroupServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -60,7 +58,7 @@ internal constructor(
     /** Get a group object by its id */
     override suspend fun retrieve(
         params: GroupRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Group {
         val request =
             HttpRequest.builder()
@@ -114,7 +112,7 @@ internal constructor(
      */
     override suspend fun list(
         params: GroupListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): GroupListPageAsync {
         val request =
             HttpRequest.builder()
@@ -164,7 +162,7 @@ internal constructor(
      */
     override suspend fun replace(
         params: GroupReplaceParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Group {
         val request =
             HttpRequest.builder()

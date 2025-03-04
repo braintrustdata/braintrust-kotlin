@@ -22,13 +22,13 @@ interface ProjectService {
      */
     fun create(
         params: ProjectCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
 
     /** Get a project object by its id */
     fun retrieve(
         params: ProjectRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
 
     /**
@@ -38,7 +38,7 @@ interface ProjectService {
      */
     fun update(
         params: ProjectUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
 
     /**
@@ -46,13 +46,20 @@ interface ProjectService {
      * recently-created projects coming first
      */
     fun list(
-        params: ProjectListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: ProjectListParams = ProjectListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectListPage
+
+    /**
+     * List out all projects. The projects are sorted by creation date, with the most
+     * recently-created projects coming first
+     */
+    fun list(requestOptions: RequestOptions): ProjectListPage =
+        list(ProjectListParams.none(), requestOptions)
 
     /** Delete a project object by its id */
     fun delete(
         params: ProjectDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
 }

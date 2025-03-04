@@ -71,13 +71,8 @@ private constructor(
         fun of(
             spanIframesService: SpanIframeService,
             params: SpanIframeListParams,
-            response: Response
-        ) =
-            SpanIframeListPage(
-                spanIframesService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = SpanIframeListPage(spanIframesService, params, response)
     }
 
     @NoAutoDetect
@@ -151,9 +146,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: SpanIframeListPage,
-    ) : Sequence<SpanIFrame> {
+    class AutoPager(private val firstPage: SpanIframeListPage) : Sequence<SpanIFrame> {
 
         override fun iterator(): Iterator<SpanIFrame> = iterator {
             var page = firstPage

@@ -79,13 +79,8 @@ private constructor(
         fun of(
             organizationsService: OrganizationServiceAsync,
             params: OrganizationListParams,
-            response: Response
-        ) =
-            OrganizationListPageAsync(
-                organizationsService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = OrganizationListPageAsync(organizationsService, params, response)
     }
 
     @NoAutoDetect
@@ -159,9 +154,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: OrganizationListPageAsync,
-    ) : Flow<Organization> {
+    class AutoPager(private val firstPage: OrganizationListPageAsync) : Flow<Organization> {
 
         override suspend fun collect(collector: FlowCollector<Organization>) {
             var page = firstPage

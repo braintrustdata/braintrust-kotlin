@@ -27,7 +27,7 @@ import java.util.Objects
 class ProjectTagUpdateParams
 private constructor(
     private val projectTagId: String,
-    private val body: ProjectTagUpdateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -59,7 +59,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): ProjectTagUpdateBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -73,9 +73,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class ProjectTagUpdateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("color")
         @ExcludeMissing
         private val color: JsonField<String> = JsonMissing.of(),
@@ -115,7 +115,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): ProjectTagUpdateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -133,7 +133,7 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [ProjectTagUpdateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var color: JsonField<String> = JsonMissing.of()
@@ -141,11 +141,11 @@ private constructor(
             private var name: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(projectTagUpdateBody: ProjectTagUpdateBody) = apply {
-                color = projectTagUpdateBody.color
-                description = projectTagUpdateBody.description
-                name = projectTagUpdateBody.name
-                additionalProperties = projectTagUpdateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                color = body.color
+                description = body.description
+                name = body.name
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** Color of the tag for the UI */
@@ -187,13 +187,7 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): ProjectTagUpdateBody =
-                ProjectTagUpdateBody(
-                    color,
-                    description,
-                    name,
-                    additionalProperties.toImmutable(),
-                )
+            fun build(): Body = Body(color, description, name, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -201,7 +195,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ProjectTagUpdateBody && color == other.color && description == other.description && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && color == other.color && description == other.description && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -211,7 +205,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ProjectTagUpdateBody{color=$color, description=$description, name=$name, additionalProperties=$additionalProperties}"
+            "Body{color=$color, description=$description, name=$name, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -226,7 +220,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var projectTagId: String? = null
-        private var body: ProjectTagUpdateBody.Builder = ProjectTagUpdateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

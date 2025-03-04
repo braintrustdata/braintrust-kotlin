@@ -21,13 +21,13 @@ interface AiSecretServiceAsync {
      */
     suspend fun create(
         params: AiSecretCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
 
     /** Get an ai_secret object by its id */
     suspend fun retrieve(
         params: AiSecretRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
 
     /**
@@ -37,7 +37,7 @@ interface AiSecretServiceAsync {
      */
     suspend fun update(
         params: AiSecretUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
 
     /**
@@ -45,20 +45,27 @@ interface AiSecretServiceAsync {
      * recently-created ai_secrets coming first
      */
     suspend fun list(
-        params: AiSecretListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: AiSecretListParams = AiSecretListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AiSecretListPageAsync
+
+    /**
+     * List out all ai_secrets. The ai_secrets are sorted by creation date, with the most
+     * recently-created ai_secrets coming first
+     */
+    suspend fun list(requestOptions: RequestOptions): AiSecretListPageAsync =
+        list(AiSecretListParams.none(), requestOptions)
 
     /** Delete an ai_secret object by its id */
     suspend fun delete(
         params: AiSecretDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
 
     /** Delete a single ai_secret */
     suspend fun findAndDelete(
         params: AiSecretFindAndDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
 
     /**
@@ -67,6 +74,6 @@ interface AiSecretServiceAsync {
      */
     suspend fun replace(
         params: AiSecretReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
 }

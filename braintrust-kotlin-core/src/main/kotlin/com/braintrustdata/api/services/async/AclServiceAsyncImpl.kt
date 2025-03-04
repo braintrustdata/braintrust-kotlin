@@ -23,10 +23,8 @@ import com.braintrustdata.api.models.AclListPageAsync
 import com.braintrustdata.api.models.AclListParams
 import com.braintrustdata.api.models.AclRetrieveParams
 
-class AclServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : AclServiceAsync {
+class AclServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    AclServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -86,7 +84,7 @@ internal constructor(
      */
     override suspend fun list(
         params: AclListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AclListPageAsync {
         val request =
             HttpRequest.builder()
@@ -136,7 +134,7 @@ internal constructor(
      */
     override suspend fun batchUpdate(
         params: AclBatchUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AclBatchUpdateResponse {
         val request =
             HttpRequest.builder()
@@ -161,7 +159,7 @@ internal constructor(
     /** Delete a single acl */
     override suspend fun findAndDelete(
         params: AclFindAndDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Acl {
         val request =
             HttpRequest.builder()

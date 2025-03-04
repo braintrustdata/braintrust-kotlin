@@ -22,10 +22,8 @@ import com.braintrustdata.api.models.SpanIframeReplaceParams
 import com.braintrustdata.api.models.SpanIframeRetrieveParams
 import com.braintrustdata.api.models.SpanIframeUpdateParams
 
-class SpanIframeServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : SpanIframeServiceAsync {
+class SpanIframeServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    SpanIframeServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -38,7 +36,7 @@ internal constructor(
      */
     override suspend fun create(
         params: SpanIframeCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): SpanIFrame {
         val request =
             HttpRequest.builder()
@@ -63,7 +61,7 @@ internal constructor(
     /** Get a span_iframe object by its id */
     override suspend fun retrieve(
         params: SpanIframeRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): SpanIFrame {
         val request =
             HttpRequest.builder()
@@ -91,7 +89,7 @@ internal constructor(
      */
     override suspend fun update(
         params: SpanIframeUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): SpanIFrame {
         val request =
             HttpRequest.builder()
@@ -120,7 +118,7 @@ internal constructor(
      */
     override suspend fun list(
         params: SpanIframeListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): SpanIframeListPageAsync {
         val request =
             HttpRequest.builder()
@@ -145,7 +143,7 @@ internal constructor(
     /** Delete a span_iframe object by its id */
     override suspend fun delete(
         params: SpanIframeDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): SpanIFrame {
         val request =
             HttpRequest.builder()
@@ -173,7 +171,7 @@ internal constructor(
      */
     override suspend fun replace(
         params: SpanIframeReplaceParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): SpanIFrame {
         val request =
             HttpRequest.builder()

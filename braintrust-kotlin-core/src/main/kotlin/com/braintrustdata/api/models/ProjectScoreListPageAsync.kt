@@ -79,13 +79,8 @@ private constructor(
         fun of(
             projectScoresService: ProjectScoreServiceAsync,
             params: ProjectScoreListParams,
-            response: Response
-        ) =
-            ProjectScoreListPageAsync(
-                projectScoresService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = ProjectScoreListPageAsync(projectScoresService, params, response)
     }
 
     @NoAutoDetect
@@ -159,9 +154,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: ProjectScoreListPageAsync,
-    ) : Flow<ProjectScore> {
+    class AutoPager(private val firstPage: ProjectScoreListPageAsync) : Flow<ProjectScore> {
 
         override suspend fun collect(collector: FlowCollector<ProjectScore>) {
             var page = firstPage

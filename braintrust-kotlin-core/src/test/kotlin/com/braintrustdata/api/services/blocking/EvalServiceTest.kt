@@ -14,13 +14,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 class EvalServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val evalService = client.evals()
+
         val summarizeExperimentResponse =
             evalService.create(
                 EvalCreateParams.builder()
@@ -72,7 +73,7 @@ class EvalServiceTest {
                     .trialCount(0.0)
                     .build()
             )
-        println(summarizeExperimentResponse)
+
         summarizeExperimentResponse.validate()
     }
 }

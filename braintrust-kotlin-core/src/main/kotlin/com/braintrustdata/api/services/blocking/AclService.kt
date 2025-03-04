@@ -24,7 +24,7 @@ interface AclService {
     /** Get an acl object by its id */
     fun retrieve(
         params: AclRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Acl
 
     /**
@@ -33,7 +33,7 @@ interface AclService {
      */
     fun list(
         params: AclListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AclListPage
 
     /** Delete an acl object by its id */
@@ -44,13 +44,20 @@ interface AclService {
      * no effect, and removing acls which do not exist will have no effect.
      */
     fun batchUpdate(
-        params: AclBatchUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: AclBatchUpdateParams = AclBatchUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AclBatchUpdateResponse
+
+    /**
+     * Batch update acls. This operation is idempotent, so adding acls which already exist will have
+     * no effect, and removing acls which do not exist will have no effect.
+     */
+    fun batchUpdate(requestOptions: RequestOptions): AclBatchUpdateResponse =
+        batchUpdate(AclBatchUpdateParams.none(), requestOptions)
 
     /** Delete a single acl */
     fun findAndDelete(
         params: AclFindAndDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Acl
 }

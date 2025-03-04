@@ -17,13 +17,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 class AclServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aclService = client.acls()
+
         val acl =
             aclService.create(
                 AclCreateParams.builder()
@@ -36,69 +37,73 @@ class AclServiceTest {
                     .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .build()
             )
-        println(acl)
+
         acl.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aclService = client.acls()
+
         val acl =
             aclService.retrieve(
                 AclRetrieveParams.builder().aclId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
             )
-        println(acl)
+
         acl.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aclService = client.acls()
-        val response =
+
+        val page =
             aclService.list(
                 AclListParams.builder()
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .objectType(AclListParams.ObjectType.ORGANIZATION)
                     .build()
             )
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aclService = client.acls()
+
         val acl =
             aclService.delete(
                 AclDeleteParams.builder().aclId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
             )
-        println(acl)
+
         acl.validate()
     }
 
     @Test
-    fun callBatchUpdate() {
+    fun batchUpdate() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aclService = client.acls()
+
         val aclBatchUpdateResponse =
             aclService.batchUpdate(
                 AclBatchUpdateParams.builder()
@@ -130,18 +135,19 @@ class AclServiceTest {
                     )
                     .build()
             )
-        println(aclBatchUpdateResponse)
+
         aclBatchUpdateResponse.validate()
     }
 
     @Test
-    fun callFindAndDelete() {
+    fun findAndDelete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aclService = client.acls()
+
         val acl =
             aclService.findAndDelete(
                 AclFindAndDeleteParams.builder()
@@ -154,7 +160,7 @@ class AclServiceTest {
                     .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .build()
             )
-        println(acl)
+
         acl.validate()
     }
 }

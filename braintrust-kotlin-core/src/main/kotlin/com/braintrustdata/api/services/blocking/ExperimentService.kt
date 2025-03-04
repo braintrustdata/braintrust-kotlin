@@ -28,13 +28,13 @@ interface ExperimentService {
      */
     fun create(
         params: ExperimentCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment
 
     /** Get an experiment object by its id */
     fun retrieve(
         params: ExperimentRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment
 
     /**
@@ -44,7 +44,7 @@ interface ExperimentService {
      */
     fun update(
         params: ExperimentUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment
 
     /**
@@ -52,20 +52,27 @@ interface ExperimentService {
      * recently-created experiments coming first
      */
     fun list(
-        params: ExperimentListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: ExperimentListParams = ExperimentListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ExperimentListPage
+
+    /**
+     * List out all experiments. The experiments are sorted by creation date, with the most
+     * recently-created experiments coming first
+     */
+    fun list(requestOptions: RequestOptions): ExperimentListPage =
+        list(ExperimentListParams.none(), requestOptions)
 
     /** Delete an experiment object by its id */
     fun delete(
         params: ExperimentDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment
 
     /** Log feedback for a set of experiment events */
     fun feedback(
         params: ExperimentFeedbackParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FeedbackResponseSchema
 
     /**
@@ -75,7 +82,7 @@ interface ExperimentService {
      */
     fun fetch(
         params: ExperimentFetchParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchExperimentEventsResponse
 
     /**
@@ -85,18 +92,18 @@ interface ExperimentService {
      */
     fun fetchPost(
         params: ExperimentFetchPostParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchExperimentEventsResponse
 
     /** Insert a set of events into the experiment */
     fun insert(
         params: ExperimentInsertParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): InsertEventsResponse
 
     /** Summarize experiment */
     fun summarize(
         params: ExperimentSummarizeParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): SummarizeExperimentResponse
 }

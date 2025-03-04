@@ -8,12 +8,12 @@ import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.models.FunctionCreateParams
 import com.braintrustdata.api.models.FunctionDeleteParams
 import com.braintrustdata.api.models.FunctionInvokeParams
-import com.braintrustdata.api.models.FunctionListParams
 import com.braintrustdata.api.models.FunctionReplaceParams
 import com.braintrustdata.api.models.FunctionRetrieveParams
 import com.braintrustdata.api.models.FunctionUpdateParams
 import com.braintrustdata.api.models.PromptData
 import com.braintrustdata.api.models.PromptOptions
+import kotlin.test.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -21,13 +21,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 class FunctionServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val functionService = client.functions()
+
         val function =
             functionService.create(
                 FunctionCreateParams.builder()
@@ -133,36 +134,38 @@ class FunctionServiceTest {
                     .addTag("string")
                     .build()
             )
-        println(function)
+
         function.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val functionService = client.functions()
+
         val function =
             functionService.retrieve(
                 FunctionRetrieveParams.builder()
                     .functionId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .build()
             )
-        println(function)
+
         function.validate()
     }
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val functionService = client.functions()
+
         val function =
             functionService.update(
                 FunctionUpdateParams.builder()
@@ -253,50 +256,53 @@ class FunctionServiceTest {
                     .addTag("string")
                     .build()
             )
-        println(function)
+
         function.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val functionService = client.functions()
-        val response = functionService.list(FunctionListParams.builder().build())
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        val page = functionService.list()
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val functionService = client.functions()
+
         val function =
             functionService.delete(
                 FunctionDeleteParams.builder()
                     .functionId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .build()
             )
-        println(function)
+
         function.validate()
     }
 
     @Test
-    fun callInvoke() {
+    fun invoke() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val functionService = client.functions()
-        val functionInvokeResponse =
+
+        val response =
             functionService.invoke(
                 FunctionInvokeParams.builder()
                     .functionId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -334,17 +340,20 @@ class FunctionServiceTest {
                     .version("version")
                     .build()
             )
-        println(functionInvokeResponse)
+
+        assertNotNull(response)
+        response.validate()
     }
 
     @Test
-    fun callReplace() {
+    fun replace() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val functionService = client.functions()
+
         val function =
             functionService.replace(
                 FunctionReplaceParams.builder()
@@ -450,7 +459,7 @@ class FunctionServiceTest {
                     .addTag("string")
                     .build()
             )
-        println(function)
+
         function.validate()
     }
 }

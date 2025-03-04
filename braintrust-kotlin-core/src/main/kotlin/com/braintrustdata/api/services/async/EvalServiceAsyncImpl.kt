@@ -16,10 +16,8 @@ import com.braintrustdata.api.errors.BraintrustError
 import com.braintrustdata.api.models.EvalCreateParams
 import com.braintrustdata.api.models.SummarizeExperimentResponse
 
-class EvalServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : EvalServiceAsync {
+class EvalServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    EvalServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -36,7 +34,7 @@ internal constructor(
      */
     override suspend fun create(
         params: EvalCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): SummarizeExperimentResponse {
         val request =
             HttpRequest.builder()

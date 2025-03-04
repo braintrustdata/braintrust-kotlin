@@ -23,7 +23,7 @@ import java.util.Objects
 class DatasetInsertParams
 private constructor(
     private val datasetId: String,
-    private val body: DatasetInsertBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -43,7 +43,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): DatasetInsertBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -57,9 +57,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class DatasetInsertBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("events")
         @ExcludeMissing
         private val events: JsonField<List<InsertDatasetEvent>> = JsonMissing.of(),
@@ -81,7 +81,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): DatasetInsertBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -97,15 +97,15 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [DatasetInsertBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var events: JsonField<MutableList<InsertDatasetEvent>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(datasetInsertBody: DatasetInsertBody) = apply {
-                events = datasetInsertBody.events.map { it.toMutableList() }
-                additionalProperties = datasetInsertBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                events = body.events.map { it.toMutableList() }
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** A list of dataset events to insert */
@@ -147,10 +147,10 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): DatasetInsertBody =
-                DatasetInsertBody(
+            fun build(): Body =
+                Body(
                     checkRequired("events", events).map { it.toImmutable() },
-                    additionalProperties.toImmutable()
+                    additionalProperties.toImmutable(),
                 )
         }
 
@@ -159,7 +159,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is DatasetInsertBody && events == other.events && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && events == other.events && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -168,8 +168,7 @@ private constructor(
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() =
-            "DatasetInsertBody{events=$events, additionalProperties=$additionalProperties}"
+        override fun toString() = "Body{events=$events, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -184,7 +183,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var datasetId: String? = null
-        private var body: DatasetInsertBody.Builder = DatasetInsertBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

@@ -20,13 +20,13 @@ interface ViewServiceAsync {
      */
     suspend fun create(
         params: ViewCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 
     /** Get a view object by its id */
     suspend fun retrieve(
         params: ViewRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 
     /**
@@ -36,7 +36,7 @@ interface ViewServiceAsync {
      */
     suspend fun update(
         params: ViewUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 
     /**
@@ -45,13 +45,13 @@ interface ViewServiceAsync {
      */
     suspend fun list(
         params: ViewListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ViewListPageAsync
 
     /** Delete a view object by its id */
     suspend fun delete(
         params: ViewDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 
     /**
@@ -60,6 +60,6 @@ interface ViewServiceAsync {
      */
     suspend fun replace(
         params: ViewReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 }

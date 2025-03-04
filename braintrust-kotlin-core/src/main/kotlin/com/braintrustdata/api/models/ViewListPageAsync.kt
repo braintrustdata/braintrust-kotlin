@@ -71,11 +71,7 @@ private constructor(
     companion object {
 
         fun of(viewsService: ViewServiceAsync, params: ViewListParams, response: Response) =
-            ViewListPageAsync(
-                viewsService,
-                params,
-                response,
-            )
+            ViewListPageAsync(viewsService, params, response)
     }
 
     @NoAutoDetect
@@ -148,9 +144,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: ViewListPageAsync,
-    ) : Flow<View> {
+    class AutoPager(private val firstPage: ViewListPageAsync) : Flow<View> {
 
         override suspend fun collect(collector: FlowCollector<View>) {
             var page = firstPage

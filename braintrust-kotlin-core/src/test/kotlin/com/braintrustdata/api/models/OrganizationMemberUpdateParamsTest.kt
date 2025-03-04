@@ -2,6 +2,7 @@
 
 package com.braintrustdata.api.models
 
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -56,8 +57,10 @@ class OrganizationMemberUpdateParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.inviteUsers())
             .isEqualTo(
                 OrganizationMemberUpdateParams.InviteUsers.builder()
@@ -84,7 +87,9 @@ class OrganizationMemberUpdateParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = OrganizationMemberUpdateParams.builder().build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
     }
 }

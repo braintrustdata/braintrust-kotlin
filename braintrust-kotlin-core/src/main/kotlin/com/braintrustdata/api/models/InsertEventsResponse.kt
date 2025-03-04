@@ -120,7 +120,7 @@ private constructor(
         fun build(): InsertEventsResponse =
             InsertEventsResponse(
                 checkRequired("rowIds", rowIds).map { it.toImmutable() },
-                additionalProperties.toImmutable()
+                additionalProperties.toImmutable(),
             )
     }
 

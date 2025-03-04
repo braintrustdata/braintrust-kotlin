@@ -18,7 +18,7 @@ interface OrganizationService {
     /** Get an organization object by its id */
     fun retrieve(
         params: OrganizationRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
 
     /**
@@ -28,7 +28,7 @@ interface OrganizationService {
      */
     fun update(
         params: OrganizationUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
 
     /**
@@ -36,13 +36,20 @@ interface OrganizationService {
      * recently-created organizations coming first
      */
     fun list(
-        params: OrganizationListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: OrganizationListParams = OrganizationListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): OrganizationListPage
+
+    /**
+     * List out all organizations. The organizations are sorted by creation date, with the most
+     * recently-created organizations coming first
+     */
+    fun list(requestOptions: RequestOptions): OrganizationListPage =
+        list(OrganizationListParams.none(), requestOptions)
 
     /** Delete an organization object by its id */
     fun delete(
         params: OrganizationDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
 }

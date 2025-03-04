@@ -73,13 +73,8 @@ private constructor(
         fun of(
             aiSecretsService: AiSecretServiceAsync,
             params: AiSecretListParams,
-            response: Response
-        ) =
-            AiSecretListPageAsync(
-                aiSecretsService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = AiSecretListPageAsync(aiSecretsService, params, response)
     }
 
     @NoAutoDetect
@@ -152,9 +147,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: AiSecretListPageAsync,
-    ) : Flow<AISecret> {
+    class AutoPager(private val firstPage: AiSecretListPageAsync) : Flow<AISecret> {
 
         override suspend fun collect(collector: FlowCollector<AISecret>) {
             var page = firstPage

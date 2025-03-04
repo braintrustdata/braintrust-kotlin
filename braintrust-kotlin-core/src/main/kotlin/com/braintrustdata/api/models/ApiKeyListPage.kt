@@ -69,11 +69,7 @@ private constructor(
     companion object {
 
         fun of(apiKeysService: ApiKeyService, params: ApiKeyListParams, response: Response) =
-            ApiKeyListPage(
-                apiKeysService,
-                params,
-                response,
-            )
+            ApiKeyListPage(apiKeysService, params, response)
     }
 
     @NoAutoDetect
@@ -146,9 +142,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: ApiKeyListPage,
-    ) : Sequence<ApiKey> {
+    class AutoPager(private val firstPage: ApiKeyListPage) : Sequence<ApiKey> {
 
         override fun iterator(): Iterator<ApiKey> = iterator {
             var page = firstPage
