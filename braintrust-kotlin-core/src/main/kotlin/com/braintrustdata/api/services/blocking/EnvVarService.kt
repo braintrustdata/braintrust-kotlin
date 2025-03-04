@@ -20,13 +20,13 @@ interface EnvVarService {
      */
     fun create(
         params: EnvVarCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar
 
     /** Get an env_var object by its id */
     fun retrieve(
         params: EnvVarRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar
 
     /**
@@ -36,7 +36,7 @@ interface EnvVarService {
      */
     fun update(
         params: EnvVarUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar
 
     /**
@@ -44,14 +44,21 @@ interface EnvVarService {
      * recently-created env_vars coming first
      */
     fun list(
-        params: EnvVarListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: EnvVarListParams = EnvVarListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVarListResponse
+
+    /**
+     * List out all env_vars. The env_vars are sorted by creation date, with the most
+     * recently-created env_vars coming first
+     */
+    fun list(requestOptions: RequestOptions): EnvVarListResponse =
+        list(EnvVarListParams.none(), requestOptions)
 
     /** Delete an env_var object by its id */
     fun delete(
         params: EnvVarDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar
 
     /**
@@ -60,6 +67,6 @@ interface EnvVarService {
      */
     fun replace(
         params: EnvVarReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar
 }

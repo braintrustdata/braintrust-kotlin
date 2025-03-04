@@ -22,10 +22,8 @@ import com.braintrustdata.api.models.PromptReplaceParams
 import com.braintrustdata.api.models.PromptRetrieveParams
 import com.braintrustdata.api.models.PromptUpdateParams
 
-class PromptServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : PromptServiceAsync {
+class PromptServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    PromptServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -38,7 +36,7 @@ internal constructor(
      */
     override suspend fun create(
         params: PromptCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Prompt {
         val request =
             HttpRequest.builder()
@@ -63,7 +61,7 @@ internal constructor(
     /** Get a prompt object by its id */
     override suspend fun retrieve(
         params: PromptRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Prompt {
         val request =
             HttpRequest.builder()
@@ -91,7 +89,7 @@ internal constructor(
      */
     override suspend fun update(
         params: PromptUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Prompt {
         val request =
             HttpRequest.builder()
@@ -120,7 +118,7 @@ internal constructor(
      */
     override suspend fun list(
         params: PromptListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): PromptListPageAsync {
         val request =
             HttpRequest.builder()
@@ -145,7 +143,7 @@ internal constructor(
     /** Delete a prompt object by its id */
     override suspend fun delete(
         params: PromptDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Prompt {
         val request =
             HttpRequest.builder()
@@ -173,7 +171,7 @@ internal constructor(
      */
     override suspend fun replace(
         params: PromptReplaceParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Prompt {
         val request =
             HttpRequest.builder()

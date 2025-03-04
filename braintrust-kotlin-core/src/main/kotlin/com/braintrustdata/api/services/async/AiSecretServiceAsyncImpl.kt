@@ -23,10 +23,8 @@ import com.braintrustdata.api.models.AiSecretReplaceParams
 import com.braintrustdata.api.models.AiSecretRetrieveParams
 import com.braintrustdata.api.models.AiSecretUpdateParams
 
-class AiSecretServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : AiSecretServiceAsync {
+class AiSecretServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    AiSecretServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -39,7 +37,7 @@ internal constructor(
      */
     override suspend fun create(
         params: AiSecretCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AISecret {
         val request =
             HttpRequest.builder()
@@ -64,7 +62,7 @@ internal constructor(
     /** Get an ai_secret object by its id */
     override suspend fun retrieve(
         params: AiSecretRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AISecret {
         val request =
             HttpRequest.builder()
@@ -92,7 +90,7 @@ internal constructor(
      */
     override suspend fun update(
         params: AiSecretUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AISecret {
         val request =
             HttpRequest.builder()
@@ -121,7 +119,7 @@ internal constructor(
      */
     override suspend fun list(
         params: AiSecretListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AiSecretListPageAsync {
         val request =
             HttpRequest.builder()
@@ -146,7 +144,7 @@ internal constructor(
     /** Delete an ai_secret object by its id */
     override suspend fun delete(
         params: AiSecretDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AISecret {
         val request =
             HttpRequest.builder()
@@ -171,7 +169,7 @@ internal constructor(
     /** Delete a single ai_secret */
     override suspend fun findAndDelete(
         params: AiSecretFindAndDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AISecret {
         val request =
             HttpRequest.builder()
@@ -199,7 +197,7 @@ internal constructor(
      */
     override suspend fun replace(
         params: AiSecretReplaceParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AISecret {
         val request =
             HttpRequest.builder()

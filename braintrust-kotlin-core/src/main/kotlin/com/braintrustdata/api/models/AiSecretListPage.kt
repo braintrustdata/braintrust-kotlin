@@ -69,11 +69,7 @@ private constructor(
     companion object {
 
         fun of(aiSecretsService: AiSecretService, params: AiSecretListParams, response: Response) =
-            AiSecretListPage(
-                aiSecretsService,
-                params,
-                response,
-            )
+            AiSecretListPage(aiSecretsService, params, response)
     }
 
     @NoAutoDetect
@@ -146,9 +142,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: AiSecretListPage,
-    ) : Sequence<AISecret> {
+    class AutoPager(private val firstPage: AiSecretListPage) : Sequence<AISecret> {
 
         override fun iterator(): Iterator<AISecret> = iterator {
             var page = firstPage

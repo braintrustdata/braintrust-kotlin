@@ -10,7 +10,11 @@ interface MemberService {
 
     /** Modify organization membership */
     fun update(
-        params: OrganizationMemberUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: OrganizationMemberUpdateParams = OrganizationMemberUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): PatchOrganizationMembersOutput
+
+    /** Modify organization membership */
+    fun update(requestOptions: RequestOptions): PatchOrganizationMembersOutput =
+        update(OrganizationMemberUpdateParams.none(), requestOptions)
 }

@@ -69,11 +69,7 @@ private constructor(
     companion object {
 
         fun of(promptsService: PromptService, params: PromptListParams, response: Response) =
-            PromptListPage(
-                promptsService,
-                params,
-                response,
-            )
+            PromptListPage(promptsService, params, response)
     }
 
     @NoAutoDetect
@@ -146,9 +142,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: PromptListPage,
-    ) : Sequence<Prompt> {
+    class AutoPager(private val firstPage: PromptListPage) : Sequence<Prompt> {
 
         override fun iterator(): Iterator<Prompt> = iterator {
             var page = firstPage

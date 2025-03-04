@@ -16,10 +16,8 @@ import com.braintrustdata.api.errors.BraintrustError
 import com.braintrustdata.api.models.OrganizationMemberUpdateParams
 import com.braintrustdata.api.models.PatchOrganizationMembersOutput
 
-class MemberServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : MemberServiceAsync {
+class MemberServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    MemberServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -30,7 +28,7 @@ internal constructor(
     /** Modify organization membership */
     override suspend fun update(
         params: OrganizationMemberUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): PatchOrganizationMembersOutput {
         val request =
             HttpRequest.builder()

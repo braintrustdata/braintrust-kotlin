@@ -30,10 +30,8 @@ import com.braintrustdata.api.models.FetchDatasetEventsResponse
 import com.braintrustdata.api.models.InsertEventsResponse
 import com.braintrustdata.api.models.SummarizeDatasetResponse
 
-class DatasetServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : DatasetServiceAsync {
+class DatasetServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    DatasetServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -46,7 +44,7 @@ internal constructor(
      */
     override suspend fun create(
         params: DatasetCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Dataset {
         val request =
             HttpRequest.builder()
@@ -71,7 +69,7 @@ internal constructor(
     /** Get a dataset object by its id */
     override suspend fun retrieve(
         params: DatasetRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Dataset {
         val request =
             HttpRequest.builder()
@@ -99,7 +97,7 @@ internal constructor(
      */
     override suspend fun update(
         params: DatasetUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Dataset {
         val request =
             HttpRequest.builder()
@@ -128,7 +126,7 @@ internal constructor(
      */
     override suspend fun list(
         params: DatasetListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): DatasetListPageAsync {
         val request =
             HttpRequest.builder()
@@ -153,7 +151,7 @@ internal constructor(
     /** Delete a dataset object by its id */
     override suspend fun delete(
         params: DatasetDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Dataset {
         val request =
             HttpRequest.builder()
@@ -178,7 +176,7 @@ internal constructor(
     /** Log feedback for a set of dataset events */
     override suspend fun feedback(
         params: DatasetFeedbackParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FeedbackResponseSchema {
         val request =
             HttpRequest.builder()
@@ -208,7 +206,7 @@ internal constructor(
      */
     override suspend fun fetch(
         params: DatasetFetchParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FetchDatasetEventsResponse {
         val request =
             HttpRequest.builder()
@@ -237,7 +235,7 @@ internal constructor(
      */
     override suspend fun fetchPost(
         params: DatasetFetchPostParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FetchDatasetEventsResponse {
         val request =
             HttpRequest.builder()
@@ -262,7 +260,7 @@ internal constructor(
     /** Insert a set of events into the dataset */
     override suspend fun insert(
         params: DatasetInsertParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): InsertEventsResponse {
         val request =
             HttpRequest.builder()
@@ -288,7 +286,7 @@ internal constructor(
     /** Summarize dataset */
     override suspend fun summarize(
         params: DatasetSummarizeParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): SummarizeDatasetResponse {
         val request =
             HttpRequest.builder()

@@ -20,13 +20,13 @@ interface RoleService {
      */
     fun create(
         params: RoleCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Role
 
     /** Get a role object by its id */
     fun retrieve(
         params: RoleRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Role
 
     /**
@@ -36,7 +36,7 @@ interface RoleService {
      */
     fun update(
         params: RoleUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Role
 
     /**
@@ -44,14 +44,21 @@ interface RoleService {
      * roles coming first
      */
     fun list(
-        params: RoleListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: RoleListParams = RoleListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): RoleListPage
+
+    /**
+     * List out all roles. The roles are sorted by creation date, with the most recently-created
+     * roles coming first
+     */
+    fun list(requestOptions: RequestOptions): RoleListPage =
+        list(RoleListParams.none(), requestOptions)
 
     /** Delete a role object by its id */
     fun delete(
         params: RoleDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Role
 
     /**
@@ -60,6 +67,6 @@ interface RoleService {
      */
     fun replace(
         params: RoleReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Role
 }

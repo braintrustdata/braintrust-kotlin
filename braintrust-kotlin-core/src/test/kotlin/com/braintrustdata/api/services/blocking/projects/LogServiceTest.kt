@@ -20,13 +20,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 class LogServiceTest {
 
     @Test
-    fun callFeedback() {
+    fun feedback() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val logService = client.projects().logs()
+
         val feedbackResponseSchema =
             logService.feedback(
                 ProjectLogFeedbackParams.builder()
@@ -52,18 +53,19 @@ class LogServiceTest {
                     )
                     .build()
             )
-        println(feedbackResponseSchema)
+
         feedbackResponseSchema.validate()
     }
 
     @Test
-    fun callFetch() {
+    fun fetch() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val logService = client.projects().logs()
+
         val fetchProjectLogsEventsResponse =
             logService.fetch(
                 ProjectLogFetchParams.builder()
@@ -74,18 +76,19 @@ class LogServiceTest {
                     .version("version")
                     .build()
             )
-        println(fetchProjectLogsEventsResponse)
+
         fetchProjectLogsEventsResponse.validate()
     }
 
     @Test
-    fun callFetchPost() {
+    fun fetchPost() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val logService = client.projects().logs()
+
         val fetchProjectLogsEventsResponse =
             logService.fetchPost(
                 ProjectLogFetchPostParams.builder()
@@ -97,18 +100,19 @@ class LogServiceTest {
                     .version("version")
                     .build()
             )
-        println(fetchProjectLogsEventsResponse)
+
         fetchProjectLogsEventsResponse.validate()
     }
 
     @Test
-    fun callInsert() {
+    fun insert() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val logService = client.projects().logs()
+
         val insertEventsResponse =
             logService.insert(
                 ProjectLogInsertParams.builder()
@@ -168,7 +172,7 @@ class LogServiceTest {
                     )
                     .build()
             )
-        println(insertEventsResponse)
+
         insertEventsResponse.validate()
     }
 }

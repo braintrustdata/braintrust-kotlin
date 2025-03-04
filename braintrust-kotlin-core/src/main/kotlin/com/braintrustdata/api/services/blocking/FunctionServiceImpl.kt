@@ -24,10 +24,8 @@ import com.braintrustdata.api.models.FunctionReplaceParams
 import com.braintrustdata.api.models.FunctionRetrieveParams
 import com.braintrustdata.api.models.FunctionUpdateParams
 
-class FunctionServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : FunctionService {
+class FunctionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    FunctionService {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -62,7 +60,7 @@ internal constructor(
     /** Get a function object by its id */
     override fun retrieve(
         params: FunctionRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Function {
         val request =
             HttpRequest.builder()
@@ -116,7 +114,7 @@ internal constructor(
      */
     override fun list(
         params: FunctionListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FunctionListPage {
         val request =
             HttpRequest.builder()
@@ -164,7 +162,7 @@ internal constructor(
     /** Invoke a function. */
     override fun invoke(
         params: FunctionInvokeParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FunctionInvokeResponse? {
         val request =
             HttpRequest.builder()

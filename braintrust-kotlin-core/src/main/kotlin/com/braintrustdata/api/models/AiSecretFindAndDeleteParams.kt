@@ -22,7 +22,7 @@ import java.util.Objects
 /** Delete a single ai_secret */
 class AiSecretFindAndDeleteParams
 private constructor(
-    private val body: AiSecretFindAndDeleteBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -53,16 +53,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): AiSecretFindAndDeleteBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class AiSecretFindAndDeleteBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("name")
         @ExcludeMissing
         private val name: JsonField<String> = JsonMissing.of(),
@@ -99,7 +99,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): AiSecretFindAndDeleteBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -116,17 +116,17 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [AiSecretFindAndDeleteBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var name: JsonField<String>? = null
             private var orgName: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(aiSecretFindAndDeleteBody: AiSecretFindAndDeleteBody) = apply {
-                name = aiSecretFindAndDeleteBody.name
-                orgName = aiSecretFindAndDeleteBody.orgName
-                additionalProperties = aiSecretFindAndDeleteBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                name = body.name
+                orgName = body.orgName
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** Name of the AI secret */
@@ -168,12 +168,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): AiSecretFindAndDeleteBody =
-                AiSecretFindAndDeleteBody(
-                    checkRequired("name", name),
-                    orgName,
-                    additionalProperties.toImmutable(),
-                )
+            fun build(): Body =
+                Body(checkRequired("name", name), orgName, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -181,7 +177,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is AiSecretFindAndDeleteBody && name == other.name && orgName == other.orgName && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && name == other.name && orgName == other.orgName && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -191,7 +187,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "AiSecretFindAndDeleteBody{name=$name, orgName=$orgName, additionalProperties=$additionalProperties}"
+            "Body{name=$name, orgName=$orgName, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -205,7 +201,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: AiSecretFindAndDeleteBody.Builder = AiSecretFindAndDeleteBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

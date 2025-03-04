@@ -8,7 +8,7 @@ abstract class BraintrustServiceException(
     private val body: String,
     private val error: BraintrustError,
     message: String = "$statusCode: $error",
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : BraintrustException(message, cause) {
 
     fun statusCode(): Int = statusCode

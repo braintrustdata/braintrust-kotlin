@@ -3,6 +3,7 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -37,8 +38,10 @@ class AiSecretUpdateParamsTest {
                 .secret("secret")
                 .type("type")
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.metadata())
             .isEqualTo(
                 AiSecretUpdateParams.Metadata.builder()
@@ -56,8 +59,10 @@ class AiSecretUpdateParamsTest {
             AiSecretUpdateParams.builder()
                 .aiSecretId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
     }
 
     @Test

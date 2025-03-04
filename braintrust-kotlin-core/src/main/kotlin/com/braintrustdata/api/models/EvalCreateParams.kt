@@ -40,7 +40,7 @@ import java.util.Objects
  */
 class EvalCreateParams
 private constructor(
-    private val body: EvalCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -199,16 +199,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): EvalCreateBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class EvalCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("data") @ExcludeMissing private val data: JsonField<Data> = JsonMissing.of(),
         @JsonProperty("project_id")
         @ExcludeMissing
@@ -421,7 +421,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): EvalCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -451,7 +451,7 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [EvalCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Data>? = null
@@ -471,23 +471,23 @@ private constructor(
             private var trialCount: JsonField<Double> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(evalCreateBody: EvalCreateBody) = apply {
-                data = evalCreateBody.data
-                projectId = evalCreateBody.projectId
-                scores = evalCreateBody.scores.map { it.toMutableList() }
-                task = evalCreateBody.task
-                baseExperimentId = evalCreateBody.baseExperimentId
-                baseExperimentName = evalCreateBody.baseExperimentName
-                experimentName = evalCreateBody.experimentName
-                gitMetadataSettings = evalCreateBody.gitMetadataSettings
-                isPublic = evalCreateBody.isPublic
-                maxConcurrency = evalCreateBody.maxConcurrency
-                metadata = evalCreateBody.metadata
-                repoInfo = evalCreateBody.repoInfo
-                stream = evalCreateBody.stream
-                timeout = evalCreateBody.timeout
-                trialCount = evalCreateBody.trialCount
-                additionalProperties = evalCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                data = body.data
+                projectId = body.projectId
+                scores = body.scores.map { it.toMutableList() }
+                task = body.task
+                baseExperimentId = body.baseExperimentId
+                baseExperimentName = body.baseExperimentName
+                experimentName = body.experimentName
+                gitMetadataSettings = body.gitMetadataSettings
+                isPublic = body.isPublic
+                maxConcurrency = body.maxConcurrency
+                metadata = body.metadata
+                repoInfo = body.repoInfo
+                stream = body.stream
+                timeout = body.timeout
+                trialCount = body.trialCount
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The dataset to use */
@@ -757,8 +757,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): EvalCreateBody =
-                EvalCreateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("data", data),
                     checkRequired("projectId", projectId),
                     checkRequired("scores", scores).map { it.toImmutable() },
@@ -783,7 +783,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is EvalCreateBody && data == other.data && projectId == other.projectId && scores == other.scores && task == other.task && baseExperimentId == other.baseExperimentId && baseExperimentName == other.baseExperimentName && experimentName == other.experimentName && gitMetadataSettings == other.gitMetadataSettings && isPublic == other.isPublic && maxConcurrency == other.maxConcurrency && metadata == other.metadata && repoInfo == other.repoInfo && stream == other.stream && timeout == other.timeout && trialCount == other.trialCount && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && data == other.data && projectId == other.projectId && scores == other.scores && task == other.task && baseExperimentId == other.baseExperimentId && baseExperimentName == other.baseExperimentName && experimentName == other.experimentName && gitMetadataSettings == other.gitMetadataSettings && isPublic == other.isPublic && maxConcurrency == other.maxConcurrency && metadata == other.metadata && repoInfo == other.repoInfo && stream == other.stream && timeout == other.timeout && trialCount == other.trialCount && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -793,7 +793,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "EvalCreateBody{data=$data, projectId=$projectId, scores=$scores, task=$task, baseExperimentId=$baseExperimentId, baseExperimentName=$baseExperimentName, experimentName=$experimentName, gitMetadataSettings=$gitMetadataSettings, isPublic=$isPublic, maxConcurrency=$maxConcurrency, metadata=$metadata, repoInfo=$repoInfo, stream=$stream, timeout=$timeout, trialCount=$trialCount, additionalProperties=$additionalProperties}"
+            "Body{data=$data, projectId=$projectId, scores=$scores, task=$task, baseExperimentId=$baseExperimentId, baseExperimentName=$baseExperimentName, experimentName=$experimentName, gitMetadataSettings=$gitMetadataSettings, isPublic=$isPublic, maxConcurrency=$maxConcurrency, metadata=$metadata, repoInfo=$repoInfo, stream=$stream, timeout=$timeout, trialCount=$trialCount, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -807,7 +807,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: EvalCreateBody.Builder = EvalCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -1170,11 +1170,7 @@ private constructor(
         }
 
         fun build(): EvalCreateParams =
-            EvalCreateParams(
-                body.build(),
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
+            EvalCreateParams(body.build(), additionalHeaders.build(), additionalQueryParams.build())
     }
 
     /** The dataset to use */
@@ -1309,7 +1305,7 @@ private constructor(
             override fun serialize(
                 value: Data,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.datasetId != null -> generator.writeObject(value.datasetId)
@@ -1401,7 +1397,7 @@ private constructor(
                 fun build(): DatasetId =
                     DatasetId(
                         checkRequired("datasetId", datasetId),
-                        additionalProperties.toImmutable()
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1780,7 +1776,7 @@ private constructor(
             override fun serialize(
                 value: Score,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.functionId != null -> generator.writeObject(value.functionId)
@@ -2167,7 +2163,7 @@ private constructor(
                 fun build(): GlobalFunction =
                     GlobalFunction(
                         checkRequired("globalFunction", globalFunction),
-                        additionalProperties.toImmutable()
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -2567,9 +2563,7 @@ private constructor(
 
                 class Runtime
                 @JsonCreator
-                private constructor(
-                    private val value: JsonField<String>,
-                ) : Enum {
+                private constructor(private val value: JsonField<String>) : Enum {
 
                     /**
                      * Returns this class instance's raw value.
@@ -2646,7 +2640,18 @@ private constructor(
                             else -> throw BraintrustInvalidDataException("Unknown Runtime: $value")
                         }
 
-                    fun asString(): String = _value().asStringOrThrow()
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws BraintrustInvalidDataException if this class instance's value does
+                     *   not have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString()
+                            ?: throw BraintrustInvalidDataException("Value is not a String")
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -3058,7 +3063,7 @@ private constructor(
             override fun serialize(
                 value: Task,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.functionId != null -> generator.writeObject(value.functionId)
@@ -3445,7 +3450,7 @@ private constructor(
                 fun build(): GlobalFunction =
                     GlobalFunction(
                         checkRequired("globalFunction", globalFunction),
-                        additionalProperties.toImmutable()
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -3845,9 +3850,7 @@ private constructor(
 
                 class Runtime
                 @JsonCreator
-                private constructor(
-                    private val value: JsonField<String>,
-                ) : Enum {
+                private constructor(private val value: JsonField<String>) : Enum {
 
                     /**
                      * Returns this class instance's raw value.
@@ -3924,7 +3927,18 @@ private constructor(
                             else -> throw BraintrustInvalidDataException("Unknown Runtime: $value")
                         }
 
-                    fun asString(): String = _value().asStringOrThrow()
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws BraintrustInvalidDataException if this class instance's value does
+                     *   not have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString()
+                            ?: throw BraintrustInvalidDataException("Value is not a String")
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -4214,11 +4228,8 @@ private constructor(
                 )
         }
 
-        class Collect
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Collect @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -4299,7 +4310,17 @@ private constructor(
                     else -> throw BraintrustInvalidDataException("Unknown Collect: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value does not have
+             *   the expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -4314,11 +4335,7 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class Field
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Field @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -4435,7 +4452,17 @@ private constructor(
                     else -> throw BraintrustInvalidDataException("Unknown Field: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value does not have
+             *   the expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -4477,7 +4504,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
     ) {
 
         @JsonAnyGetter

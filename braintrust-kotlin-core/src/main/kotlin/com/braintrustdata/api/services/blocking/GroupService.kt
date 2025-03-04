@@ -20,13 +20,13 @@ interface GroupService {
      */
     fun create(
         params: GroupCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
 
     /** Get a group object by its id */
     fun retrieve(
         params: GroupRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
 
     /**
@@ -36,7 +36,7 @@ interface GroupService {
      */
     fun update(
         params: GroupUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
 
     /**
@@ -44,14 +44,21 @@ interface GroupService {
      * groups coming first
      */
     fun list(
-        params: GroupListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: GroupListParams = GroupListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): GroupListPage
+
+    /**
+     * List out all groups. The groups are sorted by creation date, with the most recently-created
+     * groups coming first
+     */
+    fun list(requestOptions: RequestOptions): GroupListPage =
+        list(GroupListParams.none(), requestOptions)
 
     /** Delete a group object by its id */
     fun delete(
         params: GroupDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
 
     /**
@@ -60,6 +67,6 @@ interface GroupService {
      */
     fun replace(
         params: GroupReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
 }

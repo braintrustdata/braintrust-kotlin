@@ -2,6 +2,7 @@
 
 package com.braintrustdata.api.models
 
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -26,8 +27,10 @@ class EnvVarCreateParamsTest {
                 .objectType(EnvVarCreateParams.ObjectType.ORGANIZATION)
                 .value("value")
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.name()).isEqualTo("name")
         assertThat(body.objectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(body.objectType()).isEqualTo(EnvVarCreateParams.ObjectType.ORGANIZATION)
@@ -42,8 +45,10 @@ class EnvVarCreateParamsTest {
                 .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .objectType(EnvVarCreateParams.ObjectType.ORGANIZATION)
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.name()).isEqualTo("name")
         assertThat(body.objectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(body.objectType()).isEqualTo(EnvVarCreateParams.ObjectType.ORGANIZATION)

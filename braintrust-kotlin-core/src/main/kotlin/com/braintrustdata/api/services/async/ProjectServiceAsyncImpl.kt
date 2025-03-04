@@ -23,10 +23,8 @@ import com.braintrustdata.api.models.ProjectUpdateParams
 import com.braintrustdata.api.services.async.projects.LogServiceAsync
 import com.braintrustdata.api.services.async.projects.LogServiceAsyncImpl
 
-class ProjectServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ProjectServiceAsync {
+class ProjectServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    ProjectServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -43,7 +41,7 @@ internal constructor(
      */
     override suspend fun create(
         params: ProjectCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Project {
         val request =
             HttpRequest.builder()
@@ -68,7 +66,7 @@ internal constructor(
     /** Get a project object by its id */
     override suspend fun retrieve(
         params: ProjectRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Project {
         val request =
             HttpRequest.builder()
@@ -96,7 +94,7 @@ internal constructor(
      */
     override suspend fun update(
         params: ProjectUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Project {
         val request =
             HttpRequest.builder()
@@ -125,7 +123,7 @@ internal constructor(
      */
     override suspend fun list(
         params: ProjectListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ProjectListPageAsync {
         val request =
             HttpRequest.builder()
@@ -150,7 +148,7 @@ internal constructor(
     /** Delete a project object by its id */
     override suspend fun delete(
         params: ProjectDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Project {
         val request =
             HttpRequest.builder()

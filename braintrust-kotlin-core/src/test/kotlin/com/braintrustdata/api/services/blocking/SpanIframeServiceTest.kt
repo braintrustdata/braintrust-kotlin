@@ -6,7 +6,6 @@ import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
 import com.braintrustdata.api.models.SpanIframeCreateParams
 import com.braintrustdata.api.models.SpanIframeDeleteParams
-import com.braintrustdata.api.models.SpanIframeListParams
 import com.braintrustdata.api.models.SpanIframeReplaceParams
 import com.braintrustdata.api.models.SpanIframeRetrieveParams
 import com.braintrustdata.api.models.SpanIframeUpdateParams
@@ -17,13 +16,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 class SpanIframeServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val spanIframeService = client.spanIframes()
+
         val spanIFrame =
             spanIframeService.create(
                 SpanIframeCreateParams.builder()
@@ -34,36 +34,38 @@ class SpanIframeServiceTest {
                     .postMessage(true)
                     .build()
             )
-        println(spanIFrame)
+
         spanIFrame.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val spanIframeService = client.spanIframes()
+
         val spanIFrame =
             spanIframeService.retrieve(
                 SpanIframeRetrieveParams.builder()
                     .spanIframeId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .build()
             )
-        println(spanIFrame)
+
         spanIFrame.validate()
     }
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val spanIframeService = client.spanIframes()
+
         val spanIFrame =
             spanIframeService.update(
                 SpanIframeUpdateParams.builder()
@@ -73,49 +75,52 @@ class SpanIframeServiceTest {
                     .url("url")
                     .build()
             )
-        println(spanIFrame)
+
         spanIFrame.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val spanIframeService = client.spanIframes()
-        val response = spanIframeService.list(SpanIframeListParams.builder().build())
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        val page = spanIframeService.list()
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val spanIframeService = client.spanIframes()
+
         val spanIFrame =
             spanIframeService.delete(
                 SpanIframeDeleteParams.builder()
                     .spanIframeId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .build()
             )
-        println(spanIFrame)
+
         spanIFrame.validate()
     }
 
     @Test
-    fun callReplace() {
+    fun replace() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val spanIframeService = client.spanIframes()
+
         val spanIFrame =
             spanIframeService.replace(
                 SpanIframeReplaceParams.builder()
@@ -126,7 +131,7 @@ class SpanIframeServiceTest {
                     .postMessage(true)
                     .build()
             )
-        println(spanIFrame)
+
         spanIFrame.validate()
     }
 }

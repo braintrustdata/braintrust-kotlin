@@ -71,11 +71,7 @@ private constructor(
     companion object {
 
         fun of(groupsService: GroupServiceAsync, params: GroupListParams, response: Response) =
-            GroupListPageAsync(
-                groupsService,
-                params,
-                response,
-            )
+            GroupListPageAsync(groupsService, params, response)
     }
 
     @NoAutoDetect
@@ -148,9 +144,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: GroupListPageAsync,
-    ) : Flow<Group> {
+    class AutoPager(private val firstPage: GroupListPageAsync) : Flow<Group> {
 
         override suspend fun collect(collector: FlowCollector<Group>) {
             var page = firstPage

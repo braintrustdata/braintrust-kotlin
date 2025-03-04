@@ -21,13 +21,13 @@ interface ProjectScoreService {
      */
     fun create(
         params: ProjectScoreCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScore
 
     /** Get a project_score object by its id */
     fun retrieve(
         params: ProjectScoreRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScore
 
     /**
@@ -37,7 +37,7 @@ interface ProjectScoreService {
      */
     fun update(
         params: ProjectScoreUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScore
 
     /**
@@ -45,14 +45,21 @@ interface ProjectScoreService {
      * recently-created project_scores coming first
      */
     fun list(
-        params: ProjectScoreListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: ProjectScoreListParams = ProjectScoreListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScoreListPage
+
+    /**
+     * List out all project_scores. The project_scores are sorted by creation date, with the most
+     * recently-created project_scores coming first
+     */
+    fun list(requestOptions: RequestOptions): ProjectScoreListPage =
+        list(ProjectScoreListParams.none(), requestOptions)
 
     /** Delete a project_score object by its id */
     fun delete(
         params: ProjectScoreDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScore
 
     /**
@@ -62,6 +69,6 @@ interface ProjectScoreService {
      */
     fun replace(
         params: ProjectScoreReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScore
 }

@@ -22,10 +22,8 @@ import com.braintrustdata.api.models.RoleReplaceParams
 import com.braintrustdata.api.models.RoleRetrieveParams
 import com.braintrustdata.api.models.RoleUpdateParams
 
-class RoleServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : RoleServiceAsync {
+class RoleServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    RoleServiceAsync {
 
     private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
@@ -60,7 +58,7 @@ internal constructor(
     /** Get a role object by its id */
     override suspend fun retrieve(
         params: RoleRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Role {
         val request =
             HttpRequest.builder()
@@ -114,7 +112,7 @@ internal constructor(
      */
     override suspend fun list(
         params: RoleListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): RoleListPageAsync {
         val request =
             HttpRequest.builder()

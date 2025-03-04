@@ -69,11 +69,7 @@ private constructor(
     companion object {
 
         fun of(functionsService: FunctionService, params: FunctionListParams, response: Response) =
-            FunctionListPage(
-                functionsService,
-                params,
-                response,
-            )
+            FunctionListPage(functionsService, params, response)
     }
 
     @NoAutoDetect
@@ -146,9 +142,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: FunctionListPage,
-    ) : Sequence<Function> {
+    class AutoPager(private val firstPage: FunctionListPage) : Sequence<Function> {
 
         override fun iterator(): Iterator<Function> = iterator {
             var page = firstPage

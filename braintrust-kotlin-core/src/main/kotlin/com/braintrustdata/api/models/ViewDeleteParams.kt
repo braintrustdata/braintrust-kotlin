@@ -25,7 +25,7 @@ import java.util.Objects
 class ViewDeleteParams
 private constructor(
     private val viewId: String,
-    private val body: ViewDeleteBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -51,7 +51,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): ViewDeleteBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -65,9 +65,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class ViewDeleteBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("object_id")
         @ExcludeMissing
         private val objectId: JsonField<String> = JsonMissing.of(),
@@ -98,7 +98,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): ViewDeleteBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -115,17 +115,17 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [ViewDeleteBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var objectId: JsonField<String>? = null
             private var objectType: JsonField<ObjectType>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(viewDeleteBody: ViewDeleteBody) = apply {
-                objectId = viewDeleteBody.objectId
-                objectType = viewDeleteBody.objectType
-                additionalProperties = viewDeleteBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                objectId = body.objectId
+                objectType = body.objectType
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The id of the object the view applies to */
@@ -161,8 +161,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): ViewDeleteBody =
-                ViewDeleteBody(
+            fun build(): Body =
+                Body(
                     checkRequired("objectId", objectId),
                     checkRequired("objectType", objectType),
                     additionalProperties.toImmutable(),
@@ -174,7 +174,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ViewDeleteBody && objectId == other.objectId && objectType == other.objectType && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && objectId == other.objectId && objectType == other.objectType && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -184,7 +184,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ViewDeleteBody{objectId=$objectId, objectType=$objectType, additionalProperties=$additionalProperties}"
+            "Body{objectId=$objectId, objectType=$objectType, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -199,7 +199,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var viewId: String? = null
-        private var body: ViewDeleteBody.Builder = ViewDeleteBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -352,11 +352,7 @@ private constructor(
     }
 
     /** The object type that the ACL applies to */
-    class ObjectType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class ObjectType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -485,7 +481,17 @@ private constructor(
                 else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

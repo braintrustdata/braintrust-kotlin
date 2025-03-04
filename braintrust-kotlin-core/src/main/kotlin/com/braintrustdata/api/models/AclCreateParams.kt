@@ -27,7 +27,7 @@ import java.util.Objects
  */
 class AclCreateParams
 private constructor(
-    private val body: AclCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -94,7 +94,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): AclCreateBody = body
+    internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -111,9 +111,9 @@ private constructor(
      * ACL, as part of a direct permission grant or as part of a role.
      */
     @NoAutoDetect
-    class AclCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("object_id")
         @ExcludeMissing
         private val objectId: JsonField<String> = JsonMissing.of(),
@@ -216,7 +216,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): AclCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -238,7 +238,7 @@ private constructor(
             fun builder() = Builder()
         }
 
-        /** A builder for [AclCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var objectId: JsonField<String>? = null
@@ -250,15 +250,15 @@ private constructor(
             private var userId: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(aclCreateBody: AclCreateBody) = apply {
-                objectId = aclCreateBody.objectId
-                objectType = aclCreateBody.objectType
-                groupId = aclCreateBody.groupId
-                permission = aclCreateBody.permission
-                restrictObjectType = aclCreateBody.restrictObjectType
-                roleId = aclCreateBody.roleId
-                userId = aclCreateBody.userId
-                additionalProperties = aclCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                objectId = body.objectId
+                objectType = body.objectType
+                groupId = body.groupId
+                permission = body.permission
+                restrictObjectType = body.restrictObjectType
+                roleId = body.roleId
+                userId = body.userId
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The id of the object the ACL applies to */
@@ -357,8 +357,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): AclCreateBody =
-                AclCreateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("objectId", objectId),
                     checkRequired("objectType", objectType),
                     groupId,
@@ -375,7 +375,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is AclCreateBody && objectId == other.objectId && objectType == other.objectType && groupId == other.groupId && permission == other.permission && restrictObjectType == other.restrictObjectType && roleId == other.roleId && userId == other.userId && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && objectId == other.objectId && objectType == other.objectType && groupId == other.groupId && permission == other.permission && restrictObjectType == other.restrictObjectType && roleId == other.roleId && userId == other.userId && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -385,7 +385,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "AclCreateBody{objectId=$objectId, objectType=$objectType, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, userId=$userId, additionalProperties=$additionalProperties}"
+            "Body{objectId=$objectId, objectType=$objectType, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, userId=$userId, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -399,7 +399,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: AclCreateBody.Builder = AclCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -595,19 +595,11 @@ private constructor(
         }
 
         fun build(): AclCreateParams =
-            AclCreateParams(
-                body.build(),
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
+            AclCreateParams(body.build(), additionalHeaders.build(), additionalQueryParams.build())
     }
 
     /** The object type that the ACL applies to */
-    class ObjectType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class ObjectType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -736,7 +728,17 @@ private constructor(
                 else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -752,11 +754,7 @@ private constructor(
     }
 
     /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
-    class Permission
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Permission @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -867,7 +865,17 @@ private constructor(
                 else -> throw BraintrustInvalidDataException("Unknown Permission: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -888,9 +896,7 @@ private constructor(
      */
     class RestrictObjectType
     @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -1020,7 +1026,17 @@ private constructor(
                 else -> throw BraintrustInvalidDataException("Unknown RestrictObjectType: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

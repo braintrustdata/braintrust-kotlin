@@ -69,11 +69,7 @@ private constructor(
     companion object {
 
         fun of(datasetsService: DatasetService, params: DatasetListParams, response: Response) =
-            DatasetListPage(
-                datasetsService,
-                params,
-                response,
-            )
+            DatasetListPage(datasetsService, params, response)
     }
 
     @NoAutoDetect
@@ -146,9 +142,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: DatasetListPage,
-    ) : Sequence<Dataset> {
+    class AutoPager(private val firstPage: DatasetListPage) : Sequence<Dataset> {
 
         override fun iterator(): Iterator<Dataset> = iterator {
             var page = firstPage

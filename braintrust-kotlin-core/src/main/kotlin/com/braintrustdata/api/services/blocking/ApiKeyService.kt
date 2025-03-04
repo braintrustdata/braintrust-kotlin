@@ -19,13 +19,13 @@ interface ApiKeyService {
      */
     fun create(
         params: ApiKeyCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CreateApiKeyOutput
 
     /** Get an api_key object by its id */
     fun retrieve(
         params: ApiKeyRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKey
 
     /**
@@ -33,13 +33,20 @@ interface ApiKeyService {
      * recently-created api_keys coming first
      */
     fun list(
-        params: ApiKeyListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: ApiKeyListParams = ApiKeyListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKeyListPage
+
+    /**
+     * List out all api_keys. The api_keys are sorted by creation date, with the most
+     * recently-created api_keys coming first
+     */
+    fun list(requestOptions: RequestOptions): ApiKeyListPage =
+        list(ApiKeyListParams.none(), requestOptions)
 
     /** Delete an api_key object by its id */
     fun delete(
         params: ApiKeyDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKey
 }

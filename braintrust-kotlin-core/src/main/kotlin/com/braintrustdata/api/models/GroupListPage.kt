@@ -69,11 +69,7 @@ private constructor(
     companion object {
 
         fun of(groupsService: GroupService, params: GroupListParams, response: Response) =
-            GroupListPage(
-                groupsService,
-                params,
-                response,
-            )
+            GroupListPage(groupsService, params, response)
     }
 
     @NoAutoDetect
@@ -146,9 +142,7 @@ private constructor(
         }
     }
 
-    class AutoPager(
-        private val firstPage: GroupListPage,
-    ) : Sequence<Group> {
+    class AutoPager(private val firstPage: GroupListPage) : Sequence<Group> {
 
         override fun iterator(): Iterator<Group> = iterator {
             var page = firstPage
