@@ -89,6 +89,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [CodeBundle].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .bundleId()
+         * .location()
+         * .runtimeContext()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -350,6 +360,16 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Experiment].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .evalName()
+                 * .position()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -585,6 +605,14 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Type].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .type()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -794,6 +822,15 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Scorer].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .index()
+                         * .type()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -1124,6 +1161,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Function].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .index()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -1335,6 +1381,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [RuntimeContext].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .runtime()
+             * .version()
+             * ```
+             */
             fun builder() = Builder()
         }
 

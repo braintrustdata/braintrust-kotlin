@@ -77,6 +77,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [PatchOrganizationMembersOutput].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .orgId()
+         * .status()
+         * ```
+         */
         fun builder() = Builder()
     }
 

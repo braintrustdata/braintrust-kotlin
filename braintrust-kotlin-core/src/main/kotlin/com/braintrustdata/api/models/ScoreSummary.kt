@@ -88,6 +88,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ScoreSummary].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .improvements()
+         * .name()
+         * .regressions()
+         * .score()
+         * ```
+         */
         fun builder() = Builder()
     }
 

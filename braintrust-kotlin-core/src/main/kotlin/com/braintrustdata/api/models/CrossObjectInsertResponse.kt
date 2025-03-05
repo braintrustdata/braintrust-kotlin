@@ -74,6 +74,9 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [CrossObjectInsertResponse].
+         */
         fun builder() = Builder()
     }
 
@@ -167,6 +170,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Dataset]. */
             fun builder() = Builder()
         }
 
@@ -245,6 +249,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Experiment]. */
             fun builder() = Builder()
         }
 
@@ -323,6 +328,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [ProjectLogs]. */
             fun builder() = Builder()
         }
 

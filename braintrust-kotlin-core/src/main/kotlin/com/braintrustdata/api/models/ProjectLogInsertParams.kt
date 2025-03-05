@@ -95,6 +95,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .events()
+             * ```
+             */
             fun builder() = Builder()
         }
 
@@ -172,6 +180,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ProjectLogInsertParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .projectId()
+         * .events()
+         * ```
+         */
         fun builder() = Builder()
     }
 

@@ -198,6 +198,20 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [DatasetEvent].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * ._xactId()
+         * .created()
+         * .datasetId()
+         * .projectId()
+         * .rootSpanId()
+         * .spanId()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -428,6 +442,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Metadata]. */
             fun builder() = Builder()
         }
 
@@ -546,6 +561,17 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Origin].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .id()
+             * ._xactId()
+             * .objectId()
+             * .objectType()
+             * ```
+             */
             fun builder() = Builder()
         }
 

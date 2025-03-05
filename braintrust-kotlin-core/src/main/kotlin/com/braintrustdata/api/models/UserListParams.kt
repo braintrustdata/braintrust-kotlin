@@ -112,6 +112,7 @@ private constructor(
 
         fun none(): UserListParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [UserListParams]. */
         fun builder() = Builder()
     }
 

@@ -117,6 +117,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [GroupListPage]. */
             fun builder() = Builder()
         }
 

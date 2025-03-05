@@ -97,6 +97,7 @@ private constructor(
 
     companion object {
 
+        /** Returns a mutable builder for constructing an instance of [PromptData]. */
         fun builder() = Builder()
     }
 
@@ -244,6 +245,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Origin]. */
             fun builder() = Builder()
         }
 
@@ -367,6 +369,16 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Parser].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .choiceScores()
+             * .type()
+             * .useCot()
+             * ```
+             */
             fun builder() = Builder()
         }
 
@@ -453,6 +465,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [ChoiceScores]. */
                 fun builder() = Builder()
             }
 
@@ -815,6 +828,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Completion].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .content()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -1035,6 +1057,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Chat].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .messages()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -1396,6 +1427,14 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [System].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -1628,6 +1667,14 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [User].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -2208,6 +2255,14 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Assistant].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -2445,6 +2500,16 @@ private constructor(
 
                         companion object {
 
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [FunctionCall].
+                             *
+                             * The following fields are required:
+                             * ```kotlin
+                             * .arguments()
+                             * .name()
+                             * ```
+                             */
                             fun builder() = Builder()
                         }
 
@@ -2593,6 +2658,14 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Tool].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -2827,6 +2900,15 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Function].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .name()
+                         * .role()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -3051,6 +3133,14 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Fallback].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -3365,6 +3455,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [NullableVariant]. */
                 fun builder() = Builder()
             }
 
@@ -3598,6 +3689,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Function].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .id()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -3808,6 +3908,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Global].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .name()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 

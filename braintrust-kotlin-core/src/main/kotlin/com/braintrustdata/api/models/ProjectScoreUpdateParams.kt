@@ -177,6 +177,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             fun builder() = Builder()
         }
 
@@ -299,6 +300,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ProjectScoreUpdateParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .projectScoreId()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -711,6 +720,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [Weighted]. */
                 fun builder() = Builder()
             }
 
@@ -791,6 +801,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [NullableVariant]. */
                 fun builder() = Builder()
             }
 

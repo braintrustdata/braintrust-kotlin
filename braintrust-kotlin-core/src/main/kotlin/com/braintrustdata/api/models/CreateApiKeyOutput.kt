@@ -104,6 +104,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [CreateApiKeyOutput].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .key()
+         * .name()
+         * .previewName()
+         * ```
+         */
         fun builder() = Builder()
     }
 

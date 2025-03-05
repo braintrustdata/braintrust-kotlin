@@ -106,6 +106,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Project].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .name()
+         * .orgId()
+         * ```
+         */
         fun builder() = Builder()
     }
 

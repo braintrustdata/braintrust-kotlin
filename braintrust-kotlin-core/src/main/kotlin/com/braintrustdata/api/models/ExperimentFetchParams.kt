@@ -107,6 +107,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ExperimentFetchParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .experimentId()
+         * ```
+         */
         fun builder() = Builder()
     }
 

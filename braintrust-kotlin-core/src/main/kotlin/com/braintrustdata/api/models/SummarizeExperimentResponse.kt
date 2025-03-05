@@ -121,6 +121,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [SummarizeExperimentResponse].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .experimentName()
+         * .experimentUrl()
+         * .projectName()
+         * .projectUrl()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -255,6 +266,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Metrics]. */
             fun builder() = Builder()
         }
 
@@ -333,6 +345,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Scores]. */
             fun builder() = Builder()
         }
 

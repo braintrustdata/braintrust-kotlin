@@ -129,6 +129,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FeedbackProjectLogsItem].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -287,6 +295,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Metadata]. */
             fun builder() = Builder()
         }
 
@@ -368,6 +377,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Scores]. */
             fun builder() = Builder()
         }
 

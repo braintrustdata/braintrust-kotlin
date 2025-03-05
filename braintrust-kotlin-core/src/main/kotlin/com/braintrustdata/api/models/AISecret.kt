@@ -100,6 +100,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [AISecret].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .name()
+         * .orgId()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -223,6 +233,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Metadata]. */
             fun builder() = Builder()
         }
 

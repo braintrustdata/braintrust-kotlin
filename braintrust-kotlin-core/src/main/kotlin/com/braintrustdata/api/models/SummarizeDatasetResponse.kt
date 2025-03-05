@@ -98,6 +98,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [SummarizeDatasetResponse].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .datasetName()
+         * .datasetUrl()
+         * .projectName()
+         * .projectUrl()
+         * ```
+         */
         fun builder() = Builder()
     }
 

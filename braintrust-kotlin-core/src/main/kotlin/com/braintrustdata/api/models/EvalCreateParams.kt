@@ -449,6 +449,17 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .data()
+             * .projectId()
+             * .scores()
+             * .task()
+             * ```
+             */
             fun builder() = Builder()
         }
 
@@ -797,6 +808,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [EvalCreateParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .data()
+         * .projectId()
+         * .scores()
+         * .task()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -1351,6 +1373,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [DatasetId].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .datasetId()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -1463,6 +1493,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [ProjectDatasetName].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .datasetName()
+                 * .projectName()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -1837,6 +1876,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [FunctionId].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .functionId()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -1974,6 +2021,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [ProjectSlug].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .projectName()
+                 * .slug()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -2106,6 +2162,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [GlobalFunction].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .globalFunction()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -2244,6 +2308,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [PromptSessionId].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .promptSessionFunctionId()
+                 * .promptSessionId()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -2392,6 +2465,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [InlineCode].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .code()
+                 * .inlineContext()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -2504,6 +2586,15 @@ private constructor(
 
                 companion object {
 
+                    /**
+                     * Returns a mutable builder for constructing an instance of [InlineContext].
+                     *
+                     * The following fields are required:
+                     * ```kotlin
+                     * .runtime()
+                     * .version()
+                     * ```
+                     */
                     fun builder() = Builder()
                 }
 
@@ -2748,6 +2839,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [InlinePrompt].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .inlinePrompt()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -3124,6 +3223,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [FunctionId].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .functionId()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -3261,6 +3368,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [ProjectSlug].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .projectName()
+                 * .slug()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -3393,6 +3509,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [GlobalFunction].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .globalFunction()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -3531,6 +3655,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [PromptSessionId].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .promptSessionFunctionId()
+                 * .promptSessionId()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -3679,6 +3812,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [InlineCode].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .code()
+                 * .inlineContext()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -3791,6 +3933,15 @@ private constructor(
 
                 companion object {
 
+                    /**
+                     * Returns a mutable builder for constructing an instance of [InlineContext].
+                     *
+                     * The following fields are required:
+                     * ```kotlin
+                     * .runtime()
+                     * .version()
+                     * ```
+                     */
                     fun builder() = Builder()
                 }
 
@@ -4035,6 +4186,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [InlinePrompt].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .inlinePrompt()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -4161,6 +4320,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [GitMetadataSettings].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .collect()
+             * ```
+             */
             fun builder() = Builder()
         }
 
@@ -4518,6 +4685,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Metadata]. */
             fun builder() = Builder()
         }
 

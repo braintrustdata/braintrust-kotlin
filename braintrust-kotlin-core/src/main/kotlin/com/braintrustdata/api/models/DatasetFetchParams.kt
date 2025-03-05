@@ -107,6 +107,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [DatasetFetchParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .datasetId()
+         * ```
+         */
         fun builder() = Builder()
     }
 

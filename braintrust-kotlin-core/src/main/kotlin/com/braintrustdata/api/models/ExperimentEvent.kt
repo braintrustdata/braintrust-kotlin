@@ -333,6 +333,20 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ExperimentEvent].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * ._xactId()
+         * .created()
+         * .experimentId()
+         * .projectId()
+         * .rootSpanId()
+         * .spanId()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -741,6 +755,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Context]. */
             fun builder() = Builder()
         }
 
@@ -867,6 +882,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Metadata]. */
             fun builder() = Builder()
         }
 
@@ -1047,6 +1063,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Metrics]. */
             fun builder() = Builder()
         }
 
@@ -1293,6 +1310,17 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Origin].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .id()
+             * ._xactId()
+             * .objectId()
+             * .objectType()
+             * ```
+             */
             fun builder() = Builder()
         }
 
@@ -1548,6 +1576,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Scores]. */
             fun builder() = Builder()
         }
 

@@ -74,6 +74,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [FetchProjectLogsEventsResponse].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .events()
+         * ```
+         */
         fun builder() = Builder()
     }
 

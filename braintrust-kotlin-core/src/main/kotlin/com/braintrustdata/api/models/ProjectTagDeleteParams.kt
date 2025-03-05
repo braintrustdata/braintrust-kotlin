@@ -46,6 +46,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ProjectTagDeleteParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .projectTagId()
+         * ```
+         */
         fun builder() = Builder()
     }
 
