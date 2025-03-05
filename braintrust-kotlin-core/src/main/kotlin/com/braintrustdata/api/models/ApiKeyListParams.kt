@@ -93,6 +93,7 @@ private constructor(
 
         fun none(): ApiKeyListParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [ApiKeyListParams]. */
         fun builder() = Builder()
     }
 

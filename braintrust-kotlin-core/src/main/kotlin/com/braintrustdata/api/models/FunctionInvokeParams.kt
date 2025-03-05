@@ -189,6 +189,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             fun builder() = Builder()
         }
 
@@ -347,6 +348,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FunctionInvokeParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .functionId()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -842,6 +851,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [System].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .role()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -1067,6 +1084,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [User].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .role()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -1610,6 +1635,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Assistant].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .role()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -1838,6 +1871,15 @@ private constructor(
 
                 companion object {
 
+                    /**
+                     * Returns a mutable builder for constructing an instance of [FunctionCall].
+                     *
+                     * The following fields are required:
+                     * ```kotlin
+                     * .arguments()
+                     * .name()
+                     * ```
+                     */
                     fun builder() = Builder()
                 }
 
@@ -1982,6 +2024,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Tool].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .role()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -2209,6 +2259,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Function].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .name()
+                 * .role()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -2426,6 +2485,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Fallback].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .role()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -2904,6 +2971,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [SpanParentStruct].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .objectId()
+                 * .objectType()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -3114,6 +3190,9 @@ private constructor(
 
                 companion object {
 
+                    /**
+                     * Returns a mutable builder for constructing an instance of [PropagatedEvent].
+                     */
                     fun builder() = Builder()
                 }
 
@@ -3229,6 +3308,16 @@ private constructor(
 
                 companion object {
 
+                    /**
+                     * Returns a mutable builder for constructing an instance of [RowIds].
+                     *
+                     * The following fields are required:
+                     * ```kotlin
+                     * .id()
+                     * .rootSpanId()
+                     * .spanId()
+                     * ```
+                     */
                     fun builder() = Builder()
                 }
 

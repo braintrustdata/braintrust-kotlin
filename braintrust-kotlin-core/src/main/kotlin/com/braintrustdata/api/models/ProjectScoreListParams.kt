@@ -111,6 +111,7 @@ private constructor(
 
         fun none(): ProjectScoreListParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [ProjectScoreListParams]. */
         fun builder() = Builder()
     }
 

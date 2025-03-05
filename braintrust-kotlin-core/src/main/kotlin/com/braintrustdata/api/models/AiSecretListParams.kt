@@ -97,6 +97,7 @@ private constructor(
 
         fun none(): AiSecretListParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [AiSecretListParams]. */
         fun builder() = Builder()
     }
 

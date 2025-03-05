@@ -134,6 +134,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .name()
+             * .projectId()
+             * ```
+             */
             fun builder() = Builder()
         }
 
@@ -231,6 +240,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [DatasetCreateParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .name()
+         * .projectId()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -424,6 +442,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Metadata]. */
             fun builder() = Builder()
         }
 

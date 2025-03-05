@@ -165,6 +165,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             fun builder() = Builder()
         }
 
@@ -282,6 +283,10 @@ private constructor(
 
         fun none(): OrganizationMemberUpdateParams = builder().build()
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [OrganizationMemberUpdateParams].
+         */
         fun builder() = Builder()
     }
 
@@ -571,6 +576,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [InviteUsers]. */
             fun builder() = Builder()
         }
 
@@ -780,6 +786,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [RemoveUsers]. */
             fun builder() = Builder()
         }
 

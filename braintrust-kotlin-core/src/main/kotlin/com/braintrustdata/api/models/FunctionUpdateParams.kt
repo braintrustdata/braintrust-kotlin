@@ -175,6 +175,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             fun builder() = Builder()
         }
 
@@ -302,6 +303,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FunctionUpdateParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .functionId()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -708,6 +717,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Prompt].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -908,6 +925,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Code].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .data()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -1188,6 +1214,17 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Bundle].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .bundleId()
+                         * .location()
+                         * .runtimeContext()
+                         * .type()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -1452,6 +1489,16 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Inline].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .code()
+                         * .runtimeContext()
+                         * .type()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -1564,6 +1611,16 @@ private constructor(
 
                         companion object {
 
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [RuntimeContext].
+                             *
+                             * The following fields are required:
+                             * ```kotlin
+                             * .runtime()
+                             * .version()
+                             * ```
+                             */
                             fun builder() = Builder()
                         }
 
@@ -2028,6 +2085,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Global].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .name()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -2222,6 +2288,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [NullableVariant]. */
                 fun builder() = Builder()
             }
 

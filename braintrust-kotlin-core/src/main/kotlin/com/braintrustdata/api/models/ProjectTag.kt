@@ -108,6 +108,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ProjectTag].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .name()
+         * .projectId()
+         * .userId()
+         * ```
+         */
         fun builder() = Builder()
     }
 

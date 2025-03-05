@@ -165,6 +165,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Role].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .name()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -392,6 +401,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [MemberPermission].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .permission()
+             * ```
+             */
             fun builder() = Builder()
         }
 

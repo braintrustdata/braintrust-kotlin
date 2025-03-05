@@ -46,6 +46,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [RoleDeleteParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .roleId()
+         * ```
+         */
         fun builder() = Builder()
     }
 

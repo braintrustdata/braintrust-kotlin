@@ -17,6 +17,7 @@ class BraintrustOkHttpClient private constructor() {
 
     companion object {
 
+        /** Returns a mutable builder for constructing an instance of [BraintrustOkHttpClient]. */
         fun builder() = Builder()
 
         fun fromEnv(): BraintrustClient = builder().fromEnv().build()

@@ -98,6 +98,18 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [MetricSummary].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .improvements()
+         * .metric()
+         * .name()
+         * .regressions()
+         * .unit()
+         * ```
+         */
         fun builder() = Builder()
     }
 

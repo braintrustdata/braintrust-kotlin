@@ -100,6 +100,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [OnlineScoreConfig].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .samplingRate()
+         * .scorers()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -383,6 +392,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Function].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .id()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -593,6 +611,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Global].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .name()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
