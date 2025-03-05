@@ -8,6 +8,7 @@ import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkKnown
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
@@ -119,12 +120,8 @@ private constructor(
             /** A list of dataset events to insert */
             fun addEvent(event: InsertDatasetEvent) = apply {
                 events =
-                    (events ?: JsonField.of(mutableListOf())).apply {
-                        (asKnown()
-                                ?: throw IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                ))
-                            .add(event)
+                    (events ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("events", it).add(event)
                     }
             }
 
