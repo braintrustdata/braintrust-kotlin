@@ -3,6 +3,7 @@
 package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.Prompt
 import com.braintrustdata.api.models.PromptCreateParams
 import com.braintrustdata.api.models.PromptDeleteParams
@@ -11,8 +12,14 @@ import com.braintrustdata.api.models.PromptListParams
 import com.braintrustdata.api.models.PromptReplaceParams
 import com.braintrustdata.api.models.PromptRetrieveParams
 import com.braintrustdata.api.models.PromptUpdateParams
+import com.google.errorprone.annotations.MustBeClosed
 
 interface PromptService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     /**
      * Create a new prompt. If there is an existing prompt in the project with the same slug as the
@@ -69,4 +76,76 @@ interface PromptService {
         params: PromptReplaceParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
+
+    /** A view of [PromptService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a raw HTTP response for `post /v1/prompt`, but is otherwise the same as
+         * [PromptService.create].
+         */
+        @MustBeClosed
+        fun create(
+            params: PromptCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/prompt/{prompt_id}`, but is otherwise the same
+         * as [PromptService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(
+            params: PromptRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt>
+
+        /**
+         * Returns a raw HTTP response for `patch /v1/prompt/{prompt_id}`, but is otherwise the same
+         * as [PromptService.update].
+         */
+        @MustBeClosed
+        fun update(
+            params: PromptUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/prompt`, but is otherwise the same as
+         * [PromptService.list].
+         */
+        @MustBeClosed
+        fun list(
+            params: PromptListParams = PromptListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<PromptListPage>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/prompt`, but is otherwise the same as
+         * [PromptService.list].
+         */
+        @MustBeClosed
+        fun list(requestOptions: RequestOptions): HttpResponseFor<PromptListPage> =
+            list(PromptListParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /v1/prompt/{prompt_id}`, but is otherwise the
+         * same as [PromptService.delete].
+         */
+        @MustBeClosed
+        fun delete(
+            params: PromptDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt>
+
+        /**
+         * Returns a raw HTTP response for `put /v1/prompt`, but is otherwise the same as
+         * [PromptService.replace].
+         */
+        @MustBeClosed
+        fun replace(
+            params: PromptReplaceParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt>
+    }
 }

@@ -3,6 +3,7 @@
 package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.SpanIFrame
 import com.braintrustdata.api.models.SpanIframeCreateParams
 import com.braintrustdata.api.models.SpanIframeDeleteParams
@@ -11,8 +12,14 @@ import com.braintrustdata.api.models.SpanIframeListParams
 import com.braintrustdata.api.models.SpanIframeReplaceParams
 import com.braintrustdata.api.models.SpanIframeRetrieveParams
 import com.braintrustdata.api.models.SpanIframeUpdateParams
+import com.google.errorprone.annotations.MustBeClosed
 
 interface SpanIframeService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     /**
      * Create a new span_iframe. If there is an existing span_iframe with the same name as the one
@@ -69,4 +76,76 @@ interface SpanIframeService {
         params: SpanIframeReplaceParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIFrame
+
+    /** A view of [SpanIframeService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a raw HTTP response for `post /v1/span_iframe`, but is otherwise the same as
+         * [SpanIframeService.create].
+         */
+        @MustBeClosed
+        fun create(
+            params: SpanIframeCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<SpanIFrame>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/span_iframe/{span_iframe_id}`, but is otherwise
+         * the same as [SpanIframeService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(
+            params: SpanIframeRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<SpanIFrame>
+
+        /**
+         * Returns a raw HTTP response for `patch /v1/span_iframe/{span_iframe_id}`, but is
+         * otherwise the same as [SpanIframeService.update].
+         */
+        @MustBeClosed
+        fun update(
+            params: SpanIframeUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<SpanIFrame>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/span_iframe`, but is otherwise the same as
+         * [SpanIframeService.list].
+         */
+        @MustBeClosed
+        fun list(
+            params: SpanIframeListParams = SpanIframeListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<SpanIframeListPage>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/span_iframe`, but is otherwise the same as
+         * [SpanIframeService.list].
+         */
+        @MustBeClosed
+        fun list(requestOptions: RequestOptions): HttpResponseFor<SpanIframeListPage> =
+            list(SpanIframeListParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /v1/span_iframe/{span_iframe_id}`, but is
+         * otherwise the same as [SpanIframeService.delete].
+         */
+        @MustBeClosed
+        fun delete(
+            params: SpanIframeDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<SpanIFrame>
+
+        /**
+         * Returns a raw HTTP response for `put /v1/span_iframe`, but is otherwise the same as
+         * [SpanIframeService.replace].
+         */
+        @MustBeClosed
+        fun replace(
+            params: SpanIframeReplaceParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<SpanIFrame>
+    }
 }

@@ -3,6 +3,7 @@
 package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.ProjectTag
 import com.braintrustdata.api.models.ProjectTagCreateParams
 import com.braintrustdata.api.models.ProjectTagDeleteParams
@@ -11,8 +12,14 @@ import com.braintrustdata.api.models.ProjectTagListParams
 import com.braintrustdata.api.models.ProjectTagReplaceParams
 import com.braintrustdata.api.models.ProjectTagRetrieveParams
 import com.braintrustdata.api.models.ProjectTagUpdateParams
+import com.google.errorprone.annotations.MustBeClosed
 
 interface ProjectTagService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     /**
      * Create a new project_tag. If there is an existing project_tag in the project with the same
@@ -70,4 +77,76 @@ interface ProjectTagService {
         params: ProjectTagReplaceParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
+
+    /** A view of [ProjectTagService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a raw HTTP response for `post /v1/project_tag`, but is otherwise the same as
+         * [ProjectTagService.create].
+         */
+        @MustBeClosed
+        fun create(
+            params: ProjectTagCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectTag>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/project_tag/{project_tag_id}`, but is otherwise
+         * the same as [ProjectTagService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(
+            params: ProjectTagRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectTag>
+
+        /**
+         * Returns a raw HTTP response for `patch /v1/project_tag/{project_tag_id}`, but is
+         * otherwise the same as [ProjectTagService.update].
+         */
+        @MustBeClosed
+        fun update(
+            params: ProjectTagUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectTag>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/project_tag`, but is otherwise the same as
+         * [ProjectTagService.list].
+         */
+        @MustBeClosed
+        fun list(
+            params: ProjectTagListParams = ProjectTagListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectTagListPage>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/project_tag`, but is otherwise the same as
+         * [ProjectTagService.list].
+         */
+        @MustBeClosed
+        fun list(requestOptions: RequestOptions): HttpResponseFor<ProjectTagListPage> =
+            list(ProjectTagListParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /v1/project_tag/{project_tag_id}`, but is
+         * otherwise the same as [ProjectTagService.delete].
+         */
+        @MustBeClosed
+        fun delete(
+            params: ProjectTagDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectTag>
+
+        /**
+         * Returns a raw HTTP response for `put /v1/project_tag`, but is otherwise the same as
+         * [ProjectTagService.replace].
+         */
+        @MustBeClosed
+        fun replace(
+            params: ProjectTagReplaceParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectTag>
+    }
 }
