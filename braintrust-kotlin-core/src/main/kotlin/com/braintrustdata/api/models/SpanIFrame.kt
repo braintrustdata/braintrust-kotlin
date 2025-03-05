@@ -136,6 +136,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [SpanIFrame].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .name()
+         * .projectId()
+         * .url()
+         * ```
+         */
         fun builder() = Builder()
     }
 

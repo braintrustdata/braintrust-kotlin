@@ -46,6 +46,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [EnvVarDeleteParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .envVarId()
+         * ```
+         */
         fun builder() = Builder()
     }
 

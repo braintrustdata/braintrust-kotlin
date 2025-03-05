@@ -177,6 +177,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             fun builder() = Builder()
         }
 
@@ -337,6 +338,7 @@ private constructor(
 
         fun none(): AclBatchUpdateParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [AclBatchUpdateParams]. */
         fun builder() = Builder()
     }
 
@@ -688,6 +690,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [AddAcl].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .objectId()
+             * .objectType()
+             * ```
+             */
             fun builder() = Builder()
         }
 
@@ -1436,6 +1447,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [RemoveAcl].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .objectId()
+             * .objectType()
+             * ```
+             */
             fun builder() = Builder()
         }
 

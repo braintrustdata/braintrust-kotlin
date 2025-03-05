@@ -93,6 +93,7 @@ private constructor(
 
         fun none(): GroupListParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [GroupListParams]. */
         fun builder() = Builder()
     }
 

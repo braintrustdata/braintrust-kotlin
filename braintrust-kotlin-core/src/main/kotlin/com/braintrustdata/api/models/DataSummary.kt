@@ -54,6 +54,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [DataSummary].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .totalRecords()
+         * ```
+         */
         fun builder() = Builder()
     }
 

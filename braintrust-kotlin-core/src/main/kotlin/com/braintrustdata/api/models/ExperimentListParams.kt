@@ -103,6 +103,7 @@ private constructor(
 
         fun none(): ExperimentListParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [ExperimentListParams]. */
         fun builder() = Builder()
     }
 

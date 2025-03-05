@@ -57,6 +57,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ViewRetrieveParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .viewId()
+         * .objectId()
+         * .objectType()
+         * ```
+         */
         fun builder() = Builder()
     }
 

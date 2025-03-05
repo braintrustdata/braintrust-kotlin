@@ -93,6 +93,7 @@ private constructor(
 
         fun none(): SpanIframeListParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [SpanIframeListParams]. */
         fun builder() = Builder()
     }
 

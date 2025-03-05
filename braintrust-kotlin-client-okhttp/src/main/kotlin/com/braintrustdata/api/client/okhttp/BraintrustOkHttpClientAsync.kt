@@ -17,6 +17,9 @@ class BraintrustOkHttpClientAsync private constructor() {
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [BraintrustOkHttpClientAsync].
+         */
         fun builder() = Builder()
 
         fun fromEnv(): BraintrustClientAsync = builder().fromEnv().build()

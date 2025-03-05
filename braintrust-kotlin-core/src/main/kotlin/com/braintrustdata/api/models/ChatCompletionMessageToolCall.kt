@@ -63,6 +63,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [ChatCompletionMessageToolCall].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .function()
+         * .type()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -163,6 +174,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Function].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .arguments()
+             * .name()
+             * ```
+             */
             fun builder() = Builder()
         }
 

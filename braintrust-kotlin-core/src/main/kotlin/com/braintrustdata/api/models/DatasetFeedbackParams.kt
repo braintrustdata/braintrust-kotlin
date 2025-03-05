@@ -95,6 +95,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .feedback()
+             * ```
+             */
             fun builder() = Builder()
         }
 
@@ -173,6 +181,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [DatasetFeedbackParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .datasetId()
+         * .feedback()
+         * ```
+         */
         fun builder() = Builder()
     }
 

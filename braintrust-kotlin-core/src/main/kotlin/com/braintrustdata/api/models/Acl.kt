@@ -175,6 +175,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Acl].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * ._objectOrgId()
+         * .objectId()
+         * .objectType()
+         * ```
+         */
         fun builder() = Builder()
     }
 

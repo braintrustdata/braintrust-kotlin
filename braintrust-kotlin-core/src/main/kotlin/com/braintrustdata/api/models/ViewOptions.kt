@@ -72,6 +72,7 @@ private constructor(
 
     companion object {
 
+        /** Returns a mutable builder for constructing an instance of [ViewOptions]. */
         fun builder() = Builder()
     }
 
@@ -171,6 +172,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [ColumnSizing]. */
             fun builder() = Builder()
         }
 
@@ -248,6 +250,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [ColumnVisibility]. */
             fun builder() = Builder()
         }
 

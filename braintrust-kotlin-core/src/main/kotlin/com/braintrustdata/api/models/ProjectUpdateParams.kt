@@ -126,6 +126,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             fun builder() = Builder()
         }
 
@@ -204,6 +205,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ProjectUpdateParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .projectId()
+         * ```
+         */
         fun builder() = Builder()
     }
 

@@ -79,6 +79,7 @@ private constructor(
 
         fun none(): EnvVarListParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [EnvVarListParams]. */
         fun builder() = Builder()
     }
 

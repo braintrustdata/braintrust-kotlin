@@ -76,6 +76,7 @@ private constructor(
 
     companion object {
 
+        /** Returns a mutable builder for constructing an instance of [PromptOptions]. */
         fun builder() = Builder()
     }
 
@@ -474,6 +475,9 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [OpenAIModelParams].
+                 */
                 fun builder() = Builder()
             }
 
@@ -916,6 +920,14 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Function].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .name()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -1204,6 +1216,14 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [JsonObject].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .type()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -1414,6 +1434,15 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [JsonSchema].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .jsonSchema()
+                         * .type()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -1537,6 +1566,15 @@ private constructor(
 
                         companion object {
 
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [InnerJsonSchema].
+                             *
+                             * The following fields are required:
+                             * ```kotlin
+                             * .name()
+                             * ```
+                             */
                             fun builder() = Builder()
                         }
 
@@ -1640,6 +1678,10 @@ private constructor(
 
                             companion object {
 
+                                /**
+                                 * Returns a mutable builder for constructing an instance of
+                                 * [Schema].
+                                 */
                                 fun builder() = Builder()
                             }
 
@@ -1868,6 +1910,14 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Text].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .type()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -2057,6 +2107,10 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of
+                         * [NullableVariant].
+                         */
                         fun builder() = Builder()
                     }
 
@@ -2408,6 +2462,15 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Function].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .function()
+                         * .type()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
@@ -2500,6 +2563,15 @@ private constructor(
 
                         companion object {
 
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [InnerFunction].
+                             *
+                             * The following fields are required:
+                             * ```kotlin
+                             * .name()
+                             * ```
+                             */
                             fun builder() = Builder()
                         }
 
@@ -2798,6 +2870,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [AnthropicModelParams].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .maxTokens()
+                 * .temperature()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
@@ -2994,6 +3075,9 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [GoogleModelParams].
+                 */
                 fun builder() = Builder()
             }
 
@@ -3146,6 +3230,9 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [WindowAiModelParams].
+                 */
                 fun builder() = Builder()
             }
 
@@ -3263,6 +3350,9 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [JsCompletionParams].
+                 */
                 fun builder() = Builder()
             }
 

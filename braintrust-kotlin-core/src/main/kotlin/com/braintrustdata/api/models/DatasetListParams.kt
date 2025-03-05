@@ -103,6 +103,7 @@ private constructor(
 
         fun none(): DatasetListParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [DatasetListParams]. */
         fun builder() = Builder()
     }
 

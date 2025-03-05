@@ -58,6 +58,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ProjectScoreCategory].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .name()
+         * .value()
+         * ```
+         */
         fun builder() = Builder()
     }
 

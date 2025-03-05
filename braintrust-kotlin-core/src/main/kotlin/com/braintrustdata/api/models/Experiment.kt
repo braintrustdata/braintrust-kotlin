@@ -194,6 +194,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Experiment].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .name()
+         * .projectId()
+         * .public_()
+         * ```
+         */
         fun builder() = Builder()
     }
 
@@ -403,6 +414,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Metadata]. */
             fun builder() = Builder()
         }
 
