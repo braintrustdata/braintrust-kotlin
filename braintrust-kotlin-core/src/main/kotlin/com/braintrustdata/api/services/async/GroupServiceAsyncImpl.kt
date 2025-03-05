@@ -10,6 +10,8 @@ import com.braintrustdata.api.core.handlers.withErrorHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
 import com.braintrustdata.api.core.http.HttpResponse.Handler
+import com.braintrustdata.api.core.http.HttpResponseFor
+import com.braintrustdata.api.core.http.parseable
 import com.braintrustdata.api.core.json
 import com.braintrustdata.api.core.prepareAsync
 import com.braintrustdata.api.errors.BraintrustError
@@ -25,165 +27,210 @@ import com.braintrustdata.api.models.GroupUpdateParams
 class GroupServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     GroupServiceAsync {
 
-    private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
-
-    private val createHandler: Handler<Group> =
-        jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Create a new group. If there is an existing group with the same name as the one specified in
-     * the request, will return the existing group unmodified
-     */
-    override suspend fun create(params: GroupCreateParams, requestOptions: RequestOptions): Group {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("v1", "group")
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-        return response
-            .use { createHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
+    private val withRawResponse: GroupServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
     }
 
-    private val retrieveHandler: Handler<Group> =
-        jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override fun withRawResponse(): GroupServiceAsync.WithRawResponse = withRawResponse
 
-    /** Get a group object by its id */
+    override suspend fun create(params: GroupCreateParams, requestOptions: RequestOptions): Group =
+        // post /v1/group
+        withRawResponse().create(params, requestOptions).parse()
+
     override suspend fun retrieve(
         params: GroupRetrieveParams,
         requestOptions: RequestOptions,
-    ): Group {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("v1", "group", params.getPathParam(0))
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-        return response
-            .use { retrieveHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-    }
+    ): Group =
+        // get /v1/group/{group_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
 
-    private val updateHandler: Handler<Group> =
-        jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override suspend fun update(params: GroupUpdateParams, requestOptions: RequestOptions): Group =
+        // patch /v1/group/{group_id}
+        withRawResponse().update(params, requestOptions).parse()
 
-    /**
-     * Partially update a group object. Specify the fields to update in the payload. Any object-type
-     * fields will be deep-merged with existing content. Currently we do not support removing fields
-     * or setting them to null.
-     */
-    override suspend fun update(params: GroupUpdateParams, requestOptions: RequestOptions): Group {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.PATCH)
-                .addPathSegments("v1", "group", params.getPathParam(0))
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-        return response
-            .use { updateHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-    }
-
-    private val listHandler: Handler<GroupListPageAsync.Response> =
-        jsonHandler<GroupListPageAsync.Response>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
-
-    /**
-     * List out all groups. The groups are sorted by creation date, with the most recently-created
-     * groups coming first
-     */
     override suspend fun list(
         params: GroupListParams,
         requestOptions: RequestOptions,
-    ): GroupListPageAsync {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("v1", "group")
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-        return response
-            .use { listHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-            .let { GroupListPageAsync.of(this, params, it) }
-    }
+    ): GroupListPageAsync =
+        // get /v1/group
+        withRawResponse().list(params, requestOptions).parse()
 
-    private val deleteHandler: Handler<Group> =
-        jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override suspend fun delete(params: GroupDeleteParams, requestOptions: RequestOptions): Group =
+        // delete /v1/group/{group_id}
+        withRawResponse().delete(params, requestOptions).parse()
 
-    /** Delete a group object by its id */
-    override suspend fun delete(params: GroupDeleteParams, requestOptions: RequestOptions): Group {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.DELETE)
-                .addPathSegments("v1", "group", params.getPathParam(0))
-                .apply { params._body()?.let { body(json(clientOptions.jsonMapper, it)) } }
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-        return response
-            .use { deleteHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-    }
-
-    private val replaceHandler: Handler<Group> =
-        jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Create or replace group. If there is an existing group with the same name as the one
-     * specified in the request, will replace the existing group with the provided fields
-     */
     override suspend fun replace(
         params: GroupReplaceParams,
         requestOptions: RequestOptions,
-    ): Group {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.PUT)
-                .addPathSegments("v1", "group")
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-        return response
-            .use { replaceHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
+    ): Group =
+        // put /v1/group
+        withRawResponse().replace(params, requestOptions).parse()
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        GroupServiceAsync.WithRawResponse {
+
+        private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
+
+        private val createHandler: Handler<Group> =
+            jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override suspend fun create(
+            params: GroupCreateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Group> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("v1", "group")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
+        }
+
+        private val retrieveHandler: Handler<Group> =
+            jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override suspend fun retrieve(
+            params: GroupRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Group> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("v1", "group", params.getPathParam(0))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val updateHandler: Handler<Group> =
+            jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override suspend fun update(
+            params: GroupUpdateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Group> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PATCH)
+                    .addPathSegments("v1", "group", params.getPathParam(0))
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { updateHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val listHandler: Handler<GroupListPageAsync.Response> =
+            jsonHandler<GroupListPageAsync.Response>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override suspend fun list(
+            params: GroupListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<GroupListPageAsync> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("v1", "group")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let { GroupListPageAsync.of(GroupServiceAsyncImpl(clientOptions), params, it) }
+            }
+        }
+
+        private val deleteHandler: Handler<Group> =
+            jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override suspend fun delete(
+            params: GroupDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Group> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .addPathSegments("v1", "group", params.getPathParam(0))
+                    .apply { params._body()?.let { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { deleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val replaceHandler: Handler<Group> =
+            jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override suspend fun replace(
+            params: GroupReplaceParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Group> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PUT)
+                    .addPathSegments("v1", "group")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { replaceHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
     }
 }

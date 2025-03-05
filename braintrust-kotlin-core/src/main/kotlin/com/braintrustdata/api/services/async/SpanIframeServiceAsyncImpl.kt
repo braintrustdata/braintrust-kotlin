@@ -10,6 +10,8 @@ import com.braintrustdata.api.core.handlers.withErrorHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
 import com.braintrustdata.api.core.http.HttpResponse.Handler
+import com.braintrustdata.api.core.http.HttpResponseFor
+import com.braintrustdata.api.core.http.parseable
 import com.braintrustdata.api.core.json
 import com.braintrustdata.api.core.prepareAsync
 import com.braintrustdata.api.errors.BraintrustError
@@ -25,174 +27,225 @@ import com.braintrustdata.api.models.SpanIframeUpdateParams
 class SpanIframeServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     SpanIframeServiceAsync {
 
-    private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
+    private val withRawResponse: SpanIframeServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
-    private val createHandler: Handler<SpanIFrame> =
-        jsonHandler<SpanIFrame>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override fun withRawResponse(): SpanIframeServiceAsync.WithRawResponse = withRawResponse
 
-    /**
-     * Create a new span_iframe. If there is an existing span_iframe with the same name as the one
-     * specified in the request, will return the existing span_iframe unmodified
-     */
     override suspend fun create(
         params: SpanIframeCreateParams,
         requestOptions: RequestOptions,
-    ): SpanIFrame {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("v1", "span_iframe")
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-        return response
-            .use { createHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-    }
+    ): SpanIFrame =
+        // post /v1/span_iframe
+        withRawResponse().create(params, requestOptions).parse()
 
-    private val retrieveHandler: Handler<SpanIFrame> =
-        jsonHandler<SpanIFrame>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Get a span_iframe object by its id */
     override suspend fun retrieve(
         params: SpanIframeRetrieveParams,
         requestOptions: RequestOptions,
-    ): SpanIFrame {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("v1", "span_iframe", params.getPathParam(0))
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-        return response
-            .use { retrieveHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-    }
+    ): SpanIFrame =
+        // get /v1/span_iframe/{span_iframe_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
 
-    private val updateHandler: Handler<SpanIFrame> =
-        jsonHandler<SpanIFrame>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Partially update a span_iframe object. Specify the fields to update in the payload. Any
-     * object-type fields will be deep-merged with existing content. Currently we do not support
-     * removing fields or setting them to null.
-     */
     override suspend fun update(
         params: SpanIframeUpdateParams,
         requestOptions: RequestOptions,
-    ): SpanIFrame {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.PATCH)
-                .addPathSegments("v1", "span_iframe", params.getPathParam(0))
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-        return response
-            .use { updateHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-    }
+    ): SpanIFrame =
+        // patch /v1/span_iframe/{span_iframe_id}
+        withRawResponse().update(params, requestOptions).parse()
 
-    private val listHandler: Handler<SpanIframeListPageAsync.Response> =
-        jsonHandler<SpanIframeListPageAsync.Response>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
-
-    /**
-     * List out all span_iframes. The span_iframes are sorted by creation date, with the most
-     * recently-created span_iframes coming first
-     */
     override suspend fun list(
         params: SpanIframeListParams,
         requestOptions: RequestOptions,
-    ): SpanIframeListPageAsync {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("v1", "span_iframe")
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-        return response
-            .use { listHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-            .let { SpanIframeListPageAsync.of(this, params, it) }
-    }
+    ): SpanIframeListPageAsync =
+        // get /v1/span_iframe
+        withRawResponse().list(params, requestOptions).parse()
 
-    private val deleteHandler: Handler<SpanIFrame> =
-        jsonHandler<SpanIFrame>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Delete a span_iframe object by its id */
     override suspend fun delete(
         params: SpanIframeDeleteParams,
         requestOptions: RequestOptions,
-    ): SpanIFrame {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.DELETE)
-                .addPathSegments("v1", "span_iframe", params.getPathParam(0))
-                .apply { params._body()?.let { body(json(clientOptions.jsonMapper, it)) } }
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-        return response
-            .use { deleteHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-    }
+    ): SpanIFrame =
+        // delete /v1/span_iframe/{span_iframe_id}
+        withRawResponse().delete(params, requestOptions).parse()
 
-    private val replaceHandler: Handler<SpanIFrame> =
-        jsonHandler<SpanIFrame>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Create or replace span_iframe. If there is an existing span_iframe with the same name as the
-     * one specified in the request, will replace the existing span_iframe with the provided fields
-     */
     override suspend fun replace(
         params: SpanIframeReplaceParams,
         requestOptions: RequestOptions,
-    ): SpanIFrame {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.PUT)
-                .addPathSegments("v1", "span_iframe")
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-        return response
-            .use { replaceHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
+    ): SpanIFrame =
+        // put /v1/span_iframe
+        withRawResponse().replace(params, requestOptions).parse()
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        SpanIframeServiceAsync.WithRawResponse {
+
+        private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
+
+        private val createHandler: Handler<SpanIFrame> =
+            jsonHandler<SpanIFrame>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override suspend fun create(
+            params: SpanIframeCreateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<SpanIFrame> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("v1", "span_iframe")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
+        }
+
+        private val retrieveHandler: Handler<SpanIFrame> =
+            jsonHandler<SpanIFrame>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override suspend fun retrieve(
+            params: SpanIframeRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<SpanIFrame> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("v1", "span_iframe", params.getPathParam(0))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val updateHandler: Handler<SpanIFrame> =
+            jsonHandler<SpanIFrame>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override suspend fun update(
+            params: SpanIframeUpdateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<SpanIFrame> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PATCH)
+                    .addPathSegments("v1", "span_iframe", params.getPathParam(0))
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { updateHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val listHandler: Handler<SpanIframeListPageAsync.Response> =
+            jsonHandler<SpanIframeListPageAsync.Response>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override suspend fun list(
+            params: SpanIframeListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<SpanIframeListPageAsync> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("v1", "span_iframe")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let {
+                        SpanIframeListPageAsync.of(
+                            SpanIframeServiceAsyncImpl(clientOptions),
+                            params,
+                            it,
+                        )
+                    }
+            }
+        }
+
+        private val deleteHandler: Handler<SpanIFrame> =
+            jsonHandler<SpanIFrame>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override suspend fun delete(
+            params: SpanIframeDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<SpanIFrame> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .addPathSegments("v1", "span_iframe", params.getPathParam(0))
+                    .apply { params._body()?.let { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { deleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val replaceHandler: Handler<SpanIFrame> =
+            jsonHandler<SpanIFrame>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override suspend fun replace(
+            params: SpanIframeReplaceParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<SpanIFrame> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PUT)
+                    .addPathSegments("v1", "span_iframe")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { replaceHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
     }
 }

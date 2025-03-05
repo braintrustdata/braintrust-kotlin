@@ -3,6 +3,7 @@
 package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.Acl
 import com.braintrustdata.api.models.AclBatchUpdateParams
 import com.braintrustdata.api.models.AclBatchUpdateResponse
@@ -12,8 +13,14 @@ import com.braintrustdata.api.models.AclFindAndDeleteParams
 import com.braintrustdata.api.models.AclListPage
 import com.braintrustdata.api.models.AclListParams
 import com.braintrustdata.api.models.AclRetrieveParams
+import com.google.errorprone.annotations.MustBeClosed
 
 interface AclService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     /**
      * Create a new acl. If there is an existing acl with the same contents as the one specified in
@@ -60,4 +67,76 @@ interface AclService {
         params: AclFindAndDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Acl
+
+    /** A view of [AclService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a raw HTTP response for `post /v1/acl`, but is otherwise the same as
+         * [AclService.create].
+         */
+        @MustBeClosed
+        fun create(
+            params: AclCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Acl>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/acl/{acl_id}`, but is otherwise the same as
+         * [AclService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(
+            params: AclRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Acl>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/acl`, but is otherwise the same as
+         * [AclService.list].
+         */
+        @MustBeClosed
+        fun list(
+            params: AclListParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<AclListPage>
+
+        /**
+         * Returns a raw HTTP response for `delete /v1/acl/{acl_id}`, but is otherwise the same as
+         * [AclService.delete].
+         */
+        @MustBeClosed
+        fun delete(
+            params: AclDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Acl>
+
+        /**
+         * Returns a raw HTTP response for `post /v1/acl/batch-update`, but is otherwise the same as
+         * [AclService.batchUpdate].
+         */
+        @MustBeClosed
+        fun batchUpdate(
+            params: AclBatchUpdateParams = AclBatchUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<AclBatchUpdateResponse>
+
+        /**
+         * Returns a raw HTTP response for `post /v1/acl/batch-update`, but is otherwise the same as
+         * [AclService.batchUpdate].
+         */
+        @MustBeClosed
+        fun batchUpdate(requestOptions: RequestOptions): HttpResponseFor<AclBatchUpdateResponse> =
+            batchUpdate(AclBatchUpdateParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /v1/acl`, but is otherwise the same as
+         * [AclService.findAndDelete].
+         */
+        @MustBeClosed
+        fun findAndDelete(
+            params: AclFindAndDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Acl>
+    }
 }

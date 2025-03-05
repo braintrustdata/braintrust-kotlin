@@ -3,6 +3,7 @@
 package com.braintrustdata.api.services.async
 
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.EnvVar
 import com.braintrustdata.api.models.EnvVarCreateParams
 import com.braintrustdata.api.models.EnvVarDeleteParams
@@ -11,8 +12,14 @@ import com.braintrustdata.api.models.EnvVarListResponse
 import com.braintrustdata.api.models.EnvVarReplaceParams
 import com.braintrustdata.api.models.EnvVarRetrieveParams
 import com.braintrustdata.api.models.EnvVarUpdateParams
+import com.google.errorprone.annotations.MustBeClosed
 
 interface EnvVarServiceAsync {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     /**
      * Create a new env_var. If there is an existing env_var with the same name as the one specified
@@ -69,4 +76,78 @@ interface EnvVarServiceAsync {
         params: EnvVarReplaceParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar
+
+    /**
+     * A view of [EnvVarServiceAsync] that provides access to raw HTTP responses for each method.
+     */
+    interface WithRawResponse {
+
+        /**
+         * Returns a raw HTTP response for `post /v1/env_var`, but is otherwise the same as
+         * [EnvVarServiceAsync.create].
+         */
+        @MustBeClosed
+        suspend fun create(
+            params: EnvVarCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<EnvVar>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/env_var/{env_var_id}`, but is otherwise the same
+         * as [EnvVarServiceAsync.retrieve].
+         */
+        @MustBeClosed
+        suspend fun retrieve(
+            params: EnvVarRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<EnvVar>
+
+        /**
+         * Returns a raw HTTP response for `patch /v1/env_var/{env_var_id}`, but is otherwise the
+         * same as [EnvVarServiceAsync.update].
+         */
+        @MustBeClosed
+        suspend fun update(
+            params: EnvVarUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<EnvVar>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/env_var`, but is otherwise the same as
+         * [EnvVarServiceAsync.list].
+         */
+        @MustBeClosed
+        suspend fun list(
+            params: EnvVarListParams = EnvVarListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<EnvVarListResponse>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/env_var`, but is otherwise the same as
+         * [EnvVarServiceAsync.list].
+         */
+        @MustBeClosed
+        suspend fun list(requestOptions: RequestOptions): HttpResponseFor<EnvVarListResponse> =
+            list(EnvVarListParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /v1/env_var/{env_var_id}`, but is otherwise the
+         * same as [EnvVarServiceAsync.delete].
+         */
+        @MustBeClosed
+        suspend fun delete(
+            params: EnvVarDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<EnvVar>
+
+        /**
+         * Returns a raw HTTP response for `put /v1/env_var`, but is otherwise the same as
+         * [EnvVarServiceAsync.replace].
+         */
+        @MustBeClosed
+        suspend fun replace(
+            params: EnvVarReplaceParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<EnvVar>
+    }
 }
