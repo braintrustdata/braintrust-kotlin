@@ -8,6 +8,7 @@ import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkKnown
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.immutableEmptyMap
@@ -607,12 +608,8 @@ private constructor(
             /** Emails of users to invite */
             fun addEmail(email: String) = apply {
                 emails =
-                    (emails ?: JsonField.of(mutableListOf())).apply {
-                        (asKnown()
-                                ?: throw IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                ))
-                            .add(email)
+                    (emails ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("emails", it).add(email)
                     }
             }
 
@@ -633,12 +630,8 @@ private constructor(
             /** Optional list of group ids to add newly-invited users to. */
             fun addGroupId(groupId: String) = apply {
                 groupIds =
-                    (groupIds ?: JsonField.of(mutableListOf())).apply {
-                        (asKnown()
-                                ?: throw IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                ))
-                            .add(groupId)
+                    (groupIds ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("groupIds", it).add(groupId)
                     }
             }
 
@@ -659,12 +652,8 @@ private constructor(
             /** Optional list of group names to add newly-invited users to. */
             fun addGroupName(groupName: String) = apply {
                 groupNames =
-                    (groupNames ?: JsonField.of(mutableListOf())).apply {
-                        (asKnown()
-                                ?: throw IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                ))
-                            .add(groupName)
+                    (groupNames ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("groupNames", it).add(groupName)
                     }
             }
 
@@ -678,14 +667,7 @@ private constructor(
 
             /** Ids of existing users to invite */
             fun addId(id: String) = apply {
-                ids =
-                    (ids ?: JsonField.of(mutableListOf())).apply {
-                        (asKnown()
-                                ?: throw IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                ))
-                            .add(id)
-                    }
+                ids = (ids ?: JsonField.of(mutableListOf())).also { checkKnown("ids", it).add(id) }
             }
 
             /** If true, send invite emails to the users who wore actually added */
@@ -825,12 +807,8 @@ private constructor(
             /** Emails of users to remove */
             fun addEmail(email: String) = apply {
                 emails =
-                    (emails ?: JsonField.of(mutableListOf())).apply {
-                        (asKnown()
-                                ?: throw IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                ))
-                            .add(email)
+                    (emails ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("emails", it).add(email)
                     }
             }
 
@@ -844,14 +822,7 @@ private constructor(
 
             /** Ids of users to remove */
             fun addId(id: String) = apply {
-                ids =
-                    (ids ?: JsonField.of(mutableListOf())).apply {
-                        (asKnown()
-                                ?: throw IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                ))
-                            .add(id)
-                    }
+                ids = (ids ?: JsonField.of(mutableListOf())).also { checkKnown("ids", it).add(id) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

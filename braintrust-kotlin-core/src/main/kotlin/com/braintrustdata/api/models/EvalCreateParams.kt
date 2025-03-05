@@ -11,6 +11,7 @@ import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkKnown
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.getOrThrow
 import com.braintrustdata.api.core.http.Headers
@@ -520,12 +521,8 @@ private constructor(
             /** The functions to score the eval on */
             fun addScore(score: Score) = apply {
                 scores =
-                    (scores ?: JsonField.of(mutableListOf())).apply {
-                        (asKnown()
-                                ?: throw IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                ))
-                            .add(score)
+                    (scores ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("scores", it).add(score)
                     }
             }
 
@@ -4192,12 +4189,8 @@ private constructor(
 
             fun addField(field: Field) = apply {
                 fields =
-                    (fields ?: JsonField.of(mutableListOf())).apply {
-                        (asKnown()
-                                ?: throw IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                ))
-                            .add(field)
+                    (fields ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("fields", it).add(field)
                     }
             }
 
