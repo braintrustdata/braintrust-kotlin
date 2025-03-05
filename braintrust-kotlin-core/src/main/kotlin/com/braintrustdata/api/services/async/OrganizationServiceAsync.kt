@@ -3,6 +3,7 @@
 package com.braintrustdata.api.services.async
 
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.Organization
 import com.braintrustdata.api.models.OrganizationDeleteParams
 import com.braintrustdata.api.models.OrganizationListPageAsync
@@ -10,8 +11,14 @@ import com.braintrustdata.api.models.OrganizationListParams
 import com.braintrustdata.api.models.OrganizationRetrieveParams
 import com.braintrustdata.api.models.OrganizationUpdateParams
 import com.braintrustdata.api.services.async.organizations.MemberServiceAsync
+import com.google.errorprone.annotations.MustBeClosed
 
 interface OrganizationServiceAsync {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     fun members(): MemberServiceAsync
 
@@ -52,4 +59,63 @@ interface OrganizationServiceAsync {
         params: OrganizationDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
+
+    /**
+     * A view of [OrganizationServiceAsync] that provides access to raw HTTP responses for each
+     * method.
+     */
+    interface WithRawResponse {
+
+        fun members(): MemberServiceAsync.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `get /v1/organization/{organization_id}`, but is
+         * otherwise the same as [OrganizationServiceAsync.retrieve].
+         */
+        @MustBeClosed
+        suspend fun retrieve(
+            params: OrganizationRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Organization>
+
+        /**
+         * Returns a raw HTTP response for `patch /v1/organization/{organization_id}`, but is
+         * otherwise the same as [OrganizationServiceAsync.update].
+         */
+        @MustBeClosed
+        suspend fun update(
+            params: OrganizationUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Organization>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/organization`, but is otherwise the same as
+         * [OrganizationServiceAsync.list].
+         */
+        @MustBeClosed
+        suspend fun list(
+            params: OrganizationListParams = OrganizationListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<OrganizationListPageAsync>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/organization`, but is otherwise the same as
+         * [OrganizationServiceAsync.list].
+         */
+        @MustBeClosed
+        suspend fun list(
+            requestOptions: RequestOptions
+        ): HttpResponseFor<OrganizationListPageAsync> =
+            list(OrganizationListParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /v1/organization/{organization_id}`, but is
+         * otherwise the same as [OrganizationServiceAsync.delete].
+         */
+        @MustBeClosed
+        suspend fun delete(
+            params: OrganizationDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Organization>
+    }
 }

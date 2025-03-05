@@ -3,6 +3,7 @@
 package com.braintrustdata.api.services.async
 
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.Experiment
 import com.braintrustdata.api.models.ExperimentCreateParams
 import com.braintrustdata.api.models.ExperimentDeleteParams
@@ -19,8 +20,14 @@ import com.braintrustdata.api.models.FeedbackResponseSchema
 import com.braintrustdata.api.models.FetchExperimentEventsResponse
 import com.braintrustdata.api.models.InsertEventsResponse
 import com.braintrustdata.api.models.SummarizeExperimentResponse
+import com.google.errorprone.annotations.MustBeClosed
 
 interface ExperimentServiceAsync {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     /**
      * Create a new experiment. If there is an existing experiment in the project with the same name
@@ -106,4 +113,119 @@ interface ExperimentServiceAsync {
         params: ExperimentSummarizeParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SummarizeExperimentResponse
+
+    /**
+     * A view of [ExperimentServiceAsync] that provides access to raw HTTP responses for each
+     * method.
+     */
+    interface WithRawResponse {
+
+        /**
+         * Returns a raw HTTP response for `post /v1/experiment`, but is otherwise the same as
+         * [ExperimentServiceAsync.create].
+         */
+        @MustBeClosed
+        suspend fun create(
+            params: ExperimentCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Experiment>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/experiment/{experiment_id}`, but is otherwise
+         * the same as [ExperimentServiceAsync.retrieve].
+         */
+        @MustBeClosed
+        suspend fun retrieve(
+            params: ExperimentRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Experiment>
+
+        /**
+         * Returns a raw HTTP response for `patch /v1/experiment/{experiment_id}`, but is otherwise
+         * the same as [ExperimentServiceAsync.update].
+         */
+        @MustBeClosed
+        suspend fun update(
+            params: ExperimentUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Experiment>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/experiment`, but is otherwise the same as
+         * [ExperimentServiceAsync.list].
+         */
+        @MustBeClosed
+        suspend fun list(
+            params: ExperimentListParams = ExperimentListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ExperimentListPageAsync>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/experiment`, but is otherwise the same as
+         * [ExperimentServiceAsync.list].
+         */
+        @MustBeClosed
+        suspend fun list(requestOptions: RequestOptions): HttpResponseFor<ExperimentListPageAsync> =
+            list(ExperimentListParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /v1/experiment/{experiment_id}`, but is otherwise
+         * the same as [ExperimentServiceAsync.delete].
+         */
+        @MustBeClosed
+        suspend fun delete(
+            params: ExperimentDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Experiment>
+
+        /**
+         * Returns a raw HTTP response for `post /v1/experiment/{experiment_id}/feedback`, but is
+         * otherwise the same as [ExperimentServiceAsync.feedback].
+         */
+        @MustBeClosed
+        suspend fun feedback(
+            params: ExperimentFeedbackParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<FeedbackResponseSchema>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/experiment/{experiment_id}/fetch`, but is
+         * otherwise the same as [ExperimentServiceAsync.fetch].
+         */
+        @MustBeClosed
+        suspend fun fetch(
+            params: ExperimentFetchParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<FetchExperimentEventsResponse>
+
+        /**
+         * Returns a raw HTTP response for `post /v1/experiment/{experiment_id}/fetch`, but is
+         * otherwise the same as [ExperimentServiceAsync.fetchPost].
+         */
+        @MustBeClosed
+        suspend fun fetchPost(
+            params: ExperimentFetchPostParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<FetchExperimentEventsResponse>
+
+        /**
+         * Returns a raw HTTP response for `post /v1/experiment/{experiment_id}/insert`, but is
+         * otherwise the same as [ExperimentServiceAsync.insert].
+         */
+        @MustBeClosed
+        suspend fun insert(
+            params: ExperimentInsertParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<InsertEventsResponse>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/experiment/{experiment_id}/summarize`, but is
+         * otherwise the same as [ExperimentServiceAsync.summarize].
+         */
+        @MustBeClosed
+        suspend fun summarize(
+            params: ExperimentSummarizeParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<SummarizeExperimentResponse>
+    }
 }
