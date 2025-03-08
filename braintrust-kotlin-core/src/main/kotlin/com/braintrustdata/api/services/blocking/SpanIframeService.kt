@@ -55,10 +55,7 @@ interface SpanIframeService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIframeListPage
 
-    /**
-     * List out all span_iframes. The span_iframes are sorted by creation date, with the most
-     * recently-created span_iframes coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): SpanIframeListPage =
         list(SpanIframeListParams.none(), requestOptions)
 
@@ -120,10 +117,7 @@ interface SpanIframeService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<SpanIframeListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/span_iframe`, but is otherwise the same as
-         * [SpanIframeService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<SpanIframeListPage> =
             list(SpanIframeListParams.none(), requestOptions)

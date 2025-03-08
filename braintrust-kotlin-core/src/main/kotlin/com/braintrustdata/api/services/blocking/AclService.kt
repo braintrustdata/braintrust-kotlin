@@ -55,10 +55,7 @@ interface AclService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AclBatchUpdateResponse
 
-    /**
-     * Batch update acls. This operation is idempotent, so adding acls which already exist will have
-     * no effect, and removing acls which do not exist will have no effect.
-     */
+    /** @see [batchUpdate] */
     fun batchUpdate(requestOptions: RequestOptions): AclBatchUpdateResponse =
         batchUpdate(AclBatchUpdateParams.none(), requestOptions)
 
@@ -121,10 +118,7 @@ interface AclService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AclBatchUpdateResponse>
 
-        /**
-         * Returns a raw HTTP response for `post /v1/acl/batch-update`, but is otherwise the same as
-         * [AclService.batchUpdate].
-         */
+        /** @see [batchUpdate] */
         @MustBeClosed
         fun batchUpdate(requestOptions: RequestOptions): HttpResponseFor<AclBatchUpdateResponse> =
             batchUpdate(AclBatchUpdateParams.none(), requestOptions)

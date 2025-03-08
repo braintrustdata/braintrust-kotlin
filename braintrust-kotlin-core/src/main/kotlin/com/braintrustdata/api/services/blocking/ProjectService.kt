@@ -57,10 +57,7 @@ interface ProjectService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectListPage
 
-    /**
-     * List out all projects. The projects are sorted by creation date, with the most
-     * recently-created projects coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): ProjectListPage =
         list(ProjectListParams.none(), requestOptions)
 
@@ -115,10 +112,7 @@ interface ProjectService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/project`, but is otherwise the same as
-         * [ProjectService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ProjectListPage> =
             list(ProjectListParams.none(), requestOptions)

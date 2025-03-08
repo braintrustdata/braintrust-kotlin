@@ -63,10 +63,7 @@ interface ExperimentServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ExperimentListPageAsync
 
-    /**
-     * List out all experiments. The experiments are sorted by creation date, with the most
-     * recently-created experiments coming first
-     */
+    /** @see [list] */
     suspend fun list(requestOptions: RequestOptions): ExperimentListPageAsync =
         list(ExperimentListParams.none(), requestOptions)
 
@@ -160,10 +157,7 @@ interface ExperimentServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ExperimentListPageAsync>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/experiment`, but is otherwise the same as
-         * [ExperimentServiceAsync.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<ExperimentListPageAsync> =
             list(ExperimentListParams.none(), requestOptions)

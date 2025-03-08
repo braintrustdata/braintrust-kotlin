@@ -56,10 +56,7 @@ interface ProjectScoreService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScoreListPage
 
-    /**
-     * List out all project_scores. The project_scores are sorted by creation date, with the most
-     * recently-created project_scores coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): ProjectScoreListPage =
         list(ProjectScoreListParams.none(), requestOptions)
 
@@ -124,10 +121,7 @@ interface ProjectScoreService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectScoreListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/project_score`, but is otherwise the same as
-         * [ProjectScoreService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ProjectScoreListPage> =
             list(ProjectScoreListParams.none(), requestOptions)

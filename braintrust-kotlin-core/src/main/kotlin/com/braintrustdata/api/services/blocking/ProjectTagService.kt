@@ -55,10 +55,7 @@ interface ProjectTagService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTagListPage
 
-    /**
-     * List out all project_tags. The project_tags are sorted by creation date, with the most
-     * recently-created project_tags coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): ProjectTagListPage =
         list(ProjectTagListParams.none(), requestOptions)
 
@@ -121,10 +118,7 @@ interface ProjectTagService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTagListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/project_tag`, but is otherwise the same as
-         * [ProjectTagService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ProjectTagListPage> =
             list(ProjectTagListParams.none(), requestOptions)

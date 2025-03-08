@@ -55,10 +55,7 @@ interface EnvVarService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVarListResponse
 
-    /**
-     * List out all env_vars. The env_vars are sorted by creation date, with the most
-     * recently-created env_vars coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): EnvVarListResponse =
         list(EnvVarListParams.none(), requestOptions)
 
@@ -120,10 +117,7 @@ interface EnvVarService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<EnvVarListResponse>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/env_var`, but is otherwise the same as
-         * [EnvVarService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<EnvVarListResponse> =
             list(EnvVarListParams.none(), requestOptions)

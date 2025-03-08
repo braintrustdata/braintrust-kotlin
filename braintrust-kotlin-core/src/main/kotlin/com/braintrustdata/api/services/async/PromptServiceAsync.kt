@@ -55,10 +55,7 @@ interface PromptServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): PromptListPageAsync
 
-    /**
-     * List out all prompts. The prompts are sorted by creation date, with the most recently-created
-     * prompts coming first
-     */
+    /** @see [list] */
     suspend fun list(requestOptions: RequestOptions): PromptListPageAsync =
         list(PromptListParams.none(), requestOptions)
 
@@ -122,10 +119,7 @@ interface PromptServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<PromptListPageAsync>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/prompt`, but is otherwise the same as
-         * [PromptServiceAsync.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<PromptListPageAsync> =
             list(PromptListParams.none(), requestOptions)

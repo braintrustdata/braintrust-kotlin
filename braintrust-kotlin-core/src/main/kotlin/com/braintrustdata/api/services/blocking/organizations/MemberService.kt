@@ -21,7 +21,7 @@ interface MemberService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): PatchOrganizationMembersOutput
 
-    /** Modify organization membership */
+    /** @see [update] */
     fun update(requestOptions: RequestOptions): PatchOrganizationMembersOutput =
         update(OrganizationMemberUpdateParams.none(), requestOptions)
 
@@ -38,10 +38,7 @@ interface MemberService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<PatchOrganizationMembersOutput>
 
-        /**
-         * Returns a raw HTTP response for `patch /v1/organization/members`, but is otherwise the
-         * same as [MemberService.update].
-         */
+        /** @see [update] */
         @MustBeClosed
         fun update(
             requestOptions: RequestOptions

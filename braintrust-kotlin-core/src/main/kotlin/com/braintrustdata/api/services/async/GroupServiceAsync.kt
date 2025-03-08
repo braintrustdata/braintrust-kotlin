@@ -55,10 +55,7 @@ interface GroupServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): GroupListPageAsync
 
-    /**
-     * List out all groups. The groups are sorted by creation date, with the most recently-created
-     * groups coming first
-     */
+    /** @see [list] */
     suspend fun list(requestOptions: RequestOptions): GroupListPageAsync =
         list(GroupListParams.none(), requestOptions)
 
@@ -120,10 +117,7 @@ interface GroupServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<GroupListPageAsync>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/group`, but is otherwise the same as
-         * [GroupServiceAsync.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<GroupListPageAsync> =
             list(GroupListParams.none(), requestOptions)

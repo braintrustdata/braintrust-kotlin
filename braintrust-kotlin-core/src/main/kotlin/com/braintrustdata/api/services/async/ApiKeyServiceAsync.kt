@@ -44,10 +44,7 @@ interface ApiKeyServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKeyListPageAsync
 
-    /**
-     * List out all api_keys. The api_keys are sorted by creation date, with the most
-     * recently-created api_keys coming first
-     */
+    /** @see [list] */
     suspend fun list(requestOptions: RequestOptions): ApiKeyListPageAsync =
         list(ApiKeyListParams.none(), requestOptions)
 
@@ -92,10 +89,7 @@ interface ApiKeyServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ApiKeyListPageAsync>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/api_key`, but is otherwise the same as
-         * [ApiKeyServiceAsync.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<ApiKeyListPageAsync> =
             list(ApiKeyListParams.none(), requestOptions)

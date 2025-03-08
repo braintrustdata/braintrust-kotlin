@@ -21,7 +21,7 @@ interface MemberServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): PatchOrganizationMembersOutput
 
-    /** Modify organization membership */
+    /** @see [update] */
     suspend fun update(requestOptions: RequestOptions): PatchOrganizationMembersOutput =
         update(OrganizationMemberUpdateParams.none(), requestOptions)
 
@@ -40,10 +40,7 @@ interface MemberServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<PatchOrganizationMembersOutput>
 
-        /**
-         * Returns a raw HTTP response for `patch /v1/organization/members`, but is otherwise the
-         * same as [MemberServiceAsync.update].
-         */
+        /** @see [update] */
         @MustBeClosed
         suspend fun update(
             requestOptions: RequestOptions

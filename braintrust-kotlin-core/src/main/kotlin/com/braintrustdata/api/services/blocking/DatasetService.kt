@@ -63,10 +63,7 @@ interface DatasetService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): DatasetListPage
 
-    /**
-     * List out all datasets. The datasets are sorted by creation date, with the most
-     * recently-created datasets coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): DatasetListPage =
         list(DatasetListParams.none(), requestOptions)
 
@@ -157,10 +154,7 @@ interface DatasetService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<DatasetListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/dataset`, but is otherwise the same as
-         * [DatasetService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<DatasetListPage> =
             list(DatasetListParams.none(), requestOptions)

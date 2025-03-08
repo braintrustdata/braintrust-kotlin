@@ -47,10 +47,7 @@ interface OrganizationService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): OrganizationListPage
 
-    /**
-     * List out all organizations. The organizations are sorted by creation date, with the most
-     * recently-created organizations coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): OrganizationListPage =
         list(OrganizationListParams.none(), requestOptions)
 
@@ -97,10 +94,7 @@ interface OrganizationService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<OrganizationListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/organization`, but is otherwise the same as
-         * [OrganizationService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<OrganizationListPage> =
             list(OrganizationListParams.none(), requestOptions)

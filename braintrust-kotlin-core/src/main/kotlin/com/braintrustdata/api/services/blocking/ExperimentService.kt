@@ -63,10 +63,7 @@ interface ExperimentService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ExperimentListPage
 
-    /**
-     * List out all experiments. The experiments are sorted by creation date, with the most
-     * recently-created experiments coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): ExperimentListPage =
         list(ExperimentListParams.none(), requestOptions)
 
@@ -157,10 +154,7 @@ interface ExperimentService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ExperimentListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/experiment`, but is otherwise the same as
-         * [ExperimentService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ExperimentListPage> =
             list(ExperimentListParams.none(), requestOptions)
