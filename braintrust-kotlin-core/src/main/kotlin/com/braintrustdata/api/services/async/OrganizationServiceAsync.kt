@@ -47,10 +47,7 @@ interface OrganizationServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): OrganizationListPageAsync
 
-    /**
-     * List out all organizations. The organizations are sorted by creation date, with the most
-     * recently-created organizations coming first
-     */
+    /** @see [list] */
     suspend fun list(requestOptions: RequestOptions): OrganizationListPageAsync =
         list(OrganizationListParams.none(), requestOptions)
 
@@ -98,10 +95,7 @@ interface OrganizationServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<OrganizationListPageAsync>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/organization`, but is otherwise the same as
-         * [OrganizationServiceAsync.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         suspend fun list(
             requestOptions: RequestOptions

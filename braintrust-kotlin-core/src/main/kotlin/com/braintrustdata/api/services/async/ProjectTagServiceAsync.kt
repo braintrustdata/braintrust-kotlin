@@ -55,10 +55,7 @@ interface ProjectTagServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTagListPageAsync
 
-    /**
-     * List out all project_tags. The project_tags are sorted by creation date, with the most
-     * recently-created project_tags coming first
-     */
+    /** @see [list] */
     suspend fun list(requestOptions: RequestOptions): ProjectTagListPageAsync =
         list(ProjectTagListParams.none(), requestOptions)
 
@@ -124,10 +121,7 @@ interface ProjectTagServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTagListPageAsync>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/project_tag`, but is otherwise the same as
-         * [ProjectTagServiceAsync.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<ProjectTagListPageAsync> =
             list(ProjectTagListParams.none(), requestOptions)

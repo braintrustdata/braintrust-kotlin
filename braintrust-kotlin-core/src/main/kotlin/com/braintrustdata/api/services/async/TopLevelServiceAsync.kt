@@ -20,7 +20,7 @@ interface TopLevelServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): String
 
-    /** Default endpoint. Simply replies with 'Hello, World!'. Authorization is not required */
+    /** @see [helloWorld] */
     suspend fun helloWorld(requestOptions: RequestOptions): String =
         helloWorld(TopLevelHelloWorldParams.none(), requestOptions)
 
@@ -39,10 +39,7 @@ interface TopLevelServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<String>
 
-        /**
-         * Returns a raw HTTP response for `get /v1`, but is otherwise the same as
-         * [TopLevelServiceAsync.helloWorld].
-         */
+        /** @see [helloWorld] */
         @MustBeClosed
         suspend fun helloWorld(requestOptions: RequestOptions): HttpResponseFor<String> =
             helloWorld(TopLevelHelloWorldParams.none(), requestOptions)

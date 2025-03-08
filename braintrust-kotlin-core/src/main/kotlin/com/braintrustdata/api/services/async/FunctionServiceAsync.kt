@@ -57,10 +57,7 @@ interface FunctionServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FunctionListPageAsync
 
-    /**
-     * List out all functions. The functions are sorted by creation date, with the most
-     * recently-created functions coming first
-     */
+    /** @see [list] */
     suspend fun list(requestOptions: RequestOptions): FunctionListPageAsync =
         list(FunctionListParams.none(), requestOptions)
 
@@ -131,10 +128,7 @@ interface FunctionServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FunctionListPageAsync>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/function`, but is otherwise the same as
-         * [FunctionServiceAsync.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<FunctionListPageAsync> =
             list(FunctionListParams.none(), requestOptions)

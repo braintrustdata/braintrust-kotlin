@@ -20,7 +20,7 @@ interface TopLevelService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): String
 
-    /** Default endpoint. Simply replies with 'Hello, World!'. Authorization is not required */
+    /** @see [helloWorld] */
     fun helloWorld(requestOptions: RequestOptions): String =
         helloWorld(TopLevelHelloWorldParams.none(), requestOptions)
 
@@ -37,10 +37,7 @@ interface TopLevelService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<String>
 
-        /**
-         * Returns a raw HTTP response for `get /v1`, but is otherwise the same as
-         * [TopLevelService.helloWorld].
-         */
+        /** @see [helloWorld] */
         @MustBeClosed
         fun helloWorld(requestOptions: RequestOptions): HttpResponseFor<String> =
             helloWorld(TopLevelHelloWorldParams.none(), requestOptions)

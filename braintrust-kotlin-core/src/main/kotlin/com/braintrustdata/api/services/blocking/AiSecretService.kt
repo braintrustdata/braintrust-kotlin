@@ -56,10 +56,7 @@ interface AiSecretService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AiSecretListPage
 
-    /**
-     * List out all ai_secrets. The ai_secrets are sorted by creation date, with the most
-     * recently-created ai_secrets coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): AiSecretListPage =
         list(AiSecretListParams.none(), requestOptions)
 
@@ -127,10 +124,7 @@ interface AiSecretService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AiSecretListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/ai_secret`, but is otherwise the same as
-         * [AiSecretService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<AiSecretListPage> =
             list(AiSecretListParams.none(), requestOptions)

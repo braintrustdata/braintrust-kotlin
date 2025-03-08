@@ -55,10 +55,7 @@ interface GroupService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): GroupListPage
 
-    /**
-     * List out all groups. The groups are sorted by creation date, with the most recently-created
-     * groups coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): GroupListPage =
         list(GroupListParams.none(), requestOptions)
 
@@ -120,10 +117,7 @@ interface GroupService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<GroupListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/group`, but is otherwise the same as
-         * [GroupService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<GroupListPage> =
             list(GroupListParams.none(), requestOptions)

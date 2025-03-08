@@ -44,10 +44,7 @@ interface ApiKeyService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKeyListPage
 
-    /**
-     * List out all api_keys. The api_keys are sorted by creation date, with the most
-     * recently-created api_keys coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): ApiKeyListPage =
         list(ApiKeyListParams.none(), requestOptions)
 
@@ -90,10 +87,7 @@ interface ApiKeyService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ApiKeyListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/api_key`, but is otherwise the same as
-         * [ApiKeyService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ApiKeyListPage> =
             list(ApiKeyListParams.none(), requestOptions)

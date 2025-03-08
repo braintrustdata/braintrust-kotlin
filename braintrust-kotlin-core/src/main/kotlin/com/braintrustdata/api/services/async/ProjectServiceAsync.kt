@@ -57,10 +57,7 @@ interface ProjectServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectListPageAsync
 
-    /**
-     * List out all projects. The projects are sorted by creation date, with the most
-     * recently-created projects coming first
-     */
+    /** @see [list] */
     suspend fun list(requestOptions: RequestOptions): ProjectListPageAsync =
         list(ProjectListParams.none(), requestOptions)
 
@@ -117,10 +114,7 @@ interface ProjectServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectListPageAsync>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/project`, but is otherwise the same as
-         * [ProjectServiceAsync.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<ProjectListPageAsync> =
             list(ProjectListParams.none(), requestOptions)

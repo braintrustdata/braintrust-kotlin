@@ -55,10 +55,7 @@ interface RoleService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RoleListPage
 
-    /**
-     * List out all roles. The roles are sorted by creation date, with the most recently-created
-     * roles coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): RoleListPage =
         list(RoleListParams.none(), requestOptions)
 
@@ -120,10 +117,7 @@ interface RoleService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<RoleListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/role`, but is otherwise the same as
-         * [RoleService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<RoleListPage> =
             list(RoleListParams.none(), requestOptions)
