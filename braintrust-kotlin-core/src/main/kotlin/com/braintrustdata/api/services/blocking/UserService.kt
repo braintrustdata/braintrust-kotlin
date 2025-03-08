@@ -32,10 +32,7 @@ interface UserService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): UserListPage
 
-    /**
-     * List out all users. The users are sorted by creation date, with the most recently-created
-     * users coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): UserListPage =
         list(UserListParams.none(), requestOptions)
 
@@ -62,10 +59,7 @@ interface UserService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<UserListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/user`, but is otherwise the same as
-         * [UserService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<UserListPage> =
             list(UserListParams.none(), requestOptions)

@@ -56,10 +56,7 @@ interface ProjectScoreServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScoreListPageAsync
 
-    /**
-     * List out all project_scores. The project_scores are sorted by creation date, with the most
-     * recently-created project_scores coming first
-     */
+    /** @see [list] */
     suspend fun list(requestOptions: RequestOptions): ProjectScoreListPageAsync =
         list(ProjectScoreListParams.none(), requestOptions)
 
@@ -125,10 +122,7 @@ interface ProjectScoreServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectScoreListPageAsync>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/project_score`, but is otherwise the same as
-         * [ProjectScoreServiceAsync.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         suspend fun list(
             requestOptions: RequestOptions

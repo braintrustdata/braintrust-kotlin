@@ -57,10 +57,7 @@ interface FunctionService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FunctionListPage
 
-    /**
-     * List out all functions. The functions are sorted by creation date, with the most
-     * recently-created functions coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): FunctionListPage =
         list(FunctionListParams.none(), requestOptions)
 
@@ -129,10 +126,7 @@ interface FunctionService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FunctionListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/function`, but is otherwise the same as
-         * [FunctionService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<FunctionListPage> =
             list(FunctionListParams.none(), requestOptions)

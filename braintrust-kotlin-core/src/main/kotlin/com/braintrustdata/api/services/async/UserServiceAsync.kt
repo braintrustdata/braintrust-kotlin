@@ -32,10 +32,7 @@ interface UserServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): UserListPageAsync
 
-    /**
-     * List out all users. The users are sorted by creation date, with the most recently-created
-     * users coming first
-     */
+    /** @see [list] */
     suspend fun list(requestOptions: RequestOptions): UserListPageAsync =
         list(UserListParams.none(), requestOptions)
 
@@ -62,10 +59,7 @@ interface UserServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<UserListPageAsync>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/user`, but is otherwise the same as
-         * [UserServiceAsync.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<UserListPageAsync> =
             list(UserListParams.none(), requestOptions)

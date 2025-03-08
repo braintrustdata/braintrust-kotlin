@@ -55,10 +55,7 @@ interface RoleServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RoleListPageAsync
 
-    /**
-     * List out all roles. The roles are sorted by creation date, with the most recently-created
-     * roles coming first
-     */
+    /** @see [list] */
     suspend fun list(requestOptions: RequestOptions): RoleListPageAsync =
         list(RoleListParams.none(), requestOptions)
 
@@ -120,10 +117,7 @@ interface RoleServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<RoleListPageAsync>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/role`, but is otherwise the same as
-         * [RoleServiceAsync.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<RoleListPageAsync> =
             list(RoleListParams.none(), requestOptions)

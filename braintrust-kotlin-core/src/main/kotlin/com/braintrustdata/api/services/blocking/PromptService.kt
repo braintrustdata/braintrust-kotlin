@@ -55,10 +55,7 @@ interface PromptService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): PromptListPage
 
-    /**
-     * List out all prompts. The prompts are sorted by creation date, with the most recently-created
-     * prompts coming first
-     */
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): PromptListPage =
         list(PromptListParams.none(), requestOptions)
 
@@ -120,10 +117,7 @@ interface PromptService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<PromptListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/prompt`, but is otherwise the same as
-         * [PromptService.list].
-         */
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<PromptListPage> =
             list(PromptListParams.none(), requestOptions)
