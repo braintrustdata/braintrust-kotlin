@@ -16,83 +16,63 @@ import com.google.errorprone.annotations.MustBeClosed
 interface LogServiceAsync {
 
     /**
-     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     * Returns a view of this service that provides access to raw HTTP responses for
+     * each method.
      */
     fun withRawResponse(): WithRawResponse
 
     /** Log feedback for a set of project logs events */
-    suspend fun feedback(
-        params: ProjectLogFeedbackParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): FeedbackResponseSchema
+    suspend fun feedback(params: ProjectLogFeedbackParams, requestOptions: RequestOptions = RequestOptions.none()): FeedbackResponseSchema
 
     /**
-     * Fetch the events in a project logs. Equivalent to the POST form of the same path, but with
-     * the parameters in the URL query rather than in the request body. For more complex queries,
-     * use the `POST /btql` endpoint.
+     * Fetch the events in a project logs. Equivalent to the POST form of the same
+     * path, but with the parameters in the URL query rather than in the request body.
+     * For more complex queries, use the `POST /btql` endpoint.
      */
-    suspend fun fetch(
-        params: ProjectLogFetchParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): FetchProjectLogsEventsResponse
+    suspend fun fetch(params: ProjectLogFetchParams, requestOptions: RequestOptions = RequestOptions.none()): FetchProjectLogsEventsResponse
 
     /**
-     * Fetch the events in a project logs. Equivalent to the GET form of the same path, but with the
-     * parameters in the request body rather than in the URL query. For more complex queries, use
-     * the `POST /btql` endpoint.
+     * Fetch the events in a project logs. Equivalent to the GET form of the same path,
+     * but with the parameters in the request body rather than in the URL query. For
+     * more complex queries, use the `POST /btql` endpoint.
      */
-    suspend fun fetchPost(
-        params: ProjectLogFetchPostParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): FetchProjectLogsEventsResponse
+    suspend fun fetchPost(params: ProjectLogFetchPostParams, requestOptions: RequestOptions = RequestOptions.none()): FetchProjectLogsEventsResponse
 
     /** Insert a set of events into the project logs */
-    suspend fun insert(
-        params: ProjectLogInsertParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): InsertEventsResponse
+    suspend fun insert(params: ProjectLogInsertParams, requestOptions: RequestOptions = RequestOptions.none()): InsertEventsResponse
 
-    /** A view of [LogServiceAsync] that provides access to raw HTTP responses for each method. */
+    /**
+     * A view of [LogServiceAsync] that provides access to raw HTTP responses for each
+     * method.
+     */
     interface WithRawResponse {
 
         /**
-         * Returns a raw HTTP response for `post /v1/project_logs/{project_id}/feedback`, but is
-         * otherwise the same as [LogServiceAsync.feedback].
+         * Returns a raw HTTP response for `post /v1/project_logs/{project_id}/feedback`,
+         * but is otherwise the same as [LogServiceAsync.feedback].
          */
         @MustBeClosed
-        suspend fun feedback(
-            params: ProjectLogFeedbackParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<FeedbackResponseSchema>
+        suspend fun feedback(params: ProjectLogFeedbackParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<FeedbackResponseSchema>
 
         /**
-         * Returns a raw HTTP response for `get /v1/project_logs/{project_id}/fetch`, but is
-         * otherwise the same as [LogServiceAsync.fetch].
+         * Returns a raw HTTP response for `get /v1/project_logs/{project_id}/fetch`, but
+         * is otherwise the same as [LogServiceAsync.fetch].
          */
         @MustBeClosed
-        suspend fun fetch(
-            params: ProjectLogFetchParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<FetchProjectLogsEventsResponse>
+        suspend fun fetch(params: ProjectLogFetchParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<FetchProjectLogsEventsResponse>
 
         /**
-         * Returns a raw HTTP response for `post /v1/project_logs/{project_id}/fetch`, but is
-         * otherwise the same as [LogServiceAsync.fetchPost].
+         * Returns a raw HTTP response for `post /v1/project_logs/{project_id}/fetch`, but
+         * is otherwise the same as [LogServiceAsync.fetchPost].
          */
         @MustBeClosed
-        suspend fun fetchPost(
-            params: ProjectLogFetchPostParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<FetchProjectLogsEventsResponse>
+        suspend fun fetchPost(params: ProjectLogFetchPostParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<FetchProjectLogsEventsResponse>
 
         /**
-         * Returns a raw HTTP response for `post /v1/project_logs/{project_id}/insert`, but is
-         * otherwise the same as [LogServiceAsync.insert].
+         * Returns a raw HTTP response for `post /v1/project_logs/{project_id}/insert`, but
+         * is otherwise the same as [LogServiceAsync.insert].
          */
         @MustBeClosed
-        suspend fun insert(
-            params: ProjectLogInsertParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<InsertEventsResponse>
+        suspend fun insert(params: ProjectLogInsertParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<InsertEventsResponse>
     }
 }
