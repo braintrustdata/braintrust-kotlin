@@ -20,14 +20,14 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.Objects
 
 /**
- * Create a new ai_secret. If there is an existing ai_secret with the same name as the one specified
- * in the request, will return the existing ai_secret unmodified
+ * Create a new ai_secret. If there is an existing ai_secret with the same name as
+ * the one specified in the request, will return the existing ai_secret unmodified
  */
-class AiSecretCreateParams
-private constructor(
+class AiSecretCreateParams private constructor(
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
+
 ) : Params {
 
     /** Name of the AI secret */
@@ -36,15 +36,15 @@ private constructor(
     fun metadata(): Metadata? = body.metadata()
 
     /**
-     * For nearly all users, this parameter should be unnecessary. But in the rare case that your
-     * API key belongs to multiple organizations, you may specify the name of the organization the
-     * AI Secret belongs in.
+     * For nearly all users, this parameter should be unnecessary. But in the rare case
+     * that your API key belongs to multiple organizations, you may specify the name of
+     * the organization the AI Secret belongs in.
      */
     fun orgName(): String? = body.orgName()
 
     /**
-     * Secret value. If omitted in a PUT request, the existing secret value will be left intact, not
-     * replaced with null.
+     * Secret value. If omitted in a PUT request, the existing secret value will be
+     * left intact, not replaced with null.
      */
     fun secret(): String? = body.secret()
 
@@ -56,15 +56,15 @@ private constructor(
     fun _metadata(): JsonField<Metadata> = body._metadata()
 
     /**
-     * For nearly all users, this parameter should be unnecessary. But in the rare case that your
-     * API key belongs to multiple organizations, you may specify the name of the organization the
-     * AI Secret belongs in.
+     * For nearly all users, this parameter should be unnecessary. But in the rare case
+     * that your API key belongs to multiple organizations, you may specify the name of
+     * the organization the AI Secret belongs in.
      */
     fun _orgName(): JsonField<String> = body._orgName()
 
     /**
-     * Secret value. If omitted in a PUT request, the existing secret value will be left intact, not
-     * replaced with null.
+     * Secret value. If omitted in a PUT request, the existing secret value will be
+     * left intact, not replaced with null.
      */
     fun _secret(): JsonField<String> = body._secret()
 
@@ -83,26 +83,14 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        @JsonProperty("name")
-        @ExcludeMissing
-        private val name: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("metadata")
-        @ExcludeMissing
-        private val metadata: JsonField<Metadata> = JsonMissing.of(),
-        @JsonProperty("org_name")
-        @ExcludeMissing
-        private val orgName: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("secret")
-        @ExcludeMissing
-        private val secret: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("type")
-        @ExcludeMissing
-        private val type: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    class Body @JsonCreator private constructor(
+        @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonField<Metadata> = JsonMissing.of(),
+        @JsonProperty("org_name") @ExcludeMissing private val orgName: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("secret") @ExcludeMissing private val secret: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing private val type: JsonField<String> = JsonMissing.of(),
+        @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
     ) {
 
         /** Name of the AI secret */
@@ -111,39 +99,49 @@ private constructor(
         fun metadata(): Metadata? = metadata.getNullable("metadata")
 
         /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, you may specify the name of the
-         * organization the AI Secret belongs in.
+         * For nearly all users, this parameter should be unnecessary. But in the rare case
+         * that your API key belongs to multiple organizations, you may specify the name of
+         * the organization the AI Secret belongs in.
          */
         fun orgName(): String? = orgName.getNullable("org_name")
 
         /**
-         * Secret value. If omitted in a PUT request, the existing secret value will be left intact,
-         * not replaced with null.
+         * Secret value. If omitted in a PUT request, the existing secret value will be
+         * left intact, not replaced with null.
          */
         fun secret(): String? = secret.getNullable("secret")
 
         fun type(): String? = type.getNullable("type")
 
         /** Name of the AI secret */
-        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+        @JsonProperty("name")
+        @ExcludeMissing
+        fun _name(): JsonField<String> = name
 
-        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
-
-        /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, you may specify the name of the
-         * organization the AI Secret belongs in.
-         */
-        @JsonProperty("org_name") @ExcludeMissing fun _orgName(): JsonField<String> = orgName
+        @JsonProperty("metadata")
+        @ExcludeMissing
+        fun _metadata(): JsonField<Metadata> = metadata
 
         /**
-         * Secret value. If omitted in a PUT request, the existing secret value will be left intact,
-         * not replaced with null.
+         * For nearly all users, this parameter should be unnecessary. But in the rare case
+         * that your API key belongs to multiple organizations, you may specify the name of
+         * the organization the AI Secret belongs in.
          */
-        @JsonProperty("secret") @ExcludeMissing fun _secret(): JsonField<String> = secret
+        @JsonProperty("org_name")
+        @ExcludeMissing
+        fun _orgName(): JsonField<String> = orgName
 
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
+        /**
+         * Secret value. If omitted in a PUT request, the existing secret value will be
+         * left intact, not replaced with null.
+         */
+        @JsonProperty("secret")
+        @ExcludeMissing
+        fun _secret(): JsonField<String> = secret
+
+        @JsonProperty("type")
+        @ExcludeMissing
+        fun _type(): JsonField<String> = type
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -151,18 +149,19 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
+        fun validate(): Body =
+            apply {
+                if (validated) {
+                  return@apply
+                }
 
-            name()
-            metadata()?.validate()
-            orgName()
-            secret()
-            type()
-            validated = true
-        }
+                name()
+                metadata()?.validate()
+                orgName()
+                secret()
+                type()
+                validated = true
+            }
 
         fun toBuilder() = Builder().from(this)
 
@@ -172,6 +171,7 @@ private constructor(
              * Returns a mutable builder for constructing an instance of [Body].
              *
              * The following fields are required:
+             *
              * ```kotlin
              * .name()
              * ```
@@ -189,91 +189,116 @@ private constructor(
             private var type: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(body: Body) = apply {
-                name = body.name
-                metadata = body.metadata
-                orgName = body.orgName
-                secret = body.secret
-                type = body.type
-                additionalProperties = body.additionalProperties.toMutableMap()
-            }
+            internal fun from(body: Body) =
+                apply {
+                    name = body.name
+                    metadata = body.metadata
+                    orgName = body.orgName
+                    secret = body.secret
+                    type = body.type
+                    additionalProperties = body.additionalProperties.toMutableMap()
+                }
 
             /** Name of the AI secret */
             fun name(name: String) = name(JsonField.of(name))
 
             /** Name of the AI secret */
-            fun name(name: JsonField<String>) = apply { this.name = name }
+            fun name(name: JsonField<String>) =
+                apply {
+                    this.name = name
+                }
 
             fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+            fun metadata(metadata: JsonField<Metadata>) =
+                apply {
+                    this.metadata = metadata
+                }
 
             /**
-             * For nearly all users, this parameter should be unnecessary. But in the rare case that
-             * your API key belongs to multiple organizations, you may specify the name of the
-             * organization the AI Secret belongs in.
+             * For nearly all users, this parameter should be unnecessary. But in the rare case
+             * that your API key belongs to multiple organizations, you may specify the name of
+             * the organization the AI Secret belongs in.
              */
             fun orgName(orgName: String?) = orgName(JsonField.ofNullable(orgName))
 
             /**
-             * For nearly all users, this parameter should be unnecessary. But in the rare case that
-             * your API key belongs to multiple organizations, you may specify the name of the
-             * organization the AI Secret belongs in.
+             * For nearly all users, this parameter should be unnecessary. But in the rare case
+             * that your API key belongs to multiple organizations, you may specify the name of
+             * the organization the AI Secret belongs in.
              */
-            fun orgName(orgName: JsonField<String>) = apply { this.orgName = orgName }
+            fun orgName(orgName: JsonField<String>) =
+                apply {
+                    this.orgName = orgName
+                }
 
             /**
-             * Secret value. If omitted in a PUT request, the existing secret value will be left
-             * intact, not replaced with null.
+             * Secret value. If omitted in a PUT request, the existing secret value will be
+             * left intact, not replaced with null.
              */
             fun secret(secret: String?) = secret(JsonField.ofNullable(secret))
 
             /**
-             * Secret value. If omitted in a PUT request, the existing secret value will be left
-             * intact, not replaced with null.
+             * Secret value. If omitted in a PUT request, the existing secret value will be
+             * left intact, not replaced with null.
              */
-            fun secret(secret: JsonField<String>) = apply { this.secret = secret }
+            fun secret(secret: JsonField<String>) =
+                apply {
+                    this.secret = secret
+                }
 
             fun type(type: String?) = type(JsonField.ofNullable(type))
 
-            fun type(type: JsonField<String>) = apply { this.type = type }
+            fun type(type: JsonField<String>) =
+                apply {
+                    this.type = type
+                }
 
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
 
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
+            fun putAdditionalProperty(key: String, value: JsonValue) =
+                apply {
+                    additionalProperties.put(key, value)
+                }
 
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                apply {
+                    this.additionalProperties.putAll(additionalProperties)
+                }
 
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+            fun removeAdditionalProperty(key: String) =
+                apply {
+                    additionalProperties.remove(key)
+                }
 
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
+            fun removeAllAdditionalProperties(keys: Set<String>) =
+                apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
 
             fun build(): Body =
                 Body(
-                    checkRequired("name", name),
-                    metadata,
-                    orgName,
-                    secret,
-                    type,
-                    additionalProperties.toImmutable(),
+                  checkRequired(
+                    "name", name
+                  ),
+                  metadata,
+                  orgName,
+                  secret,
+                  type,
+                  additionalProperties.toImmutable(),
                 )
         }
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return /* spotless:off */ other is Body && name == other.name && metadata == other.metadata && orgName == other.orgName && secret == other.secret && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+          return /* spotless:off */ other is Body && name == other.name && metadata == other.metadata && orgName == other.orgName && secret == other.secret && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -282,8 +307,7 @@ private constructor(
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() =
-            "Body{name=$name, metadata=$metadata, orgName=$orgName, secret=$secret, type=$type, additionalProperties=$additionalProperties}"
+        override fun toString() = "Body{name=$name, metadata=$metadata, orgName=$orgName, secret=$secret, type=$type, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -291,9 +315,11 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [AiSecretCreateParams].
+         * Returns a mutable builder for constructing an instance of
+         * [AiSecretCreateParams].
          *
          * The following fields are required:
+         *
          * ```kotlin
          * .name()
          * ```
@@ -309,183 +335,246 @@ private constructor(
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-        internal fun from(aiSecretCreateParams: AiSecretCreateParams) = apply {
-            body = aiSecretCreateParams.body.toBuilder()
-            additionalHeaders = aiSecretCreateParams.additionalHeaders.toBuilder()
-            additionalQueryParams = aiSecretCreateParams.additionalQueryParams.toBuilder()
-        }
+        internal fun from(aiSecretCreateParams: AiSecretCreateParams) =
+            apply {
+                body = aiSecretCreateParams.body.toBuilder()
+                additionalHeaders = aiSecretCreateParams.additionalHeaders.toBuilder()
+                additionalQueryParams = aiSecretCreateParams.additionalQueryParams.toBuilder()
+            }
 
         /** Name of the AI secret */
-        fun name(name: String) = apply { body.name(name) }
+        fun name(name: String) =
+            apply {
+                body.name(name)
+            }
 
         /** Name of the AI secret */
-        fun name(name: JsonField<String>) = apply { body.name(name) }
+        fun name(name: JsonField<String>) =
+            apply {
+                body.name(name)
+            }
 
-        fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
+        fun metadata(metadata: Metadata?) =
+            apply {
+                body.metadata(metadata)
+            }
 
-        fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
-
-        /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, you may specify the name of the
-         * organization the AI Secret belongs in.
-         */
-        fun orgName(orgName: String?) = apply { body.orgName(orgName) }
-
-        /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, you may specify the name of the
-         * organization the AI Secret belongs in.
-         */
-        fun orgName(orgName: JsonField<String>) = apply { body.orgName(orgName) }
+        fun metadata(metadata: JsonField<Metadata>) =
+            apply {
+                body.metadata(metadata)
+            }
 
         /**
-         * Secret value. If omitted in a PUT request, the existing secret value will be left intact,
-         * not replaced with null.
+         * For nearly all users, this parameter should be unnecessary. But in the rare case
+         * that your API key belongs to multiple organizations, you may specify the name of
+         * the organization the AI Secret belongs in.
          */
-        fun secret(secret: String?) = apply { body.secret(secret) }
+        fun orgName(orgName: String?) =
+            apply {
+                body.orgName(orgName)
+            }
 
         /**
-         * Secret value. If omitted in a PUT request, the existing secret value will be left intact,
-         * not replaced with null.
+         * For nearly all users, this parameter should be unnecessary. But in the rare case
+         * that your API key belongs to multiple organizations, you may specify the name of
+         * the organization the AI Secret belongs in.
          */
-        fun secret(secret: JsonField<String>) = apply { body.secret(secret) }
+        fun orgName(orgName: JsonField<String>) =
+            apply {
+                body.orgName(orgName)
+            }
 
-        fun type(type: String?) = apply { body.type(type) }
+        /**
+         * Secret value. If omitted in a PUT request, the existing secret value will be
+         * left intact, not replaced with null.
+         */
+        fun secret(secret: String?) =
+            apply {
+                body.secret(secret)
+            }
 
-        fun type(type: JsonField<String>) = apply { body.type(type) }
+        /**
+         * Secret value. If omitted in a PUT request, the existing secret value will be
+         * left intact, not replaced with null.
+         */
+        fun secret(secret: JsonField<String>) =
+            apply {
+                body.secret(secret)
+            }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
+        fun type(type: String?) =
+            apply {
+                body.type(type)
+            }
 
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
+        fun type(type: JsonField<String>) =
+            apply {
+                body.type(type)
+            }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.additionalProperties(additionalBodyProperties)
+            }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) =
+            apply {
+                body.putAdditionalProperty(
+                  key, value
+                )
+            }
 
         fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
             apply {
                 body.putAllAdditionalProperties(additionalBodyProperties)
             }
 
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+        fun removeAdditionalBodyProperty(key: String) =
+            apply {
+                body.removeAdditionalProperty(key)
+            }
 
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
-        }
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) =
+            apply {
+                body.removeAllAdditionalProperties(keys)
+            }
 
-        fun additionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.clear()
-            putAllAdditionalHeaders(additionalHeaders)
-        }
+        fun additionalHeaders(additionalHeaders: Headers) =
+            apply {
+                this.additionalHeaders.clear()
+                putAllAdditionalHeaders(additionalHeaders)
+            }
 
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllAdditionalHeaders(additionalHeaders)
-        }
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalHeaders.clear()
+                putAllAdditionalHeaders(additionalHeaders)
+            }
 
-        fun putAdditionalHeader(name: String, value: String) = apply {
-            additionalHeaders.put(name, value)
-        }
+        fun putAdditionalHeader(name: String, value: String) =
+            apply {
+                additionalHeaders.put(name, value)
+            }
 
-        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
-            additionalHeaders.put(name, values)
-        }
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) =
+            apply {
+                additionalHeaders.put(name, values)
+            }
 
-        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.putAll(additionalHeaders)
-        }
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) =
+            apply {
+                this.additionalHeaders.putAll(additionalHeaders)
+            }
 
-        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.putAll(additionalHeaders)
-        }
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalHeaders.putAll(additionalHeaders)
+            }
 
-        fun replaceAdditionalHeaders(name: String, value: String) = apply {
-            additionalHeaders.replace(name, value)
-        }
+        fun replaceAdditionalHeaders(name: String, value: String) =
+            apply {
+                additionalHeaders.replace(name, value)
+            }
 
-        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
-            additionalHeaders.replace(name, values)
-        }
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) =
+            apply {
+                additionalHeaders.replace(name, values)
+            }
 
-        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.replaceAll(additionalHeaders)
-        }
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) =
+            apply {
+                this.additionalHeaders.replaceAll(additionalHeaders)
+            }
 
-        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.replaceAll(additionalHeaders)
-        }
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalHeaders.replaceAll(additionalHeaders)
+            }
 
-        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+        fun removeAdditionalHeaders(name: String) =
+            apply {
+                additionalHeaders.remove(name)
+            }
 
-        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
-            additionalHeaders.removeAll(names)
-        }
+        fun removeAllAdditionalHeaders(names: Set<String>) =
+            apply {
+                additionalHeaders.removeAll(names)
+            }
 
-        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.clear()
-            putAllAdditionalQueryParams(additionalQueryParams)
-        }
+        fun additionalQueryParams(additionalQueryParams: QueryParams) =
+            apply {
+                this.additionalQueryParams.clear()
+                putAllAdditionalQueryParams(additionalQueryParams)
+            }
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllAdditionalQueryParams(additionalQueryParams)
-        }
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.clear()
+                putAllAdditionalQueryParams(additionalQueryParams)
+            }
 
-        fun putAdditionalQueryParam(key: String, value: String) = apply {
-            additionalQueryParams.put(key, value)
-        }
+        fun putAdditionalQueryParam(key: String, value: String) =
+            apply {
+                additionalQueryParams.put(key, value)
+            }
 
-        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
-            additionalQueryParams.put(key, values)
-        }
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) =
+            apply {
+                additionalQueryParams.put(key, values)
+            }
 
-        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.putAll(additionalQueryParams)
-        }
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
 
         fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
                 this.additionalQueryParams.putAll(additionalQueryParams)
             }
 
-        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
-            additionalQueryParams.replace(key, value)
-        }
+        fun replaceAdditionalQueryParams(key: String, value: String) =
+            apply {
+                additionalQueryParams.replace(key, value)
+            }
 
-        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
-            additionalQueryParams.replace(key, values)
-        }
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) =
+            apply {
+                additionalQueryParams.replace(key, values)
+            }
 
-        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.replaceAll(additionalQueryParams)
-        }
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
 
         fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
                 this.additionalQueryParams.replaceAll(additionalQueryParams)
             }
 
-        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+        fun removeAdditionalQueryParams(key: String) =
+            apply {
+                additionalQueryParams.remove(key)
+            }
 
-        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
-            additionalQueryParams.removeAll(keys)
-        }
+        fun removeAllAdditionalQueryParams(keys: Set<String>) =
+            apply {
+                additionalQueryParams.removeAll(keys)
+            }
 
         fun build(): AiSecretCreateParams =
             AiSecretCreateParams(
-                body.build(),
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
+              body.build(),
+              additionalHeaders.build(),
+              additionalQueryParams.build(),
             )
     }
 
     @NoAutoDetect
-    class Metadata
-    @JsonCreator
-    private constructor(
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
+    class Metadata @JsonCreator private constructor(
+        @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
     ) {
 
         @JsonAnyGetter
@@ -494,13 +583,14 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Metadata = apply {
-            if (validated) {
-                return@apply
-            }
+        fun validate(): Metadata =
+            apply {
+                if (validated) {
+                  return@apply
+                }
 
-            validated = true
-        }
+                validated = true
+            }
 
         fun toBuilder() = Builder().from(this)
 
@@ -515,38 +605,46 @@ private constructor(
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(metadata: Metadata) = apply {
-                additionalProperties = metadata.additionalProperties.toMutableMap()
-            }
+            internal fun from(metadata: Metadata) =
+                apply {
+                    additionalProperties = metadata.additionalProperties.toMutableMap()
+                }
 
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
 
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
+            fun putAdditionalProperty(key: String, value: JsonValue) =
+                apply {
+                    additionalProperties.put(key, value)
+                }
 
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                apply {
+                    this.additionalProperties.putAll(additionalProperties)
+                }
 
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+            fun removeAdditionalProperty(key: String) =
+                apply {
+                    additionalProperties.remove(key)
+                }
 
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
+            fun removeAllAdditionalProperties(keys: Set<String>) =
+                apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
 
             fun build(): Metadata = Metadata(additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+          return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -559,15 +657,14 @@ private constructor(
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return /* spotless:off */ other is AiSecretCreateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+      return /* spotless:off */ other is AiSecretCreateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
-    override fun toString() =
-        "AiSecretCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+    override fun toString() = "AiSecretCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
