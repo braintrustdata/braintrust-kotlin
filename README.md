@@ -384,7 +384,7 @@ val params: ProjectUpdateParams = ProjectUpdateParams.builder()
 
 These properties can be accessed on the nested built object later using the `_additionalProperties()` method.
 
-To set a documented parameter or property to an undocumented or not yet supported _value_, pass a [`JsonValue`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/core/JsonValue.kt) object to its setter:
+To set a documented parameter or property to an undocumented or not yet supported _value_, pass a [`JsonValue`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/core/Values.kt) object to its setter:
 
 ```kotlin
 import com.braintrustdata.api.core.JsonValue
@@ -393,6 +393,41 @@ import com.braintrustdata.api.models.ProjectCreateParams
 val params: ProjectCreateParams = ProjectCreateParams.builder()
     .name(JsonValue.from(42))
     .build()
+```
+
+The most straightforward way to create a [`JsonValue`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/core/Values.kt) is using its `from(...)` method:
+
+```kotlin
+import com.braintrustdata.api.core.JsonValue
+
+// Create primitive JSON values
+val nullValue: JsonValue = JsonValue.from(null)
+val booleanValue: JsonValue = JsonValue.from(true)
+val numberValue: JsonValue = JsonValue.from(42)
+val stringValue: JsonValue = JsonValue.from("Hello World!")
+
+// Create a JSON array value equivalent to `["Hello", "World"]`
+val arrayValue: JsonValue = JsonValue.from(listOf(
+  "Hello", "World"
+))
+
+// Create a JSON object value equivalent to `{ "a": 1, "b": 2 }`
+val objectValue: JsonValue = JsonValue.from(mapOf(
+  "a" to 1, "b" to 2
+))
+
+// Create an arbitrarily nested JSON equivalent to:
+// {
+//   "a": [1, 2],
+//   "b": [3, 4]
+// }
+val complexValue: JsonValue = JsonValue.from(mapOf(
+  "a" to listOf(
+    1, 2
+  ), "b" to listOf(
+    3, 4
+  )
+))
 ```
 
 ### Response properties
