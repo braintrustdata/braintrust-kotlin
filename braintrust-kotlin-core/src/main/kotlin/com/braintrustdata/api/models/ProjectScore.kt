@@ -28,39 +28,26 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.time.OffsetDateTime
 import java.util.Objects
+import java.util.Optional
 
-/** A project score is a user-configured score, which can be manually-labeled through the UI */
+/**
+ * A project score is a user-configured score, which can be manually-labeled
+ * through the UI
+ */
 @NoAutoDetect
-class ProjectScore
-@JsonCreator
-private constructor(
+class ProjectScore @JsonCreator private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
     @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("project_id")
-    @ExcludeMissing
-    private val projectId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("score_type")
-    @ExcludeMissing
-    private val scoreType: JsonField<ScoreType> = JsonMissing.of(),
-    @JsonProperty("user_id")
-    @ExcludeMissing
-    private val userId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("categories")
-    @ExcludeMissing
-    private val categories: JsonField<Categories> = JsonMissing.of(),
-    @JsonProperty("config")
-    @ExcludeMissing
-    private val config: JsonField<ProjectScoreConfig> = JsonMissing.of(),
-    @JsonProperty("created")
-    @ExcludeMissing
-    private val created: JsonField<OffsetDateTime> = JsonMissing.of(),
-    @JsonProperty("description")
-    @ExcludeMissing
-    private val description: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("position")
-    @ExcludeMissing
-    private val position: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("project_id") @ExcludeMissing private val projectId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("score_type") @ExcludeMissing private val scoreType: JsonField<ScoreType> = JsonMissing.of(),
+    @JsonProperty("user_id") @ExcludeMissing private val userId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("categories") @ExcludeMissing private val categories: JsonField<Categories> = JsonMissing.of(),
+    @JsonProperty("config") @ExcludeMissing private val config: JsonField<ProjectScoreConfig> = JsonMissing.of(),
+    @JsonProperty("created") @ExcludeMissing private val created: JsonField<OffsetDateTime> = JsonMissing.of(),
+    @JsonProperty("description") @ExcludeMissing private val description: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("position") @ExcludeMissing private val position: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
 ) {
 
     /** Unique identifier for the project score */
@@ -88,38 +75,62 @@ private constructor(
     /** Textual description of the project score */
     fun description(): String? = description.getNullable("description")
 
-    /** An optional LexoRank-based string that sets the sort position for the score in the UI */
+    /**
+     * An optional LexoRank-based string that sets the sort position for the score in
+     * the UI
+     */
     fun position(): String? = position.getNullable("position")
 
     /** Unique identifier for the project score */
-    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+    @JsonProperty("id")
+    @ExcludeMissing
+    fun _id(): JsonField<String> = id
 
     /** Name of the project score */
-    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+    @JsonProperty("name")
+    @ExcludeMissing
+    fun _name(): JsonField<String> = name
 
     /** Unique identifier for the project that the project score belongs under */
-    @JsonProperty("project_id") @ExcludeMissing fun _projectId(): JsonField<String> = projectId
+    @JsonProperty("project_id")
+    @ExcludeMissing
+    fun _projectId(): JsonField<String> = projectId
 
     /** The type of the configured score */
-    @JsonProperty("score_type") @ExcludeMissing fun _scoreType(): JsonField<ScoreType> = scoreType
+    @JsonProperty("score_type")
+    @ExcludeMissing
+    fun _scoreType(): JsonField<ScoreType> = scoreType
 
-    @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
+    @JsonProperty("user_id")
+    @ExcludeMissing
+    fun _userId(): JsonField<String> = userId
 
     /** For categorical-type project scores, the list of all categories */
     @JsonProperty("categories")
     @ExcludeMissing
     fun _categories(): JsonField<Categories> = categories
 
-    @JsonProperty("config") @ExcludeMissing fun _config(): JsonField<ProjectScoreConfig> = config
+    @JsonProperty("config")
+    @ExcludeMissing
+    fun _config(): JsonField<ProjectScoreConfig> = config
 
     /** Date of project score creation */
-    @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<OffsetDateTime> = created
+    @JsonProperty("created")
+    @ExcludeMissing
+    fun _created(): JsonField<OffsetDateTime> = created
 
     /** Textual description of the project score */
-    @JsonProperty("description") @ExcludeMissing fun _description(): JsonField<String> = description
+    @JsonProperty("description")
+    @ExcludeMissing
+    fun _description(): JsonField<String> = description
 
-    /** An optional LexoRank-based string that sets the sort position for the score in the UI */
-    @JsonProperty("position") @ExcludeMissing fun _position(): JsonField<String> = position
+    /**
+     * An optional LexoRank-based string that sets the sort position for the score in
+     * the UI
+     */
+    @JsonProperty("position")
+    @ExcludeMissing
+    fun _position(): JsonField<String> = position
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -127,23 +138,24 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): ProjectScore = apply {
-        if (validated) {
-            return@apply
-        }
+    fun validate(): ProjectScore =
+        apply {
+            if (validated) {
+              return@apply
+            }
 
-        id()
-        name()
-        projectId()
-        scoreType()
-        userId()
-        categories()?.validate()
-        config()?.validate()
-        created()
-        description()
-        position()
-        validated = true
-    }
+            id()
+            name()
+            projectId()
+            scoreType()
+            userId()
+            categories()?.validate()
+            config()?.validate()
+            created()
+            description()
+            position()
+            validated = true
+        }
 
     fun toBuilder() = Builder().from(this)
 
@@ -153,6 +165,7 @@ private constructor(
          * Returns a mutable builder for constructing an instance of [ProjectScore].
          *
          * The following fields are required:
+         *
          * ```kotlin
          * .id()
          * .name()
@@ -179,57 +192,75 @@ private constructor(
         private var position: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        internal fun from(projectScore: ProjectScore) = apply {
-            id = projectScore.id
-            name = projectScore.name
-            projectId = projectScore.projectId
-            scoreType = projectScore.scoreType
-            userId = projectScore.userId
-            categories = projectScore.categories
-            config = projectScore.config
-            created = projectScore.created
-            description = projectScore.description
-            position = projectScore.position
-            additionalProperties = projectScore.additionalProperties.toMutableMap()
-        }
+        internal fun from(projectScore: ProjectScore) =
+            apply {
+                id = projectScore.id
+                name = projectScore.name
+                projectId = projectScore.projectId
+                scoreType = projectScore.scoreType
+                userId = projectScore.userId
+                categories = projectScore.categories
+                config = projectScore.config
+                created = projectScore.created
+                description = projectScore.description
+                position = projectScore.position
+                additionalProperties = projectScore.additionalProperties.toMutableMap()
+            }
 
         /** Unique identifier for the project score */
         fun id(id: String) = id(JsonField.of(id))
 
         /** Unique identifier for the project score */
-        fun id(id: JsonField<String>) = apply { this.id = id }
+        fun id(id: JsonField<String>) =
+            apply {
+                this.id = id
+            }
 
         /** Name of the project score */
         fun name(name: String) = name(JsonField.of(name))
 
         /** Name of the project score */
-        fun name(name: JsonField<String>) = apply { this.name = name }
+        fun name(name: JsonField<String>) =
+            apply {
+                this.name = name
+            }
 
         /** Unique identifier for the project that the project score belongs under */
         fun projectId(projectId: String) = projectId(JsonField.of(projectId))
 
         /** Unique identifier for the project that the project score belongs under */
-        fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
+        fun projectId(projectId: JsonField<String>) =
+            apply {
+                this.projectId = projectId
+            }
 
         /** The type of the configured score */
         fun scoreType(scoreType: ScoreType) = scoreType(JsonField.of(scoreType))
 
         /** The type of the configured score */
-        fun scoreType(scoreType: JsonField<ScoreType>) = apply { this.scoreType = scoreType }
+        fun scoreType(scoreType: JsonField<ScoreType>) =
+            apply {
+                this.scoreType = scoreType
+            }
 
         fun userId(userId: String) = userId(JsonField.of(userId))
 
-        fun userId(userId: JsonField<String>) = apply { this.userId = userId }
+        fun userId(userId: JsonField<String>) =
+            apply {
+                this.userId = userId
+            }
 
         /** For categorical-type project scores, the list of all categories */
         fun categories(categories: Categories) = categories(JsonField.of(categories))
 
         /** For categorical-type project scores, the list of all categories */
-        fun categories(categories: JsonField<Categories>) = apply { this.categories = categories }
+        fun categories(categories: JsonField<Categories>) =
+            apply {
+                this.categories = categories
+            }
 
         /** For categorical-type project scores, the list of all categories */
-        fun categoriesOfCategorical(categorical: List<ProjectScoreCategory>) =
-            categories(Categories.ofCategorical(categorical))
+        fun categoriesOfCategorical(categorical: List<ProjectScoreCategory>) = categories(Categories.ofCategorical(categorical))
 
         /** For weighted-type project scores, the weights of each score */
         fun categories(weighted: Categories.Weighted) = categories(Categories.ofWeighted(weighted))
@@ -238,78 +269,116 @@ private constructor(
         fun categoriesOfMinimum(minimum: List<String>) = categories(Categories.ofMinimum(minimum))
 
         /** For categorical-type project scores, the list of all categories */
-        fun categories(nullableVariant: Categories.NullableVariant) =
-            categories(Categories.ofNullableVariant(nullableVariant))
+        fun categories(nullableVariant: Categories.NullableVariant) = categories(Categories.ofNullableVariant(nullableVariant))
 
         fun config(config: ProjectScoreConfig?) = config(JsonField.ofNullable(config))
 
-        fun config(config: JsonField<ProjectScoreConfig>) = apply { this.config = config }
+        fun config(config: JsonField<ProjectScoreConfig>) =
+            apply {
+                this.config = config
+            }
 
         /** Date of project score creation */
         fun created(created: OffsetDateTime?) = created(JsonField.ofNullable(created))
 
         /** Date of project score creation */
-        fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
+        fun created(created: JsonField<OffsetDateTime>) =
+            apply {
+                this.created = created
+            }
 
         /** Textual description of the project score */
         fun description(description: String?) = description(JsonField.ofNullable(description))
 
         /** Textual description of the project score */
-        fun description(description: JsonField<String>) = apply { this.description = description }
+        fun description(description: JsonField<String>) =
+            apply {
+                this.description = description
+            }
 
-        /** An optional LexoRank-based string that sets the sort position for the score in the UI */
+        /**
+         * An optional LexoRank-based string that sets the sort position for the score in
+         * the UI
+         */
         fun position(position: String?) = position(JsonField.ofNullable(position))
 
-        /** An optional LexoRank-based string that sets the sort position for the score in the UI */
-        fun position(position: JsonField<String>) = apply { this.position = position }
+        /**
+         * An optional LexoRank-based string that sets the sort position for the score in
+         * the UI
+         */
+        fun position(position: JsonField<String>) =
+            apply {
+                this.position = position
+            }
 
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.clear()
-            putAllAdditionalProperties(additionalProperties)
-        }
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+            apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
 
-        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            additionalProperties.put(key, value)
-        }
+        fun putAdditionalProperty(key: String, value: JsonValue) =
+            apply {
+                additionalProperties.put(key, value)
+            }
 
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.putAll(additionalProperties)
-        }
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+            apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
 
-        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+        fun removeAdditionalProperty(key: String) =
+            apply {
+                additionalProperties.remove(key)
+            }
 
-        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalProperty)
-        }
+        fun removeAllAdditionalProperties(keys: Set<String>) =
+            apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
 
         fun build(): ProjectScore =
             ProjectScore(
-                checkRequired("id", id),
-                checkRequired("name", name),
-                checkRequired("projectId", projectId),
-                checkRequired("scoreType", scoreType),
-                checkRequired("userId", userId),
-                categories,
-                config,
-                created,
-                description,
-                position,
-                additionalProperties.toImmutable(),
+              checkRequired(
+                "id", id
+              ),
+              checkRequired(
+                "name", name
+              ),
+              checkRequired(
+                "projectId", projectId
+              ),
+              checkRequired(
+                "scoreType", scoreType
+              ),
+              checkRequired(
+                "userId", userId
+              ),
+              categories,
+              config,
+              created,
+              description,
+              position,
+              additionalProperties.toImmutable(),
             )
     }
 
     /** The type of the configured score */
-    class ScoreType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+    class ScoreType @JsonCreator private constructor(
+        private val value: JsonField<String>,
+
+    ) : Enum {
 
         /**
          * Returns this class instance's raw value.
          *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
+         * This is usually only useful if this instance was deserialized from data that
+         * doesn't match any known member, and you want to know that value. For example, if
+         * the SDK is on an older version than the API, then the API may respond with new
+         * members that the SDK is unaware of.
          */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+        @com.fasterxml.jackson.annotation.JsonValue
+        fun _value(): JsonField<String> = value
 
         companion object {
 
@@ -342,9 +411,11 @@ private constructor(
          * An enum containing [ScoreType]'s known values, as well as an [_UNKNOWN] member.
          *
          * An instance of [ScoreType] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
+         *
+         * - It was deserialized from data that doesn't match any known member. For
+         *   example, if the SDK is on an older version than the API, then the API may
+         *   respond with new members that the SDK is unaware of.
+         *
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
@@ -355,17 +426,18 @@ private constructor(
             MAXIMUM,
             ONLINE,
             /**
-             * An enum member indicating that [ScoreType] was instantiated with an unknown value.
+             * An enum member indicating that [ScoreType] was instantiated with an unknown
+             * value.
              */
             _UNKNOWN,
         }
 
         /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
+         * Returns an enum member corresponding to this class instance's value, or
+         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
          *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
+         * Use the [known] method instead if you're certain the value is always known or if
+         * you want to throw for the unknown case.
          */
         fun value(): Value =
             when (this) {
@@ -381,11 +453,11 @@ private constructor(
         /**
          * Returns an enum member corresponding to this class instance's value.
          *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
+         * Use the [value] method instead if you're uncertain the value is always known and
+         * don't want to throw for the unknown case.
          *
-         * @throws BraintrustInvalidDataException if this class instance's value is a not a known
-         *   member.
+         * @throws BraintrustInvalidDataException if this class instance's value is a not a
+         * known member.
          */
         fun known(): Known =
             when (this) {
@@ -401,21 +473,20 @@ private constructor(
         /**
          * Returns this class instance's primitive wire representation.
          *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
+         * This differs from the [toString] method because that method is primarily for
+         * debugging and generally doesn't throw.
          *
-         * @throws BraintrustInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
+         * @throws BraintrustInvalidDataException if this class instance's value does not
+         * have the expected primitive type.
          */
-        fun asString(): String =
-            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
+        fun asString(): String = _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return /* spotless:off */ other is ScoreType && value == other.value /* spotless:on */
+          return /* spotless:off */ other is ScoreType && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -426,13 +497,13 @@ private constructor(
     /** For categorical-type project scores, the list of all categories */
     @JsonDeserialize(using = Categories.Deserializer::class)
     @JsonSerialize(using = Categories.Serializer::class)
-    class Categories
-    private constructor(
+    class Categories private constructor(
         private val categorical: List<ProjectScoreCategory>? = null,
         private val weighted: Weighted? = null,
         private val minimum: List<String>? = null,
         private val nullableVariant: NullableVariant? = null,
         private val _json: JsonValue? = null,
+
     ) {
 
         /** For categorical-type project scores, the list of all categories */
@@ -468,48 +539,49 @@ private constructor(
         fun _json(): JsonValue? = _json
 
         fun <T> accept(visitor: Visitor<T>): T {
-            return when {
-                categorical != null -> visitor.visitCategorical(categorical)
-                weighted != null -> visitor.visitWeighted(weighted)
-                minimum != null -> visitor.visitMinimum(minimum)
-                nullableVariant != null -> visitor.visitNullableVariant(nullableVariant)
-                else -> visitor.unknown(_json)
-            }
+          return when {
+              categorical != null -> visitor.visitCategorical(categorical)
+              weighted != null -> visitor.visitWeighted(weighted)
+              minimum != null -> visitor.visitMinimum(minimum)
+              nullableVariant != null -> visitor.visitNullableVariant(nullableVariant)
+              else -> visitor.unknown(_json)
+          }
         }
 
         private var validated: Boolean = false
 
-        fun validate(): Categories = apply {
-            if (validated) {
-                return@apply
-            }
+        fun validate(): Categories =
+            apply {
+                if (validated) {
+                  return@apply
+                }
 
-            accept(
-                object : Visitor<Unit> {
+                accept(object : Visitor<Unit> {
                     override fun visitCategorical(categorical: List<ProjectScoreCategory>) {
-                        categorical.forEach { it.validate() }
+                      categorical.forEach { it.validate() }
                     }
 
                     override fun visitWeighted(weighted: Weighted) {
-                        weighted.validate()
+                      weighted.validate()
                     }
 
-                    override fun visitMinimum(minimum: List<String>) {}
+                    override fun visitMinimum(minimum: List<String>) {
+
+                    }
 
                     override fun visitNullableVariant(nullableVariant: NullableVariant) {
-                        nullableVariant.validate()
+                      nullableVariant.validate()
                     }
-                }
-            )
-            validated = true
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
+                })
+                validated = true
             }
 
-            return /* spotless:off */ other is Categories && categorical == other.categorical && weighted == other.weighted && minimum == other.minimum && nullableVariant == other.nullableVariant /* spotless:on */
+        override fun equals(other: Any?): Boolean {
+          if (this === other) {
+              return true
+          }
+
+          return /* spotless:off */ other is Categories && categorical == other.categorical && weighted == other.weighted && minimum == other.minimum && nullableVariant == other.nullableVariant /* spotless:on */
         }
 
         override fun hashCode(): Int = /* spotless:off */ Objects.hash(categorical, weighted, minimum, nullableVariant) /* spotless:on */
@@ -527,8 +599,7 @@ private constructor(
         companion object {
 
             /** For categorical-type project scores, the list of all categories */
-            fun ofCategorical(categorical: List<ProjectScoreCategory>) =
-                Categories(categorical = categorical)
+            fun ofCategorical(categorical: List<ProjectScoreCategory>) = Categories(categorical = categorical)
 
             /** For weighted-type project scores, the weights of each score */
             fun ofWeighted(weighted: Weighted) = Categories(weighted = weighted)
@@ -536,12 +607,12 @@ private constructor(
             /** For minimum-type project scores, the list of included scores */
             fun ofMinimum(minimum: List<String>) = Categories(minimum = minimum)
 
-            fun ofNullableVariant(nullableVariant: NullableVariant) =
-                Categories(nullableVariant = nullableVariant)
+            fun ofNullableVariant(nullableVariant: NullableVariant) = Categories(nullableVariant = nullableVariant)
         }
 
         /**
-         * An interface that defines how to map each variant of [Categories] to a value of type [T].
+         * An interface that defines how to map each variant of [Categories] to a value of
+         * type [T].
          */
         interface Visitor<out T> {
 
@@ -559,70 +630,59 @@ private constructor(
             /**
              * Maps an unknown variant of [Categories] to a value of type [T].
              *
-             * An instance of [Categories] can contain an unknown variant if it was deserialized
-             * from data that doesn't match any known variant. For example, if the SDK is on an
-             * older version than the API, then the API may respond with new variants that the SDK
-             * is unaware of.
+             * An instance of [Categories] can contain an unknown variant if it was
+             * deserialized from data that doesn't match any known variant. For example, if the
+             * SDK is on an older version than the API, then the API may respond with new
+             * variants that the SDK is unaware of.
              *
              * @throws BraintrustInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown Categories: $json")
+              throw BraintrustInvalidDataException("Unknown Categories: $json")
             }
         }
 
         internal class Deserializer : BaseDeserializer<Categories>(Categories::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Categories {
-                val json = JsonValue.fromJsonNode(node)
+              val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<List<ProjectScoreCategory>>()) {
-                        it.forEach { it.validate() }
-                    }
-                    ?.let {
-                        return Categories(categorical = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<Weighted>()) { it.validate() }
-                    ?.let {
-                        return Categories(weighted = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                    return Categories(minimum = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<NullableVariant>()) { it.validate() }
-                    ?.let {
-                        return Categories(nullableVariant = it, _json = json)
-                    }
+              tryDeserialize(node, jacksonTypeRef<List<ProjectScoreCategory>>()){ it.forEach { it.validate() } }?.let {
+                  return Categories(categorical = it, _json = json)
+              }
+              tryDeserialize(node, jacksonTypeRef<Weighted>()){ it.validate() }?.let {
+                  return Categories(weighted = it, _json = json)
+              }
+              tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
+                  return Categories(minimum = it, _json = json)
+              }
+              tryDeserialize(node, jacksonTypeRef<NullableVariant>()){ it.validate() }?.let {
+                  return Categories(nullableVariant = it, _json = json)
+              }
 
-                return Categories(_json = json)
+              return Categories(_json = json)
             }
         }
 
         internal class Serializer : BaseSerializer<Categories>(Categories::class) {
 
-            override fun serialize(
-                value: Categories,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.categorical != null -> generator.writeObject(value.categorical)
-                    value.weighted != null -> generator.writeObject(value.weighted)
-                    value.minimum != null -> generator.writeObject(value.minimum)
-                    value.nullableVariant != null -> generator.writeObject(value.nullableVariant)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Categories")
-                }
+            override fun serialize(value: Categories, generator: JsonGenerator, provider: SerializerProvider) {
+              when {
+                  value.categorical != null -> generator.writeObject(value.categorical)
+                  value.weighted != null -> generator.writeObject(value.weighted)
+                  value.minimum != null -> generator.writeObject(value.minimum)
+                  value.nullableVariant != null -> generator.writeObject(value.nullableVariant)
+                  value._json != null -> generator.writeObject(value._json)
+                  else -> throw IllegalStateException("Invalid Categories")
+              }
             }
         }
 
         /** For weighted-type project scores, the weights of each score */
         @NoAutoDetect
-        class Weighted
-        @JsonCreator
-        private constructor(
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
+        class Weighted @JsonCreator private constructor(
+            @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
         ) {
 
             @JsonAnyGetter
@@ -631,13 +691,14 @@ private constructor(
 
             private var validated: Boolean = false
 
-            fun validate(): Weighted = apply {
-                if (validated) {
-                    return@apply
-                }
+            fun validate(): Weighted =
+                apply {
+                    if (validated) {
+                      return@apply
+                    }
 
-                validated = true
-            }
+                    validated = true
+                }
 
             fun toBuilder() = Builder().from(this)
 
@@ -652,41 +713,46 @@ private constructor(
 
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-                internal fun from(weighted: Weighted) = apply {
-                    additionalProperties = weighted.additionalProperties.toMutableMap()
-                }
+                internal fun from(weighted: Weighted) =
+                    apply {
+                        additionalProperties = weighted.additionalProperties.toMutableMap()
+                    }
 
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
 
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
+                fun putAdditionalProperty(key: String, value: JsonValue) =
+                    apply {
+                        additionalProperties.put(key, value)
+                    }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
 
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
+                fun removeAdditionalProperty(key: String) =
+                    apply {
+                        additionalProperties.remove(key)
+                    }
 
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
+                fun removeAllAdditionalProperties(keys: Set<String>) =
+                    apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
 
                 fun build(): Weighted = Weighted(additionalProperties.toImmutable())
             }
 
             override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
+              if (this === other) {
+                  return true
+              }
 
-                return /* spotless:off */ other is Weighted && additionalProperties == other.additionalProperties /* spotless:on */
+              return /* spotless:off */ other is Weighted && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
@@ -699,11 +765,9 @@ private constructor(
         }
 
         @NoAutoDetect
-        class NullableVariant
-        @JsonCreator
-        private constructor(
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
+        class NullableVariant @JsonCreator private constructor(
+            @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
         ) {
 
             @JsonAnyGetter
@@ -712,13 +776,14 @@ private constructor(
 
             private var validated: Boolean = false
 
-            fun validate(): NullableVariant = apply {
-                if (validated) {
-                    return@apply
-                }
+            fun validate(): NullableVariant =
+                apply {
+                    if (validated) {
+                      return@apply
+                    }
 
-                validated = true
-            }
+                    validated = true
+                }
 
             fun toBuilder() = Builder().from(this)
 
@@ -733,41 +798,46 @@ private constructor(
 
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-                internal fun from(nullableVariant: NullableVariant) = apply {
-                    additionalProperties = nullableVariant.additionalProperties.toMutableMap()
-                }
+                internal fun from(nullableVariant: NullableVariant) =
+                    apply {
+                        additionalProperties = nullableVariant.additionalProperties.toMutableMap()
+                    }
 
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
 
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
+                fun putAdditionalProperty(key: String, value: JsonValue) =
+                    apply {
+                        additionalProperties.put(key, value)
+                    }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
 
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
+                fun removeAdditionalProperty(key: String) =
+                    apply {
+                        additionalProperties.remove(key)
+                    }
 
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
+                fun removeAllAdditionalProperties(keys: Set<String>) =
+                    apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
 
                 fun build(): NullableVariant = NullableVariant(additionalProperties.toImmutable())
             }
 
             override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
+              if (this === other) {
+                  return true
+              }
 
-                return /* spotless:off */ other is NullableVariant && additionalProperties == other.additionalProperties /* spotless:on */
+              return /* spotless:off */ other is NullableVariant && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
@@ -781,11 +851,11 @@ private constructor(
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return /* spotless:off */ other is ProjectScore && id == other.id && name == other.name && projectId == other.projectId && scoreType == other.scoreType && userId == other.userId && categories == other.categories && config == other.config && created == other.created && description == other.description && position == other.position && additionalProperties == other.additionalProperties /* spotless:on */
+      return /* spotless:off */ other is ProjectScore && id == other.id && name == other.name && projectId == other.projectId && scoreType == other.scoreType && userId == other.userId && categories == other.categories && config == other.config && created == other.created && description == other.description && position == other.position && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -794,6 +864,5 @@ private constructor(
 
     override fun hashCode(): Int = hashCode
 
-    override fun toString() =
-        "ProjectScore{id=$id, name=$name, projectId=$projectId, scoreType=$scoreType, userId=$userId, categories=$categories, config=$config, created=$created, description=$description, position=$position, additionalProperties=$additionalProperties}"
+    override fun toString() = "ProjectScore{id=$id, name=$name, projectId=$projectId, scoreType=$scoreType, userId=$userId, categories=$categories, config=$config, created=$created, description=$description, position=$position, additionalProperties=$additionalProperties}"
 }

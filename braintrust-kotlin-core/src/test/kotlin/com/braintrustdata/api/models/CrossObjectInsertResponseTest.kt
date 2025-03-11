@@ -10,60 +10,26 @@ class CrossObjectInsertResponseTest {
 
     @Test
     fun createCrossObjectInsertResponse() {
-        val crossObjectInsertResponse =
-            CrossObjectInsertResponse.builder()
-                .dataset(
-                    CrossObjectInsertResponse.Dataset.builder()
-                        .putAdditionalProperty(
-                            "foo",
-                            JsonValue.from(mapOf("row_ids" to listOf("string"))),
-                        )
-                        .build()
-                )
-                .experiment(
-                    CrossObjectInsertResponse.Experiment.builder()
-                        .putAdditionalProperty(
-                            "foo",
-                            JsonValue.from(mapOf("row_ids" to listOf("string"))),
-                        )
-                        .build()
-                )
-                .projectLogs(
-                    CrossObjectInsertResponse.ProjectLogs.builder()
-                        .putAdditionalProperty(
-                            "foo",
-                            JsonValue.from(mapOf("row_ids" to listOf("string"))),
-                        )
-                        .build()
-                )
-                .build()
-        assertThat(crossObjectInsertResponse).isNotNull
-        assertThat(crossObjectInsertResponse.dataset())
-            .isEqualTo(
-                CrossObjectInsertResponse.Dataset.builder()
-                    .putAdditionalProperty(
-                        "foo",
-                        JsonValue.from(mapOf("row_ids" to listOf("string"))),
-                    )
-                    .build()
-            )
-        assertThat(crossObjectInsertResponse.experiment())
-            .isEqualTo(
-                CrossObjectInsertResponse.Experiment.builder()
-                    .putAdditionalProperty(
-                        "foo",
-                        JsonValue.from(mapOf("row_ids" to listOf("string"))),
-                    )
-                    .build()
-            )
-        assertThat(crossObjectInsertResponse.projectLogs())
-            .isEqualTo(
-                CrossObjectInsertResponse.ProjectLogs.builder()
-                    .putAdditionalProperty(
-                        "foo",
-                        JsonValue.from(mapOf("row_ids" to listOf("string"))),
-                    )
-                    .build()
-            )
+      val crossObjectInsertResponse = CrossObjectInsertResponse.builder()
+          .dataset(CrossObjectInsertResponse.Dataset.builder()
+              .putAdditionalProperty("foo", JsonValue.from(mapOf("row_ids" to listOf("string"))))
+              .build())
+          .experiment(CrossObjectInsertResponse.Experiment.builder()
+              .putAdditionalProperty("foo", JsonValue.from(mapOf("row_ids" to listOf("string"))))
+              .build())
+          .projectLogs(CrossObjectInsertResponse.ProjectLogs.builder()
+              .putAdditionalProperty("foo", JsonValue.from(mapOf("row_ids" to listOf("string"))))
+              .build())
+          .build()
+      assertThat(crossObjectInsertResponse).isNotNull
+      assertThat(crossObjectInsertResponse.dataset()).isEqualTo(CrossObjectInsertResponse.Dataset.builder()
+          .putAdditionalProperty("foo", JsonValue.from(mapOf("row_ids" to listOf("string"))))
+          .build())
+      assertThat(crossObjectInsertResponse.experiment()).isEqualTo(CrossObjectInsertResponse.Experiment.builder()
+          .putAdditionalProperty("foo", JsonValue.from(mapOf("row_ids" to listOf("string"))))
+          .build())
+      assertThat(crossObjectInsertResponse.projectLogs()).isEqualTo(CrossObjectInsertResponse.ProjectLogs.builder()
+          .putAdditionalProperty("foo", JsonValue.from(mapOf("row_ids" to listOf("string"))))
+          .build())
     }
 }
