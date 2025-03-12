@@ -18,23 +18,48 @@ import java.time.OffsetDateTime
 import java.util.Objects
 
 @NoAutoDetect
-class Experiment @JsonCreator private constructor(
+class Experiment
+@JsonCreator
+private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
     @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("project_id") @ExcludeMissing private val projectId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("public") @ExcludeMissing private val public_: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("base_exp_id") @ExcludeMissing private val baseExpId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("commit") @ExcludeMissing private val commit: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("created") @ExcludeMissing private val created: JsonField<OffsetDateTime> = JsonMissing.of(),
-    @JsonProperty("dataset_id") @ExcludeMissing private val datasetId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("dataset_version") @ExcludeMissing private val datasetVersion: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("deleted_at") @ExcludeMissing private val deletedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
-    @JsonProperty("description") @ExcludeMissing private val description: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonField<Metadata> = JsonMissing.of(),
-    @JsonProperty("repo_info") @ExcludeMissing private val repoInfo: JsonField<RepoInfo> = JsonMissing.of(),
-    @JsonProperty("user_id") @ExcludeMissing private val userId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("project_id")
+    @ExcludeMissing
+    private val projectId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("public")
+    @ExcludeMissing
+    private val public_: JsonField<Boolean> = JsonMissing.of(),
+    @JsonProperty("base_exp_id")
+    @ExcludeMissing
+    private val baseExpId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("commit")
+    @ExcludeMissing
+    private val commit: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("created")
+    @ExcludeMissing
+    private val created: JsonField<OffsetDateTime> = JsonMissing.of(),
+    @JsonProperty("dataset_id")
+    @ExcludeMissing
+    private val datasetId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("dataset_version")
+    @ExcludeMissing
+    private val datasetVersion: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("deleted_at")
+    @ExcludeMissing
+    private val deletedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
+    @JsonProperty("description")
+    @ExcludeMissing
+    private val description: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("metadata")
+    @ExcludeMissing
+    private val metadata: JsonField<Metadata> = JsonMissing.of(),
+    @JsonProperty("repo_info")
+    @ExcludeMissing
+    private val repoInfo: JsonField<RepoInfo> = JsonMissing.of(),
+    @JsonProperty("user_id")
+    @ExcludeMissing
+    private val userId: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-
 ) {
 
     /** Unique identifier for the experiment */
@@ -47,8 +72,8 @@ class Experiment @JsonCreator private constructor(
     fun projectId(): String = projectId.getRequired("project_id")
 
     /**
-     * Whether or not the experiment is public. Public experiments can be viewed by
-     * anybody inside or outside the organization
+     * Whether or not the experiment is public. Public experiments can be viewed by anybody inside
+     * or outside the organization
      */
     fun public_(): Boolean = public_.getRequired("public")
 
@@ -61,15 +86,12 @@ class Experiment @JsonCreator private constructor(
     /** Date of experiment creation */
     fun created(): OffsetDateTime? = created.getNullable("created")
 
-    /**
-     * Identifier of the linked dataset, or null if the experiment is not linked to a
-     * dataset
-     */
+    /** Identifier of the linked dataset, or null if the experiment is not linked to a dataset */
     fun datasetId(): String? = datasetId.getNullable("dataset_id")
 
     /**
-     * Version number of the linked dataset the experiment was run against. This can be
-     * used to reproduce the experiment after the dataset has been modified.
+     * Version number of the linked dataset the experiment was run against. This can be used to
+     * reproduce the experiment after the dataset has been modified.
      */
     fun datasetVersion(): String? = datasetVersion.getNullable("dataset_version")
 
@@ -89,54 +111,35 @@ class Experiment @JsonCreator private constructor(
     fun userId(): String? = userId.getNullable("user_id")
 
     /** Unique identifier for the experiment */
-    @JsonProperty("id")
-    @ExcludeMissing
-    fun _id(): JsonField<String> = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** Name of the experiment. Within a project, experiment names are unique */
-    @JsonProperty("name")
-    @ExcludeMissing
-    fun _name(): JsonField<String> = name
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /** Unique identifier for the project that the experiment belongs under */
-    @JsonProperty("project_id")
-    @ExcludeMissing
-    fun _projectId(): JsonField<String> = projectId
+    @JsonProperty("project_id") @ExcludeMissing fun _projectId(): JsonField<String> = projectId
 
     /**
-     * Whether or not the experiment is public. Public experiments can be viewed by
-     * anybody inside or outside the organization
+     * Whether or not the experiment is public. Public experiments can be viewed by anybody inside
+     * or outside the organization
      */
-    @JsonProperty("public")
-    @ExcludeMissing
-    fun _public_(): JsonField<Boolean> = public_
+    @JsonProperty("public") @ExcludeMissing fun _public_(): JsonField<Boolean> = public_
 
     /** Id of default base experiment to compare against when viewing this experiment */
-    @JsonProperty("base_exp_id")
-    @ExcludeMissing
-    fun _baseExpId(): JsonField<String> = baseExpId
+    @JsonProperty("base_exp_id") @ExcludeMissing fun _baseExpId(): JsonField<String> = baseExpId
 
     /** Commit, taken directly from `repo_info.commit` */
-    @JsonProperty("commit")
-    @ExcludeMissing
-    fun _commit(): JsonField<String> = commit
+    @JsonProperty("commit") @ExcludeMissing fun _commit(): JsonField<String> = commit
 
     /** Date of experiment creation */
-    @JsonProperty("created")
-    @ExcludeMissing
-    fun _created(): JsonField<OffsetDateTime> = created
+    @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<OffsetDateTime> = created
+
+    /** Identifier of the linked dataset, or null if the experiment is not linked to a dataset */
+    @JsonProperty("dataset_id") @ExcludeMissing fun _datasetId(): JsonField<String> = datasetId
 
     /**
-     * Identifier of the linked dataset, or null if the experiment is not linked to a
-     * dataset
-     */
-    @JsonProperty("dataset_id")
-    @ExcludeMissing
-    fun _datasetId(): JsonField<String> = datasetId
-
-    /**
-     * Version number of the linked dataset the experiment was run against. This can be
-     * used to reproduce the experiment after the dataset has been modified.
+     * Version number of the linked dataset the experiment was run against. This can be used to
+     * reproduce the experiment after the dataset has been modified.
      */
     @JsonProperty("dataset_version")
     @ExcludeMissing
@@ -148,24 +151,16 @@ class Experiment @JsonCreator private constructor(
     fun _deletedAt(): JsonField<OffsetDateTime> = deletedAt
 
     /** Textual description of the experiment */
-    @JsonProperty("description")
-    @ExcludeMissing
-    fun _description(): JsonField<String> = description
+    @JsonProperty("description") @ExcludeMissing fun _description(): JsonField<String> = description
 
     /** User-controlled metadata about the experiment */
-    @JsonProperty("metadata")
-    @ExcludeMissing
-    fun _metadata(): JsonField<Metadata> = metadata
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
     /** Metadata about the state of the repo when the experiment was created */
-    @JsonProperty("repo_info")
-    @ExcludeMissing
-    fun _repoInfo(): JsonField<RepoInfo> = repoInfo
+    @JsonProperty("repo_info") @ExcludeMissing fun _repoInfo(): JsonField<RepoInfo> = repoInfo
 
     /** Identifies the user who created the experiment */
-    @JsonProperty("user_id")
-    @ExcludeMissing
-    fun _userId(): JsonField<String> = userId
+    @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -173,28 +168,27 @@ class Experiment @JsonCreator private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): Experiment =
-        apply {
-            if (validated) {
-              return@apply
-            }
-
-            id()
-            name()
-            projectId()
-            public_()
-            baseExpId()
-            commit()
-            created()
-            datasetId()
-            datasetVersion()
-            deletedAt()
-            description()
-            metadata()?.validate()
-            repoInfo()?.validate()
-            userId()
-            validated = true
+    fun validate(): Experiment = apply {
+        if (validated) {
+            return@apply
         }
+
+        id()
+        name()
+        projectId()
+        public_()
+        baseExpId()
+        commit()
+        created()
+        datasetId()
+        datasetVersion()
+        deletedAt()
+        description()
+        metadata()?.validate()
+        repoInfo()?.validate()
+        userId()
+        validated = true
+    }
 
     fun toBuilder() = Builder().from(this)
 
@@ -204,7 +198,6 @@ class Experiment @JsonCreator private constructor(
          * Returns a mutable builder for constructing an instance of [Experiment].
          *
          * The following fields are required:
-         *
          * ```kotlin
          * .id()
          * .name()
@@ -234,228 +227,173 @@ class Experiment @JsonCreator private constructor(
         private var userId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        internal fun from(experiment: Experiment) =
-            apply {
-                id = experiment.id
-                name = experiment.name
-                projectId = experiment.projectId
-                public_ = experiment.public_
-                baseExpId = experiment.baseExpId
-                commit = experiment.commit
-                created = experiment.created
-                datasetId = experiment.datasetId
-                datasetVersion = experiment.datasetVersion
-                deletedAt = experiment.deletedAt
-                description = experiment.description
-                metadata = experiment.metadata
-                repoInfo = experiment.repoInfo
-                userId = experiment.userId
-                additionalProperties = experiment.additionalProperties.toMutableMap()
-            }
+        internal fun from(experiment: Experiment) = apply {
+            id = experiment.id
+            name = experiment.name
+            projectId = experiment.projectId
+            public_ = experiment.public_
+            baseExpId = experiment.baseExpId
+            commit = experiment.commit
+            created = experiment.created
+            datasetId = experiment.datasetId
+            datasetVersion = experiment.datasetVersion
+            deletedAt = experiment.deletedAt
+            description = experiment.description
+            metadata = experiment.metadata
+            repoInfo = experiment.repoInfo
+            userId = experiment.userId
+            additionalProperties = experiment.additionalProperties.toMutableMap()
+        }
 
         /** Unique identifier for the experiment */
         fun id(id: String) = id(JsonField.of(id))
 
         /** Unique identifier for the experiment */
-        fun id(id: JsonField<String>) =
-            apply {
-                this.id = id
-            }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** Name of the experiment. Within a project, experiment names are unique */
         fun name(name: String) = name(JsonField.of(name))
 
         /** Name of the experiment. Within a project, experiment names are unique */
-        fun name(name: JsonField<String>) =
-            apply {
-                this.name = name
-            }
+        fun name(name: JsonField<String>) = apply { this.name = name }
 
         /** Unique identifier for the project that the experiment belongs under */
         fun projectId(projectId: String) = projectId(JsonField.of(projectId))
 
         /** Unique identifier for the project that the experiment belongs under */
-        fun projectId(projectId: JsonField<String>) =
-            apply {
-                this.projectId = projectId
-            }
+        fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
 
         /**
-         * Whether or not the experiment is public. Public experiments can be viewed by
-         * anybody inside or outside the organization
+         * Whether or not the experiment is public. Public experiments can be viewed by anybody
+         * inside or outside the organization
          */
         fun public_(public_: Boolean) = public_(JsonField.of(public_))
 
         /**
-         * Whether or not the experiment is public. Public experiments can be viewed by
-         * anybody inside or outside the organization
+         * Whether or not the experiment is public. Public experiments can be viewed by anybody
+         * inside or outside the organization
          */
-        fun public_(public_: JsonField<Boolean>) =
-            apply {
-                this.public_ = public_
-            }
+        fun public_(public_: JsonField<Boolean>) = apply { this.public_ = public_ }
 
         /** Id of default base experiment to compare against when viewing this experiment */
         fun baseExpId(baseExpId: String?) = baseExpId(JsonField.ofNullable(baseExpId))
 
         /** Id of default base experiment to compare against when viewing this experiment */
-        fun baseExpId(baseExpId: JsonField<String>) =
-            apply {
-                this.baseExpId = baseExpId
-            }
+        fun baseExpId(baseExpId: JsonField<String>) = apply { this.baseExpId = baseExpId }
 
         /** Commit, taken directly from `repo_info.commit` */
         fun commit(commit: String?) = commit(JsonField.ofNullable(commit))
 
         /** Commit, taken directly from `repo_info.commit` */
-        fun commit(commit: JsonField<String>) =
-            apply {
-                this.commit = commit
-            }
+        fun commit(commit: JsonField<String>) = apply { this.commit = commit }
 
         /** Date of experiment creation */
         fun created(created: OffsetDateTime?) = created(JsonField.ofNullable(created))
 
         /** Date of experiment creation */
-        fun created(created: JsonField<OffsetDateTime>) =
-            apply {
-                this.created = created
-            }
+        fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
 
         /**
-         * Identifier of the linked dataset, or null if the experiment is not linked to a
-         * dataset
+         * Identifier of the linked dataset, or null if the experiment is not linked to a dataset
          */
         fun datasetId(datasetId: String?) = datasetId(JsonField.ofNullable(datasetId))
 
         /**
-         * Identifier of the linked dataset, or null if the experiment is not linked to a
-         * dataset
+         * Identifier of the linked dataset, or null if the experiment is not linked to a dataset
          */
-        fun datasetId(datasetId: JsonField<String>) =
-            apply {
-                this.datasetId = datasetId
-            }
+        fun datasetId(datasetId: JsonField<String>) = apply { this.datasetId = datasetId }
 
         /**
-         * Version number of the linked dataset the experiment was run against. This can be
-         * used to reproduce the experiment after the dataset has been modified.
+         * Version number of the linked dataset the experiment was run against. This can be used to
+         * reproduce the experiment after the dataset has been modified.
          */
-        fun datasetVersion(datasetVersion: String?) = datasetVersion(JsonField.ofNullable(datasetVersion))
+        fun datasetVersion(datasetVersion: String?) =
+            datasetVersion(JsonField.ofNullable(datasetVersion))
 
         /**
-         * Version number of the linked dataset the experiment was run against. This can be
-         * used to reproduce the experiment after the dataset has been modified.
+         * Version number of the linked dataset the experiment was run against. This can be used to
+         * reproduce the experiment after the dataset has been modified.
          */
-        fun datasetVersion(datasetVersion: JsonField<String>) =
-            apply {
-                this.datasetVersion = datasetVersion
-            }
+        fun datasetVersion(datasetVersion: JsonField<String>) = apply {
+            this.datasetVersion = datasetVersion
+        }
 
         /** Date of experiment deletion, or null if the experiment is still active */
         fun deletedAt(deletedAt: OffsetDateTime?) = deletedAt(JsonField.ofNullable(deletedAt))
 
         /** Date of experiment deletion, or null if the experiment is still active */
-        fun deletedAt(deletedAt: JsonField<OffsetDateTime>) =
-            apply {
-                this.deletedAt = deletedAt
-            }
+        fun deletedAt(deletedAt: JsonField<OffsetDateTime>) = apply { this.deletedAt = deletedAt }
 
         /** Textual description of the experiment */
         fun description(description: String?) = description(JsonField.ofNullable(description))
 
         /** Textual description of the experiment */
-        fun description(description: JsonField<String>) =
-            apply {
-                this.description = description
-            }
+        fun description(description: JsonField<String>) = apply { this.description = description }
 
         /** User-controlled metadata about the experiment */
         fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
         /** User-controlled metadata about the experiment */
-        fun metadata(metadata: JsonField<Metadata>) =
-            apply {
-                this.metadata = metadata
-            }
+        fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /** Metadata about the state of the repo when the experiment was created */
         fun repoInfo(repoInfo: RepoInfo?) = repoInfo(JsonField.ofNullable(repoInfo))
 
         /** Metadata about the state of the repo when the experiment was created */
-        fun repoInfo(repoInfo: JsonField<RepoInfo>) =
-            apply {
-                this.repoInfo = repoInfo
-            }
+        fun repoInfo(repoInfo: JsonField<RepoInfo>) = apply { this.repoInfo = repoInfo }
 
         /** Identifies the user who created the experiment */
         fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
 
         /** Identifies the user who created the experiment */
-        fun userId(userId: JsonField<String>) =
-            apply {
-                this.userId = userId
-            }
+        fun userId(userId: JsonField<String>) = apply { this.userId = userId }
 
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
 
-        fun putAdditionalProperty(key: String, value: JsonValue) =
-            apply {
-                additionalProperties.put(key, value)
-            }
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
 
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
 
-        fun removeAdditionalProperty(key: String) =
-            apply {
-                additionalProperties.remove(key)
-            }
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
 
-        fun removeAllAdditionalProperties(keys: Set<String>) =
-            apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
 
         fun build(): Experiment =
             Experiment(
-              checkRequired(
-                "id", id
-              ),
-              checkRequired(
-                "name", name
-              ),
-              checkRequired(
-                "projectId", projectId
-              ),
-              checkRequired(
-                "public_", public_
-              ),
-              baseExpId,
-              commit,
-              created,
-              datasetId,
-              datasetVersion,
-              deletedAt,
-              description,
-              metadata,
-              repoInfo,
-              userId,
-              additionalProperties.toImmutable(),
+                checkRequired("id", id),
+                checkRequired("name", name),
+                checkRequired("projectId", projectId),
+                checkRequired("public_", public_),
+                baseExpId,
+                commit,
+                created,
+                datasetId,
+                datasetVersion,
+                deletedAt,
+                description,
+                metadata,
+                repoInfo,
+                userId,
+                additionalProperties.toImmutable(),
             )
     }
 
     /** User-controlled metadata about the experiment */
     @NoAutoDetect
-    class Metadata @JsonCreator private constructor(
-        @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-
+    class Metadata
+    @JsonCreator
+    private constructor(
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
     ) {
 
         @JsonAnyGetter
@@ -464,14 +402,13 @@ class Experiment @JsonCreator private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Metadata =
-            apply {
-                if (validated) {
-                  return@apply
-                }
-
-                validated = true
+        fun validate(): Metadata = apply {
+            if (validated) {
+                return@apply
             }
+
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -486,46 +423,38 @@ class Experiment @JsonCreator private constructor(
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(metadata: Metadata) =
-                apply {
-                    additionalProperties = metadata.additionalProperties.toMutableMap()
-                }
+            internal fun from(metadata: Metadata) = apply {
+                additionalProperties = metadata.additionalProperties.toMutableMap()
+            }
 
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
 
-            fun putAdditionalProperty(key: String, value: JsonValue) =
-                apply {
-                    additionalProperties.put(key, value)
-                }
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
 
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                apply {
-                    this.additionalProperties.putAll(additionalProperties)
-                }
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
 
-            fun removeAdditionalProperty(key: String) =
-                apply {
-                    additionalProperties.remove(key)
-                }
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
 
-            fun removeAllAdditionalProperties(keys: Set<String>) =
-                apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
 
             fun build(): Metadata = Metadata(additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -538,11 +467,11 @@ class Experiment @JsonCreator private constructor(
     }
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return /* spotless:off */ other is Experiment && id == other.id && name == other.name && projectId == other.projectId && public_ == other.public_ && baseExpId == other.baseExpId && commit == other.commit && created == other.created && datasetId == other.datasetId && datasetVersion == other.datasetVersion && deletedAt == other.deletedAt && description == other.description && metadata == other.metadata && repoInfo == other.repoInfo && userId == other.userId && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Experiment && id == other.id && name == other.name && projectId == other.projectId && public_ == other.public_ && baseExpId == other.baseExpId && commit == other.commit && created == other.created && datasetId == other.datasetId && datasetVersion == other.datasetVersion && deletedAt == other.deletedAt && description == other.description && metadata == other.metadata && repoInfo == other.repoInfo && userId == other.userId && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -551,5 +480,6 @@ class Experiment @JsonCreator private constructor(
 
     override fun hashCode(): Int = hashCode
 
-    override fun toString() = "Experiment{id=$id, name=$name, projectId=$projectId, public_=$public_, baseExpId=$baseExpId, commit=$commit, created=$created, datasetId=$datasetId, datasetVersion=$datasetVersion, deletedAt=$deletedAt, description=$description, metadata=$metadata, repoInfo=$repoInfo, userId=$userId, additionalProperties=$additionalProperties}"
+    override fun toString() =
+        "Experiment{id=$id, name=$name, projectId=$projectId, public_=$public_, baseExpId=$baseExpId, commit=$commit, created=$created, datasetId=$datasetId, datasetVersion=$datasetVersion, deletedAt=$deletedAt, description=$description, metadata=$metadata, repoInfo=$repoInfo, userId=$userId, additionalProperties=$additionalProperties}"
 }
