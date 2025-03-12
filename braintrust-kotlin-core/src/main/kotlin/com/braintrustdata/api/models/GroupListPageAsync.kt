@@ -9,24 +9,29 @@ import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.models
 import com.braintrustdata.api.services.async.GroupServiceAsync
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.Objects
+import java.util.Optional
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executor
+import java.util.function.Predicate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 
 /**
- * List out all groups. The groups are sorted by creation date, with the most recently-created
- * groups coming first
+ * List out all groups. The groups are sorted by creation date, with the most
+ * recently-created groups coming first
  */
-class GroupListPageAsync
-private constructor(
+class GroupListPageAsync private constructor(
     private val groupsService: GroupServiceAsync,
     private val params: GroupListParams,
     private val response: Response,
+
 ) {
 
     fun response(): Response = response
@@ -34,36 +39,37 @@ private constructor(
     fun objects(): List<Group> = response().objects()
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return /* spotless:off */ other is GroupListPageAsync && groupsService == other.groupsService && params == other.params && response == other.response /* spotless:on */
+      return /* spotless:off */ other is GroupListPageAsync && groupsService == other.groupsService && params == other.params && response == other.response /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(groupsService, params, response) /* spotless:on */
 
-    override fun toString() =
-        "GroupListPageAsync{groupsService=$groupsService, params=$params, response=$response}"
+    override fun toString() = "GroupListPageAsync{groupsService=$groupsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
-        return !objects().isEmpty()
+      return !objects().isEmpty()
     }
 
     fun getNextPageParams(): GroupListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
+      if (!hasNextPage()) {
+        return null
+      }
 
-        return if (params.endingBefore() != null) {
-            GroupListParams.builder().from(params).endingBefore(objects().first().id()).build()
-        } else {
-            GroupListParams.builder().from(params).startingAfter(objects().last().id()).build()
-        }
+      return if (params.endingBefore() != null) {
+        GroupListParams.builder().from(params).endingBefore(objects().first().id()).build();
+      } else {
+        GroupListParams.builder().from(params).startingAfter(objects().last().id()).build();
+      }
     }
 
     suspend fun getNextPage(): GroupListPageAsync? {
-        return getNextPageParams()?.let { groupsService.list(it) }
+      return getNextPageParams()?.let {
+          groupsService.list(it)
+      }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
@@ -71,21 +77,24 @@ private constructor(
     companion object {
 
         fun of(groupsService: GroupServiceAsync, params: GroupListParams, response: Response) =
-            GroupListPageAsync(groupsService, params, response)
+            GroupListPageAsync(
+              groupsService,
+              params,
+              response,
+            )
     }
 
     @NoAutoDetect
-    class Response
-    @JsonCreator
-    constructor(
+    class Response @JsonCreator constructor(
         @JsonProperty("objects") private val objects: JsonField<List<Group>> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
     ) {
 
         fun objects(): List<Group> = objects.getNullable("objects") ?: listOf()
 
-        @JsonProperty("objects") fun _objects(): JsonField<List<Group>>? = objects
+        @JsonProperty("objects")
+        fun _objects(): JsonField<List<Group>>? = objects
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -93,29 +102,29 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Response = apply {
-            if (validated) {
-                return@apply
-            }
+        fun validate(): Response =
+            apply {
+                if (validated) {
+                  return@apply
+                }
 
-            objects().map { it.validate() }
-            validated = true
-        }
+                objects().map { it.validate() }
+                validated = true
+            }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return /* spotless:off */ other is Response && objects == other.objects && additionalProperties == other.additionalProperties /* spotless:on */
+          return /* spotless:off */ other is Response && objects == other.objects && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         override fun hashCode(): Int = /* spotless:off */ Objects.hash(objects, additionalProperties) /* spotless:on */
 
-        override fun toString() =
-            "Response{objects=$objects, additionalProperties=$additionalProperties}"
+        override fun toString() = "Response{objects=$objects, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -128,35 +137,43 @@ private constructor(
             private var objects: JsonField<List<Group>> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(page: Response) = apply {
-                this.objects = page.objects
-                this.additionalProperties.putAll(page.additionalProperties)
-            }
+            internal fun from(page: Response) =
+                apply {
+                    this.objects = page.objects
+                    this.additionalProperties.putAll(page.additionalProperties)
+                }
 
             fun objects(objects: List<Group>) = objects(JsonField.of(objects))
 
             fun objects(objects: JsonField<List<Group>>) = apply { this.objects = objects }
 
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
+            fun putAdditionalProperty(key: String, value: JsonValue) =
+                apply {
+                    this.additionalProperties.put(key, value)
+                }
 
-            fun build() = Response(objects, additionalProperties.toImmutable())
+            fun build() =
+                Response(
+                  objects, additionalProperties.toImmutable()
+                )
         }
     }
 
-    class AutoPager(private val firstPage: GroupListPageAsync) : Flow<Group> {
+    class AutoPager(
+        private val firstPage: GroupListPageAsync,
+
+    ) : Flow<Group> {
 
         override suspend fun collect(collector: FlowCollector<Group>) {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    collector.emit(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
+          var page = firstPage
+          var index = 0
+          while (true) {
+            while (index < page.objects().size) {
+              collector.emit(page.objects()[index++])
             }
+            page = page.getNextPage() ?: break
+            index = 0
+          }
         }
     }
 }

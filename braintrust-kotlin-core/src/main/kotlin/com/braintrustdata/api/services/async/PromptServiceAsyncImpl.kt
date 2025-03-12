@@ -18,230 +18,208 @@ import com.braintrustdata.api.errors.BraintrustError
 import com.braintrustdata.api.models.Prompt
 import com.braintrustdata.api.models.PromptCreateParams
 import com.braintrustdata.api.models.PromptDeleteParams
+import com.braintrustdata.api.models.PromptListPage
 import com.braintrustdata.api.models.PromptListPageAsync
 import com.braintrustdata.api.models.PromptListParams
 import com.braintrustdata.api.models.PromptReplaceParams
 import com.braintrustdata.api.models.PromptRetrieveParams
 import com.braintrustdata.api.models.PromptUpdateParams
 
-class PromptServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
-    PromptServiceAsync {
+class PromptServiceAsyncImpl internal constructor(
+    private val clientOptions: ClientOptions,
 
-    private val withRawResponse: PromptServiceAsync.WithRawResponse by lazy {
-        WithRawResponseImpl(clientOptions)
-    }
+) : PromptServiceAsync {
+
+    private val withRawResponse: PromptServiceAsync.WithRawResponse by lazy { WithRawResponseImpl(clientOptions) }
 
     override fun withRawResponse(): PromptServiceAsync.WithRawResponse = withRawResponse
 
-    override suspend fun create(
-        params: PromptCreateParams,
-        requestOptions: RequestOptions,
-    ): Prompt =
+    override suspend fun create(params: PromptCreateParams, requestOptions: RequestOptions): Prompt =
         // post /v1/prompt
         withRawResponse().create(params, requestOptions).parse()
 
-    override suspend fun retrieve(
-        params: PromptRetrieveParams,
-        requestOptions: RequestOptions,
-    ): Prompt =
+    override suspend fun retrieve(params: PromptRetrieveParams, requestOptions: RequestOptions): Prompt =
         // get /v1/prompt/{prompt_id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
-    override suspend fun update(
-        params: PromptUpdateParams,
-        requestOptions: RequestOptions,
-    ): Prompt =
+    override suspend fun update(params: PromptUpdateParams, requestOptions: RequestOptions): Prompt =
         // patch /v1/prompt/{prompt_id}
         withRawResponse().update(params, requestOptions).parse()
 
-    override suspend fun list(
-        params: PromptListParams,
-        requestOptions: RequestOptions,
-    ): PromptListPageAsync =
+    override suspend fun list(params: PromptListParams, requestOptions: RequestOptions): PromptListPageAsync =
         // get /v1/prompt
         withRawResponse().list(params, requestOptions).parse()
 
-    override suspend fun delete(
-        params: PromptDeleteParams,
-        requestOptions: RequestOptions,
-    ): Prompt =
+    override suspend fun delete(params: PromptDeleteParams, requestOptions: RequestOptions): Prompt =
         // delete /v1/prompt/{prompt_id}
         withRawResponse().delete(params, requestOptions).parse()
 
-    override suspend fun replace(
-        params: PromptReplaceParams,
-        requestOptions: RequestOptions,
-    ): Prompt =
+    override suspend fun replace(params: PromptReplaceParams, requestOptions: RequestOptions): Prompt =
         // put /v1/prompt
         withRawResponse().replace(params, requestOptions).parse()
 
-    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
-        PromptServiceAsync.WithRawResponse {
+    class WithRawResponseImpl internal constructor(
+        private val clientOptions: ClientOptions,
+
+    ) : PromptServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
 
-        private val createHandler: Handler<Prompt> =
-            jsonHandler<Prompt>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val createHandler: Handler<Prompt> = jsonHandler<Prompt>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
-        override suspend fun create(
-            params: PromptCreateParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<Prompt> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .addPathSegments("v1", "prompt")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
-                response
-                    .use { createHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
+        override suspend fun create(params: PromptCreateParams, requestOptions: RequestOptions): HttpResponseFor<Prompt> {
+          val request = HttpRequest.builder()
+            .method(HttpMethod.POST)
+            .addPathSegments("v1", "prompt")
+            .body(json(clientOptions.jsonMapper, params._body()))
+            .build()
+            .prepareAsync(clientOptions, params)
+          val requestOptions = requestOptions
+              .applyDefaults(RequestOptions.from(clientOptions))
+          val response = clientOptions.httpClient.executeAsync(
+            request, requestOptions
+          )
+          return response.parseable {
+              response.use {
+                  createHandler.handle(it)
+              }
+              .also {
+                  if (requestOptions.responseValidation!!) {
+                    it.validate()
+                  }
+              }
+          }
         }
 
-        private val retrieveHandler: Handler<Prompt> =
-            jsonHandler<Prompt>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val retrieveHandler: Handler<Prompt> = jsonHandler<Prompt>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
-        override suspend fun retrieve(
-            params: PromptRetrieveParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<Prompt> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.GET)
-                    .addPathSegments("v1", "prompt", params.getPathParam(0))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
-                response
-                    .use { retrieveHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
+        override suspend fun retrieve(params: PromptRetrieveParams, requestOptions: RequestOptions): HttpResponseFor<Prompt> {
+          val request = HttpRequest.builder()
+            .method(HttpMethod.GET)
+            .addPathSegments("v1", "prompt", params.getPathParam(0))
+            .build()
+            .prepareAsync(clientOptions, params)
+          val requestOptions = requestOptions
+              .applyDefaults(RequestOptions.from(clientOptions))
+          val response = clientOptions.httpClient.executeAsync(
+            request, requestOptions
+          )
+          return response.parseable {
+              response.use {
+                  retrieveHandler.handle(it)
+              }
+              .also {
+                  if (requestOptions.responseValidation!!) {
+                    it.validate()
+                  }
+              }
+          }
         }
 
-        private val updateHandler: Handler<Prompt> =
-            jsonHandler<Prompt>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val updateHandler: Handler<Prompt> = jsonHandler<Prompt>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
-        override suspend fun update(
-            params: PromptUpdateParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<Prompt> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.PATCH)
-                    .addPathSegments("v1", "prompt", params.getPathParam(0))
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
-                response
-                    .use { updateHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
+        override suspend fun update(params: PromptUpdateParams, requestOptions: RequestOptions): HttpResponseFor<Prompt> {
+          val request = HttpRequest.builder()
+            .method(HttpMethod.PATCH)
+            .addPathSegments("v1", "prompt", params.getPathParam(0))
+            .body(json(clientOptions.jsonMapper, params._body()))
+            .build()
+            .prepareAsync(clientOptions, params)
+          val requestOptions = requestOptions
+              .applyDefaults(RequestOptions.from(clientOptions))
+          val response = clientOptions.httpClient.executeAsync(
+            request, requestOptions
+          )
+          return response.parseable {
+              response.use {
+                  updateHandler.handle(it)
+              }
+              .also {
+                  if (requestOptions.responseValidation!!) {
+                    it.validate()
+                  }
+              }
+          }
         }
 
-        private val listHandler: Handler<PromptListPageAsync.Response> =
-            jsonHandler<PromptListPageAsync.Response>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
+        private val listHandler: Handler<PromptListPageAsync.Response> = jsonHandler<PromptListPageAsync.Response>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
-        override suspend fun list(
-            params: PromptListParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<PromptListPageAsync> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.GET)
-                    .addPathSegments("v1", "prompt")
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
-                response
-                    .use { listHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-                    .let {
-                        PromptListPageAsync.of(PromptServiceAsyncImpl(clientOptions), params, it)
-                    }
-            }
+        override suspend fun list(params: PromptListParams, requestOptions: RequestOptions): HttpResponseFor<PromptListPageAsync> {
+          val request = HttpRequest.builder()
+            .method(HttpMethod.GET)
+            .addPathSegments("v1", "prompt")
+            .build()
+            .prepareAsync(clientOptions, params)
+          val requestOptions = requestOptions
+              .applyDefaults(RequestOptions.from(clientOptions))
+          val response = clientOptions.httpClient.executeAsync(
+            request, requestOptions
+          )
+          return response.parseable {
+              response.use {
+                  listHandler.handle(it)
+              }
+              .also {
+                  if (requestOptions.responseValidation!!) {
+                    it.validate()
+                  }
+              }
+              .let {
+                  PromptListPageAsync.of(PromptServiceAsyncImpl(clientOptions), params, it)
+              }
+          }
         }
 
-        private val deleteHandler: Handler<Prompt> =
-            jsonHandler<Prompt>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val deleteHandler: Handler<Prompt> = jsonHandler<Prompt>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
-        override suspend fun delete(
-            params: PromptDeleteParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<Prompt> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.DELETE)
-                    .addPathSegments("v1", "prompt", params.getPathParam(0))
-                    .apply { params._body()?.let { body(json(clientOptions.jsonMapper, it)) } }
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
-                response
-                    .use { deleteHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
+        override suspend fun delete(params: PromptDeleteParams, requestOptions: RequestOptions): HttpResponseFor<Prompt> {
+          val request = HttpRequest.builder()
+            .method(HttpMethod.DELETE)
+            .addPathSegments("v1", "prompt", params.getPathParam(0))
+            .apply { params._body()?.let{ body(json(clientOptions.jsonMapper, it)) } }
+            .build()
+            .prepareAsync(clientOptions, params)
+          val requestOptions = requestOptions
+              .applyDefaults(RequestOptions.from(clientOptions))
+          val response = clientOptions.httpClient.executeAsync(
+            request, requestOptions
+          )
+          return response.parseable {
+              response.use {
+                  deleteHandler.handle(it)
+              }
+              .also {
+                  if (requestOptions.responseValidation!!) {
+                    it.validate()
+                  }
+              }
+          }
         }
 
-        private val replaceHandler: Handler<Prompt> =
-            jsonHandler<Prompt>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val replaceHandler: Handler<Prompt> = jsonHandler<Prompt>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
-        override suspend fun replace(
-            params: PromptReplaceParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<Prompt> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.PUT)
-                    .addPathSegments("v1", "prompt")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
-                response
-                    .use { replaceHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
+        override suspend fun replace(params: PromptReplaceParams, requestOptions: RequestOptions): HttpResponseFor<Prompt> {
+          val request = HttpRequest.builder()
+            .method(HttpMethod.PUT)
+            .addPathSegments("v1", "prompt")
+            .body(json(clientOptions.jsonMapper, params._body()))
+            .build()
+            .prepareAsync(clientOptions, params)
+          val requestOptions = requestOptions
+              .applyDefaults(RequestOptions.from(clientOptions))
+          val response = clientOptions.httpClient.executeAsync(
+            request, requestOptions
+          )
+          return response.parseable {
+              response.use {
+                  replaceHandler.handle(it)
+              }
+              .also {
+                  if (requestOptions.responseValidation!!) {
+                    it.validate()
+                  }
+              }
+          }
         }
     }
 }
