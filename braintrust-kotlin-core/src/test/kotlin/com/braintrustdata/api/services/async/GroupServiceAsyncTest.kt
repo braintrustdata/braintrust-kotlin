@@ -6,7 +6,6 @@ import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClientAsync
 import com.braintrustdata.api.models.GroupCreateParams
 import com.braintrustdata.api.models.GroupDeleteParams
-import com.braintrustdata.api.models.GroupListParams
 import com.braintrustdata.api.models.GroupReplaceParams
 import com.braintrustdata.api.models.GroupRetrieveParams
 import com.braintrustdata.api.models.GroupUpdateParams
@@ -18,103 +17,122 @@ class GroupServiceAsyncTest {
 
     @Test
     suspend fun create() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val groupServiceAsync = client.groups()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val groupServiceAsync = client.groups()
 
-      val group = groupServiceAsync.create(GroupCreateParams.builder()
-          .name("x")
-          .description("description")
-          .addMemberGroup("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .addMemberUser("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .orgName("org_name")
-          .build())
+        val group =
+            groupServiceAsync.create(
+                GroupCreateParams.builder()
+                    .name("x")
+                    .description("description")
+                    .addMemberGroup("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .addMemberUser("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .orgName("org_name")
+                    .build()
+            )
 
-      group.validate()
+        group.validate()
     }
 
     @Test
     suspend fun retrieve() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val groupServiceAsync = client.groups()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val groupServiceAsync = client.groups()
 
-      val group = groupServiceAsync.retrieve(GroupRetrieveParams.builder()
-          .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build())
+        val group =
+            groupServiceAsync.retrieve(
+                GroupRetrieveParams.builder()
+                    .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
+            )
 
-      group.validate()
+        group.validate()
     }
 
     @Test
     suspend fun update() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val groupServiceAsync = client.groups()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val groupServiceAsync = client.groups()
 
-      val group = groupServiceAsync.update(GroupUpdateParams.builder()
-          .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .addAddMemberGroup("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .addAddMemberUser("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .description("description")
-          .name("x")
-          .addRemoveMemberGroup("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .addRemoveMemberUser("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build())
+        val group =
+            groupServiceAsync.update(
+                GroupUpdateParams.builder()
+                    .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .addAddMemberGroup("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .addAddMemberUser("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .description("description")
+                    .name("x")
+                    .addRemoveMemberGroup("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .addRemoveMemberUser("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
+            )
 
-      group.validate()
+        group.validate()
     }
 
     @Test
     suspend fun list() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val groupServiceAsync = client.groups()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val groupServiceAsync = client.groups()
 
-      val page = groupServiceAsync.list()
+        val page = groupServiceAsync.list()
 
-      page.response().validate()
+        page.response().validate()
     }
 
     @Test
     suspend fun delete() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val groupServiceAsync = client.groups()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val groupServiceAsync = client.groups()
 
-      val group = groupServiceAsync.delete(GroupDeleteParams.builder()
-          .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build())
+        val group =
+            groupServiceAsync.delete(
+                GroupDeleteParams.builder().groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+            )
 
-      group.validate()
+        group.validate()
     }
 
     @Test
     suspend fun replace() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val groupServiceAsync = client.groups()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val groupServiceAsync = client.groups()
 
-      val group = groupServiceAsync.replace(GroupReplaceParams.builder()
-          .name("x")
-          .description("description")
-          .addMemberGroup("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .addMemberUser("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .orgName("org_name")
-          .build())
+        val group =
+            groupServiceAsync.replace(
+                GroupReplaceParams.builder()
+                    .name("x")
+                    .description("description")
+                    .addMemberGroup("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .addMemberUser("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .orgName("org_name")
+                    .build()
+            )
 
-      group.validate()
+        group.validate()
     }
 }
