@@ -23,14 +23,15 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.Objects
 
 /**
- * Create or replace prompt. If there is an existing prompt in the project with the same slug as the
- * one specified in the request, will replace the existing prompt with the provided fields
+ * Create or replace prompt. If there is an existing prompt in the project with the
+ * same slug as the one specified in the request, will replace the existing prompt
+ * with the provided fields
  */
-class PromptReplaceParams
-private constructor(
+class PromptReplaceParams private constructor(
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
+
 ) : Params {
 
     /** Name of the prompt */
@@ -86,32 +87,16 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        @JsonProperty("name")
-        @ExcludeMissing
-        private val name: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("project_id")
-        @ExcludeMissing
-        private val projectId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("slug")
-        @ExcludeMissing
-        private val slug: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("description")
-        @ExcludeMissing
-        private val description: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("function_type")
-        @ExcludeMissing
-        private val functionType: JsonField<FunctionType> = JsonMissing.of(),
-        @JsonProperty("prompt_data")
-        @ExcludeMissing
-        private val promptData: JsonField<PromptData> = JsonMissing.of(),
-        @JsonProperty("tags")
-        @ExcludeMissing
-        private val tags: JsonField<List<String>> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    class Body @JsonCreator private constructor(
+        @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("project_id") @ExcludeMissing private val projectId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("slug") @ExcludeMissing private val slug: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("description") @ExcludeMissing private val description: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("function_type") @ExcludeMissing private val functionType: JsonField<FunctionType> = JsonMissing.of(),
+        @JsonProperty("prompt_data") @ExcludeMissing private val promptData: JsonField<PromptData> = JsonMissing.of(),
+        @JsonProperty("tags") @ExcludeMissing private val tags: JsonField<List<String>> = JsonMissing.of(),
+        @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
     ) {
 
         /** Name of the prompt */
@@ -135,13 +120,19 @@ private constructor(
         fun tags(): List<String>? = tags.getNullable("tags")
 
         /** Name of the prompt */
-        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+        @JsonProperty("name")
+        @ExcludeMissing
+        fun _name(): JsonField<String> = name
 
         /** Unique identifier for the project that the prompt belongs under */
-        @JsonProperty("project_id") @ExcludeMissing fun _projectId(): JsonField<String> = projectId
+        @JsonProperty("project_id")
+        @ExcludeMissing
+        fun _projectId(): JsonField<String> = projectId
 
         /** Unique identifier for the prompt */
-        @JsonProperty("slug") @ExcludeMissing fun _slug(): JsonField<String> = slug
+        @JsonProperty("slug")
+        @ExcludeMissing
+        fun _slug(): JsonField<String> = slug
 
         /** Textual description of the prompt */
         @JsonProperty("description")
@@ -158,7 +149,9 @@ private constructor(
         fun _promptData(): JsonField<PromptData> = promptData
 
         /** A list of tags for the prompt */
-        @JsonProperty("tags") @ExcludeMissing fun _tags(): JsonField<List<String>> = tags
+        @JsonProperty("tags")
+        @ExcludeMissing
+        fun _tags(): JsonField<List<String>> = tags
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -166,20 +159,21 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
+        fun validate(): Body =
+            apply {
+                if (validated) {
+                  return@apply
+                }
 
-            name()
-            projectId()
-            slug()
-            description()
-            functionType()
-            promptData()?.validate()
-            tags()
-            validated = true
-        }
+                name()
+                projectId()
+                slug()
+                description()
+                functionType()
+                promptData()?.validate()
+                tags()
+                validated = true
+            }
 
         fun toBuilder() = Builder().from(this)
 
@@ -189,6 +183,7 @@ private constructor(
              * Returns a mutable builder for constructing an instance of [Body].
              *
              * The following fields are required:
+             *
              * ```kotlin
              * .name()
              * .projectId()
@@ -210,110 +205,138 @@ private constructor(
             private var tags: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(body: Body) = apply {
-                name = body.name
-                projectId = body.projectId
-                slug = body.slug
-                description = body.description
-                functionType = body.functionType
-                promptData = body.promptData
-                tags = body.tags.map { it.toMutableList() }
-                additionalProperties = body.additionalProperties.toMutableMap()
-            }
+            internal fun from(body: Body) =
+                apply {
+                    name = body.name
+                    projectId = body.projectId
+                    slug = body.slug
+                    description = body.description
+                    functionType = body.functionType
+                    promptData = body.promptData
+                    tags = body.tags.map { it.toMutableList() }
+                    additionalProperties = body.additionalProperties.toMutableMap()
+                }
 
             /** Name of the prompt */
             fun name(name: String) = name(JsonField.of(name))
 
             /** Name of the prompt */
-            fun name(name: JsonField<String>) = apply { this.name = name }
+            fun name(name: JsonField<String>) =
+                apply {
+                    this.name = name
+                }
 
             /** Unique identifier for the project that the prompt belongs under */
             fun projectId(projectId: String) = projectId(JsonField.of(projectId))
 
             /** Unique identifier for the project that the prompt belongs under */
-            fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
+            fun projectId(projectId: JsonField<String>) =
+                apply {
+                    this.projectId = projectId
+                }
 
             /** Unique identifier for the prompt */
             fun slug(slug: String) = slug(JsonField.of(slug))
 
             /** Unique identifier for the prompt */
-            fun slug(slug: JsonField<String>) = apply { this.slug = slug }
+            fun slug(slug: JsonField<String>) =
+                apply {
+                    this.slug = slug
+                }
 
             /** Textual description of the prompt */
             fun description(description: String?) = description(JsonField.ofNullable(description))
 
             /** Textual description of the prompt */
-            fun description(description: JsonField<String>) = apply {
-                this.description = description
-            }
+            fun description(description: JsonField<String>) =
+                apply {
+                    this.description = description
+                }
 
-            fun functionType(functionType: FunctionType?) =
-                functionType(JsonField.ofNullable(functionType))
+            fun functionType(functionType: FunctionType?) = functionType(JsonField.ofNullable(functionType))
 
-            fun functionType(functionType: JsonField<FunctionType>) = apply {
-                this.functionType = functionType
-            }
+            fun functionType(functionType: JsonField<FunctionType>) =
+                apply {
+                    this.functionType = functionType
+                }
 
             /** The prompt, model, and its parameters */
             fun promptData(promptData: PromptData?) = promptData(JsonField.ofNullable(promptData))
 
             /** The prompt, model, and its parameters */
-            fun promptData(promptData: JsonField<PromptData>) = apply {
-                this.promptData = promptData
-            }
+            fun promptData(promptData: JsonField<PromptData>) =
+                apply {
+                    this.promptData = promptData
+                }
 
             /** A list of tags for the prompt */
             fun tags(tags: List<String>?) = tags(JsonField.ofNullable(tags))
 
             /** A list of tags for the prompt */
-            fun tags(tags: JsonField<List<String>>) = apply {
-                this.tags = tags.map { it.toMutableList() }
-            }
+            fun tags(tags: JsonField<List<String>>) =
+                apply {
+                    this.tags = tags.map { it.toMutableList() }
+                }
 
             /** A list of tags for the prompt */
-            fun addTag(tag: String) = apply {
-                tags =
-                    (tags ?: JsonField.of(mutableListOf())).also { checkKnown("tags", it).add(tag) }
-            }
+            fun addTag(tag: String) =
+                apply {
+                    tags = (tags ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("tags", it).add(tag)
+                    }
+                }
 
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
 
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
+            fun putAdditionalProperty(key: String, value: JsonValue) =
+                apply {
+                    additionalProperties.put(key, value)
+                }
 
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                apply {
+                    this.additionalProperties.putAll(additionalProperties)
+                }
 
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+            fun removeAdditionalProperty(key: String) =
+                apply {
+                    additionalProperties.remove(key)
+                }
 
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
+            fun removeAllAdditionalProperties(keys: Set<String>) =
+                apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
 
             fun build(): Body =
                 Body(
-                    checkRequired("name", name),
-                    checkRequired("projectId", projectId),
-                    checkRequired("slug", slug),
-                    description,
-                    functionType,
-                    promptData,
-                    (tags ?: JsonMissing.of()).map { it.toImmutable() },
-                    additionalProperties.toImmutable(),
+                  checkRequired(
+                    "name", name
+                  ),
+                  checkRequired(
+                    "projectId", projectId
+                  ),
+                  checkRequired(
+                    "slug", slug
+                  ),
+                  description,
+                  functionType,
+                  promptData,
+                  (tags ?: JsonMissing.of()).map { it.toImmutable() },
+                  additionalProperties.toImmutable(),
                 )
         }
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return /* spotless:off */ other is Body && name == other.name && projectId == other.projectId && slug == other.slug && description == other.description && functionType == other.functionType && promptData == other.promptData && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
+          return /* spotless:off */ other is Body && name == other.name && projectId == other.projectId && slug == other.slug && description == other.description && functionType == other.functionType && promptData == other.promptData && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -322,8 +345,7 @@ private constructor(
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() =
-            "Body{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
+        override fun toString() = "Body{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -334,6 +356,7 @@ private constructor(
          * Returns a mutable builder for constructing an instance of [PromptReplaceParams].
          *
          * The following fields are required:
+         *
          * ```kotlin
          * .name()
          * .projectId()
@@ -351,194 +374,275 @@ private constructor(
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-        internal fun from(promptReplaceParams: PromptReplaceParams) = apply {
-            body = promptReplaceParams.body.toBuilder()
-            additionalHeaders = promptReplaceParams.additionalHeaders.toBuilder()
-            additionalQueryParams = promptReplaceParams.additionalQueryParams.toBuilder()
-        }
+        internal fun from(promptReplaceParams: PromptReplaceParams) =
+            apply {
+                body = promptReplaceParams.body.toBuilder()
+                additionalHeaders = promptReplaceParams.additionalHeaders.toBuilder()
+                additionalQueryParams = promptReplaceParams.additionalQueryParams.toBuilder()
+            }
 
         /** Name of the prompt */
-        fun name(name: String) = apply { body.name(name) }
+        fun name(name: String) =
+            apply {
+                body.name(name)
+            }
 
         /** Name of the prompt */
-        fun name(name: JsonField<String>) = apply { body.name(name) }
+        fun name(name: JsonField<String>) =
+            apply {
+                body.name(name)
+            }
 
         /** Unique identifier for the project that the prompt belongs under */
-        fun projectId(projectId: String) = apply { body.projectId(projectId) }
+        fun projectId(projectId: String) =
+            apply {
+                body.projectId(projectId)
+            }
 
         /** Unique identifier for the project that the prompt belongs under */
-        fun projectId(projectId: JsonField<String>) = apply { body.projectId(projectId) }
+        fun projectId(projectId: JsonField<String>) =
+            apply {
+                body.projectId(projectId)
+            }
 
         /** Unique identifier for the prompt */
-        fun slug(slug: String) = apply { body.slug(slug) }
+        fun slug(slug: String) =
+            apply {
+                body.slug(slug)
+            }
 
         /** Unique identifier for the prompt */
-        fun slug(slug: JsonField<String>) = apply { body.slug(slug) }
+        fun slug(slug: JsonField<String>) =
+            apply {
+                body.slug(slug)
+            }
 
         /** Textual description of the prompt */
-        fun description(description: String?) = apply { body.description(description) }
+        fun description(description: String?) =
+            apply {
+                body.description(description)
+            }
 
         /** Textual description of the prompt */
-        fun description(description: JsonField<String>) = apply { body.description(description) }
+        fun description(description: JsonField<String>) =
+            apply {
+                body.description(description)
+            }
 
-        fun functionType(functionType: FunctionType?) = apply { body.functionType(functionType) }
+        fun functionType(functionType: FunctionType?) =
+            apply {
+                body.functionType(functionType)
+            }
 
-        fun functionType(functionType: JsonField<FunctionType>) = apply {
-            body.functionType(functionType)
-        }
+        fun functionType(functionType: JsonField<FunctionType>) =
+            apply {
+                body.functionType(functionType)
+            }
 
         /** The prompt, model, and its parameters */
-        fun promptData(promptData: PromptData?) = apply { body.promptData(promptData) }
+        fun promptData(promptData: PromptData?) =
+            apply {
+                body.promptData(promptData)
+            }
 
         /** The prompt, model, and its parameters */
-        fun promptData(promptData: JsonField<PromptData>) = apply { body.promptData(promptData) }
+        fun promptData(promptData: JsonField<PromptData>) =
+            apply {
+                body.promptData(promptData)
+            }
 
         /** A list of tags for the prompt */
-        fun tags(tags: List<String>?) = apply { body.tags(tags) }
+        fun tags(tags: List<String>?) =
+            apply {
+                body.tags(tags)
+            }
 
         /** A list of tags for the prompt */
-        fun tags(tags: JsonField<List<String>>) = apply { body.tags(tags) }
+        fun tags(tags: JsonField<List<String>>) =
+            apply {
+                body.tags(tags)
+            }
 
         /** A list of tags for the prompt */
-        fun addTag(tag: String) = apply { body.addTag(tag) }
+        fun addTag(tag: String) =
+            apply {
+                body.addTag(tag)
+            }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.additionalProperties(additionalBodyProperties)
+            }
 
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) =
+            apply {
+                body.putAdditionalProperty(
+                  key, value
+                )
+            }
 
         fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
             apply {
                 body.putAllAdditionalProperties(additionalBodyProperties)
             }
 
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+        fun removeAdditionalBodyProperty(key: String) =
+            apply {
+                body.removeAdditionalProperty(key)
+            }
 
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
-        }
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) =
+            apply {
+                body.removeAllAdditionalProperties(keys)
+            }
 
-        fun additionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.clear()
-            putAllAdditionalHeaders(additionalHeaders)
-        }
+        fun additionalHeaders(additionalHeaders: Headers) =
+            apply {
+                this.additionalHeaders.clear()
+                putAllAdditionalHeaders(additionalHeaders)
+            }
 
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllAdditionalHeaders(additionalHeaders)
-        }
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalHeaders.clear()
+                putAllAdditionalHeaders(additionalHeaders)
+            }
 
-        fun putAdditionalHeader(name: String, value: String) = apply {
-            additionalHeaders.put(name, value)
-        }
+        fun putAdditionalHeader(name: String, value: String) =
+            apply {
+                additionalHeaders.put(name, value)
+            }
 
-        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
-            additionalHeaders.put(name, values)
-        }
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) =
+            apply {
+                additionalHeaders.put(name, values)
+            }
 
-        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.putAll(additionalHeaders)
-        }
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) =
+            apply {
+                this.additionalHeaders.putAll(additionalHeaders)
+            }
 
-        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.putAll(additionalHeaders)
-        }
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalHeaders.putAll(additionalHeaders)
+            }
 
-        fun replaceAdditionalHeaders(name: String, value: String) = apply {
-            additionalHeaders.replace(name, value)
-        }
+        fun replaceAdditionalHeaders(name: String, value: String) =
+            apply {
+                additionalHeaders.replace(name, value)
+            }
 
-        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
-            additionalHeaders.replace(name, values)
-        }
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) =
+            apply {
+                additionalHeaders.replace(name, values)
+            }
 
-        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.replaceAll(additionalHeaders)
-        }
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) =
+            apply {
+                this.additionalHeaders.replaceAll(additionalHeaders)
+            }
 
-        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.replaceAll(additionalHeaders)
-        }
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalHeaders.replaceAll(additionalHeaders)
+            }
 
-        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+        fun removeAdditionalHeaders(name: String) =
+            apply {
+                additionalHeaders.remove(name)
+            }
 
-        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
-            additionalHeaders.removeAll(names)
-        }
+        fun removeAllAdditionalHeaders(names: Set<String>) =
+            apply {
+                additionalHeaders.removeAll(names)
+            }
 
-        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.clear()
-            putAllAdditionalQueryParams(additionalQueryParams)
-        }
+        fun additionalQueryParams(additionalQueryParams: QueryParams) =
+            apply {
+                this.additionalQueryParams.clear()
+                putAllAdditionalQueryParams(additionalQueryParams)
+            }
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllAdditionalQueryParams(additionalQueryParams)
-        }
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.clear()
+                putAllAdditionalQueryParams(additionalQueryParams)
+            }
 
-        fun putAdditionalQueryParam(key: String, value: String) = apply {
-            additionalQueryParams.put(key, value)
-        }
+        fun putAdditionalQueryParam(key: String, value: String) =
+            apply {
+                additionalQueryParams.put(key, value)
+            }
 
-        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
-            additionalQueryParams.put(key, values)
-        }
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) =
+            apply {
+                additionalQueryParams.put(key, values)
+            }
 
-        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.putAll(additionalQueryParams)
-        }
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
 
         fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
                 this.additionalQueryParams.putAll(additionalQueryParams)
             }
 
-        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
-            additionalQueryParams.replace(key, value)
-        }
+        fun replaceAdditionalQueryParams(key: String, value: String) =
+            apply {
+                additionalQueryParams.replace(key, value)
+            }
 
-        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
-            additionalQueryParams.replace(key, values)
-        }
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) =
+            apply {
+                additionalQueryParams.replace(key, values)
+            }
 
-        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.replaceAll(additionalQueryParams)
-        }
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
 
         fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
                 this.additionalQueryParams.replaceAll(additionalQueryParams)
             }
 
-        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+        fun removeAdditionalQueryParams(key: String) =
+            apply {
+                additionalQueryParams.remove(key)
+            }
 
-        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
-            additionalQueryParams.removeAll(keys)
-        }
+        fun removeAllAdditionalQueryParams(keys: Set<String>) =
+            apply {
+                additionalQueryParams.removeAll(keys)
+            }
 
         fun build(): PromptReplaceParams =
             PromptReplaceParams(
-                body.build(),
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
+              body.build(),
+              additionalHeaders.build(),
+              additionalQueryParams.build(),
             )
     }
 
-    class FunctionType @JsonCreator private constructor(private val value: JsonField<String>) :
-        Enum {
+    class FunctionType @JsonCreator private constructor(
+        private val value: JsonField<String>,
+
+    ) : Enum {
 
         /**
          * Returns this class instance's raw value.
          *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
+         * This is usually only useful if this instance was deserialized from data that
+         * doesn't match any known member, and you want to know that value. For example, if
+         * the SDK is on an older version than the API, then the API may respond with new
+         * members that the SDK is unaware of.
          */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+        @com.fasterxml.jackson.annotation.JsonValue
+        fun _value(): JsonField<String> = value
 
         companion object {
 
@@ -562,12 +666,15 @@ private constructor(
         }
 
         /**
-         * An enum containing [FunctionType]'s known values, as well as an [_UNKNOWN] member.
+         * An enum containing [FunctionType]'s known values, as well as an [_UNKNOWN]
+         * member.
          *
          * An instance of [FunctionType] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
+         *
+         * - It was deserialized from data that doesn't match any known member. For
+         *   example, if the SDK is on an older version than the API, then the API may
+         *   respond with new members that the SDK is unaware of.
+         *
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
@@ -576,17 +683,18 @@ private constructor(
             TASK,
             TOOL,
             /**
-             * An enum member indicating that [FunctionType] was instantiated with an unknown value.
+             * An enum member indicating that [FunctionType] was instantiated with an unknown
+             * value.
              */
             _UNKNOWN,
         }
 
         /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
+         * Returns an enum member corresponding to this class instance's value, or
+         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
          *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
+         * Use the [known] method instead if you're certain the value is always known or if
+         * you want to throw for the unknown case.
          */
         fun value(): Value =
             when (this) {
@@ -600,11 +708,11 @@ private constructor(
         /**
          * Returns an enum member corresponding to this class instance's value.
          *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
+         * Use the [value] method instead if you're uncertain the value is always known and
+         * don't want to throw for the unknown case.
          *
-         * @throws BraintrustInvalidDataException if this class instance's value is a not a known
-         *   member.
+         * @throws BraintrustInvalidDataException if this class instance's value is a not a
+         * known member.
          */
         fun known(): Known =
             when (this) {
@@ -618,21 +726,20 @@ private constructor(
         /**
          * Returns this class instance's primitive wire representation.
          *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
+         * This differs from the [toString] method because that method is primarily for
+         * debugging and generally doesn't throw.
          *
-         * @throws BraintrustInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
+         * @throws BraintrustInvalidDataException if this class instance's value does not
+         * have the expected primitive type.
          */
-        fun asString(): String =
-            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
+        fun asString(): String = _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
+          if (this === other) {
+              return true
+          }
 
-            return /* spotless:off */ other is FunctionType && value == other.value /* spotless:on */
+          return /* spotless:off */ other is FunctionType && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -641,15 +748,14 @@ private constructor(
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return /* spotless:off */ other is PromptReplaceParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+      return /* spotless:off */ other is PromptReplaceParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
-    override fun toString() =
-        "PromptReplaceParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+    override fun toString() = "PromptReplaceParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
