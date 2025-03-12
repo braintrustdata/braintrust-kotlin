@@ -17,50 +17,64 @@ import com.google.errorprone.annotations.MustBeClosed
 interface GroupService {
 
     /**
-     * Returns a view of this service that provides access to raw HTTP responses for
-     * each method.
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
 
     /**
-     * Create a new group. If there is an existing group with the same name as the one
-     * specified in the request, will return the existing group unmodified
+     * Create a new group. If there is an existing group with the same name as the one specified in
+     * the request, will return the existing group unmodified
      */
-    fun create(params: GroupCreateParams, requestOptions: RequestOptions = RequestOptions.none()): Group
+    fun create(
+        params: GroupCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group
 
     /** Get a group object by its id */
-    fun retrieve(params: GroupRetrieveParams, requestOptions: RequestOptions = RequestOptions.none()): Group
+    fun retrieve(
+        params: GroupRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group
 
     /**
-     * Partially update a group object. Specify the fields to update in the payload.
-     * Any object-type fields will be deep-merged with existing content. Currently we
-     * do not support removing fields or setting them to null.
+     * Partially update a group object. Specify the fields to update in the payload. Any object-type
+     * fields will be deep-merged with existing content. Currently we do not support removing fields
+     * or setting them to null.
      */
-    fun update(params: GroupUpdateParams, requestOptions: RequestOptions = RequestOptions.none()): Group
+    fun update(
+        params: GroupUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group
 
     /**
-     * List out all groups. The groups are sorted by creation date, with the most
-     * recently-created groups coming first
+     * List out all groups. The groups are sorted by creation date, with the most recently-created
+     * groups coming first
      */
-    fun list(params: GroupListParams = GroupListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): GroupListPage
+    fun list(
+        params: GroupListParams = GroupListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): GroupListPage
 
     /** @see [list] */
-    fun list(requestOptions: RequestOptions): GroupListPage = list(GroupListParams.none(), requestOptions)
+    fun list(requestOptions: RequestOptions): GroupListPage =
+        list(GroupListParams.none(), requestOptions)
 
     /** Delete a group object by its id */
-    fun delete(params: GroupDeleteParams, requestOptions: RequestOptions = RequestOptions.none()): Group
+    fun delete(
+        params: GroupDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group
 
     /**
-     * Create or replace group. If there is an existing group with the same name as the
-     * one specified in the request, will replace the existing group with the provided
-     * fields
+     * Create or replace group. If there is an existing group with the same name as the one
+     * specified in the request, will replace the existing group with the provided fields
      */
-    fun replace(params: GroupReplaceParams, requestOptions: RequestOptions = RequestOptions.none()): Group
+    fun replace(
+        params: GroupReplaceParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group
 
-    /**
-     * A view of [GroupService] that provides access to raw HTTP responses for each
-     * method.
-     */
+    /** A view of [GroupService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
         /**
@@ -68,45 +82,64 @@ interface GroupService {
          * [GroupService.create].
          */
         @MustBeClosed
-        fun create(params: GroupCreateParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Group>
+        fun create(
+            params: GroupCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group>
 
         /**
-         * Returns a raw HTTP response for `get /v1/group/{group_id}`, but is otherwise the
-         * same as [GroupService.retrieve].
+         * Returns a raw HTTP response for `get /v1/group/{group_id}`, but is otherwise the same as
+         * [GroupService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(params: GroupRetrieveParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Group>
+        fun retrieve(
+            params: GroupRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group>
 
         /**
-         * Returns a raw HTTP response for `patch /v1/group/{group_id}`, but is otherwise
-         * the same as [GroupService.update].
+         * Returns a raw HTTP response for `patch /v1/group/{group_id}`, but is otherwise the same
+         * as [GroupService.update].
          */
         @MustBeClosed
-        fun update(params: GroupUpdateParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Group>
+        fun update(
+            params: GroupUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group>
 
         /**
          * Returns a raw HTTP response for `get /v1/group`, but is otherwise the same as
          * [GroupService.list].
          */
         @MustBeClosed
-        fun list(params: GroupListParams = GroupListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<GroupListPage>
+        fun list(
+            params: GroupListParams = GroupListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<GroupListPage>
 
         /** @see [list] */
         @MustBeClosed
-        fun list(requestOptions: RequestOptions): HttpResponseFor<GroupListPage> = list(GroupListParams.none(), requestOptions)
+        fun list(requestOptions: RequestOptions): HttpResponseFor<GroupListPage> =
+            list(GroupListParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `delete /v1/group/{group_id}`, but is otherwise
-         * the same as [GroupService.delete].
+         * Returns a raw HTTP response for `delete /v1/group/{group_id}`, but is otherwise the same
+         * as [GroupService.delete].
          */
         @MustBeClosed
-        fun delete(params: GroupDeleteParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Group>
+        fun delete(
+            params: GroupDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group>
 
         /**
          * Returns a raw HTTP response for `put /v1/group`, but is otherwise the same as
          * [GroupService.replace].
          */
         @MustBeClosed
-        fun replace(params: GroupReplaceParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Group>
+        fun replace(
+            params: GroupReplaceParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group>
     }
 }

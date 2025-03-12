@@ -4,7 +4,6 @@ package com.braintrustdata.api.services.async
 
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClientAsync
-import com.braintrustdata.api.models.TopLevelHelloWorldParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -13,12 +12,13 @@ class TopLevelServiceAsyncTest {
 
     @Test
     suspend fun helloWorld() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val topLevelServiceAsync = client.topLevel()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val topLevelServiceAsync = client.topLevel()
 
-      topLevelServiceAsync.helloWorld()
+        topLevelServiceAsync.helloWorld()
     }
 }
