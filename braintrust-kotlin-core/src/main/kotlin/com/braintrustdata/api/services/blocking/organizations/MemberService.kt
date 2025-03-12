@@ -11,38 +11,32 @@ import com.google.errorprone.annotations.MustBeClosed
 interface MemberService {
 
     /**
-     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     * Returns a view of this service that provides access to raw HTTP responses for
+     * each method.
      */
     fun withRawResponse(): WithRawResponse
 
     /** Modify organization membership */
-    fun update(
-        params: OrganizationMemberUpdateParams = OrganizationMemberUpdateParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): PatchOrganizationMembersOutput
+    fun update(params: OrganizationMemberUpdateParams = OrganizationMemberUpdateParams.none(), requestOptions: RequestOptions = RequestOptions.none()): PatchOrganizationMembersOutput
 
     /** @see [update] */
-    fun update(requestOptions: RequestOptions): PatchOrganizationMembersOutput =
-        update(OrganizationMemberUpdateParams.none(), requestOptions)
+    fun update(requestOptions: RequestOptions): PatchOrganizationMembersOutput = update(OrganizationMemberUpdateParams.none(), requestOptions)
 
-    /** A view of [MemberService] that provides access to raw HTTP responses for each method. */
+    /**
+     * A view of [MemberService] that provides access to raw HTTP responses for each
+     * method.
+     */
     interface WithRawResponse {
 
         /**
-         * Returns a raw HTTP response for `patch /v1/organization/members`, but is otherwise the
-         * same as [MemberService.update].
+         * Returns a raw HTTP response for `patch /v1/organization/members`, but is
+         * otherwise the same as [MemberService.update].
          */
         @MustBeClosed
-        fun update(
-            params: OrganizationMemberUpdateParams = OrganizationMemberUpdateParams.none(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<PatchOrganizationMembersOutput>
+        fun update(params: OrganizationMemberUpdateParams = OrganizationMemberUpdateParams.none(), requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<PatchOrganizationMembersOutput>
 
         /** @see [update] */
         @MustBeClosed
-        fun update(
-            requestOptions: RequestOptions
-        ): HttpResponseFor<PatchOrganizationMembersOutput> =
-            update(OrganizationMemberUpdateParams.none(), requestOptions)
+        fun update(requestOptions: RequestOptions): HttpResponseFor<PatchOrganizationMembersOutput> = update(OrganizationMemberUpdateParams.none(), requestOptions)
     }
 }
