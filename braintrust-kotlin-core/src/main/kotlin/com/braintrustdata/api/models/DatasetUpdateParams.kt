@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.Objects
 
 /**
- * Partially update a dataset object. Specify the fields to update in the payload.
- * Any object-type fields will be deep-merged with existing content. Currently we
- * do not support removing fields or setting them to null.
+ * Partially update a dataset object. Specify the fields to update in the payload. Any object-type
+ * fields will be deep-merged with existing content. Currently we do not support removing fields or
+ * setting them to null.
  */
-class DatasetUpdateParams private constructor(
+class DatasetUpdateParams
+private constructor(
     private val datasetId: String,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-
 ) : Params {
 
     /** Dataset id */
@@ -66,19 +66,27 @@ class DatasetUpdateParams private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     fun getPathParam(index: Int): String {
-      return when (index) {
-          0 -> datasetId
-          else -> ""
-      }
+        return when (index) {
+            0 -> datasetId
+            else -> ""
+        }
     }
 
     @NoAutoDetect
-    class Body @JsonCreator private constructor(
-        @JsonProperty("description") @ExcludeMissing private val description: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonField<Metadata> = JsonMissing.of(),
-        @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-
+    class Body
+    @JsonCreator
+    private constructor(
+        @JsonProperty("description")
+        @ExcludeMissing
+        private val description: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("metadata")
+        @ExcludeMissing
+        private val metadata: JsonField<Metadata> = JsonMissing.of(),
+        @JsonProperty("name")
+        @ExcludeMissing
+        private val name: JsonField<String> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** Textual description of the dataset */
@@ -96,14 +104,10 @@ class DatasetUpdateParams private constructor(
         fun _description(): JsonField<String> = description
 
         /** User-controlled metadata about the dataset */
-        @JsonProperty("metadata")
-        @ExcludeMissing
-        fun _metadata(): JsonField<Metadata> = metadata
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
         /** Name of the dataset. Within a project, dataset names are unique */
-        @JsonProperty("name")
-        @ExcludeMissing
-        fun _name(): JsonField<String> = name
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -111,17 +115,16 @@ class DatasetUpdateParams private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Body =
-            apply {
-                if (validated) {
-                  return@apply
-                }
-
-                description()
-                metadata()?.validate()
-                name()
-                validated = true
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
             }
+
+            description()
+            metadata()?.validate()
+            name()
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -139,82 +142,62 @@ class DatasetUpdateParams private constructor(
             private var name: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(body: Body) =
-                apply {
-                    description = body.description
-                    metadata = body.metadata
-                    name = body.name
-                    additionalProperties = body.additionalProperties.toMutableMap()
-                }
+            internal fun from(body: Body) = apply {
+                description = body.description
+                metadata = body.metadata
+                name = body.name
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
 
             /** Textual description of the dataset */
             fun description(description: String?) = description(JsonField.ofNullable(description))
 
             /** Textual description of the dataset */
-            fun description(description: JsonField<String>) =
-                apply {
-                    this.description = description
-                }
+            fun description(description: JsonField<String>) = apply {
+                this.description = description
+            }
 
             /** User-controlled metadata about the dataset */
             fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
             /** User-controlled metadata about the dataset */
-            fun metadata(metadata: JsonField<Metadata>) =
-                apply {
-                    this.metadata = metadata
-                }
+            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /** Name of the dataset. Within a project, dataset names are unique */
             fun name(name: String?) = name(JsonField.ofNullable(name))
 
             /** Name of the dataset. Within a project, dataset names are unique */
-            fun name(name: JsonField<String>) =
-                apply {
-                    this.name = name
-                }
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
 
-            fun putAdditionalProperty(key: String, value: JsonValue) =
-                apply {
-                    additionalProperties.put(key, value)
-                }
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
 
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                apply {
-                    this.additionalProperties.putAll(additionalProperties)
-                }
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
 
-            fun removeAdditionalProperty(key: String) =
-                apply {
-                    additionalProperties.remove(key)
-                }
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
 
-            fun removeAllAdditionalProperties(keys: Set<String>) =
-                apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
 
             fun build(): Body =
-                Body(
-                  description,
-                  metadata,
-                  name,
-                  additionalProperties.toImmutable(),
-                )
+                Body(description, metadata, name, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return /* spotless:off */ other is Body && description == other.description && metadata == other.metadata && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && description == other.description && metadata == other.metadata && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -223,7 +206,8 @@ class DatasetUpdateParams private constructor(
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Body{description=$description, metadata=$metadata, name=$name, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "Body{description=$description, metadata=$metadata, name=$name, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -234,7 +218,6 @@ class DatasetUpdateParams private constructor(
          * Returns a mutable builder for constructing an instance of [DatasetUpdateParams].
          *
          * The following fields are required:
-         *
          * ```kotlin
          * .datasetId()
          * ```
@@ -251,223 +234,167 @@ class DatasetUpdateParams private constructor(
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-        internal fun from(datasetUpdateParams: DatasetUpdateParams) =
-            apply {
-                datasetId = datasetUpdateParams.datasetId
-                body = datasetUpdateParams.body.toBuilder()
-                additionalHeaders = datasetUpdateParams.additionalHeaders.toBuilder()
-                additionalQueryParams = datasetUpdateParams.additionalQueryParams.toBuilder()
-            }
+        internal fun from(datasetUpdateParams: DatasetUpdateParams) = apply {
+            datasetId = datasetUpdateParams.datasetId
+            body = datasetUpdateParams.body.toBuilder()
+            additionalHeaders = datasetUpdateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = datasetUpdateParams.additionalQueryParams.toBuilder()
+        }
 
         /** Dataset id */
-        fun datasetId(datasetId: String) =
-            apply {
-                this.datasetId = datasetId
-            }
+        fun datasetId(datasetId: String) = apply { this.datasetId = datasetId }
 
         /** Textual description of the dataset */
-        fun description(description: String?) =
-            apply {
-                body.description(description)
-            }
+        fun description(description: String?) = apply { body.description(description) }
 
         /** Textual description of the dataset */
-        fun description(description: JsonField<String>) =
-            apply {
-                body.description(description)
-            }
+        fun description(description: JsonField<String>) = apply { body.description(description) }
 
         /** User-controlled metadata about the dataset */
-        fun metadata(metadata: Metadata?) =
-            apply {
-                body.metadata(metadata)
-            }
+        fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
 
         /** User-controlled metadata about the dataset */
-        fun metadata(metadata: JsonField<Metadata>) =
-            apply {
-                body.metadata(metadata)
-            }
+        fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /** Name of the dataset. Within a project, dataset names are unique */
-        fun name(name: String?) =
-            apply {
-                body.name(name)
-            }
+        fun name(name: String?) = apply { body.name(name) }
 
         /** Name of the dataset. Within a project, dataset names are unique */
-        fun name(name: JsonField<String>) =
-            apply {
-                body.name(name)
-            }
+        fun name(name: JsonField<String>) = apply { body.name(name) }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.additionalProperties(additionalBodyProperties)
-            }
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
 
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) =
-            apply {
-                body.putAdditionalProperty(
-                  key, value
-                )
-            }
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
 
         fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
             apply {
                 body.putAllAdditionalProperties(additionalBodyProperties)
             }
 
-        fun removeAdditionalBodyProperty(key: String) =
-            apply {
-                body.removeAdditionalProperty(key)
-            }
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
 
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) =
-            apply {
-                body.removeAllAdditionalProperties(keys)
-            }
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
-        fun additionalHeaders(additionalHeaders: Headers) =
-            apply {
-                this.additionalHeaders.clear()
-                putAllAdditionalHeaders(additionalHeaders)
-            }
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
 
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalHeaders.clear()
-                putAllAdditionalHeaders(additionalHeaders)
-            }
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
 
-        fun putAdditionalHeader(name: String, value: String) =
-            apply {
-                additionalHeaders.put(name, value)
-            }
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
 
-        fun putAdditionalHeaders(name: String, values: Iterable<String>) =
-            apply {
-                additionalHeaders.put(name, values)
-            }
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
 
-        fun putAllAdditionalHeaders(additionalHeaders: Headers) =
-            apply {
-                this.additionalHeaders.putAll(additionalHeaders)
-            }
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
 
-        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalHeaders.putAll(additionalHeaders)
-            }
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
 
-        fun replaceAdditionalHeaders(name: String, value: String) =
-            apply {
-                additionalHeaders.replace(name, value)
-            }
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
 
-        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) =
-            apply {
-                additionalHeaders.replace(name, values)
-            }
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
 
-        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) =
-            apply {
-                this.additionalHeaders.replaceAll(additionalHeaders)
-            }
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
 
-        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalHeaders.replaceAll(additionalHeaders)
-            }
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
 
-        fun removeAdditionalHeaders(name: String) =
-            apply {
-                additionalHeaders.remove(name)
-            }
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
 
-        fun removeAllAdditionalHeaders(names: Set<String>) =
-            apply {
-                additionalHeaders.removeAll(names)
-            }
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
 
-        fun additionalQueryParams(additionalQueryParams: QueryParams) =
-            apply {
-                this.additionalQueryParams.clear()
-                putAllAdditionalQueryParams(additionalQueryParams)
-            }
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalQueryParams.clear()
-                putAllAdditionalQueryParams(additionalQueryParams)
-            }
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
 
-        fun putAdditionalQueryParam(key: String, value: String) =
-            apply {
-                additionalQueryParams.put(key, value)
-            }
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
 
-        fun putAdditionalQueryParams(key: String, values: Iterable<String>) =
-            apply {
-                additionalQueryParams.put(key, values)
-            }
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
 
-        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) =
-            apply {
-                this.additionalQueryParams.putAll(additionalQueryParams)
-            }
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
 
         fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
                 this.additionalQueryParams.putAll(additionalQueryParams)
             }
 
-        fun replaceAdditionalQueryParams(key: String, value: String) =
-            apply {
-                additionalQueryParams.replace(key, value)
-            }
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
 
-        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) =
-            apply {
-                additionalQueryParams.replace(key, values)
-            }
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
 
-        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) =
-            apply {
-                this.additionalQueryParams.replaceAll(additionalQueryParams)
-            }
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
 
         fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
                 this.additionalQueryParams.replaceAll(additionalQueryParams)
             }
 
-        fun removeAdditionalQueryParams(key: String) =
-            apply {
-                additionalQueryParams.remove(key)
-            }
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
 
-        fun removeAllAdditionalQueryParams(keys: Set<String>) =
-            apply {
-                additionalQueryParams.removeAll(keys)
-            }
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
 
         fun build(): DatasetUpdateParams =
             DatasetUpdateParams(
-              checkRequired(
-                "datasetId", datasetId
-              ),
-              body.build(),
-              additionalHeaders.build(),
-              additionalQueryParams.build(),
+                checkRequired("datasetId", datasetId),
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
             )
     }
 
     /** User-controlled metadata about the dataset */
     @NoAutoDetect
-    class Metadata @JsonCreator private constructor(
-        @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-
+    class Metadata
+    @JsonCreator
+    private constructor(
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
     ) {
 
         @JsonAnyGetter
@@ -476,14 +403,13 @@ class DatasetUpdateParams private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Metadata =
-            apply {
-                if (validated) {
-                  return@apply
-                }
-
-                validated = true
+        fun validate(): Metadata = apply {
+            if (validated) {
+                return@apply
             }
+
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -498,46 +424,38 @@ class DatasetUpdateParams private constructor(
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(metadata: Metadata) =
-                apply {
-                    additionalProperties = metadata.additionalProperties.toMutableMap()
-                }
+            internal fun from(metadata: Metadata) = apply {
+                additionalProperties = metadata.additionalProperties.toMutableMap()
+            }
 
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
 
-            fun putAdditionalProperty(key: String, value: JsonValue) =
-                apply {
-                    additionalProperties.put(key, value)
-                }
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
 
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                apply {
-                    this.additionalProperties.putAll(additionalProperties)
-                }
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
 
-            fun removeAdditionalProperty(key: String) =
-                apply {
-                    additionalProperties.remove(key)
-                }
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
 
-            fun removeAllAdditionalProperties(keys: Set<String>) =
-                apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
 
             fun build(): Metadata = Metadata(additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -550,14 +468,15 @@ class DatasetUpdateParams private constructor(
     }
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return /* spotless:off */ other is DatasetUpdateParams && datasetId == other.datasetId && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is DatasetUpdateParams && datasetId == other.datasetId && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(datasetId, body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
-    override fun toString() = "DatasetUpdateParams{datasetId=$datasetId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+    override fun toString() =
+        "DatasetUpdateParams{datasetId=$datasetId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

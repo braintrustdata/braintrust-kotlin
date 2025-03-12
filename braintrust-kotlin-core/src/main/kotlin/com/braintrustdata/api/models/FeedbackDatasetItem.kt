@@ -20,19 +20,28 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.Objects
 
 @NoAutoDetect
-class FeedbackDatasetItem @JsonCreator private constructor(
+class FeedbackDatasetItem
+@JsonCreator
+private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("comment") @ExcludeMissing private val comment: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonField<Metadata> = JsonMissing.of(),
-    @JsonProperty("source") @ExcludeMissing private val source: JsonField<Source> = JsonMissing.of(),
-    @JsonProperty("tags") @ExcludeMissing private val tags: JsonField<List<String>> = JsonMissing.of(),
+    @JsonProperty("comment")
+    @ExcludeMissing
+    private val comment: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("metadata")
+    @ExcludeMissing
+    private val metadata: JsonField<Metadata> = JsonMissing.of(),
+    @JsonProperty("source")
+    @ExcludeMissing
+    private val source: JsonField<Source> = JsonMissing.of(),
+    @JsonProperty("tags")
+    @ExcludeMissing
+    private val tags: JsonField<List<String>> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-
 ) {
 
     /**
-     * The id of the dataset event to log feedback for. This is the row `id` returned
-     * by `POST /v1/dataset/{dataset_id}/insert`
+     * The id of the dataset event to log feedback for. This is the row `id` returned by `POST
+     * /v1/dataset/{dataset_id}/insert`
      */
     fun id(): String = id.getRequired("id")
 
@@ -40,10 +49,9 @@ class FeedbackDatasetItem @JsonCreator private constructor(
     fun comment(): String? = comment.getNullable("comment")
 
     /**
-     * A dictionary with additional data about the feedback. If you have a `user_id`,
-     * you can log it here and access it in the Braintrust UI. Note, this metadata does
-     * not correspond to the main event itself, but rather the audit log attached to
-     * the event.
+     * A dictionary with additional data about the feedback. If you have a `user_id`, you can log it
+     * here and access it in the Braintrust UI. Note, this metadata does not correspond to the main
+     * event itself, but rather the audit log attached to the event.
      */
     fun metadata(): Metadata? = metadata.getNullable("metadata")
 
@@ -54,37 +62,26 @@ class FeedbackDatasetItem @JsonCreator private constructor(
     fun tags(): List<String>? = tags.getNullable("tags")
 
     /**
-     * The id of the dataset event to log feedback for. This is the row `id` returned
-     * by `POST /v1/dataset/{dataset_id}/insert`
+     * The id of the dataset event to log feedback for. This is the row `id` returned by `POST
+     * /v1/dataset/{dataset_id}/insert`
      */
-    @JsonProperty("id")
-    @ExcludeMissing
-    fun _id(): JsonField<String> = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** An optional comment string to log about the dataset event */
-    @JsonProperty("comment")
-    @ExcludeMissing
-    fun _comment(): JsonField<String> = comment
+    @JsonProperty("comment") @ExcludeMissing fun _comment(): JsonField<String> = comment
 
     /**
-     * A dictionary with additional data about the feedback. If you have a `user_id`,
-     * you can log it here and access it in the Braintrust UI. Note, this metadata does
-     * not correspond to the main event itself, but rather the audit log attached to
-     * the event.
+     * A dictionary with additional data about the feedback. If you have a `user_id`, you can log it
+     * here and access it in the Braintrust UI. Note, this metadata does not correspond to the main
+     * event itself, but rather the audit log attached to the event.
      */
-    @JsonProperty("metadata")
-    @ExcludeMissing
-    fun _metadata(): JsonField<Metadata> = metadata
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
     /** The source of the feedback. Must be one of "external" (default), "app", or "api" */
-    @JsonProperty("source")
-    @ExcludeMissing
-    fun _source(): JsonField<Source> = source
+    @JsonProperty("source") @ExcludeMissing fun _source(): JsonField<Source> = source
 
     /** A list of tags to log */
-    @JsonProperty("tags")
-    @ExcludeMissing
-    fun _tags(): JsonField<List<String>> = tags
+    @JsonProperty("tags") @ExcludeMissing fun _tags(): JsonField<List<String>> = tags
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -92,19 +89,18 @@ class FeedbackDatasetItem @JsonCreator private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): FeedbackDatasetItem =
-        apply {
-            if (validated) {
-              return@apply
-            }
-
-            id()
-            comment()
-            metadata()?.validate()
-            source()
-            tags()
-            validated = true
+    fun validate(): FeedbackDatasetItem = apply {
+        if (validated) {
+            return@apply
         }
+
+        id()
+        comment()
+        metadata()?.validate()
+        source()
+        tags()
+        validated = true
+    }
 
     fun toBuilder() = Builder().from(this)
 
@@ -114,7 +110,6 @@ class FeedbackDatasetItem @JsonCreator private constructor(
          * Returns a mutable builder for constructing an instance of [FeedbackDatasetItem].
          *
          * The following fields are required:
-         *
          * ```kotlin
          * .id()
          * ```
@@ -132,134 +127,107 @@ class FeedbackDatasetItem @JsonCreator private constructor(
         private var tags: JsonField<MutableList<String>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        internal fun from(feedbackDatasetItem: FeedbackDatasetItem) =
-            apply {
-                id = feedbackDatasetItem.id
-                comment = feedbackDatasetItem.comment
-                metadata = feedbackDatasetItem.metadata
-                source = feedbackDatasetItem.source
-                tags = feedbackDatasetItem.tags.map { it.toMutableList() }
-                additionalProperties = feedbackDatasetItem.additionalProperties.toMutableMap()
-            }
+        internal fun from(feedbackDatasetItem: FeedbackDatasetItem) = apply {
+            id = feedbackDatasetItem.id
+            comment = feedbackDatasetItem.comment
+            metadata = feedbackDatasetItem.metadata
+            source = feedbackDatasetItem.source
+            tags = feedbackDatasetItem.tags.map { it.toMutableList() }
+            additionalProperties = feedbackDatasetItem.additionalProperties.toMutableMap()
+        }
 
         /**
-         * The id of the dataset event to log feedback for. This is the row `id` returned
-         * by `POST /v1/dataset/{dataset_id}/insert`
+         * The id of the dataset event to log feedback for. This is the row `id` returned by `POST
+         * /v1/dataset/{dataset_id}/insert`
          */
         fun id(id: String) = id(JsonField.of(id))
 
         /**
-         * The id of the dataset event to log feedback for. This is the row `id` returned
-         * by `POST /v1/dataset/{dataset_id}/insert`
+         * The id of the dataset event to log feedback for. This is the row `id` returned by `POST
+         * /v1/dataset/{dataset_id}/insert`
          */
-        fun id(id: JsonField<String>) =
-            apply {
-                this.id = id
-            }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** An optional comment string to log about the dataset event */
         fun comment(comment: String?) = comment(JsonField.ofNullable(comment))
 
         /** An optional comment string to log about the dataset event */
-        fun comment(comment: JsonField<String>) =
-            apply {
-                this.comment = comment
-            }
+        fun comment(comment: JsonField<String>) = apply { this.comment = comment }
 
         /**
-         * A dictionary with additional data about the feedback. If you have a `user_id`,
-         * you can log it here and access it in the Braintrust UI. Note, this metadata does
-         * not correspond to the main event itself, but rather the audit log attached to
-         * the event.
+         * A dictionary with additional data about the feedback. If you have a `user_id`, you can
+         * log it here and access it in the Braintrust UI. Note, this metadata does not correspond
+         * to the main event itself, but rather the audit log attached to the event.
          */
         fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
         /**
-         * A dictionary with additional data about the feedback. If you have a `user_id`,
-         * you can log it here and access it in the Braintrust UI. Note, this metadata does
-         * not correspond to the main event itself, but rather the audit log attached to
-         * the event.
+         * A dictionary with additional data about the feedback. If you have a `user_id`, you can
+         * log it here and access it in the Braintrust UI. Note, this metadata does not correspond
+         * to the main event itself, but rather the audit log attached to the event.
          */
-        fun metadata(metadata: JsonField<Metadata>) =
-            apply {
-                this.metadata = metadata
-            }
+        fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /** The source of the feedback. Must be one of "external" (default), "app", or "api" */
         fun source(source: Source?) = source(JsonField.ofNullable(source))
 
         /** The source of the feedback. Must be one of "external" (default), "app", or "api" */
-        fun source(source: JsonField<Source>) =
-            apply {
-                this.source = source
-            }
+        fun source(source: JsonField<Source>) = apply { this.source = source }
 
         /** A list of tags to log */
         fun tags(tags: List<String>?) = tags(JsonField.ofNullable(tags))
 
         /** A list of tags to log */
-        fun tags(tags: JsonField<List<String>>) =
-            apply {
-                this.tags = tags.map { it.toMutableList() }
-            }
+        fun tags(tags: JsonField<List<String>>) = apply {
+            this.tags = tags.map { it.toMutableList() }
+        }
 
         /** A list of tags to log */
-        fun addTag(tag: String) =
-            apply {
-                tags = (tags ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("tags", it).add(tag)
-                }
-            }
+        fun addTag(tag: String) = apply {
+            tags = (tags ?: JsonField.of(mutableListOf())).also { checkKnown("tags", it).add(tag) }
+        }
 
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
 
-        fun putAdditionalProperty(key: String, value: JsonValue) =
-            apply {
-                additionalProperties.put(key, value)
-            }
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
 
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
 
-        fun removeAdditionalProperty(key: String) =
-            apply {
-                additionalProperties.remove(key)
-            }
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
 
-        fun removeAllAdditionalProperties(keys: Set<String>) =
-            apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
 
         fun build(): FeedbackDatasetItem =
             FeedbackDatasetItem(
-              checkRequired(
-                "id", id
-              ),
-              comment,
-              metadata,
-              source,
-              (tags ?: JsonMissing.of()).map { it.toImmutable() },
-              additionalProperties.toImmutable(),
+                checkRequired("id", id),
+                comment,
+                metadata,
+                source,
+                (tags ?: JsonMissing.of()).map { it.toImmutable() },
+                additionalProperties.toImmutable(),
             )
     }
 
     /**
-     * A dictionary with additional data about the feedback. If you have a `user_id`,
-     * you can log it here and access it in the Braintrust UI. Note, this metadata does
-     * not correspond to the main event itself, but rather the audit log attached to
-     * the event.
+     * A dictionary with additional data about the feedback. If you have a `user_id`, you can log it
+     * here and access it in the Braintrust UI. Note, this metadata does not correspond to the main
+     * event itself, but rather the audit log attached to the event.
      */
     @NoAutoDetect
-    class Metadata @JsonCreator private constructor(
-        @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-
+    class Metadata
+    @JsonCreator
+    private constructor(
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
     ) {
 
         @JsonAnyGetter
@@ -268,14 +236,13 @@ class FeedbackDatasetItem @JsonCreator private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Metadata =
-            apply {
-                if (validated) {
-                  return@apply
-                }
-
-                validated = true
+        fun validate(): Metadata = apply {
+            if (validated) {
+                return@apply
             }
+
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -290,46 +257,38 @@ class FeedbackDatasetItem @JsonCreator private constructor(
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(metadata: Metadata) =
-                apply {
-                    additionalProperties = metadata.additionalProperties.toMutableMap()
-                }
+            internal fun from(metadata: Metadata) = apply {
+                additionalProperties = metadata.additionalProperties.toMutableMap()
+            }
 
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
 
-            fun putAdditionalProperty(key: String, value: JsonValue) =
-                apply {
-                    additionalProperties.put(key, value)
-                }
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
 
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                apply {
-                    this.additionalProperties.putAll(additionalProperties)
-                }
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
 
-            fun removeAdditionalProperty(key: String) =
-                apply {
-                    additionalProperties.remove(key)
-                }
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
 
-            fun removeAllAdditionalProperties(keys: Set<String>) =
-                apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
 
             fun build(): Metadata = Metadata(additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -342,21 +301,17 @@ class FeedbackDatasetItem @JsonCreator private constructor(
     }
 
     /** The source of the feedback. Must be one of "external" (default), "app", or "api" */
-    class Source @JsonCreator private constructor(
-        private val value: JsonField<String>,
-
-    ) : Enum {
+    class Source @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
          *
-         * This is usually only useful if this instance was deserialized from data that
-         * doesn't match any known member, and you want to know that value. For example, if
-         * the SDK is on an older version than the API, then the API may respond with new
-         * members that the SDK is unaware of.
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
          */
-        @com.fasterxml.jackson.annotation.JsonValue
-        fun _value(): JsonField<String> = value
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
 
@@ -380,11 +335,9 @@ class FeedbackDatasetItem @JsonCreator private constructor(
          * An enum containing [Source]'s known values, as well as an [_UNKNOWN] member.
          *
          * An instance of [Source] can contain an unknown value in a couple of cases:
-         *
-         * - It was deserialized from data that doesn't match any known member. For
-         *   example, if the SDK is on an older version than the API, then the API may
-         *   respond with new members that the SDK is unaware of.
-         *
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
@@ -396,11 +349,11 @@ class FeedbackDatasetItem @JsonCreator private constructor(
         }
 
         /**
-         * Returns an enum member corresponding to this class instance's value, or
-         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
          *
-         * Use the [known] method instead if you're certain the value is always known or if
-         * you want to throw for the unknown case.
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
          */
         fun value(): Value =
             when (this) {
@@ -413,11 +366,11 @@ class FeedbackDatasetItem @JsonCreator private constructor(
         /**
          * Returns an enum member corresponding to this class instance's value.
          *
-         * Use the [value] method instead if you're uncertain the value is always known and
-         * don't want to throw for the unknown case.
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
          *
-         * @throws BraintrustInvalidDataException if this class instance's value is a not a
-         * known member.
+         * @throws BraintrustInvalidDataException if this class instance's value is a not a known
+         *   member.
          */
         fun known(): Known =
             when (this) {
@@ -430,20 +383,21 @@ class FeedbackDatasetItem @JsonCreator private constructor(
         /**
          * Returns this class instance's primitive wire representation.
          *
-         * This differs from the [toString] method because that method is primarily for
-         * debugging and generally doesn't throw.
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
          *
-         * @throws BraintrustInvalidDataException if this class instance's value does not
-         * have the expected primitive type.
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
          */
-        fun asString(): String = _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return /* spotless:off */ other is Source && value == other.value /* spotless:on */
+            return /* spotless:off */ other is Source && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -452,11 +406,11 @@ class FeedbackDatasetItem @JsonCreator private constructor(
     }
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return /* spotless:off */ other is FeedbackDatasetItem && id == other.id && comment == other.comment && metadata == other.metadata && source == other.source && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FeedbackDatasetItem && id == other.id && comment == other.comment && metadata == other.metadata && source == other.source && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -465,5 +419,6 @@ class FeedbackDatasetItem @JsonCreator private constructor(
 
     override fun hashCode(): Int = hashCode
 
-    override fun toString() = "FeedbackDatasetItem{id=$id, comment=$comment, metadata=$metadata, source=$source, tags=$tags, additionalProperties=$additionalProperties}"
+    override fun toString() =
+        "FeedbackDatasetItem{id=$id, comment=$comment, metadata=$metadata, source=$source, tags=$tags, additionalProperties=$additionalProperties}"
 }

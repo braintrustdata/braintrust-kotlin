@@ -18,121 +18,149 @@ class AclServiceAsyncTest {
 
     @Test
     suspend fun create() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val aclServiceAsync = client.acls()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val aclServiceAsync = client.acls()
 
-      val acl = aclServiceAsync.create(AclCreateParams.builder()
-          .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .objectType(AclCreateParams.ObjectType.ORGANIZATION)
-          .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .permission(AclCreateParams.Permission.CREATE)
-          .restrictObjectType(AclCreateParams.RestrictObjectType.ORGANIZATION)
-          .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build())
+        val acl =
+            aclServiceAsync.create(
+                AclCreateParams.builder()
+                    .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .objectType(AclCreateParams.ObjectType.ORGANIZATION)
+                    .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .permission(AclCreateParams.Permission.CREATE)
+                    .restrictObjectType(AclCreateParams.RestrictObjectType.ORGANIZATION)
+                    .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
+            )
 
-      acl.validate()
+        acl.validate()
     }
 
     @Test
     suspend fun retrieve() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val aclServiceAsync = client.acls()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val aclServiceAsync = client.acls()
 
-      val acl = aclServiceAsync.retrieve(AclRetrieveParams.builder()
-          .aclId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build())
+        val acl =
+            aclServiceAsync.retrieve(
+                AclRetrieveParams.builder().aclId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+            )
 
-      acl.validate()
+        acl.validate()
     }
 
     @Test
     suspend fun list() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val aclServiceAsync = client.acls()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val aclServiceAsync = client.acls()
 
-      val page = aclServiceAsync.list(AclListParams.builder()
-          .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .objectType(AclListParams.ObjectType.ORGANIZATION)
-          .build())
+        val page =
+            aclServiceAsync.list(
+                AclListParams.builder()
+                    .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .objectType(AclListParams.ObjectType.ORGANIZATION)
+                    .build()
+            )
 
-      page.response().validate()
+        page.response().validate()
     }
 
     @Test
     suspend fun delete() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val aclServiceAsync = client.acls()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val aclServiceAsync = client.acls()
 
-      val acl = aclServiceAsync.delete(AclDeleteParams.builder()
-          .aclId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build())
+        val acl =
+            aclServiceAsync.delete(
+                AclDeleteParams.builder().aclId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+            )
 
-      acl.validate()
+        acl.validate()
     }
 
     @Test
     suspend fun batchUpdate() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val aclServiceAsync = client.acls()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val aclServiceAsync = client.acls()
 
-      val aclBatchUpdateResponse = aclServiceAsync.batchUpdate(AclBatchUpdateParams.builder()
-          .addAddAcl(AclBatchUpdateParams.AddAcl.builder()
-              .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-              .objectType(AclBatchUpdateParams.AddAcl.ObjectType.ORGANIZATION)
-              .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-              .permission(AclBatchUpdateParams.AddAcl.Permission.CREATE)
-              .restrictObjectType(AclBatchUpdateParams.AddAcl.RestrictObjectType.ORGANIZATION)
-              .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-              .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-              .build())
-          .addRemoveAcl(AclBatchUpdateParams.RemoveAcl.builder()
-              .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-              .objectType(AclBatchUpdateParams.RemoveAcl.ObjectType.ORGANIZATION)
-              .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-              .permission(AclBatchUpdateParams.RemoveAcl.Permission.CREATE)
-              .restrictObjectType(AclBatchUpdateParams.RemoveAcl.RestrictObjectType.ORGANIZATION)
-              .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-              .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-              .build())
-          .build())
+        val aclBatchUpdateResponse =
+            aclServiceAsync.batchUpdate(
+                AclBatchUpdateParams.builder()
+                    .addAddAcl(
+                        AclBatchUpdateParams.AddAcl.builder()
+                            .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .objectType(AclBatchUpdateParams.AddAcl.ObjectType.ORGANIZATION)
+                            .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .permission(AclBatchUpdateParams.AddAcl.Permission.CREATE)
+                            .restrictObjectType(
+                                AclBatchUpdateParams.AddAcl.RestrictObjectType.ORGANIZATION
+                            )
+                            .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .build()
+                    )
+                    .addRemoveAcl(
+                        AclBatchUpdateParams.RemoveAcl.builder()
+                            .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .objectType(AclBatchUpdateParams.RemoveAcl.ObjectType.ORGANIZATION)
+                            .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .permission(AclBatchUpdateParams.RemoveAcl.Permission.CREATE)
+                            .restrictObjectType(
+                                AclBatchUpdateParams.RemoveAcl.RestrictObjectType.ORGANIZATION
+                            )
+                            .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .build()
+                    )
+                    .build()
+            )
 
-      aclBatchUpdateResponse.validate()
+        aclBatchUpdateResponse.validate()
     }
 
     @Test
     suspend fun findAndDelete() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val aclServiceAsync = client.acls()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val aclServiceAsync = client.acls()
 
-      val acl = aclServiceAsync.findAndDelete(AclFindAndDeleteParams.builder()
-          .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .objectType(AclFindAndDeleteParams.ObjectType.ORGANIZATION)
-          .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .permission(AclFindAndDeleteParams.Permission.CREATE)
-          .restrictObjectType(AclFindAndDeleteParams.RestrictObjectType.ORGANIZATION)
-          .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build())
+        val acl =
+            aclServiceAsync.findAndDelete(
+                AclFindAndDeleteParams.builder()
+                    .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .objectType(AclFindAndDeleteParams.ObjectType.ORGANIZATION)
+                    .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .permission(AclFindAndDeleteParams.Permission.CREATE)
+                    .restrictObjectType(AclFindAndDeleteParams.RestrictObjectType.ORGANIZATION)
+                    .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
+            )
 
-      acl.validate()
+        acl.validate()
     }
 }
