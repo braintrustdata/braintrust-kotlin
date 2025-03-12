@@ -10,78 +10,108 @@ class RoleUpdateParamsTest {
 
     @Test
     fun create() {
-      RoleUpdateParams.builder()
-          .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .addAddMemberPermission(RoleUpdateParams.AddMemberPermission.builder()
-              .permission(RoleUpdateParams.AddMemberPermission.Permission.CREATE)
-              .restrictObjectType(RoleUpdateParams.AddMemberPermission.RestrictObjectType.ORGANIZATION)
-              .build())
-          .addAddMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .description("description")
-          .name("x")
-          .addRemoveMemberPermission(RoleUpdateParams.RemoveMemberPermission.builder()
-              .permission(RoleUpdateParams.RemoveMemberPermission.Permission.CREATE)
-              .restrictObjectType(RoleUpdateParams.RemoveMemberPermission.RestrictObjectType.ORGANIZATION)
-              .build())
-          .addRemoveMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build()
+        RoleUpdateParams.builder()
+            .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .addAddMemberPermission(
+                RoleUpdateParams.AddMemberPermission.builder()
+                    .permission(RoleUpdateParams.AddMemberPermission.Permission.CREATE)
+                    .restrictObjectType(
+                        RoleUpdateParams.AddMemberPermission.RestrictObjectType.ORGANIZATION
+                    )
+                    .build()
+            )
+            .addAddMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .description("description")
+            .name("x")
+            .addRemoveMemberPermission(
+                RoleUpdateParams.RemoveMemberPermission.builder()
+                    .permission(RoleUpdateParams.RemoveMemberPermission.Permission.CREATE)
+                    .restrictObjectType(
+                        RoleUpdateParams.RemoveMemberPermission.RestrictObjectType.ORGANIZATION
+                    )
+                    .build()
+            )
+            .addRemoveMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .build()
     }
 
     @Test
     fun body() {
-      val params = RoleUpdateParams.builder()
-          .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .addAddMemberPermission(RoleUpdateParams.AddMemberPermission.builder()
-              .permission(RoleUpdateParams.AddMemberPermission.Permission.CREATE)
-              .restrictObjectType(RoleUpdateParams.AddMemberPermission.RestrictObjectType.ORGANIZATION)
-              .build())
-          .addAddMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .description("description")
-          .name("x")
-          .addRemoveMemberPermission(RoleUpdateParams.RemoveMemberPermission.builder()
-              .permission(RoleUpdateParams.RemoveMemberPermission.Permission.CREATE)
-              .restrictObjectType(RoleUpdateParams.RemoveMemberPermission.RestrictObjectType.ORGANIZATION)
-              .build())
-          .addRemoveMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build()
+        val params =
+            RoleUpdateParams.builder()
+                .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .addAddMemberPermission(
+                    RoleUpdateParams.AddMemberPermission.builder()
+                        .permission(RoleUpdateParams.AddMemberPermission.Permission.CREATE)
+                        .restrictObjectType(
+                            RoleUpdateParams.AddMemberPermission.RestrictObjectType.ORGANIZATION
+                        )
+                        .build()
+                )
+                .addAddMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .description("description")
+                .name("x")
+                .addRemoveMemberPermission(
+                    RoleUpdateParams.RemoveMemberPermission.builder()
+                        .permission(RoleUpdateParams.RemoveMemberPermission.Permission.CREATE)
+                        .restrictObjectType(
+                            RoleUpdateParams.RemoveMemberPermission.RestrictObjectType.ORGANIZATION
+                        )
+                        .build()
+                )
+                .addRemoveMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .build()
 
-      val body = params._body()
+        val body = params._body()
 
-      assertNotNull(body)
-      assertThat(body.addMemberPermissions()).isEqualTo(listOf(RoleUpdateParams.AddMemberPermission.builder()
-          .permission(RoleUpdateParams.AddMemberPermission.Permission.CREATE)
-          .restrictObjectType(RoleUpdateParams.AddMemberPermission.RestrictObjectType.ORGANIZATION)
-          .build()))
-      assertThat(body.addMemberRoles()).isEqualTo(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-      assertThat(body.description()).isEqualTo("description")
-      assertThat(body.name()).isEqualTo("x")
-      assertThat(body.removeMemberPermissions()).isEqualTo(listOf(RoleUpdateParams.RemoveMemberPermission.builder()
-          .permission(RoleUpdateParams.RemoveMemberPermission.Permission.CREATE)
-          .restrictObjectType(RoleUpdateParams.RemoveMemberPermission.RestrictObjectType.ORGANIZATION)
-          .build()))
-      assertThat(body.removeMemberRoles()).isEqualTo(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertNotNull(body)
+        assertThat(body.addMemberPermissions())
+            .isEqualTo(
+                listOf(
+                    RoleUpdateParams.AddMemberPermission.builder()
+                        .permission(RoleUpdateParams.AddMemberPermission.Permission.CREATE)
+                        .restrictObjectType(
+                            RoleUpdateParams.AddMemberPermission.RestrictObjectType.ORGANIZATION
+                        )
+                        .build()
+                )
+            )
+        assertThat(body.addMemberRoles()).isEqualTo(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertThat(body.description()).isEqualTo("description")
+        assertThat(body.name()).isEqualTo("x")
+        assertThat(body.removeMemberPermissions())
+            .isEqualTo(
+                listOf(
+                    RoleUpdateParams.RemoveMemberPermission.builder()
+                        .permission(RoleUpdateParams.RemoveMemberPermission.Permission.CREATE)
+                        .restrictObjectType(
+                            RoleUpdateParams.RemoveMemberPermission.RestrictObjectType.ORGANIZATION
+                        )
+                        .build()
+                )
+            )
+        assertThat(body.removeMemberRoles())
+            .isEqualTo(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
     }
 
     @Test
     fun bodyWithoutOptionalFields() {
-      val params = RoleUpdateParams.builder()
-          .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build()
+        val params =
+            RoleUpdateParams.builder().roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
 
-      val body = params._body()
+        val body = params._body()
 
-      assertNotNull(body)
+        assertNotNull(body)
     }
 
     @Test
     fun getPathParam() {
-      val params = RoleUpdateParams.builder()
-          .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build()
-      assertThat(params).isNotNull
-      // path param "roleId"
-      assertThat(params.getPathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-      // out-of-bound path param
-      assertThat(params.getPathParam(1)).isEqualTo("")
+        val params =
+            RoleUpdateParams.builder().roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+        assertThat(params).isNotNull
+        // path param "roleId"
+        assertThat(params.getPathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+        // out-of-bound path param
+        assertThat(params.getPathParam(1)).isEqualTo("")
     }
 }
