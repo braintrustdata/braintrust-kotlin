@@ -16,10 +16,13 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.Objects
 
 @NoAutoDetect
-class ProjectSettings @JsonCreator private constructor(
-    @JsonProperty("comparison_key") @ExcludeMissing private val comparisonKey: JsonField<String> = JsonMissing.of(),
+class ProjectSettings
+@JsonCreator
+private constructor(
+    @JsonProperty("comparison_key")
+    @ExcludeMissing
+    private val comparisonKey: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-
 ) {
 
     /** The key used to join two experiments (defaults to `input`). */
@@ -36,15 +39,14 @@ class ProjectSettings @JsonCreator private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): ProjectSettings =
-        apply {
-            if (validated) {
-              return@apply
-            }
-
-            comparisonKey()
-            validated = true
+    fun validate(): ProjectSettings = apply {
+        if (validated) {
+            return@apply
         }
+
+        comparisonKey()
+        validated = true
+    }
 
     fun toBuilder() = Builder().from(this)
 
@@ -60,59 +62,49 @@ class ProjectSettings @JsonCreator private constructor(
         private var comparisonKey: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        internal fun from(projectSettings: ProjectSettings) =
-            apply {
-                comparisonKey = projectSettings.comparisonKey
-                additionalProperties = projectSettings.additionalProperties.toMutableMap()
-            }
+        internal fun from(projectSettings: ProjectSettings) = apply {
+            comparisonKey = projectSettings.comparisonKey
+            additionalProperties = projectSettings.additionalProperties.toMutableMap()
+        }
 
         /** The key used to join two experiments (defaults to `input`). */
-        fun comparisonKey(comparisonKey: String?) = comparisonKey(JsonField.ofNullable(comparisonKey))
+        fun comparisonKey(comparisonKey: String?) =
+            comparisonKey(JsonField.ofNullable(comparisonKey))
 
         /** The key used to join two experiments (defaults to `input`). */
-        fun comparisonKey(comparisonKey: JsonField<String>) =
-            apply {
-                this.comparisonKey = comparisonKey
-            }
+        fun comparisonKey(comparisonKey: JsonField<String>) = apply {
+            this.comparisonKey = comparisonKey
+        }
 
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
 
-        fun putAdditionalProperty(key: String, value: JsonValue) =
-            apply {
-                additionalProperties.put(key, value)
-            }
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
 
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
 
-        fun removeAdditionalProperty(key: String) =
-            apply {
-                additionalProperties.remove(key)
-            }
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
 
-        fun removeAllAdditionalProperties(keys: Set<String>) =
-            apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
 
         fun build(): ProjectSettings =
-            ProjectSettings(
-              comparisonKey, additionalProperties.toImmutable()
-            )
+            ProjectSettings(comparisonKey, additionalProperties.toImmutable())
     }
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return /* spotless:off */ other is ProjectSettings && comparisonKey == other.comparisonKey && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ProjectSettings && comparisonKey == other.comparisonKey && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -121,5 +113,6 @@ class ProjectSettings @JsonCreator private constructor(
 
     override fun hashCode(): Int = hashCode
 
-    override fun toString() = "ProjectSettings{comparisonKey=$comparisonKey, additionalProperties=$additionalProperties}"
+    override fun toString() =
+        "ProjectSettings{comparisonKey=$comparisonKey, additionalProperties=$additionalProperties}"
 }

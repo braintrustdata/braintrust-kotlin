@@ -17,50 +17,64 @@ import com.google.errorprone.annotations.MustBeClosed
 interface GroupServiceAsync {
 
     /**
-     * Returns a view of this service that provides access to raw HTTP responses for
-     * each method.
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
 
     /**
-     * Create a new group. If there is an existing group with the same name as the one
-     * specified in the request, will return the existing group unmodified
+     * Create a new group. If there is an existing group with the same name as the one specified in
+     * the request, will return the existing group unmodified
      */
-    suspend fun create(params: GroupCreateParams, requestOptions: RequestOptions = RequestOptions.none()): Group
+    suspend fun create(
+        params: GroupCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group
 
     /** Get a group object by its id */
-    suspend fun retrieve(params: GroupRetrieveParams, requestOptions: RequestOptions = RequestOptions.none()): Group
+    suspend fun retrieve(
+        params: GroupRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group
 
     /**
-     * Partially update a group object. Specify the fields to update in the payload.
-     * Any object-type fields will be deep-merged with existing content. Currently we
-     * do not support removing fields or setting them to null.
+     * Partially update a group object. Specify the fields to update in the payload. Any object-type
+     * fields will be deep-merged with existing content. Currently we do not support removing fields
+     * or setting them to null.
      */
-    suspend fun update(params: GroupUpdateParams, requestOptions: RequestOptions = RequestOptions.none()): Group
+    suspend fun update(
+        params: GroupUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group
 
     /**
-     * List out all groups. The groups are sorted by creation date, with the most
-     * recently-created groups coming first
+     * List out all groups. The groups are sorted by creation date, with the most recently-created
+     * groups coming first
      */
-    suspend fun list(params: GroupListParams = GroupListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): GroupListPageAsync
+    suspend fun list(
+        params: GroupListParams = GroupListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): GroupListPageAsync
 
     /** @see [list] */
-    suspend fun list(requestOptions: RequestOptions): GroupListPageAsync = list(GroupListParams.none(), requestOptions)
+    suspend fun list(requestOptions: RequestOptions): GroupListPageAsync =
+        list(GroupListParams.none(), requestOptions)
 
     /** Delete a group object by its id */
-    suspend fun delete(params: GroupDeleteParams, requestOptions: RequestOptions = RequestOptions.none()): Group
+    suspend fun delete(
+        params: GroupDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group
 
     /**
-     * Create or replace group. If there is an existing group with the same name as the
-     * one specified in the request, will replace the existing group with the provided
-     * fields
+     * Create or replace group. If there is an existing group with the same name as the one
+     * specified in the request, will replace the existing group with the provided fields
      */
-    suspend fun replace(params: GroupReplaceParams, requestOptions: RequestOptions = RequestOptions.none()): Group
+    suspend fun replace(
+        params: GroupReplaceParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group
 
-    /**
-     * A view of [GroupServiceAsync] that provides access to raw HTTP responses for
-     * each method.
-     */
+    /** A view of [GroupServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
         /**
@@ -68,45 +82,64 @@ interface GroupServiceAsync {
          * [GroupServiceAsync.create].
          */
         @MustBeClosed
-        suspend fun create(params: GroupCreateParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Group>
+        suspend fun create(
+            params: GroupCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group>
 
         /**
-         * Returns a raw HTTP response for `get /v1/group/{group_id}`, but is otherwise the
-         * same as [GroupServiceAsync.retrieve].
+         * Returns a raw HTTP response for `get /v1/group/{group_id}`, but is otherwise the same as
+         * [GroupServiceAsync.retrieve].
          */
         @MustBeClosed
-        suspend fun retrieve(params: GroupRetrieveParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Group>
+        suspend fun retrieve(
+            params: GroupRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group>
 
         /**
-         * Returns a raw HTTP response for `patch /v1/group/{group_id}`, but is otherwise
-         * the same as [GroupServiceAsync.update].
+         * Returns a raw HTTP response for `patch /v1/group/{group_id}`, but is otherwise the same
+         * as [GroupServiceAsync.update].
          */
         @MustBeClosed
-        suspend fun update(params: GroupUpdateParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Group>
+        suspend fun update(
+            params: GroupUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group>
 
         /**
          * Returns a raw HTTP response for `get /v1/group`, but is otherwise the same as
          * [GroupServiceAsync.list].
          */
         @MustBeClosed
-        suspend fun list(params: GroupListParams = GroupListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<GroupListPageAsync>
+        suspend fun list(
+            params: GroupListParams = GroupListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<GroupListPageAsync>
 
         /** @see [list] */
         @MustBeClosed
-        suspend fun list(requestOptions: RequestOptions): HttpResponseFor<GroupListPageAsync> = list(GroupListParams.none(), requestOptions)
+        suspend fun list(requestOptions: RequestOptions): HttpResponseFor<GroupListPageAsync> =
+            list(GroupListParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `delete /v1/group/{group_id}`, but is otherwise
-         * the same as [GroupServiceAsync.delete].
+         * Returns a raw HTTP response for `delete /v1/group/{group_id}`, but is otherwise the same
+         * as [GroupServiceAsync.delete].
          */
         @MustBeClosed
-        suspend fun delete(params: GroupDeleteParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Group>
+        suspend fun delete(
+            params: GroupDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group>
 
         /**
          * Returns a raw HTTP response for `put /v1/group`, but is otherwise the same as
          * [GroupServiceAsync.replace].
          */
         @MustBeClosed
-        suspend fun replace(params: GroupReplaceParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Group>
+        suspend fun replace(
+            params: GroupReplaceParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group>
     }
 }

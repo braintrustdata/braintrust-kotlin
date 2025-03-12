@@ -17,50 +17,65 @@ import com.google.errorprone.annotations.MustBeClosed
 interface PromptServiceAsync {
 
     /**
-     * Returns a view of this service that provides access to raw HTTP responses for
-     * each method.
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
 
     /**
-     * Create a new prompt. If there is an existing prompt in the project with the same
-     * slug as the one specified in the request, will return the existing prompt
-     * unmodified
+     * Create a new prompt. If there is an existing prompt in the project with the same slug as the
+     * one specified in the request, will return the existing prompt unmodified
      */
-    suspend fun create(params: PromptCreateParams, requestOptions: RequestOptions = RequestOptions.none()): Prompt
+    suspend fun create(
+        params: PromptCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Prompt
 
     /** Get a prompt object by its id */
-    suspend fun retrieve(params: PromptRetrieveParams, requestOptions: RequestOptions = RequestOptions.none()): Prompt
+    suspend fun retrieve(
+        params: PromptRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Prompt
 
     /**
-     * Partially update a prompt object. Specify the fields to update in the payload.
-     * Any object-type fields will be deep-merged with existing content. Currently we
-     * do not support removing fields or setting them to null.
+     * Partially update a prompt object. Specify the fields to update in the payload. Any
+     * object-type fields will be deep-merged with existing content. Currently we do not support
+     * removing fields or setting them to null.
      */
-    suspend fun update(params: PromptUpdateParams, requestOptions: RequestOptions = RequestOptions.none()): Prompt
+    suspend fun update(
+        params: PromptUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Prompt
 
     /**
-     * List out all prompts. The prompts are sorted by creation date, with the most
-     * recently-created prompts coming first
+     * List out all prompts. The prompts are sorted by creation date, with the most recently-created
+     * prompts coming first
      */
-    suspend fun list(params: PromptListParams = PromptListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): PromptListPageAsync
+    suspend fun list(
+        params: PromptListParams = PromptListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): PromptListPageAsync
 
     /** @see [list] */
-    suspend fun list(requestOptions: RequestOptions): PromptListPageAsync = list(PromptListParams.none(), requestOptions)
+    suspend fun list(requestOptions: RequestOptions): PromptListPageAsync =
+        list(PromptListParams.none(), requestOptions)
 
     /** Delete a prompt object by its id */
-    suspend fun delete(params: PromptDeleteParams, requestOptions: RequestOptions = RequestOptions.none()): Prompt
+    suspend fun delete(
+        params: PromptDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Prompt
 
     /**
-     * Create or replace prompt. If there is an existing prompt in the project with the
-     * same slug as the one specified in the request, will replace the existing prompt
-     * with the provided fields
+     * Create or replace prompt. If there is an existing prompt in the project with the same slug as
+     * the one specified in the request, will replace the existing prompt with the provided fields
      */
-    suspend fun replace(params: PromptReplaceParams, requestOptions: RequestOptions = RequestOptions.none()): Prompt
+    suspend fun replace(
+        params: PromptReplaceParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Prompt
 
     /**
-     * A view of [PromptServiceAsync] that provides access to raw HTTP responses for
-     * each method.
+     * A view of [PromptServiceAsync] that provides access to raw HTTP responses for each method.
      */
     interface WithRawResponse {
 
@@ -69,45 +84,64 @@ interface PromptServiceAsync {
          * [PromptServiceAsync.create].
          */
         @MustBeClosed
-        suspend fun create(params: PromptCreateParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Prompt>
+        suspend fun create(
+            params: PromptCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt>
 
         /**
-         * Returns a raw HTTP response for `get /v1/prompt/{prompt_id}`, but is otherwise
-         * the same as [PromptServiceAsync.retrieve].
+         * Returns a raw HTTP response for `get /v1/prompt/{prompt_id}`, but is otherwise the same
+         * as [PromptServiceAsync.retrieve].
          */
         @MustBeClosed
-        suspend fun retrieve(params: PromptRetrieveParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Prompt>
+        suspend fun retrieve(
+            params: PromptRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt>
 
         /**
-         * Returns a raw HTTP response for `patch /v1/prompt/{prompt_id}`, but is otherwise
-         * the same as [PromptServiceAsync.update].
+         * Returns a raw HTTP response for `patch /v1/prompt/{prompt_id}`, but is otherwise the same
+         * as [PromptServiceAsync.update].
          */
         @MustBeClosed
-        suspend fun update(params: PromptUpdateParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Prompt>
+        suspend fun update(
+            params: PromptUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt>
 
         /**
          * Returns a raw HTTP response for `get /v1/prompt`, but is otherwise the same as
          * [PromptServiceAsync.list].
          */
         @MustBeClosed
-        suspend fun list(params: PromptListParams = PromptListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<PromptListPageAsync>
+        suspend fun list(
+            params: PromptListParams = PromptListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<PromptListPageAsync>
 
         /** @see [list] */
         @MustBeClosed
-        suspend fun list(requestOptions: RequestOptions): HttpResponseFor<PromptListPageAsync> = list(PromptListParams.none(), requestOptions)
+        suspend fun list(requestOptions: RequestOptions): HttpResponseFor<PromptListPageAsync> =
+            list(PromptListParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `delete /v1/prompt/{prompt_id}`, but is
-         * otherwise the same as [PromptServiceAsync.delete].
+         * Returns a raw HTTP response for `delete /v1/prompt/{prompt_id}`, but is otherwise the
+         * same as [PromptServiceAsync.delete].
          */
         @MustBeClosed
-        suspend fun delete(params: PromptDeleteParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Prompt>
+        suspend fun delete(
+            params: PromptDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt>
 
         /**
          * Returns a raw HTTP response for `put /v1/prompt`, but is otherwise the same as
          * [PromptServiceAsync.replace].
          */
         @MustBeClosed
-        suspend fun replace(params: PromptReplaceParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Prompt>
+        suspend fun replace(
+            params: PromptReplaceParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt>
     }
 }

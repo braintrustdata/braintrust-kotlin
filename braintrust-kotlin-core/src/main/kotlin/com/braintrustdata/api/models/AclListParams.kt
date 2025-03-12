@@ -23,13 +23,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.util.Objects
-import java.util.Optional
 
 /**
- * List out all acls. The acls are sorted by creation date, with the most
- * recently-created acls coming first
+ * List out all acls. The acls are sorted by creation date, with the most recently-created acls
+ * coming first
  */
-class AclListParams private constructor(
+class AclListParams
+private constructor(
     private val objectId: String,
     private val objectType: ObjectType,
     private val endingBefore: String?,
@@ -38,7 +38,6 @@ class AclListParams private constructor(
     private val startingAfter: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-
 ) : Params {
 
     /** The id of the object the ACL applies to */
@@ -50,15 +49,15 @@ class AclListParams private constructor(
     /**
      * Pagination cursor id.
      *
-     * For example, if the initial item in the last page you fetched had an id of
-     * `foo`, pass `ending_before=foo` to fetch the previous page. Note: you may only
-     * pass one of `starting_after` and `ending_before`
+     * For example, if the initial item in the last page you fetched had an id of `foo`, pass
+     * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
+     * `starting_after` and `ending_before`
      */
     fun endingBefore(): String? = endingBefore
 
     /**
-     * Filter search results to a particular set of object IDs. To specify a list of
-     * IDs, include the query param multiple times
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
      */
     fun ids(): Ids? = ids
 
@@ -68,9 +67,9 @@ class AclListParams private constructor(
     /**
      * Pagination cursor id.
      *
-     * For example, if the final item in the last page you fetched had an id of `foo`,
-     * pass `starting_after=foo` to fetch the next page. Note: you may only pass one of
-     * `starting_after` and `ending_before`
+     * For example, if the final item in the last page you fetched had an id of `foo`, pass
+     * `starting_after=foo` to fetch the next page. Note: you may only pass one of `starting_after`
+     * and `ending_before`
      */
     fun startingAfter(): String? = startingAfter
 
@@ -81,39 +80,15 @@ class AclListParams private constructor(
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams {
-      val queryParams = QueryParams.builder()
-      this.objectId.let {
-          queryParams.put(
-            "object_id", listOf(it.toString())
-          )
-      }
-      this.objectType.let {
-          queryParams.put(
-            "object_type", listOf(it.toString())
-          )
-      }
-      this.endingBefore?.let {
-          queryParams.put(
-            "ending_before", listOf(it.toString())
-          )
-      }
-      this.ids?.let {
-          queryParams.put(
-            "ids", listOf(it.toString())
-          )
-      }
-      this.limit?.let {
-          queryParams.put(
-            "limit", listOf(it.toString())
-          )
-      }
-      this.startingAfter?.let {
-          queryParams.put(
-            "starting_after", listOf(it.toString())
-          )
-      }
-      queryParams.putAll(additionalQueryParams)
-      return queryParams.build()
+        val queryParams = QueryParams.builder()
+        this.objectId.let { queryParams.put("object_id", listOf(it.toString())) }
+        this.objectType.let { queryParams.put("object_type", listOf(it.toString())) }
+        this.endingBefore?.let { queryParams.put("ending_before", listOf(it.toString())) }
+        this.ids?.let { queryParams.put("ids", listOf(it.toString())) }
+        this.limit?.let { queryParams.put("limit", listOf(it.toString())) }
+        this.startingAfter?.let { queryParams.put("starting_after", listOf(it.toString())) }
+        queryParams.putAll(additionalQueryParams)
+        return queryParams.build()
     }
 
     fun toBuilder() = Builder().from(this)
@@ -124,7 +99,6 @@ class AclListParams private constructor(
          * Returns a mutable builder for constructing an instance of [AclListParams].
          *
          * The following fields are required:
-         *
          * ```kotlin
          * .objectId()
          * .objectType()
@@ -146,68 +120,52 @@ class AclListParams private constructor(
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-        internal fun from(aclListParams: AclListParams) =
-            apply {
-                objectId = aclListParams.objectId
-                objectType = aclListParams.objectType
-                endingBefore = aclListParams.endingBefore
-                ids = aclListParams.ids
-                limit = aclListParams.limit
-                startingAfter = aclListParams.startingAfter
-                additionalHeaders = aclListParams.additionalHeaders.toBuilder()
-                additionalQueryParams = aclListParams.additionalQueryParams.toBuilder()
-            }
+        internal fun from(aclListParams: AclListParams) = apply {
+            objectId = aclListParams.objectId
+            objectType = aclListParams.objectType
+            endingBefore = aclListParams.endingBefore
+            ids = aclListParams.ids
+            limit = aclListParams.limit
+            startingAfter = aclListParams.startingAfter
+            additionalHeaders = aclListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = aclListParams.additionalQueryParams.toBuilder()
+        }
 
         /** The id of the object the ACL applies to */
-        fun objectId(objectId: String) =
-            apply {
-                this.objectId = objectId
-            }
+        fun objectId(objectId: String) = apply { this.objectId = objectId }
 
         /** The object type that the ACL applies to */
-        fun objectType(objectType: ObjectType) =
-            apply {
-                this.objectType = objectType
-            }
+        fun objectType(objectType: ObjectType) = apply { this.objectType = objectType }
 
         /**
          * Pagination cursor id.
          *
-         * For example, if the initial item in the last page you fetched had an id of
-         * `foo`, pass `ending_before=foo` to fetch the previous page. Note: you may only
-         * pass one of `starting_after` and `ending_before`
+         * For example, if the initial item in the last page you fetched had an id of `foo`, pass
+         * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
+         * `starting_after` and `ending_before`
          */
-        fun endingBefore(endingBefore: String?) =
-            apply {
-                this.endingBefore = endingBefore
-            }
+        fun endingBefore(endingBefore: String?) = apply { this.endingBefore = endingBefore }
 
         /**
-         * Filter search results to a particular set of object IDs. To specify a list of
-         * IDs, include the query param multiple times
+         * Filter search results to a particular set of object IDs. To specify a list of IDs,
+         * include the query param multiple times
          */
-        fun ids(ids: Ids?) =
-            apply {
-                this.ids = ids
-            }
+        fun ids(ids: Ids?) = apply { this.ids = ids }
 
         /**
-         * Filter search results to a particular set of object IDs. To specify a list of
-         * IDs, include the query param multiple times
+         * Filter search results to a particular set of object IDs. To specify a list of IDs,
+         * include the query param multiple times
          */
         fun ids(string: String) = ids(Ids.ofString(string))
 
         /**
-         * Filter search results to a particular set of object IDs. To specify a list of
-         * IDs, include the query param multiple times
+         * Filter search results to a particular set of object IDs. To specify a list of IDs,
+         * include the query param multiple times
          */
         fun idsOfStrings(strings: List<String>) = ids(Ids.ofStrings(strings))
 
         /** Limit the number of objects to return */
-        fun limit(limit: Long?) =
-            apply {
-                this.limit = limit
-            }
+        fun limit(limit: Long?) = apply { this.limit = limit }
 
         /** Limit the number of objects to return */
         fun limit(limit: Long) = limit(limit as Long?)
@@ -215,172 +173,135 @@ class AclListParams private constructor(
         /**
          * Pagination cursor id.
          *
-         * For example, if the final item in the last page you fetched had an id of `foo`,
-         * pass `starting_after=foo` to fetch the next page. Note: you may only pass one of
+         * For example, if the final item in the last page you fetched had an id of `foo`, pass
+         * `starting_after=foo` to fetch the next page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun startingAfter(startingAfter: String?) =
-            apply {
-                this.startingAfter = startingAfter
-            }
+        fun startingAfter(startingAfter: String?) = apply { this.startingAfter = startingAfter }
 
-        fun additionalHeaders(additionalHeaders: Headers) =
-            apply {
-                this.additionalHeaders.clear()
-                putAllAdditionalHeaders(additionalHeaders)
-            }
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
 
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalHeaders.clear()
-                putAllAdditionalHeaders(additionalHeaders)
-            }
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
 
-        fun putAdditionalHeader(name: String, value: String) =
-            apply {
-                additionalHeaders.put(name, value)
-            }
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
 
-        fun putAdditionalHeaders(name: String, values: Iterable<String>) =
-            apply {
-                additionalHeaders.put(name, values)
-            }
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
 
-        fun putAllAdditionalHeaders(additionalHeaders: Headers) =
-            apply {
-                this.additionalHeaders.putAll(additionalHeaders)
-            }
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
 
-        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalHeaders.putAll(additionalHeaders)
-            }
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
 
-        fun replaceAdditionalHeaders(name: String, value: String) =
-            apply {
-                additionalHeaders.replace(name, value)
-            }
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
 
-        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) =
-            apply {
-                additionalHeaders.replace(name, values)
-            }
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
 
-        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) =
-            apply {
-                this.additionalHeaders.replaceAll(additionalHeaders)
-            }
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
 
-        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalHeaders.replaceAll(additionalHeaders)
-            }
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
 
-        fun removeAdditionalHeaders(name: String) =
-            apply {
-                additionalHeaders.remove(name)
-            }
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
 
-        fun removeAllAdditionalHeaders(names: Set<String>) =
-            apply {
-                additionalHeaders.removeAll(names)
-            }
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
 
-        fun additionalQueryParams(additionalQueryParams: QueryParams) =
-            apply {
-                this.additionalQueryParams.clear()
-                putAllAdditionalQueryParams(additionalQueryParams)
-            }
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalQueryParams.clear()
-                putAllAdditionalQueryParams(additionalQueryParams)
-            }
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
 
-        fun putAdditionalQueryParam(key: String, value: String) =
-            apply {
-                additionalQueryParams.put(key, value)
-            }
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
 
-        fun putAdditionalQueryParams(key: String, values: Iterable<String>) =
-            apply {
-                additionalQueryParams.put(key, values)
-            }
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
 
-        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) =
-            apply {
-                this.additionalQueryParams.putAll(additionalQueryParams)
-            }
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
 
         fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
                 this.additionalQueryParams.putAll(additionalQueryParams)
             }
 
-        fun replaceAdditionalQueryParams(key: String, value: String) =
-            apply {
-                additionalQueryParams.replace(key, value)
-            }
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
 
-        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) =
-            apply {
-                additionalQueryParams.replace(key, values)
-            }
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
 
-        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) =
-            apply {
-                this.additionalQueryParams.replaceAll(additionalQueryParams)
-            }
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
 
         fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
                 this.additionalQueryParams.replaceAll(additionalQueryParams)
             }
 
-        fun removeAdditionalQueryParams(key: String) =
-            apply {
-                additionalQueryParams.remove(key)
-            }
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
 
-        fun removeAllAdditionalQueryParams(keys: Set<String>) =
-            apply {
-                additionalQueryParams.removeAll(keys)
-            }
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
 
         fun build(): AclListParams =
             AclListParams(
-              checkRequired(
-                "objectId", objectId
-              ),
-              checkRequired(
-                "objectType", objectType
-              ),
-              endingBefore,
-              ids,
-              limit,
-              startingAfter,
-              additionalHeaders.build(),
-              additionalQueryParams.build(),
+                checkRequired("objectId", objectId),
+                checkRequired("objectType", objectType),
+                endingBefore,
+                ids,
+                limit,
+                startingAfter,
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
             )
     }
 
     /** The object type that the ACL applies to */
-    class ObjectType @JsonCreator private constructor(
-        private val value: JsonField<String>,
-
-    ) : Enum {
+    class ObjectType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
          *
-         * This is usually only useful if this instance was deserialized from data that
-         * doesn't match any known member, and you want to know that value. For example, if
-         * the SDK is on an older version than the API, then the API may respond with new
-         * members that the SDK is unaware of.
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
          */
-        @com.fasterxml.jackson.annotation.JsonValue
-        fun _value(): JsonField<String> = value
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
 
@@ -428,11 +349,9 @@ class AclListParams private constructor(
          * An enum containing [ObjectType]'s known values, as well as an [_UNKNOWN] member.
          *
          * An instance of [ObjectType] can contain an unknown value in a couple of cases:
-         *
-         * - It was deserialized from data that doesn't match any known member. For
-         *   example, if the SDK is on an older version than the API, then the API may
-         *   respond with new members that the SDK is unaware of.
-         *
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
@@ -448,18 +367,17 @@ class AclListParams private constructor(
             PROJECT_LOG,
             ORG_PROJECT,
             /**
-             * An enum member indicating that [ObjectType] was instantiated with an unknown
-             * value.
+             * An enum member indicating that [ObjectType] was instantiated with an unknown value.
              */
             _UNKNOWN,
         }
 
         /**
-         * Returns an enum member corresponding to this class instance's value, or
-         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
          *
-         * Use the [known] method instead if you're certain the value is always known or if
-         * you want to throw for the unknown case.
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
          */
         fun value(): Value =
             when (this) {
@@ -480,11 +398,11 @@ class AclListParams private constructor(
         /**
          * Returns an enum member corresponding to this class instance's value.
          *
-         * Use the [value] method instead if you're uncertain the value is always known and
-         * don't want to throw for the unknown case.
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
          *
-         * @throws BraintrustInvalidDataException if this class instance's value is a not a
-         * known member.
+         * @throws BraintrustInvalidDataException if this class instance's value is a not a known
+         *   member.
          */
         fun known(): Known =
             when (this) {
@@ -505,20 +423,21 @@ class AclListParams private constructor(
         /**
          * Returns this class instance's primitive wire representation.
          *
-         * This differs from the [toString] method because that method is primarily for
-         * debugging and generally doesn't throw.
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
          *
-         * @throws BraintrustInvalidDataException if this class instance's value does not
-         * have the expected primitive type.
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
          */
-        fun asString(): String = _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return /* spotless:off */ other is ObjectType && value == other.value /* spotless:on */
+            return /* spotless:off */ other is ObjectType && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -527,16 +446,16 @@ class AclListParams private constructor(
     }
 
     /**
-     * Filter search results to a particular set of object IDs. To specify a list of
-     * IDs, include the query param multiple times
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
      */
     @JsonDeserialize(using = Ids.Deserializer::class)
     @JsonSerialize(using = Ids.Serializer::class)
-    class Ids private constructor(
+    class Ids
+    private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
         private val _json: JsonValue? = null,
-
     ) {
 
         fun string(): String? = string
@@ -554,19 +473,19 @@ class AclListParams private constructor(
         fun _json(): JsonValue? = _json
 
         fun <T> accept(visitor: Visitor<T>): T {
-          return when {
-              string != null -> visitor.visitString(string)
-              strings != null -> visitor.visitStrings(strings)
-              else -> visitor.unknown(_json)
-          }
+            return when {
+                string != null -> visitor.visitString(string)
+                strings != null -> visitor.visitStrings(strings)
+                else -> visitor.unknown(_json)
+            }
         }
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return /* spotless:off */ other is Ids && string == other.string && strings == other.strings /* spotless:on */
+            return /* spotless:off */ other is Ids && string == other.string && strings == other.strings /* spotless:on */
         }
 
         override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
@@ -586,10 +505,7 @@ class AclListParams private constructor(
             fun ofStrings(strings: List<String>) = Ids(strings = strings)
         }
 
-        /**
-         * An interface that defines how to map each variant of [Ids] to a value of type
-         * [T].
-         */
+        /** An interface that defines how to map each variant of [Ids] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
@@ -599,56 +515,60 @@ class AclListParams private constructor(
             /**
              * Maps an unknown variant of [Ids] to a value of type [T].
              *
-             * An instance of [Ids] can contain an unknown variant if it was deserialized from
-             * data that doesn't match any known variant. For example, if the SDK is on an
-             * older version than the API, then the API may respond with new variants that the
-             * SDK is unaware of.
+             * An instance of [Ids] can contain an unknown variant if it was deserialized from data
+             * that doesn't match any known variant. For example, if the SDK is on an older version
+             * than the API, then the API may respond with new variants that the SDK is unaware of.
              *
              * @throws BraintrustInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-              throw BraintrustInvalidDataException("Unknown Ids: $json")
+                throw BraintrustInvalidDataException("Unknown Ids: $json")
             }
         }
 
         internal class Deserializer : BaseDeserializer<Ids>(Ids::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Ids {
-              val json = JsonValue.fromJsonNode(node)
+                val json = JsonValue.fromJsonNode(node)
 
-              tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                  return Ids(string = it, _json = json)
-              }
-              tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                  return Ids(strings = it, _json = json)
-              }
+                tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                    return Ids(string = it, _json = json)
+                }
+                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
+                    return Ids(strings = it, _json = json)
+                }
 
-              return Ids(_json = json)
+                return Ids(_json = json)
             }
         }
 
         internal class Serializer : BaseSerializer<Ids>(Ids::class) {
 
-            override fun serialize(value: Ids, generator: JsonGenerator, provider: SerializerProvider) {
-              when {
-                  value.string != null -> generator.writeObject(value.string)
-                  value.strings != null -> generator.writeObject(value.strings)
-                  value._json != null -> generator.writeObject(value._json)
-                  else -> throw IllegalStateException("Invalid Ids")
-              }
+            override fun serialize(
+                value: Ids,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.string != null -> generator.writeObject(value.string)
+                    value.strings != null -> generator.writeObject(value.strings)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Ids")
+                }
             }
         }
     }
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return /* spotless:off */ other is AclListParams && objectId == other.objectId && objectType == other.objectType && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is AclListParams && objectId == other.objectId && objectType == other.objectType && endingBefore == other.endingBefore && ids == other.ids && limit == other.limit && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(objectId, objectType, endingBefore, ids, limit, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
 
-    override fun toString() = "AclListParams{objectId=$objectId, objectType=$objectType, endingBefore=$endingBefore, ids=$ids, limit=$limit, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+    override fun toString() =
+        "AclListParams{objectId=$objectId, objectType=$objectType, endingBefore=$endingBefore, ids=$ids, limit=$limit, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
