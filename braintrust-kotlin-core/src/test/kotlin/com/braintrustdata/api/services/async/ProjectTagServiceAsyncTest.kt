@@ -6,7 +6,6 @@ import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClientAsync
 import com.braintrustdata.api.models.ProjectTagCreateParams
 import com.braintrustdata.api.models.ProjectTagDeleteParams
-import com.braintrustdata.api.models.ProjectTagListParams
 import com.braintrustdata.api.models.ProjectTagReplaceParams
 import com.braintrustdata.api.models.ProjectTagRetrieveParams
 import com.braintrustdata.api.models.ProjectTagUpdateParams
@@ -18,98 +17,119 @@ class ProjectTagServiceAsyncTest {
 
     @Test
     suspend fun create() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val projectTagServiceAsync = client.projectTags()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val projectTagServiceAsync = client.projectTags()
 
-      val projectTag = projectTagServiceAsync.create(ProjectTagCreateParams.builder()
-          .name("name")
-          .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .color("color")
-          .description("description")
-          .build())
+        val projectTag =
+            projectTagServiceAsync.create(
+                ProjectTagCreateParams.builder()
+                    .name("name")
+                    .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .color("color")
+                    .description("description")
+                    .build()
+            )
 
-      projectTag.validate()
+        projectTag.validate()
     }
 
     @Test
     suspend fun retrieve() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val projectTagServiceAsync = client.projectTags()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val projectTagServiceAsync = client.projectTags()
 
-      val projectTag = projectTagServiceAsync.retrieve(ProjectTagRetrieveParams.builder()
-          .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build())
+        val projectTag =
+            projectTagServiceAsync.retrieve(
+                ProjectTagRetrieveParams.builder()
+                    .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
+            )
 
-      projectTag.validate()
+        projectTag.validate()
     }
 
     @Test
     suspend fun update() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val projectTagServiceAsync = client.projectTags()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val projectTagServiceAsync = client.projectTags()
 
-      val projectTag = projectTagServiceAsync.update(ProjectTagUpdateParams.builder()
-          .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .color("color")
-          .description("description")
-          .name("name")
-          .build())
+        val projectTag =
+            projectTagServiceAsync.update(
+                ProjectTagUpdateParams.builder()
+                    .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .color("color")
+                    .description("description")
+                    .name("name")
+                    .build()
+            )
 
-      projectTag.validate()
+        projectTag.validate()
     }
 
     @Test
     suspend fun list() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val projectTagServiceAsync = client.projectTags()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val projectTagServiceAsync = client.projectTags()
 
-      val page = projectTagServiceAsync.list()
+        val page = projectTagServiceAsync.list()
 
-      page.response().validate()
+        page.response().validate()
     }
 
     @Test
     suspend fun delete() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val projectTagServiceAsync = client.projectTags()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val projectTagServiceAsync = client.projectTags()
 
-      val projectTag = projectTagServiceAsync.delete(ProjectTagDeleteParams.builder()
-          .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build())
+        val projectTag =
+            projectTagServiceAsync.delete(
+                ProjectTagDeleteParams.builder()
+                    .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
+            )
 
-      projectTag.validate()
+        projectTag.validate()
     }
 
     @Test
     suspend fun replace() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val projectTagServiceAsync = client.projectTags()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val projectTagServiceAsync = client.projectTags()
 
-      val projectTag = projectTagServiceAsync.replace(ProjectTagReplaceParams.builder()
-          .name("name")
-          .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .color("color")
-          .description("description")
-          .build())
+        val projectTag =
+            projectTagServiceAsync.replace(
+                ProjectTagReplaceParams.builder()
+                    .name("name")
+                    .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .color("color")
+                    .description("description")
+                    .build()
+            )
 
-      projectTag.validate()
+        projectTag.validate()
     }
 }

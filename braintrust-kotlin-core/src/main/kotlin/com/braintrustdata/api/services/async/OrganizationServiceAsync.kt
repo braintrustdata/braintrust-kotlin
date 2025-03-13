@@ -16,38 +16,50 @@ import com.google.errorprone.annotations.MustBeClosed
 interface OrganizationServiceAsync {
 
     /**
-     * Returns a view of this service that provides access to raw HTTP responses for
-     * each method.
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
 
     fun members(): MemberServiceAsync
 
     /** Get an organization object by its id */
-    suspend fun retrieve(params: OrganizationRetrieveParams, requestOptions: RequestOptions = RequestOptions.none()): Organization
+    suspend fun retrieve(
+        params: OrganizationRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Organization
 
     /**
-     * Partially update an organization object. Specify the fields to update in the
-     * payload. Any object-type fields will be deep-merged with existing content.
-     * Currently we do not support removing fields or setting them to null.
+     * Partially update an organization object. Specify the fields to update in the payload. Any
+     * object-type fields will be deep-merged with existing content. Currently we do not support
+     * removing fields or setting them to null.
      */
-    suspend fun update(params: OrganizationUpdateParams, requestOptions: RequestOptions = RequestOptions.none()): Organization
+    suspend fun update(
+        params: OrganizationUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Organization
 
     /**
-     * List out all organizations. The organizations are sorted by creation date, with
-     * the most recently-created organizations coming first
+     * List out all organizations. The organizations are sorted by creation date, with the most
+     * recently-created organizations coming first
      */
-    suspend fun list(params: OrganizationListParams = OrganizationListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): OrganizationListPageAsync
+    suspend fun list(
+        params: OrganizationListParams = OrganizationListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): OrganizationListPageAsync
 
     /** @see [list] */
-    suspend fun list(requestOptions: RequestOptions): OrganizationListPageAsync = list(OrganizationListParams.none(), requestOptions)
+    suspend fun list(requestOptions: RequestOptions): OrganizationListPageAsync =
+        list(OrganizationListParams.none(), requestOptions)
 
     /** Delete an organization object by its id */
-    suspend fun delete(params: OrganizationDeleteParams, requestOptions: RequestOptions = RequestOptions.none()): Organization
+    suspend fun delete(
+        params: OrganizationDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Organization
 
     /**
-     * A view of [OrganizationServiceAsync] that provides access to raw HTTP responses
-     * for each method.
+     * A view of [OrganizationServiceAsync] that provides access to raw HTTP responses for each
+     * method.
      */
     interface WithRawResponse {
 
@@ -58,31 +70,46 @@ interface OrganizationServiceAsync {
          * otherwise the same as [OrganizationServiceAsync.retrieve].
          */
         @MustBeClosed
-        suspend fun retrieve(params: OrganizationRetrieveParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Organization>
+        suspend fun retrieve(
+            params: OrganizationRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Organization>
 
         /**
-         * Returns a raw HTTP response for `patch /v1/organization/{organization_id}`, but
-         * is otherwise the same as [OrganizationServiceAsync.update].
+         * Returns a raw HTTP response for `patch /v1/organization/{organization_id}`, but is
+         * otherwise the same as [OrganizationServiceAsync.update].
          */
         @MustBeClosed
-        suspend fun update(params: OrganizationUpdateParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Organization>
+        suspend fun update(
+            params: OrganizationUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Organization>
 
         /**
-         * Returns a raw HTTP response for `get /v1/organization`, but is otherwise the
-         * same as [OrganizationServiceAsync.list].
+         * Returns a raw HTTP response for `get /v1/organization`, but is otherwise the same as
+         * [OrganizationServiceAsync.list].
          */
         @MustBeClosed
-        suspend fun list(params: OrganizationListParams = OrganizationListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<OrganizationListPageAsync>
+        suspend fun list(
+            params: OrganizationListParams = OrganizationListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<OrganizationListPageAsync>
 
         /** @see [list] */
         @MustBeClosed
-        suspend fun list(requestOptions: RequestOptions): HttpResponseFor<OrganizationListPageAsync> = list(OrganizationListParams.none(), requestOptions)
+        suspend fun list(
+            requestOptions: RequestOptions
+        ): HttpResponseFor<OrganizationListPageAsync> =
+            list(OrganizationListParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `delete /v1/organization/{organization_id}`, but
-         * is otherwise the same as [OrganizationServiceAsync.delete].
+         * Returns a raw HTTP response for `delete /v1/organization/{organization_id}`, but is
+         * otherwise the same as [OrganizationServiceAsync.delete].
          */
         @MustBeClosed
-        suspend fun delete(params: OrganizationDeleteParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Organization>
+        suspend fun delete(
+            params: OrganizationDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Organization>
     }
 }

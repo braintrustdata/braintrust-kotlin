@@ -19,13 +19,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.util.Objects
-import java.util.Optional
 
 /**
- * List out all users. The users are sorted by creation date, with the most
- * recently-created users coming first
+ * List out all users. The users are sorted by creation date, with the most recently-created users
+ * coming first
  */
-class UserListParams private constructor(
+class UserListParams
+private constructor(
     private val email: Email?,
     private val endingBefore: String?,
     private val familyName: FamilyName?,
@@ -36,39 +36,38 @@ class UserListParams private constructor(
     private val startingAfter: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-
 ) : Params {
 
     /**
-     * Email of the user to search for. You may pass the param multiple times to filter
-     * for more than one email
+     * Email of the user to search for. You may pass the param multiple times to filter for more
+     * than one email
      */
     fun email(): Email? = email
 
     /**
      * Pagination cursor id.
      *
-     * For example, if the initial item in the last page you fetched had an id of
-     * `foo`, pass `ending_before=foo` to fetch the previous page. Note: you may only
-     * pass one of `starting_after` and `ending_before`
+     * For example, if the initial item in the last page you fetched had an id of `foo`, pass
+     * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
+     * `starting_after` and `ending_before`
      */
     fun endingBefore(): String? = endingBefore
 
     /**
-     * Family name of the user to search for. You may pass the param multiple times to
-     * filter for more than one family name
+     * Family name of the user to search for. You may pass the param multiple times to filter for
+     * more than one family name
      */
     fun familyName(): FamilyName? = familyName
 
     /**
-     * Given name of the user to search for. You may pass the param multiple times to
-     * filter for more than one given name
+     * Given name of the user to search for. You may pass the param multiple times to filter for
+     * more than one given name
      */
     fun givenName(): GivenName? = givenName
 
     /**
-     * Filter search results to a particular set of object IDs. To specify a list of
-     * IDs, include the query param multiple times
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
      */
     fun ids(): Ids? = ids
 
@@ -81,9 +80,9 @@ class UserListParams private constructor(
     /**
      * Pagination cursor id.
      *
-     * For example, if the final item in the last page you fetched had an id of `foo`,
-     * pass `starting_after=foo` to fetch the next page. Note: you may only pass one of
-     * `starting_after` and `ending_before`
+     * For example, if the final item in the last page you fetched had an id of `foo`, pass
+     * `starting_after=foo` to fetch the next page. Note: you may only pass one of `starting_after`
+     * and `ending_before`
      */
     fun startingAfter(): String? = startingAfter
 
@@ -94,49 +93,17 @@ class UserListParams private constructor(
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams {
-      val queryParams = QueryParams.builder()
-      this.email?.let {
-          queryParams.put(
-            "email", listOf(it.toString())
-          )
-      }
-      this.endingBefore?.let {
-          queryParams.put(
-            "ending_before", listOf(it.toString())
-          )
-      }
-      this.familyName?.let {
-          queryParams.put(
-            "family_name", listOf(it.toString())
-          )
-      }
-      this.givenName?.let {
-          queryParams.put(
-            "given_name", listOf(it.toString())
-          )
-      }
-      this.ids?.let {
-          queryParams.put(
-            "ids", listOf(it.toString())
-          )
-      }
-      this.limit?.let {
-          queryParams.put(
-            "limit", listOf(it.toString())
-          )
-      }
-      this.orgName?.let {
-          queryParams.put(
-            "org_name", listOf(it.toString())
-          )
-      }
-      this.startingAfter?.let {
-          queryParams.put(
-            "starting_after", listOf(it.toString())
-          )
-      }
-      queryParams.putAll(additionalQueryParams)
-      return queryParams.build()
+        val queryParams = QueryParams.builder()
+        this.email?.let { queryParams.put("email", listOf(it.toString())) }
+        this.endingBefore?.let { queryParams.put("ending_before", listOf(it.toString())) }
+        this.familyName?.let { queryParams.put("family_name", listOf(it.toString())) }
+        this.givenName?.let { queryParams.put("given_name", listOf(it.toString())) }
+        this.ids?.let { queryParams.put("ids", listOf(it.toString())) }
+        this.limit?.let { queryParams.put("limit", listOf(it.toString())) }
+        this.orgName?.let { queryParams.put("org_name", listOf(it.toString())) }
+        this.startingAfter?.let { queryParams.put("starting_after", listOf(it.toString())) }
+        queryParams.putAll(additionalQueryParams)
+        return queryParams.build()
     }
 
     fun toBuilder() = Builder().from(this)
@@ -164,293 +131,242 @@ class UserListParams private constructor(
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-        internal fun from(userListParams: UserListParams) =
-            apply {
-                email = userListParams.email
-                endingBefore = userListParams.endingBefore
-                familyName = userListParams.familyName
-                givenName = userListParams.givenName
-                ids = userListParams.ids
-                limit = userListParams.limit
-                orgName = userListParams.orgName
-                startingAfter = userListParams.startingAfter
-                additionalHeaders = userListParams.additionalHeaders.toBuilder()
-                additionalQueryParams = userListParams.additionalQueryParams.toBuilder()
-            }
+        internal fun from(userListParams: UserListParams) = apply {
+            email = userListParams.email
+            endingBefore = userListParams.endingBefore
+            familyName = userListParams.familyName
+            givenName = userListParams.givenName
+            ids = userListParams.ids
+            limit = userListParams.limit
+            orgName = userListParams.orgName
+            startingAfter = userListParams.startingAfter
+            additionalHeaders = userListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = userListParams.additionalQueryParams.toBuilder()
+        }
 
         /**
-         * Email of the user to search for. You may pass the param multiple times to filter
-         * for more than one email
+         * Email of the user to search for. You may pass the param multiple times to filter for more
+         * than one email
          */
-        fun email(email: Email?) =
-            apply {
-                this.email = email
-            }
+        fun email(email: Email?) = apply { this.email = email }
 
         /**
-         * Email of the user to search for. You may pass the param multiple times to filter
-         * for more than one email
+         * Email of the user to search for. You may pass the param multiple times to filter for more
+         * than one email
          */
         fun email(string: String) = email(Email.ofString(string))
 
         /**
-         * Email of the user to search for. You may pass the param multiple times to filter
-         * for more than one email
+         * Email of the user to search for. You may pass the param multiple times to filter for more
+         * than one email
          */
         fun emailOfStrings(strings: List<String>) = email(Email.ofStrings(strings))
 
         /**
          * Pagination cursor id.
          *
-         * For example, if the initial item in the last page you fetched had an id of
-         * `foo`, pass `ending_before=foo` to fetch the previous page. Note: you may only
-         * pass one of `starting_after` and `ending_before`
+         * For example, if the initial item in the last page you fetched had an id of `foo`, pass
+         * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
+         * `starting_after` and `ending_before`
          */
-        fun endingBefore(endingBefore: String?) =
-            apply {
-                this.endingBefore = endingBefore
-            }
+        fun endingBefore(endingBefore: String?) = apply { this.endingBefore = endingBefore }
 
         /**
-         * Family name of the user to search for. You may pass the param multiple times to
-         * filter for more than one family name
+         * Family name of the user to search for. You may pass the param multiple times to filter
+         * for more than one family name
          */
-        fun familyName(familyName: FamilyName?) =
-            apply {
-                this.familyName = familyName
-            }
+        fun familyName(familyName: FamilyName?) = apply { this.familyName = familyName }
 
         /**
-         * Family name of the user to search for. You may pass the param multiple times to
-         * filter for more than one family name
+         * Family name of the user to search for. You may pass the param multiple times to filter
+         * for more than one family name
          */
         fun familyName(string: String) = familyName(FamilyName.ofString(string))
 
         /**
-         * Family name of the user to search for. You may pass the param multiple times to
-         * filter for more than one family name
+         * Family name of the user to search for. You may pass the param multiple times to filter
+         * for more than one family name
          */
         fun familyNameOfStrings(strings: List<String>) = familyName(FamilyName.ofStrings(strings))
 
         /**
-         * Given name of the user to search for. You may pass the param multiple times to
-         * filter for more than one given name
+         * Given name of the user to search for. You may pass the param multiple times to filter for
+         * more than one given name
          */
-        fun givenName(givenName: GivenName?) =
-            apply {
-                this.givenName = givenName
-            }
+        fun givenName(givenName: GivenName?) = apply { this.givenName = givenName }
 
         /**
-         * Given name of the user to search for. You may pass the param multiple times to
-         * filter for more than one given name
+         * Given name of the user to search for. You may pass the param multiple times to filter for
+         * more than one given name
          */
         fun givenName(string: String) = givenName(GivenName.ofString(string))
 
         /**
-         * Given name of the user to search for. You may pass the param multiple times to
-         * filter for more than one given name
+         * Given name of the user to search for. You may pass the param multiple times to filter for
+         * more than one given name
          */
         fun givenNameOfStrings(strings: List<String>) = givenName(GivenName.ofStrings(strings))
 
         /**
-         * Filter search results to a particular set of object IDs. To specify a list of
-         * IDs, include the query param multiple times
+         * Filter search results to a particular set of object IDs. To specify a list of IDs,
+         * include the query param multiple times
          */
-        fun ids(ids: Ids?) =
-            apply {
-                this.ids = ids
-            }
+        fun ids(ids: Ids?) = apply { this.ids = ids }
 
         /**
-         * Filter search results to a particular set of object IDs. To specify a list of
-         * IDs, include the query param multiple times
+         * Filter search results to a particular set of object IDs. To specify a list of IDs,
+         * include the query param multiple times
          */
         fun ids(string: String) = ids(Ids.ofString(string))
 
         /**
-         * Filter search results to a particular set of object IDs. To specify a list of
-         * IDs, include the query param multiple times
+         * Filter search results to a particular set of object IDs. To specify a list of IDs,
+         * include the query param multiple times
          */
         fun idsOfStrings(strings: List<String>) = ids(Ids.ofStrings(strings))
 
         /** Limit the number of objects to return */
-        fun limit(limit: Long?) =
-            apply {
-                this.limit = limit
-            }
+        fun limit(limit: Long?) = apply { this.limit = limit }
 
         /** Limit the number of objects to return */
         fun limit(limit: Long) = limit(limit as Long?)
 
         /** Filter search results to within a particular organization */
-        fun orgName(orgName: String?) =
-            apply {
-                this.orgName = orgName
-            }
+        fun orgName(orgName: String?) = apply { this.orgName = orgName }
 
         /**
          * Pagination cursor id.
          *
-         * For example, if the final item in the last page you fetched had an id of `foo`,
-         * pass `starting_after=foo` to fetch the next page. Note: you may only pass one of
+         * For example, if the final item in the last page you fetched had an id of `foo`, pass
+         * `starting_after=foo` to fetch the next page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun startingAfter(startingAfter: String?) =
-            apply {
-                this.startingAfter = startingAfter
-            }
+        fun startingAfter(startingAfter: String?) = apply { this.startingAfter = startingAfter }
 
-        fun additionalHeaders(additionalHeaders: Headers) =
-            apply {
-                this.additionalHeaders.clear()
-                putAllAdditionalHeaders(additionalHeaders)
-            }
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
 
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalHeaders.clear()
-                putAllAdditionalHeaders(additionalHeaders)
-            }
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
 
-        fun putAdditionalHeader(name: String, value: String) =
-            apply {
-                additionalHeaders.put(name, value)
-            }
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
 
-        fun putAdditionalHeaders(name: String, values: Iterable<String>) =
-            apply {
-                additionalHeaders.put(name, values)
-            }
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
 
-        fun putAllAdditionalHeaders(additionalHeaders: Headers) =
-            apply {
-                this.additionalHeaders.putAll(additionalHeaders)
-            }
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
 
-        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalHeaders.putAll(additionalHeaders)
-            }
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
 
-        fun replaceAdditionalHeaders(name: String, value: String) =
-            apply {
-                additionalHeaders.replace(name, value)
-            }
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
 
-        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) =
-            apply {
-                additionalHeaders.replace(name, values)
-            }
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
 
-        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) =
-            apply {
-                this.additionalHeaders.replaceAll(additionalHeaders)
-            }
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
 
-        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalHeaders.replaceAll(additionalHeaders)
-            }
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
 
-        fun removeAdditionalHeaders(name: String) =
-            apply {
-                additionalHeaders.remove(name)
-            }
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
 
-        fun removeAllAdditionalHeaders(names: Set<String>) =
-            apply {
-                additionalHeaders.removeAll(names)
-            }
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
 
-        fun additionalQueryParams(additionalQueryParams: QueryParams) =
-            apply {
-                this.additionalQueryParams.clear()
-                putAllAdditionalQueryParams(additionalQueryParams)
-            }
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalQueryParams.clear()
-                putAllAdditionalQueryParams(additionalQueryParams)
-            }
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
 
-        fun putAdditionalQueryParam(key: String, value: String) =
-            apply {
-                additionalQueryParams.put(key, value)
-            }
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
 
-        fun putAdditionalQueryParams(key: String, values: Iterable<String>) =
-            apply {
-                additionalQueryParams.put(key, values)
-            }
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
 
-        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) =
-            apply {
-                this.additionalQueryParams.putAll(additionalQueryParams)
-            }
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
 
         fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
                 this.additionalQueryParams.putAll(additionalQueryParams)
             }
 
-        fun replaceAdditionalQueryParams(key: String, value: String) =
-            apply {
-                additionalQueryParams.replace(key, value)
-            }
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
 
-        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) =
-            apply {
-                additionalQueryParams.replace(key, values)
-            }
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
 
-        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) =
-            apply {
-                this.additionalQueryParams.replaceAll(additionalQueryParams)
-            }
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
 
         fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
                 this.additionalQueryParams.replaceAll(additionalQueryParams)
             }
 
-        fun removeAdditionalQueryParams(key: String) =
-            apply {
-                additionalQueryParams.remove(key)
-            }
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
 
-        fun removeAllAdditionalQueryParams(keys: Set<String>) =
-            apply {
-                additionalQueryParams.removeAll(keys)
-            }
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
 
         fun build(): UserListParams =
             UserListParams(
-              email,
-              endingBefore,
-              familyName,
-              givenName,
-              ids,
-              limit,
-              orgName,
-              startingAfter,
-              additionalHeaders.build(),
-              additionalQueryParams.build(),
+                email,
+                endingBefore,
+                familyName,
+                givenName,
+                ids,
+                limit,
+                orgName,
+                startingAfter,
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
             )
     }
 
     /**
-     * Email of the user to search for. You may pass the param multiple times to filter
-     * for more than one email
+     * Email of the user to search for. You may pass the param multiple times to filter for more
+     * than one email
      */
     @JsonDeserialize(using = Email.Deserializer::class)
     @JsonSerialize(using = Email.Serializer::class)
-    class Email private constructor(
+    class Email
+    private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
         private val _json: JsonValue? = null,
-
     ) {
 
         fun string(): String? = string
@@ -468,19 +384,19 @@ class UserListParams private constructor(
         fun _json(): JsonValue? = _json
 
         fun <T> accept(visitor: Visitor<T>): T {
-          return when {
-              string != null -> visitor.visitString(string)
-              strings != null -> visitor.visitStrings(strings)
-              else -> visitor.unknown(_json)
-          }
+            return when {
+                string != null -> visitor.visitString(string)
+                strings != null -> visitor.visitStrings(strings)
+                else -> visitor.unknown(_json)
+            }
         }
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return /* spotless:off */ other is Email && string == other.string && strings == other.strings /* spotless:on */
+            return /* spotless:off */ other is Email && string == other.string && strings == other.strings /* spotless:on */
         }
 
         override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
@@ -500,10 +416,7 @@ class UserListParams private constructor(
             fun ofStrings(strings: List<String>) = Email(strings = strings)
         }
 
-        /**
-         * An interface that defines how to map each variant of [Email] to a value of type
-         * [T].
-         */
+        /** An interface that defines how to map each variant of [Email] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
@@ -513,58 +426,62 @@ class UserListParams private constructor(
             /**
              * Maps an unknown variant of [Email] to a value of type [T].
              *
-             * An instance of [Email] can contain an unknown variant if it was deserialized
-             * from data that doesn't match any known variant. For example, if the SDK is on an
-             * older version than the API, then the API may respond with new variants that the
-             * SDK is unaware of.
+             * An instance of [Email] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
              *
              * @throws BraintrustInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-              throw BraintrustInvalidDataException("Unknown Email: $json")
+                throw BraintrustInvalidDataException("Unknown Email: $json")
             }
         }
 
         internal class Deserializer : BaseDeserializer<Email>(Email::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Email {
-              val json = JsonValue.fromJsonNode(node)
+                val json = JsonValue.fromJsonNode(node)
 
-              tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                  return Email(string = it, _json = json)
-              }
-              tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                  return Email(strings = it, _json = json)
-              }
+                tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                    return Email(string = it, _json = json)
+                }
+                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
+                    return Email(strings = it, _json = json)
+                }
 
-              return Email(_json = json)
+                return Email(_json = json)
             }
         }
 
         internal class Serializer : BaseSerializer<Email>(Email::class) {
 
-            override fun serialize(value: Email, generator: JsonGenerator, provider: SerializerProvider) {
-              when {
-                  value.string != null -> generator.writeObject(value.string)
-                  value.strings != null -> generator.writeObject(value.strings)
-                  value._json != null -> generator.writeObject(value._json)
-                  else -> throw IllegalStateException("Invalid Email")
-              }
+            override fun serialize(
+                value: Email,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.string != null -> generator.writeObject(value.string)
+                    value.strings != null -> generator.writeObject(value.strings)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Email")
+                }
             }
         }
     }
 
     /**
-     * Family name of the user to search for. You may pass the param multiple times to
-     * filter for more than one family name
+     * Family name of the user to search for. You may pass the param multiple times to filter for
+     * more than one family name
      */
     @JsonDeserialize(using = FamilyName.Deserializer::class)
     @JsonSerialize(using = FamilyName.Serializer::class)
-    class FamilyName private constructor(
+    class FamilyName
+    private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
         private val _json: JsonValue? = null,
-
     ) {
 
         fun string(): String? = string
@@ -582,19 +499,19 @@ class UserListParams private constructor(
         fun _json(): JsonValue? = _json
 
         fun <T> accept(visitor: Visitor<T>): T {
-          return when {
-              string != null -> visitor.visitString(string)
-              strings != null -> visitor.visitStrings(strings)
-              else -> visitor.unknown(_json)
-          }
+            return when {
+                string != null -> visitor.visitString(string)
+                strings != null -> visitor.visitStrings(strings)
+                else -> visitor.unknown(_json)
+            }
         }
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return /* spotless:off */ other is FamilyName && string == other.string && strings == other.strings /* spotless:on */
+            return /* spotless:off */ other is FamilyName && string == other.string && strings == other.strings /* spotless:on */
         }
 
         override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
@@ -615,8 +532,7 @@ class UserListParams private constructor(
         }
 
         /**
-         * An interface that defines how to map each variant of [FamilyName] to a value of
-         * type [T].
+         * An interface that defines how to map each variant of [FamilyName] to a value of type [T].
          */
         interface Visitor<out T> {
 
@@ -627,58 +543,62 @@ class UserListParams private constructor(
             /**
              * Maps an unknown variant of [FamilyName] to a value of type [T].
              *
-             * An instance of [FamilyName] can contain an unknown variant if it was
-             * deserialized from data that doesn't match any known variant. For example, if the
-             * SDK is on an older version than the API, then the API may respond with new
-             * variants that the SDK is unaware of.
+             * An instance of [FamilyName] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
              *
              * @throws BraintrustInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-              throw BraintrustInvalidDataException("Unknown FamilyName: $json")
+                throw BraintrustInvalidDataException("Unknown FamilyName: $json")
             }
         }
 
         internal class Deserializer : BaseDeserializer<FamilyName>(FamilyName::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): FamilyName {
-              val json = JsonValue.fromJsonNode(node)
+                val json = JsonValue.fromJsonNode(node)
 
-              tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                  return FamilyName(string = it, _json = json)
-              }
-              tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                  return FamilyName(strings = it, _json = json)
-              }
+                tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                    return FamilyName(string = it, _json = json)
+                }
+                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
+                    return FamilyName(strings = it, _json = json)
+                }
 
-              return FamilyName(_json = json)
+                return FamilyName(_json = json)
             }
         }
 
         internal class Serializer : BaseSerializer<FamilyName>(FamilyName::class) {
 
-            override fun serialize(value: FamilyName, generator: JsonGenerator, provider: SerializerProvider) {
-              when {
-                  value.string != null -> generator.writeObject(value.string)
-                  value.strings != null -> generator.writeObject(value.strings)
-                  value._json != null -> generator.writeObject(value._json)
-                  else -> throw IllegalStateException("Invalid FamilyName")
-              }
+            override fun serialize(
+                value: FamilyName,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.string != null -> generator.writeObject(value.string)
+                    value.strings != null -> generator.writeObject(value.strings)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid FamilyName")
+                }
             }
         }
     }
 
     /**
-     * Given name of the user to search for. You may pass the param multiple times to
-     * filter for more than one given name
+     * Given name of the user to search for. You may pass the param multiple times to filter for
+     * more than one given name
      */
     @JsonDeserialize(using = GivenName.Deserializer::class)
     @JsonSerialize(using = GivenName.Serializer::class)
-    class GivenName private constructor(
+    class GivenName
+    private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
         private val _json: JsonValue? = null,
-
     ) {
 
         fun string(): String? = string
@@ -696,19 +616,19 @@ class UserListParams private constructor(
         fun _json(): JsonValue? = _json
 
         fun <T> accept(visitor: Visitor<T>): T {
-          return when {
-              string != null -> visitor.visitString(string)
-              strings != null -> visitor.visitStrings(strings)
-              else -> visitor.unknown(_json)
-          }
+            return when {
+                string != null -> visitor.visitString(string)
+                strings != null -> visitor.visitStrings(strings)
+                else -> visitor.unknown(_json)
+            }
         }
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return /* spotless:off */ other is GivenName && string == other.string && strings == other.strings /* spotless:on */
+            return /* spotless:off */ other is GivenName && string == other.string && strings == other.strings /* spotless:on */
         }
 
         override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
@@ -729,8 +649,7 @@ class UserListParams private constructor(
         }
 
         /**
-         * An interface that defines how to map each variant of [GivenName] to a value of
-         * type [T].
+         * An interface that defines how to map each variant of [GivenName] to a value of type [T].
          */
         interface Visitor<out T> {
 
@@ -741,58 +660,62 @@ class UserListParams private constructor(
             /**
              * Maps an unknown variant of [GivenName] to a value of type [T].
              *
-             * An instance of [GivenName] can contain an unknown variant if it was deserialized
-             * from data that doesn't match any known variant. For example, if the SDK is on an
-             * older version than the API, then the API may respond with new variants that the
-             * SDK is unaware of.
+             * An instance of [GivenName] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
              *
              * @throws BraintrustInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-              throw BraintrustInvalidDataException("Unknown GivenName: $json")
+                throw BraintrustInvalidDataException("Unknown GivenName: $json")
             }
         }
 
         internal class Deserializer : BaseDeserializer<GivenName>(GivenName::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): GivenName {
-              val json = JsonValue.fromJsonNode(node)
+                val json = JsonValue.fromJsonNode(node)
 
-              tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                  return GivenName(string = it, _json = json)
-              }
-              tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                  return GivenName(strings = it, _json = json)
-              }
+                tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                    return GivenName(string = it, _json = json)
+                }
+                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
+                    return GivenName(strings = it, _json = json)
+                }
 
-              return GivenName(_json = json)
+                return GivenName(_json = json)
             }
         }
 
         internal class Serializer : BaseSerializer<GivenName>(GivenName::class) {
 
-            override fun serialize(value: GivenName, generator: JsonGenerator, provider: SerializerProvider) {
-              when {
-                  value.string != null -> generator.writeObject(value.string)
-                  value.strings != null -> generator.writeObject(value.strings)
-                  value._json != null -> generator.writeObject(value._json)
-                  else -> throw IllegalStateException("Invalid GivenName")
-              }
+            override fun serialize(
+                value: GivenName,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.string != null -> generator.writeObject(value.string)
+                    value.strings != null -> generator.writeObject(value.strings)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid GivenName")
+                }
             }
         }
     }
 
     /**
-     * Filter search results to a particular set of object IDs. To specify a list of
-     * IDs, include the query param multiple times
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
      */
     @JsonDeserialize(using = Ids.Deserializer::class)
     @JsonSerialize(using = Ids.Serializer::class)
-    class Ids private constructor(
+    class Ids
+    private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
         private val _json: JsonValue? = null,
-
     ) {
 
         fun string(): String? = string
@@ -810,19 +733,19 @@ class UserListParams private constructor(
         fun _json(): JsonValue? = _json
 
         fun <T> accept(visitor: Visitor<T>): T {
-          return when {
-              string != null -> visitor.visitString(string)
-              strings != null -> visitor.visitStrings(strings)
-              else -> visitor.unknown(_json)
-          }
+            return when {
+                string != null -> visitor.visitString(string)
+                strings != null -> visitor.visitStrings(strings)
+                else -> visitor.unknown(_json)
+            }
         }
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return /* spotless:off */ other is Ids && string == other.string && strings == other.strings /* spotless:on */
+            return /* spotless:off */ other is Ids && string == other.string && strings == other.strings /* spotless:on */
         }
 
         override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
@@ -842,10 +765,7 @@ class UserListParams private constructor(
             fun ofStrings(strings: List<String>) = Ids(strings = strings)
         }
 
-        /**
-         * An interface that defines how to map each variant of [Ids] to a value of type
-         * [T].
-         */
+        /** An interface that defines how to map each variant of [Ids] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
@@ -855,56 +775,60 @@ class UserListParams private constructor(
             /**
              * Maps an unknown variant of [Ids] to a value of type [T].
              *
-             * An instance of [Ids] can contain an unknown variant if it was deserialized from
-             * data that doesn't match any known variant. For example, if the SDK is on an
-             * older version than the API, then the API may respond with new variants that the
-             * SDK is unaware of.
+             * An instance of [Ids] can contain an unknown variant if it was deserialized from data
+             * that doesn't match any known variant. For example, if the SDK is on an older version
+             * than the API, then the API may respond with new variants that the SDK is unaware of.
              *
              * @throws BraintrustInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-              throw BraintrustInvalidDataException("Unknown Ids: $json")
+                throw BraintrustInvalidDataException("Unknown Ids: $json")
             }
         }
 
         internal class Deserializer : BaseDeserializer<Ids>(Ids::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Ids {
-              val json = JsonValue.fromJsonNode(node)
+                val json = JsonValue.fromJsonNode(node)
 
-              tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                  return Ids(string = it, _json = json)
-              }
-              tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                  return Ids(strings = it, _json = json)
-              }
+                tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                    return Ids(string = it, _json = json)
+                }
+                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
+                    return Ids(strings = it, _json = json)
+                }
 
-              return Ids(_json = json)
+                return Ids(_json = json)
             }
         }
 
         internal class Serializer : BaseSerializer<Ids>(Ids::class) {
 
-            override fun serialize(value: Ids, generator: JsonGenerator, provider: SerializerProvider) {
-              when {
-                  value.string != null -> generator.writeObject(value.string)
-                  value.strings != null -> generator.writeObject(value.strings)
-                  value._json != null -> generator.writeObject(value._json)
-                  else -> throw IllegalStateException("Invalid Ids")
-              }
+            override fun serialize(
+                value: Ids,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.string != null -> generator.writeObject(value.string)
+                    value.strings != null -> generator.writeObject(value.strings)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Ids")
+                }
             }
         }
     }
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return /* spotless:off */ other is UserListParams && email == other.email && endingBefore == other.endingBefore && familyName == other.familyName && givenName == other.givenName && ids == other.ids && limit == other.limit && orgName == other.orgName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is UserListParams && email == other.email && endingBefore == other.endingBefore && familyName == other.familyName && givenName == other.givenName && ids == other.ids && limit == other.limit && orgName == other.orgName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(email, endingBefore, familyName, givenName, ids, limit, orgName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
 
-    override fun toString() = "UserListParams{email=$email, endingBefore=$endingBefore, familyName=$familyName, givenName=$givenName, ids=$ids, limit=$limit, orgName=$orgName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+    override fun toString() =
+        "UserListParams{email=$email, endingBefore=$endingBefore, familyName=$familyName, givenName=$givenName, ids=$ids, limit=$limit, orgName=$orgName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
