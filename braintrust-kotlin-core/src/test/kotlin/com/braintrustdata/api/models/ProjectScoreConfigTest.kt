@@ -9,30 +9,41 @@ class ProjectScoreConfigTest {
 
     @Test
     fun createProjectScoreConfig() {
-      val projectScoreConfig = ProjectScoreConfig.builder()
-          .destination(ProjectScoreConfig.Destination.EXPECTED)
-          .multiSelect(true)
-          .online(OnlineScoreConfig.builder()
-              .samplingRate(0.0)
-              .addScorer(OnlineScoreConfig.Scorer.Function.builder()
-                  .id("id")
-                  .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
-                  .build())
-              .applyToRootSpan(true)
-              .addApplyToSpanName("string")
-              .build())
-          .build()
-      assertThat(projectScoreConfig).isNotNull
-      assertThat(projectScoreConfig.destination()).isEqualTo(ProjectScoreConfig.Destination.EXPECTED)
-      assertThat(projectScoreConfig.multiSelect()).isEqualTo(true)
-      assertThat(projectScoreConfig.online()).isEqualTo(OnlineScoreConfig.builder()
-          .samplingRate(0.0)
-          .addScorer(OnlineScoreConfig.Scorer.Function.builder()
-              .id("id")
-              .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
-              .build())
-          .applyToRootSpan(true)
-          .addApplyToSpanName("string")
-          .build())
+        val projectScoreConfig =
+            ProjectScoreConfig.builder()
+                .destination(ProjectScoreConfig.Destination.EXPECTED)
+                .multiSelect(true)
+                .online(
+                    OnlineScoreConfig.builder()
+                        .samplingRate(0.0)
+                        .addScorer(
+                            OnlineScoreConfig.Scorer.Function.builder()
+                                .id("id")
+                                .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                .build()
+                        )
+                        .applyToRootSpan(true)
+                        .addApplyToSpanName("string")
+                        .build()
+                )
+                .build()
+        assertThat(projectScoreConfig).isNotNull
+        assertThat(projectScoreConfig.destination())
+            .isEqualTo(ProjectScoreConfig.Destination.EXPECTED)
+        assertThat(projectScoreConfig.multiSelect()).isEqualTo(true)
+        assertThat(projectScoreConfig.online())
+            .isEqualTo(
+                OnlineScoreConfig.builder()
+                    .samplingRate(0.0)
+                    .addScorer(
+                        OnlineScoreConfig.Scorer.Function.builder()
+                            .id("id")
+                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                            .build()
+                    )
+                    .applyToRootSpan(true)
+                    .addApplyToSpanName("string")
+                    .build()
+            )
     }
 }

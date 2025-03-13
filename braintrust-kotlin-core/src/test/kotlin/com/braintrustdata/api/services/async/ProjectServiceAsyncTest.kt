@@ -6,7 +6,6 @@ import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClientAsync
 import com.braintrustdata.api.models.ProjectCreateParams
 import com.braintrustdata.api.models.ProjectDeleteParams
-import com.braintrustdata.api.models.ProjectListParams
 import com.braintrustdata.api.models.ProjectRetrieveParams
 import com.braintrustdata.api.models.ProjectSettings
 import com.braintrustdata.api.models.ProjectUpdateParams
@@ -18,79 +17,91 @@ class ProjectServiceAsyncTest {
 
     @Test
     suspend fun create() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val projectServiceAsync = client.projects()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val projectServiceAsync = client.projects()
 
-      val project = projectServiceAsync.create(ProjectCreateParams.builder()
-          .name("x")
-          .orgName("org_name")
-          .build())
+        val project =
+            projectServiceAsync.create(
+                ProjectCreateParams.builder().name("x").orgName("org_name").build()
+            )
 
-      project.validate()
+        project.validate()
     }
 
     @Test
     suspend fun retrieve() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val projectServiceAsync = client.projects()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val projectServiceAsync = client.projects()
 
-      val project = projectServiceAsync.retrieve(ProjectRetrieveParams.builder()
-          .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build())
+        val project =
+            projectServiceAsync.retrieve(
+                ProjectRetrieveParams.builder()
+                    .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
+            )
 
-      project.validate()
+        project.validate()
     }
 
     @Test
     suspend fun update() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val projectServiceAsync = client.projects()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val projectServiceAsync = client.projects()
 
-      val project = projectServiceAsync.update(ProjectUpdateParams.builder()
-          .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .name("name")
-          .settings(ProjectSettings.builder()
-              .comparisonKey("comparison_key")
-              .build())
-          .build())
+        val project =
+            projectServiceAsync.update(
+                ProjectUpdateParams.builder()
+                    .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .name("name")
+                    .settings(ProjectSettings.builder().comparisonKey("comparison_key").build())
+                    .build()
+            )
 
-      project.validate()
+        project.validate()
     }
 
     @Test
     suspend fun list() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val projectServiceAsync = client.projects()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val projectServiceAsync = client.projects()
 
-      val page = projectServiceAsync.list()
+        val page = projectServiceAsync.list()
 
-      page.response().validate()
+        page.response().validate()
     }
 
     @Test
     suspend fun delete() {
-      val client = BraintrustOkHttpClientAsync.builder()
-          .baseUrl(TestServerExtension.BASE_URL)
-          .apiKey("My API Key")
-          .build()
-      val projectServiceAsync = client.projects()
+        val client =
+            BraintrustOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val projectServiceAsync = client.projects()
 
-      val project = projectServiceAsync.delete(ProjectDeleteParams.builder()
-          .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .build())
+        val project =
+            projectServiceAsync.delete(
+                ProjectDeleteParams.builder()
+                    .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
+            )
 
-      project.validate()
+        project.validate()
     }
 }
