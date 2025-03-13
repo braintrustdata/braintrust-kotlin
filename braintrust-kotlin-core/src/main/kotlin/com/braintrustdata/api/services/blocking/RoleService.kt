@@ -17,50 +17,64 @@ import com.google.errorprone.annotations.MustBeClosed
 interface RoleService {
 
     /**
-     * Returns a view of this service that provides access to raw HTTP responses for
-     * each method.
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
 
     /**
-     * Create a new role. If there is an existing role with the same name as the one
-     * specified in the request, will return the existing role unmodified
+     * Create a new role. If there is an existing role with the same name as the one specified in
+     * the request, will return the existing role unmodified
      */
-    fun create(params: RoleCreateParams, requestOptions: RequestOptions = RequestOptions.none()): Role
+    fun create(
+        params: RoleCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Role
 
     /** Get a role object by its id */
-    fun retrieve(params: RoleRetrieveParams, requestOptions: RequestOptions = RequestOptions.none()): Role
+    fun retrieve(
+        params: RoleRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Role
 
     /**
-     * Partially update a role object. Specify the fields to update in the payload. Any
-     * object-type fields will be deep-merged with existing content. Currently we do
-     * not support removing fields or setting them to null.
+     * Partially update a role object. Specify the fields to update in the payload. Any object-type
+     * fields will be deep-merged with existing content. Currently we do not support removing fields
+     * or setting them to null.
      */
-    fun update(params: RoleUpdateParams, requestOptions: RequestOptions = RequestOptions.none()): Role
+    fun update(
+        params: RoleUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Role
 
     /**
-     * List out all roles. The roles are sorted by creation date, with the most
-     * recently-created roles coming first
+     * List out all roles. The roles are sorted by creation date, with the most recently-created
+     * roles coming first
      */
-    fun list(params: RoleListParams = RoleListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): RoleListPage
+    fun list(
+        params: RoleListParams = RoleListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): RoleListPage
 
     /** @see [list] */
-    fun list(requestOptions: RequestOptions): RoleListPage = list(RoleListParams.none(), requestOptions)
+    fun list(requestOptions: RequestOptions): RoleListPage =
+        list(RoleListParams.none(), requestOptions)
 
     /** Delete a role object by its id */
-    fun delete(params: RoleDeleteParams, requestOptions: RequestOptions = RequestOptions.none()): Role
+    fun delete(
+        params: RoleDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Role
 
     /**
-     * Create or replace role. If there is an existing role with the same name as the
-     * one specified in the request, will replace the existing role with the provided
-     * fields
+     * Create or replace role. If there is an existing role with the same name as the one specified
+     * in the request, will replace the existing role with the provided fields
      */
-    fun replace(params: RoleReplaceParams, requestOptions: RequestOptions = RequestOptions.none()): Role
+    fun replace(
+        params: RoleReplaceParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Role
 
-    /**
-     * A view of [RoleService] that provides access to raw HTTP responses for each
-     * method.
-     */
+    /** A view of [RoleService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
         /**
@@ -68,45 +82,64 @@ interface RoleService {
          * [RoleService.create].
          */
         @MustBeClosed
-        fun create(params: RoleCreateParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Role>
+        fun create(
+            params: RoleCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Role>
 
         /**
-         * Returns a raw HTTP response for `get /v1/role/{role_id}`, but is otherwise the
-         * same as [RoleService.retrieve].
+         * Returns a raw HTTP response for `get /v1/role/{role_id}`, but is otherwise the same as
+         * [RoleService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(params: RoleRetrieveParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Role>
+        fun retrieve(
+            params: RoleRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Role>
 
         /**
-         * Returns a raw HTTP response for `patch /v1/role/{role_id}`, but is otherwise the
-         * same as [RoleService.update].
+         * Returns a raw HTTP response for `patch /v1/role/{role_id}`, but is otherwise the same as
+         * [RoleService.update].
          */
         @MustBeClosed
-        fun update(params: RoleUpdateParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Role>
+        fun update(
+            params: RoleUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Role>
 
         /**
          * Returns a raw HTTP response for `get /v1/role`, but is otherwise the same as
          * [RoleService.list].
          */
         @MustBeClosed
-        fun list(params: RoleListParams = RoleListParams.none(), requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<RoleListPage>
+        fun list(
+            params: RoleListParams = RoleListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<RoleListPage>
 
         /** @see [list] */
         @MustBeClosed
-        fun list(requestOptions: RequestOptions): HttpResponseFor<RoleListPage> = list(RoleListParams.none(), requestOptions)
+        fun list(requestOptions: RequestOptions): HttpResponseFor<RoleListPage> =
+            list(RoleListParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `delete /v1/role/{role_id}`, but is otherwise
-         * the same as [RoleService.delete].
+         * Returns a raw HTTP response for `delete /v1/role/{role_id}`, but is otherwise the same as
+         * [RoleService.delete].
          */
         @MustBeClosed
-        fun delete(params: RoleDeleteParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Role>
+        fun delete(
+            params: RoleDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Role>
 
         /**
          * Returns a raw HTTP response for `put /v1/role`, but is otherwise the same as
          * [RoleService.replace].
          */
         @MustBeClosed
-        fun replace(params: RoleReplaceParams, requestOptions: RequestOptions = RequestOptions.none()): HttpResponseFor<Role>
+        fun replace(
+            params: RoleReplaceParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Role>
     }
 }
