@@ -16,8 +16,6 @@ import com.braintrustdata.api.core.http.parseable
 import com.braintrustdata.api.core.prepareAsync
 import com.braintrustdata.api.errors.BraintrustError
 import com.braintrustdata.api.models.Acl
-import com.braintrustdata.api.models.AclBatchUpdateParams
-import com.braintrustdata.api.models.AclBatchUpdateResponse
 import com.braintrustdata.api.models.AclCreateParams
 import com.braintrustdata.api.models.AclDeleteParams
 import com.braintrustdata.api.models.AclFindAndDeleteParams
@@ -52,13 +50,6 @@ class AclServiceAsyncImpl internal constructor(private val clientOptions: Client
     override suspend fun delete(params: AclDeleteParams, requestOptions: RequestOptions): Acl =
         // delete /v1/acl/{acl_id}
         withRawResponse().delete(params, requestOptions).parse()
-
-    override suspend fun batchUpdate(
-        params: AclBatchUpdateParams,
-        requestOptions: RequestOptions,
-    ): AclBatchUpdateResponse =
-        // post /v1/acl/batch-update
-        withRawResponse().batchUpdate(params, requestOptions).parse()
 
     override suspend fun findAndDelete(
         params: AclFindAndDeleteParams,
@@ -172,34 +163,6 @@ class AclServiceAsyncImpl internal constructor(private val clientOptions: Client
             return response.parseable {
                 response
                     .use { deleteHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-        }
-
-        private val batchUpdateHandler: Handler<AclBatchUpdateResponse> =
-            jsonHandler<AclBatchUpdateResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
-
-        override suspend fun batchUpdate(
-            params: AclBatchUpdateParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<AclBatchUpdateResponse> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .addPathSegments("v1", "acl", "batch-update")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
-                response
-                    .use { batchUpdateHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

@@ -30,6 +30,15 @@ private constructor(
     @JsonProperty("columnVisibility")
     @ExcludeMissing
     private val columnVisibility: JsonField<ColumnVisibility> = JsonMissing.of(),
+    @JsonProperty("grouping")
+    @ExcludeMissing
+    private val grouping: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("layout")
+    @ExcludeMissing
+    private val layout: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("rowHeight")
+    @ExcludeMissing
+    private val rowHeight: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
@@ -38,6 +47,12 @@ private constructor(
     fun columnSizing(): ColumnSizing? = columnSizing.getNullable("columnSizing")
 
     fun columnVisibility(): ColumnVisibility? = columnVisibility.getNullable("columnVisibility")
+
+    fun grouping(): String? = grouping.getNullable("grouping")
+
+    fun layout(): String? = layout.getNullable("layout")
+
+    fun rowHeight(): String? = rowHeight.getNullable("rowHeight")
 
     @JsonProperty("columnOrder")
     @ExcludeMissing
@@ -50,6 +65,12 @@ private constructor(
     @JsonProperty("columnVisibility")
     @ExcludeMissing
     fun _columnVisibility(): JsonField<ColumnVisibility> = columnVisibility
+
+    @JsonProperty("grouping") @ExcludeMissing fun _grouping(): JsonField<String> = grouping
+
+    @JsonProperty("layout") @ExcludeMissing fun _layout(): JsonField<String> = layout
+
+    @JsonProperty("rowHeight") @ExcludeMissing fun _rowHeight(): JsonField<String> = rowHeight
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -65,6 +86,9 @@ private constructor(
         columnOrder()
         columnSizing()?.validate()
         columnVisibility()?.validate()
+        grouping()
+        layout()
+        rowHeight()
         validated = true
     }
 
@@ -82,12 +106,18 @@ private constructor(
         private var columnOrder: JsonField<MutableList<String>>? = null
         private var columnSizing: JsonField<ColumnSizing> = JsonMissing.of()
         private var columnVisibility: JsonField<ColumnVisibility> = JsonMissing.of()
+        private var grouping: JsonField<String> = JsonMissing.of()
+        private var layout: JsonField<String> = JsonMissing.of()
+        private var rowHeight: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(viewOptions: ViewOptions) = apply {
             columnOrder = viewOptions.columnOrder.map { it.toMutableList() }
             columnSizing = viewOptions.columnSizing
             columnVisibility = viewOptions.columnVisibility
+            grouping = viewOptions.grouping
+            layout = viewOptions.layout
+            rowHeight = viewOptions.rowHeight
             additionalProperties = viewOptions.additionalProperties.toMutableMap()
         }
 
@@ -118,6 +148,18 @@ private constructor(
             this.columnVisibility = columnVisibility
         }
 
+        fun grouping(grouping: String?) = grouping(JsonField.ofNullable(grouping))
+
+        fun grouping(grouping: JsonField<String>) = apply { this.grouping = grouping }
+
+        fun layout(layout: String?) = layout(JsonField.ofNullable(layout))
+
+        fun layout(layout: JsonField<String>) = apply { this.layout = layout }
+
+        fun rowHeight(rowHeight: String?) = rowHeight(JsonField.ofNullable(rowHeight))
+
+        fun rowHeight(rowHeight: JsonField<String>) = apply { this.rowHeight = rowHeight }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -142,6 +184,9 @@ private constructor(
                 (columnOrder ?: JsonMissing.of()).map { it.toImmutable() },
                 columnSizing,
                 columnVisibility,
+                grouping,
+                layout,
+                rowHeight,
                 additionalProperties.toImmutable(),
             )
     }
@@ -307,15 +352,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ViewOptions && columnOrder == other.columnOrder && columnSizing == other.columnSizing && columnVisibility == other.columnVisibility && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ViewOptions && columnOrder == other.columnOrder && columnSizing == other.columnSizing && columnVisibility == other.columnVisibility && grouping == other.grouping && layout == other.layout && rowHeight == other.rowHeight && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(columnOrder, columnSizing, columnVisibility, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(columnOrder, columnSizing, columnVisibility, grouping, layout, rowHeight, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ViewOptions{columnOrder=$columnOrder, columnSizing=$columnSizing, columnVisibility=$columnVisibility, additionalProperties=$additionalProperties}"
+        "ViewOptions{columnOrder=$columnOrder, columnSizing=$columnSizing, columnVisibility=$columnVisibility, grouping=$grouping, layout=$layout, rowHeight=$rowHeight, additionalProperties=$additionalProperties}"
 }

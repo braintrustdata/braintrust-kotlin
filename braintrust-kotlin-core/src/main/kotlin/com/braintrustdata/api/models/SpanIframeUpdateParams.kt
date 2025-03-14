@@ -35,6 +35,9 @@ private constructor(
     /** SpanIframe id */
     fun spanIframeId(): String = spanIframeId
 
+    /** Textual description of the span iframe */
+    fun description(): String? = body.description()
+
     /** Name of the span iframe */
     fun name(): String? = body.name()
 
@@ -46,6 +49,9 @@ private constructor(
 
     /** URL to embed the project viewer in an iframe */
     fun url(): String? = body.url()
+
+    /** Textual description of the span iframe */
+    fun _description(): JsonField<String> = body._description()
 
     /** Name of the span iframe */
     fun _name(): JsonField<String> = body._name()
@@ -82,6 +88,9 @@ private constructor(
     class Body
     @JsonCreator
     private constructor(
+        @JsonProperty("description")
+        @ExcludeMissing
+        private val description: JsonField<String> = JsonMissing.of(),
         @JsonProperty("name")
         @ExcludeMissing
         private val name: JsonField<String> = JsonMissing.of(),
@@ -92,6 +101,9 @@ private constructor(
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
+
+        /** Textual description of the span iframe */
+        fun description(): String? = description.getNullable("description")
 
         /** Name of the span iframe */
         fun name(): String? = name.getNullable("name")
@@ -104,6 +116,11 @@ private constructor(
 
         /** URL to embed the project viewer in an iframe */
         fun url(): String? = url.getNullable("url")
+
+        /** Textual description of the span iframe */
+        @JsonProperty("description")
+        @ExcludeMissing
+        fun _description(): JsonField<String> = description
 
         /** Name of the span iframe */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
@@ -130,6 +147,7 @@ private constructor(
                 return@apply
             }
 
+            description()
             name()
             postMessage()
             url()
@@ -147,16 +165,26 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
+            private var description: JsonField<String> = JsonMissing.of()
             private var name: JsonField<String> = JsonMissing.of()
             private var postMessage: JsonField<Boolean> = JsonMissing.of()
             private var url: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(body: Body) = apply {
+                description = body.description
                 name = body.name
                 postMessage = body.postMessage
                 url = body.url
                 additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /** Textual description of the span iframe */
+            fun description(description: String?) = description(JsonField.ofNullable(description))
+
+            /** Textual description of the span iframe */
+            fun description(description: JsonField<String>) = apply {
+                this.description = description
             }
 
             /** Name of the span iframe */
@@ -210,7 +238,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): Body = Body(name, postMessage, url, additionalProperties.toImmutable())
+            fun build(): Body =
+                Body(description, name, postMessage, url, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -218,17 +247,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && name == other.name && postMessage == other.postMessage && url == other.url && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && description == other.description && name == other.name && postMessage == other.postMessage && url == other.url && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(name, postMessage, url, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(description, name, postMessage, url, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{name=$name, postMessage=$postMessage, url=$url, additionalProperties=$additionalProperties}"
+            "Body{description=$description, name=$name, postMessage=$postMessage, url=$url, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -264,6 +293,12 @@ private constructor(
 
         /** SpanIframe id */
         fun spanIframeId(spanIframeId: String) = apply { this.spanIframeId = spanIframeId }
+
+        /** Textual description of the span iframe */
+        fun description(description: String?) = apply { body.description(description) }
+
+        /** Textual description of the span iframe */
+        fun description(description: JsonField<String>) = apply { body.description(description) }
 
         /** Name of the span iframe */
         fun name(name: String?) = apply { body.name(name) }

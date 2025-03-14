@@ -34,6 +34,9 @@ private constructor(
     @ExcludeMissing
     private val previewSecret: JsonField<String> = JsonMissing.of(),
     @JsonProperty("type") @ExcludeMissing private val type: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("updated_at")
+    @ExcludeMissing
+    private val updatedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
@@ -55,6 +58,9 @@ private constructor(
 
     fun type(): String? = type.getNullable("type")
 
+    /** Date of last AI secret update */
+    fun updatedAt(): OffsetDateTime? = updatedAt.getNullable("updated_at")
+
     /** Unique identifier for the AI secret */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
@@ -75,6 +81,11 @@ private constructor(
 
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
 
+    /** Date of last AI secret update */
+    @JsonProperty("updated_at")
+    @ExcludeMissing
+    fun _updatedAt(): JsonField<OffsetDateTime> = updatedAt
+
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -93,6 +104,7 @@ private constructor(
         metadata()?.validate()
         previewSecret()
         type()
+        updatedAt()
         validated = true
     }
 
@@ -123,6 +135,7 @@ private constructor(
         private var metadata: JsonField<Metadata> = JsonMissing.of()
         private var previewSecret: JsonField<String> = JsonMissing.of()
         private var type: JsonField<String> = JsonMissing.of()
+        private var updatedAt: JsonField<OffsetDateTime> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(aiSecret: AISecret) = apply {
@@ -133,6 +146,7 @@ private constructor(
             metadata = aiSecret.metadata
             previewSecret = aiSecret.previewSecret
             type = aiSecret.type
+            updatedAt = aiSecret.updatedAt
             additionalProperties = aiSecret.additionalProperties.toMutableMap()
         }
 
@@ -175,6 +189,12 @@ private constructor(
 
         fun type(type: JsonField<String>) = apply { this.type = type }
 
+        /** Date of last AI secret update */
+        fun updatedAt(updatedAt: OffsetDateTime?) = updatedAt(JsonField.ofNullable(updatedAt))
+
+        /** Date of last AI secret update */
+        fun updatedAt(updatedAt: JsonField<OffsetDateTime>) = apply { this.updatedAt = updatedAt }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -203,6 +223,7 @@ private constructor(
                 metadata,
                 previewSecret,
                 type,
+                updatedAt,
                 additionalProperties.toImmutable(),
             )
     }
@@ -290,15 +311,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AISecret && id == other.id && name == other.name && orgId == other.orgId && created == other.created && metadata == other.metadata && previewSecret == other.previewSecret && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is AISecret && id == other.id && name == other.name && orgId == other.orgId && created == other.created && metadata == other.metadata && previewSecret == other.previewSecret && type == other.type && updatedAt == other.updatedAt && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, name, orgId, created, metadata, previewSecret, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, name, orgId, created, metadata, previewSecret, type, updatedAt, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AISecret{id=$id, name=$name, orgId=$orgId, created=$created, metadata=$metadata, previewSecret=$previewSecret, type=$type, additionalProperties=$additionalProperties}"
+        "AISecret{id=$id, name=$name, orgId=$orgId, created=$created, metadata=$metadata, previewSecret=$previewSecret, type=$type, updatedAt=$updatedAt, additionalProperties=$additionalProperties}"
 }

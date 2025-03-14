@@ -9,8 +9,31 @@ class ProjectSettingsTest {
 
     @Test
     fun createProjectSettings() {
-        val projectSettings = ProjectSettings.builder().comparisonKey("comparison_key").build()
+        val projectSettings =
+            ProjectSettings.builder()
+                .baselineExperimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .comparisonKey("comparison_key")
+                .addSpanFieldOrder(
+                    ProjectSettings.SpanFieldOrder.builder()
+                        .columnId("column_id")
+                        .objectType("object_type")
+                        .position("position")
+                        .layout(ProjectSettings.SpanFieldOrder.Layout.FULL)
+                        .build()
+                )
+                .build()
         assertThat(projectSettings).isNotNull
+        assertThat(projectSettings.baselineExperimentId())
+            .isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(projectSettings.comparisonKey()).isEqualTo("comparison_key")
+        assertThat(projectSettings.spanFieldOrder())
+            .containsExactly(
+                ProjectSettings.SpanFieldOrder.builder()
+                    .columnId("column_id")
+                    .objectType("object_type")
+                    .position("position")
+                    .layout(ProjectSettings.SpanFieldOrder.Layout.FULL)
+                    .build()
+            )
     }
 }
