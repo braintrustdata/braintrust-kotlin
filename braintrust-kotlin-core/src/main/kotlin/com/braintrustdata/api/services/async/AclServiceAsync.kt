@@ -5,6 +5,8 @@ package com.braintrustdata.api.services.async
 import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.Acl
+import com.braintrustdata.api.models.AclBatchUpdateParams
+import com.braintrustdata.api.models.AclBatchUpdateResponse
 import com.braintrustdata.api.models.AclCreateParams
 import com.braintrustdata.api.models.AclDeleteParams
 import com.braintrustdata.api.models.AclFindAndDeleteParams
@@ -49,6 +51,19 @@ interface AclServiceAsync {
         params: AclDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Acl
+
+    /**
+     * Batch update acls. This operation is idempotent, so adding acls which already exist will have
+     * no effect, and removing acls which do not exist will have no effect.
+     */
+    suspend fun batchUpdate(
+        params: AclBatchUpdateParams = AclBatchUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AclBatchUpdateResponse
+
+    /** @see [batchUpdate] */
+    suspend fun batchUpdate(requestOptions: RequestOptions): AclBatchUpdateResponse =
+        batchUpdate(AclBatchUpdateParams.none(), requestOptions)
 
     /** Delete a single acl */
     suspend fun findAndDelete(
@@ -98,6 +113,23 @@ interface AclServiceAsync {
             params: AclDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Acl>
+
+        /**
+         * Returns a raw HTTP response for `post /v1/acl/batch_update`, but is otherwise the same as
+         * [AclServiceAsync.batchUpdate].
+         */
+        @MustBeClosed
+        suspend fun batchUpdate(
+            params: AclBatchUpdateParams = AclBatchUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<AclBatchUpdateResponse>
+
+        /** @see [batchUpdate] */
+        @MustBeClosed
+        suspend fun batchUpdate(
+            requestOptions: RequestOptions
+        ): HttpResponseFor<AclBatchUpdateResponse> =
+            batchUpdate(AclBatchUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `delete /v1/acl`, but is otherwise the same as
