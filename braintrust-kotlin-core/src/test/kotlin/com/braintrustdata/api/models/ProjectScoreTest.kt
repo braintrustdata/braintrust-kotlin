@@ -22,7 +22,7 @@ class ProjectScoreTest {
                 )
                 .config(
                     ProjectScoreConfig.builder()
-                        .destination(ProjectScoreConfig.Destination.EXPECTED)
+                        .destination("destination")
                         .multiSelect(true)
                         .online(
                             OnlineScoreConfig.builder()
@@ -58,7 +58,7 @@ class ProjectScoreTest {
         assertThat(projectScore.config())
             .isEqualTo(
                 ProjectScoreConfig.builder()
-                    .destination(ProjectScoreConfig.Destination.EXPECTED)
+                    .destination("destination")
                     .multiSelect(true)
                     .online(
                         OnlineScoreConfig.builder()
