@@ -38,7 +38,7 @@ class ProjectScoreServiceAsyncTest {
                     )
                     .config(
                         ProjectScoreConfig.builder()
-                            .destination(ProjectScoreConfig.Destination.EXPECTED)
+                            .destination("destination")
                             .multiSelect(true)
                             .online(
                                 OnlineScoreConfig.builder()
@@ -99,7 +99,7 @@ class ProjectScoreServiceAsyncTest {
                     )
                     .config(
                         ProjectScoreConfig.builder()
-                            .destination(ProjectScoreConfig.Destination.EXPECTED)
+                            .destination("destination")
                             .multiSelect(true)
                             .online(
                                 OnlineScoreConfig.builder()
@@ -178,7 +178,7 @@ class ProjectScoreServiceAsyncTest {
                     )
                     .config(
                         ProjectScoreConfig.builder()
-                            .destination(ProjectScoreConfig.Destination.EXPECTED)
+                            .destination("destination")
                             .multiSelect(true)
                             .online(
                                 OnlineScoreConfig.builder()

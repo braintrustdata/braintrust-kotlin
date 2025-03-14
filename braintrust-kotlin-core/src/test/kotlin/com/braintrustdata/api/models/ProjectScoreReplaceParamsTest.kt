@@ -19,7 +19,7 @@ class ProjectScoreReplaceParamsTest {
             )
             .config(
                 ProjectScoreConfig.builder()
-                    .destination(ProjectScoreConfig.Destination.EXPECTED)
+                    .destination("destination")
                     .multiSelect(true)
                     .online(
                         OnlineScoreConfig.builder()
@@ -52,7 +52,7 @@ class ProjectScoreReplaceParamsTest {
                 )
                 .config(
                     ProjectScoreConfig.builder()
-                        .destination(ProjectScoreConfig.Destination.EXPECTED)
+                        .destination("destination")
                         .multiSelect(true)
                         .online(
                             OnlineScoreConfig.builder()
@@ -87,7 +87,7 @@ class ProjectScoreReplaceParamsTest {
         assertThat(body.config())
             .isEqualTo(
                 ProjectScoreConfig.builder()
-                    .destination(ProjectScoreConfig.Destination.EXPECTED)
+                    .destination("destination")
                     .multiSelect(true)
                     .online(
                         OnlineScoreConfig.builder()

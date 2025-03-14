@@ -23,6 +23,9 @@ class ViewOptionsTest {
                         .putAdditionalProperty("foo", JsonValue.from(true))
                         .build()
                 )
+                .grouping("grouping")
+                .layout("layout")
+                .rowHeight("rowHeight")
                 .build()
         assertThat(viewOptions).isNotNull
         assertThat(viewOptions.columnOrder()).containsExactly("string")
@@ -38,5 +41,8 @@ class ViewOptionsTest {
                     .putAdditionalProperty("foo", JsonValue.from(true))
                     .build()
             )
+        assertThat(viewOptions.grouping()).isEqualTo("grouping")
+        assertThat(viewOptions.layout()).isEqualTo("layout")
+        assertThat(viewOptions.rowHeight()).isEqualTo("rowHeight")
     }
 }

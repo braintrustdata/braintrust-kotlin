@@ -68,9 +68,15 @@ class FunctionServiceAsyncTest {
                                                     .UnionMember0
                                                     .AUTO
                                             )
+                                            .maxCompletionTokens(0.0)
                                             .maxTokens(0.0)
                                             .n(0.0)
                                             .presencePenalty(0.0)
+                                            .reasoningEffort(
+                                                PromptOptions.Params.OpenAIModelParams
+                                                    .ReasoningEffort
+                                                    .LOW
+                                            )
                                             .responseFormat(
                                                 PromptOptions.Params.OpenAIModelParams
                                                     .ResponseFormat
@@ -190,9 +196,15 @@ class FunctionServiceAsyncTest {
                                                     .UnionMember0
                                                     .AUTO
                                             )
+                                            .maxCompletionTokens(0.0)
                                             .maxTokens(0.0)
                                             .n(0.0)
                                             .presencePenalty(0.0)
+                                            .reasoningEffort(
+                                                PromptOptions.Params.OpenAIModelParams
+                                                    .ReasoningEffort
+                                                    .LOW
+                                            )
                                             .responseFormat(
                                                 PromptOptions.Params.OpenAIModelParams
                                                     .ResponseFormat
@@ -306,12 +318,18 @@ class FunctionServiceAsyncTest {
             functionServiceAsync.invoke(
                 FunctionInvokeParams.builder()
                     .functionId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .expected(JsonValue.from(mapOf<String, Any>()))
                     .input(JsonValue.from(mapOf<String, Any>()))
                     .addMessage(
                         FunctionInvokeParams.Message.System.builder()
                             .role(FunctionInvokeParams.Message.System.Role.SYSTEM)
                             .content("content")
                             .name("name")
+                            .build()
+                    )
+                    .metadata(
+                        FunctionInvokeParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
                     .mode(FunctionInvokeParams.Mode.AUTO)
@@ -393,9 +411,15 @@ class FunctionServiceAsyncTest {
                                                     .UnionMember0
                                                     .AUTO
                                             )
+                                            .maxCompletionTokens(0.0)
                                             .maxTokens(0.0)
                                             .n(0.0)
                                             .presencePenalty(0.0)
+                                            .reasoningEffort(
+                                                PromptOptions.Params.OpenAIModelParams
+                                                    .ReasoningEffort
+                                                    .LOW
+                                            )
                                             .responseFormat(
                                                 PromptOptions.Params.OpenAIModelParams
                                                     .ResponseFormat

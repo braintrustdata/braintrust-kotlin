@@ -2,7 +2,6 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
@@ -12,7 +11,6 @@ import com.braintrustdata.api.core.checkKnown
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -46,9 +44,6 @@ private constructor(
     @JsonProperty("context")
     @ExcludeMissing
     private val context: JsonField<Context> = JsonMissing.of(),
-    @JsonProperty("dataset_record_id")
-    @ExcludeMissing
-    private val datasetRecordId: JsonField<String> = JsonMissing.of(),
     @JsonProperty("error") @ExcludeMissing private val error: JsonValue = JsonMissing.of(),
     @JsonProperty("expected") @ExcludeMissing private val expected: JsonValue = JsonMissing.of(),
     @JsonProperty("input") @ExcludeMissing private val input: JsonValue = JsonMissing.of(),
@@ -63,7 +58,7 @@ private constructor(
     private val metrics: JsonField<Metrics> = JsonMissing.of(),
     @JsonProperty("origin")
     @ExcludeMissing
-    private val origin: JsonField<Origin> = JsonMissing.of(),
+    private val origin: JsonField<ObjectReference> = JsonMissing.of(),
     @JsonProperty("output") @ExcludeMissing private val output: JsonValue = JsonMissing.of(),
     @JsonProperty("scores")
     @ExcludeMissing
@@ -119,12 +114,6 @@ private constructor(
      */
     fun context(): Context? = context.getNullable("context")
 
-    /**
-     * If the experiment is associated to a dataset, this is the event-level dataset id this
-     * experiment event is tied to
-     */
-    fun datasetRecordId(): String? = datasetRecordId.getNullable("dataset_record_id")
-
     /** The error that occurred, if any. */
     @JsonProperty("error") @ExcludeMissing fun _error(): JsonValue = error
 
@@ -166,7 +155,7 @@ private constructor(
     fun metrics(): Metrics? = metrics.getNullable("metrics")
 
     /** Indicates the event was copied from another object. */
-    fun origin(): Origin? = origin.getNullable("origin")
+    fun origin(): ObjectReference? = origin.getNullable("origin")
 
     /**
      * The output of your application, including post-processing (an arbitrary, JSON serializable
@@ -241,14 +230,6 @@ private constructor(
      */
     @JsonProperty("context") @ExcludeMissing fun _context(): JsonField<Context> = context
 
-    /**
-     * If the experiment is associated to a dataset, this is the event-level dataset id this
-     * experiment event is tied to
-     */
-    @JsonProperty("dataset_record_id")
-    @ExcludeMissing
-    fun _datasetRecordId(): JsonField<String> = datasetRecordId
-
     /** Whether this span is a root span */
     @JsonProperty("is_root") @ExcludeMissing fun _isRoot(): JsonField<Boolean> = isRoot
 
@@ -269,7 +250,7 @@ private constructor(
     @JsonProperty("metrics") @ExcludeMissing fun _metrics(): JsonField<Metrics> = metrics
 
     /** Indicates the event was copied from another object. */
-    @JsonProperty("origin") @ExcludeMissing fun _origin(): JsonField<Origin> = origin
+    @JsonProperty("origin") @ExcludeMissing fun _origin(): JsonField<ObjectReference> = origin
 
     /**
      * A dictionary of numeric values (between 0 and 1) to log. The scores should give you a variety
@@ -317,7 +298,6 @@ private constructor(
         rootSpanId()
         spanId()
         context()?.validate()
-        datasetRecordId()
         isRoot()
         metadata()?.validate()
         metrics()?.validate()
@@ -361,14 +341,13 @@ private constructor(
         private var rootSpanId: JsonField<String>? = null
         private var spanId: JsonField<String>? = null
         private var context: JsonField<Context> = JsonMissing.of()
-        private var datasetRecordId: JsonField<String> = JsonMissing.of()
         private var error: JsonValue = JsonMissing.of()
         private var expected: JsonValue = JsonMissing.of()
         private var input: JsonValue = JsonMissing.of()
         private var isRoot: JsonField<Boolean> = JsonMissing.of()
         private var metadata: JsonField<Metadata> = JsonMissing.of()
         private var metrics: JsonField<Metrics> = JsonMissing.of()
-        private var origin: JsonField<Origin> = JsonMissing.of()
+        private var origin: JsonField<ObjectReference> = JsonMissing.of()
         private var output: JsonValue = JsonMissing.of()
         private var scores: JsonField<Scores> = JsonMissing.of()
         private var spanAttributes: JsonField<SpanAttributes> = JsonMissing.of()
@@ -385,7 +364,6 @@ private constructor(
             rootSpanId = experimentEvent.rootSpanId
             spanId = experimentEvent.spanId
             context = experimentEvent.context
-            datasetRecordId = experimentEvent.datasetRecordId
             error = experimentEvent.error
             expected = experimentEvent.expected
             input = experimentEvent.input
@@ -481,21 +459,6 @@ private constructor(
          */
         fun context(context: JsonField<Context>) = apply { this.context = context }
 
-        /**
-         * If the experiment is associated to a dataset, this is the event-level dataset id this
-         * experiment event is tied to
-         */
-        fun datasetRecordId(datasetRecordId: String?) =
-            datasetRecordId(JsonField.ofNullable(datasetRecordId))
-
-        /**
-         * If the experiment is associated to a dataset, this is the event-level dataset id this
-         * experiment event is tied to
-         */
-        fun datasetRecordId(datasetRecordId: JsonField<String>) = apply {
-            this.datasetRecordId = datasetRecordId
-        }
-
         /** The error that occurred, if any. */
         fun error(error: JsonValue) = apply { this.error = error }
 
@@ -559,10 +522,10 @@ private constructor(
         fun metrics(metrics: JsonField<Metrics>) = apply { this.metrics = metrics }
 
         /** Indicates the event was copied from another object. */
-        fun origin(origin: Origin?) = origin(JsonField.ofNullable(origin))
+        fun origin(origin: ObjectReference?) = origin(JsonField.ofNullable(origin))
 
         /** Indicates the event was copied from another object. */
-        fun origin(origin: JsonField<Origin>) = apply { this.origin = origin }
+        fun origin(origin: JsonField<ObjectReference>) = apply { this.origin = origin }
 
         /**
          * The output of your application, including post-processing (an arbitrary, JSON
@@ -671,7 +634,6 @@ private constructor(
                 checkRequired("rootSpanId", rootSpanId),
                 checkRequired("spanId", spanId),
                 context,
-                datasetRecordId,
                 error,
                 expected,
                 input,
@@ -860,9 +822,18 @@ private constructor(
     class Metadata
     @JsonCreator
     private constructor(
+        @JsonProperty("model")
+        @ExcludeMissing
+        private val model: JsonField<String> = JsonMissing.of(),
         @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
+
+        /** The model used for this example */
+        fun model(): String? = model.getNullable("model")
+
+        /** The model used for this example */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -875,6 +846,7 @@ private constructor(
                 return@apply
             }
 
+            model()
             validated = true
         }
 
@@ -889,11 +861,19 @@ private constructor(
         /** A builder for [Metadata]. */
         class Builder internal constructor() {
 
+            private var model: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(metadata: Metadata) = apply {
+                model = metadata.model
                 additionalProperties = metadata.additionalProperties.toMutableMap()
             }
+
+            /** The model used for this example */
+            fun model(model: String?) = model(JsonField.ofNullable(model))
+
+            /** The model used for this example */
+            fun model(model: JsonField<String>) = apply { this.model = model }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -914,7 +894,7 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): Metadata = Metadata(additionalProperties.toImmutable())
+            fun build(): Metadata = Metadata(model, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -922,16 +902,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Metadata && model == other.model && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(model, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "Metadata{model=$model, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1243,304 +1224,6 @@ private constructor(
             "Metrics{callerFilename=$callerFilename, callerFunctionname=$callerFunctionname, callerLineno=$callerLineno, completionTokens=$completionTokens, end=$end, promptTokens=$promptTokens, start=$start, tokens=$tokens, additionalProperties=$additionalProperties}"
     }
 
-    /** Indicates the event was copied from another object. */
-    @NoAutoDetect
-    class Origin
-    @JsonCreator
-    private constructor(
-        @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("_xact_id")
-        @ExcludeMissing
-        private val _xactId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("object_id")
-        @ExcludeMissing
-        private val objectId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("object_type")
-        @ExcludeMissing
-        private val objectType: JsonField<ObjectType> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        /** ID of the original event. */
-        fun id(): String = id.getRequired("id")
-
-        /** Transaction ID of the original event. */
-        fun _xactId(): String = _xactId.getRequired("_xact_id")
-
-        /** ID of the object the event is originating from. */
-        fun objectId(): String = objectId.getRequired("object_id")
-
-        /** Type of the object the event is originating from. */
-        fun objectType(): ObjectType = objectType.getRequired("object_type")
-
-        /** ID of the original event. */
-        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
-
-        /** Transaction ID of the original event. */
-        @JsonProperty("_xact_id") @ExcludeMissing fun __xactId(): JsonField<String> = _xactId
-
-        /** ID of the object the event is originating from. */
-        @JsonProperty("object_id") @ExcludeMissing fun _objectId(): JsonField<String> = objectId
-
-        /** Type of the object the event is originating from. */
-        @JsonProperty("object_type")
-        @ExcludeMissing
-        fun _objectType(): JsonField<ObjectType> = objectType
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Origin = apply {
-            if (validated) {
-                return@apply
-            }
-
-            id()
-            _xactId()
-            objectId()
-            objectType()
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Origin].
-             *
-             * The following fields are required:
-             * ```kotlin
-             * .id()
-             * ._xactId()
-             * .objectId()
-             * .objectType()
-             * ```
-             */
-            fun builder() = Builder()
-        }
-
-        /** A builder for [Origin]. */
-        class Builder internal constructor() {
-
-            private var id: JsonField<String>? = null
-            private var _xactId: JsonField<String>? = null
-            private var objectId: JsonField<String>? = null
-            private var objectType: JsonField<ObjectType>? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(origin: Origin) = apply {
-                id = origin.id
-                _xactId = origin._xactId
-                objectId = origin.objectId
-                objectType = origin.objectType
-                additionalProperties = origin.additionalProperties.toMutableMap()
-            }
-
-            /** ID of the original event. */
-            fun id(id: String) = id(JsonField.of(id))
-
-            /** ID of the original event. */
-            fun id(id: JsonField<String>) = apply { this.id = id }
-
-            /** Transaction ID of the original event. */
-            fun _xactId(_xactId: String) = _xactId(JsonField.of(_xactId))
-
-            /** Transaction ID of the original event. */
-            fun _xactId(_xactId: JsonField<String>) = apply { this._xactId = _xactId }
-
-            /** ID of the object the event is originating from. */
-            fun objectId(objectId: String) = objectId(JsonField.of(objectId))
-
-            /** ID of the object the event is originating from. */
-            fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
-
-            /** Type of the object the event is originating from. */
-            fun objectType(objectType: ObjectType) = objectType(JsonField.of(objectType))
-
-            /** Type of the object the event is originating from. */
-            fun objectType(objectType: JsonField<ObjectType>) = apply {
-                this.objectType = objectType
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            fun build(): Origin =
-                Origin(
-                    checkRequired("id", id),
-                    checkRequired("_xactId", _xactId),
-                    checkRequired("objectId", objectId),
-                    checkRequired("objectType", objectType),
-                    additionalProperties.toImmutable(),
-                )
-        }
-
-        /** Type of the object the event is originating from. */
-        class ObjectType @JsonCreator private constructor(private val value: JsonField<String>) :
-            Enum {
-
-            /**
-             * Returns this class instance's raw value.
-             *
-             * This is usually only useful if this instance was deserialized from data that doesn't
-             * match any known member, and you want to know that value. For example, if the SDK is
-             * on an older version than the API, then the API may respond with new members that the
-             * SDK is unaware of.
-             */
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                val EXPERIMENT = of("experiment")
-
-                val DATASET = of("dataset")
-
-                val PROMPT = of("prompt")
-
-                val FUNCTION = of("function")
-
-                val PROMPT_SESSION = of("prompt_session")
-
-                val PROJECT_LOGS = of("project_logs")
-
-                fun of(value: String) = ObjectType(JsonField.of(value))
-            }
-
-            /** An enum containing [ObjectType]'s known values. */
-            enum class Known {
-                EXPERIMENT,
-                DATASET,
-                PROMPT,
-                FUNCTION,
-                PROMPT_SESSION,
-                PROJECT_LOGS,
-            }
-
-            /**
-             * An enum containing [ObjectType]'s known values, as well as an [_UNKNOWN] member.
-             *
-             * An instance of [ObjectType] can contain an unknown value in a couple of cases:
-             * - It was deserialized from data that doesn't match any known member. For example, if
-             *   the SDK is on an older version than the API, then the API may respond with new
-             *   members that the SDK is unaware of.
-             * - It was constructed with an arbitrary value using the [of] method.
-             */
-            enum class Value {
-                EXPERIMENT,
-                DATASET,
-                PROMPT,
-                FUNCTION,
-                PROMPT_SESSION,
-                PROJECT_LOGS,
-                /**
-                 * An enum member indicating that [ObjectType] was instantiated with an unknown
-                 * value.
-                 */
-                _UNKNOWN,
-            }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value, or
-             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-             *
-             * Use the [known] method instead if you're certain the value is always known or if you
-             * want to throw for the unknown case.
-             */
-            fun value(): Value =
-                when (this) {
-                    EXPERIMENT -> Value.EXPERIMENT
-                    DATASET -> Value.DATASET
-                    PROMPT -> Value.PROMPT
-                    FUNCTION -> Value.FUNCTION
-                    PROMPT_SESSION -> Value.PROMPT_SESSION
-                    PROJECT_LOGS -> Value.PROJECT_LOGS
-                    else -> Value._UNKNOWN
-                }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value.
-             *
-             * Use the [value] method instead if you're uncertain the value is always known and
-             * don't want to throw for the unknown case.
-             *
-             * @throws BraintrustInvalidDataException if this class instance's value is a not a
-             *   known member.
-             */
-            fun known(): Known =
-                when (this) {
-                    EXPERIMENT -> Known.EXPERIMENT
-                    DATASET -> Known.DATASET
-                    PROMPT -> Known.PROMPT
-                    FUNCTION -> Known.FUNCTION
-                    PROMPT_SESSION -> Known.PROMPT_SESSION
-                    PROJECT_LOGS -> Known.PROJECT_LOGS
-                    else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
-                }
-
-            /**
-             * Returns this class instance's primitive wire representation.
-             *
-             * This differs from the [toString] method because that method is primarily for
-             * debugging and generally doesn't throw.
-             *
-             * @throws BraintrustInvalidDataException if this class instance's value does not have
-             *   the expected primitive type.
-             */
-            fun asString(): String =
-                _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is ObjectType && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Origin && id == other.id && _xactId == other._xactId && objectId == other.objectId && objectType == other.objectType && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, _xactId, objectId, objectType, additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Origin{id=$id, _xactId=$_xactId, objectId=$objectId, objectType=$objectType, additionalProperties=$additionalProperties}"
-    }
-
     /**
      * A dictionary of numeric values (between 0 and 1) to log. The scores should give you a variety
      * of signals that help you determine how accurate the outputs are compared to what you expect
@@ -1633,15 +1316,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ExperimentEvent && id == other.id && _xactId == other._xactId && created == other.created && experimentId == other.experimentId && projectId == other.projectId && rootSpanId == other.rootSpanId && spanId == other.spanId && context == other.context && datasetRecordId == other.datasetRecordId && error == other.error && expected == other.expected && input == other.input && isRoot == other.isRoot && metadata == other.metadata && metrics == other.metrics && origin == other.origin && output == other.output && scores == other.scores && spanAttributes == other.spanAttributes && spanParents == other.spanParents && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ExperimentEvent && id == other.id && _xactId == other._xactId && created == other.created && experimentId == other.experimentId && projectId == other.projectId && rootSpanId == other.rootSpanId && spanId == other.spanId && context == other.context && error == other.error && expected == other.expected && input == other.input && isRoot == other.isRoot && metadata == other.metadata && metrics == other.metrics && origin == other.origin && output == other.output && scores == other.scores && spanAttributes == other.spanAttributes && spanParents == other.spanParents && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, _xactId, created, experimentId, projectId, rootSpanId, spanId, context, datasetRecordId, error, expected, input, isRoot, metadata, metrics, origin, output, scores, spanAttributes, spanParents, tags, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, _xactId, created, experimentId, projectId, rootSpanId, spanId, context, error, expected, input, isRoot, metadata, metrics, origin, output, scores, spanAttributes, spanParents, tags, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ExperimentEvent{id=$id, _xactId=$_xactId, created=$created, experimentId=$experimentId, projectId=$projectId, rootSpanId=$rootSpanId, spanId=$spanId, context=$context, datasetRecordId=$datasetRecordId, error=$error, expected=$expected, input=$input, isRoot=$isRoot, metadata=$metadata, metrics=$metrics, origin=$origin, output=$output, scores=$scores, spanAttributes=$spanAttributes, spanParents=$spanParents, tags=$tags, additionalProperties=$additionalProperties}"
+        "ExperimentEvent{id=$id, _xactId=$_xactId, created=$created, experimentId=$experimentId, projectId=$projectId, rootSpanId=$rootSpanId, spanId=$spanId, context=$context, error=$error, expected=$expected, input=$input, isRoot=$isRoot, metadata=$metadata, metrics=$metrics, origin=$origin, output=$output, scores=$scores, spanAttributes=$spanAttributes, spanParents=$spanParents, tags=$tags, additionalProperties=$additionalProperties}"
 }

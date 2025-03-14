@@ -11,7 +11,7 @@ class ProjectScoreConfigTest {
     fun createProjectScoreConfig() {
         val projectScoreConfig =
             ProjectScoreConfig.builder()
-                .destination(ProjectScoreConfig.Destination.EXPECTED)
+                .destination("destination")
                 .multiSelect(true)
                 .online(
                     OnlineScoreConfig.builder()
@@ -28,8 +28,7 @@ class ProjectScoreConfigTest {
                 )
                 .build()
         assertThat(projectScoreConfig).isNotNull
-        assertThat(projectScoreConfig.destination())
-            .isEqualTo(ProjectScoreConfig.Destination.EXPECTED)
+        assertThat(projectScoreConfig.destination()).isEqualTo("destination")
         assertThat(projectScoreConfig.multiSelect()).isEqualTo(true)
         assertThat(projectScoreConfig.online())
             .isEqualTo(

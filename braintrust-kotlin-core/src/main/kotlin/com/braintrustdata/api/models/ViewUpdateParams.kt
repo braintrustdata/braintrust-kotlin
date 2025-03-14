@@ -701,19 +701,25 @@ private constructor(
 
             val PROJECTS = of("projects")
 
-            val LOGS = of("logs")
-
             val EXPERIMENTS = of("experiments")
-
-            val DATASETS = of("datasets")
-
-            val PROMPTS = of("prompts")
-
-            val PLAYGROUNDS = of("playgrounds")
 
             val EXPERIMENT = of("experiment")
 
+            val PLAYGROUNDS = of("playgrounds")
+
+            val PLAYGROUND = of("playground")
+
+            val DATASETS = of("datasets")
+
             val DATASET = of("dataset")
+
+            val PROMPTS = of("prompts")
+
+            val TOOLS = of("tools")
+
+            val SCORERS = of("scorers")
+
+            val LOGS = of("logs")
 
             fun of(value: String) = ViewType(JsonField.of(value))
         }
@@ -721,13 +727,16 @@ private constructor(
         /** An enum containing [ViewType]'s known values. */
         enum class Known {
             PROJECTS,
-            LOGS,
             EXPERIMENTS,
-            DATASETS,
-            PROMPTS,
-            PLAYGROUNDS,
             EXPERIMENT,
+            PLAYGROUNDS,
+            PLAYGROUND,
+            DATASETS,
             DATASET,
+            PROMPTS,
+            TOOLS,
+            SCORERS,
+            LOGS,
         }
 
         /**
@@ -741,13 +750,16 @@ private constructor(
          */
         enum class Value {
             PROJECTS,
-            LOGS,
             EXPERIMENTS,
-            DATASETS,
-            PROMPTS,
-            PLAYGROUNDS,
             EXPERIMENT,
+            PLAYGROUNDS,
+            PLAYGROUND,
+            DATASETS,
             DATASET,
+            PROMPTS,
+            TOOLS,
+            SCORERS,
+            LOGS,
             /** An enum member indicating that [ViewType] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -762,13 +774,16 @@ private constructor(
         fun value(): Value =
             when (this) {
                 PROJECTS -> Value.PROJECTS
-                LOGS -> Value.LOGS
                 EXPERIMENTS -> Value.EXPERIMENTS
-                DATASETS -> Value.DATASETS
-                PROMPTS -> Value.PROMPTS
-                PLAYGROUNDS -> Value.PLAYGROUNDS
                 EXPERIMENT -> Value.EXPERIMENT
+                PLAYGROUNDS -> Value.PLAYGROUNDS
+                PLAYGROUND -> Value.PLAYGROUND
+                DATASETS -> Value.DATASETS
                 DATASET -> Value.DATASET
+                PROMPTS -> Value.PROMPTS
+                TOOLS -> Value.TOOLS
+                SCORERS -> Value.SCORERS
+                LOGS -> Value.LOGS
                 else -> Value._UNKNOWN
             }
 
@@ -784,13 +799,16 @@ private constructor(
         fun known(): Known =
             when (this) {
                 PROJECTS -> Known.PROJECTS
-                LOGS -> Known.LOGS
                 EXPERIMENTS -> Known.EXPERIMENTS
-                DATASETS -> Known.DATASETS
-                PROMPTS -> Known.PROMPTS
-                PLAYGROUNDS -> Known.PLAYGROUNDS
                 EXPERIMENT -> Known.EXPERIMENT
+                PLAYGROUNDS -> Known.PLAYGROUNDS
+                PLAYGROUND -> Known.PLAYGROUND
+                DATASETS -> Known.DATASETS
                 DATASET -> Known.DATASET
+                PROMPTS -> Known.PROMPTS
+                TOOLS -> Known.TOOLS
+                SCORERS -> Known.SCORERS
+                LOGS -> Known.LOGS
                 else -> throw BraintrustInvalidDataException("Unknown ViewType: $value")
             }
 
