@@ -59,9 +59,7 @@ class ExperimentEventTest {
                         .putAdditionalProperty("foo", JsonValue.from(0))
                         .build()
                 )
-                .spanAttributes(
-                    SpanAttributes.builder().name("name").type(SpanAttributes.Type.LLM).build()
-                )
+                .spanAttributes(SpanAttributes.builder().name("name").type(SpanType.LLM).build())
                 .addSpanParent("string")
                 .addTag("string")
                 .build()
@@ -119,7 +117,7 @@ class ExperimentEventTest {
                     .build()
             )
         assertThat(experimentEvent.spanAttributes())
-            .isEqualTo(SpanAttributes.builder().name("name").type(SpanAttributes.Type.LLM).build())
+            .isEqualTo(SpanAttributes.builder().name("name").type(SpanType.LLM).build())
         assertThat(experimentEvent.spanParents()).containsExactly("string")
         assertThat(experimentEvent.tags()).containsExactly("string")
     }
