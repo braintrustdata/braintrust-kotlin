@@ -4,8 +4,6 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.BaseDeserializer
 import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.Params
@@ -13,7 +11,6 @@ import com.braintrustdata.api.core.getOrThrow
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.JsonNode
@@ -33,7 +30,7 @@ private constructor(
     private val ids: Ids?,
     private val limit: Long?,
     private val objectId: String?,
-    private val objectType: ObjectType?,
+    private val objectType: EnvVarObjectType?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -54,7 +51,7 @@ private constructor(
     fun objectId(): String? = objectId
 
     /** The type of the object the environment variable is scoped for */
-    fun objectType(): ObjectType? = objectType
+    fun objectType(): EnvVarObjectType? = objectType
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -91,7 +88,7 @@ private constructor(
         private var ids: Ids? = null
         private var limit: Long? = null
         private var objectId: String? = null
-        private var objectType: ObjectType? = null
+        private var objectType: EnvVarObjectType? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -136,7 +133,7 @@ private constructor(
         fun objectId(objectId: String?) = apply { this.objectId = objectId }
 
         /** The type of the object the environment variable is scoped for */
-        fun objectType(objectType: ObjectType?) = apply { this.objectType = objectType }
+        fun objectType(objectType: EnvVarObjectType?) = apply { this.objectType = objectType }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -360,113 +357,6 @@ private constructor(
                 }
             }
         }
-    }
-
-    /** The type of the object the environment variable is scoped for */
-    class ObjectType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            val ORGANIZATION = of("organization")
-
-            val PROJECT = of("project")
-
-            val FUNCTION = of("function")
-
-            fun of(value: String) = ObjectType(JsonField.of(value))
-        }
-
-        /** An enum containing [ObjectType]'s known values. */
-        enum class Known {
-            ORGANIZATION,
-            PROJECT,
-            FUNCTION,
-        }
-
-        /**
-         * An enum containing [ObjectType]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [ObjectType] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            ORGANIZATION,
-            PROJECT,
-            FUNCTION,
-            /**
-             * An enum member indicating that [ObjectType] was instantiated with an unknown value.
-             */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                ORGANIZATION -> Value.ORGANIZATION
-                PROJECT -> Value.PROJECT
-                FUNCTION -> Value.FUNCTION
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws BraintrustInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                ORGANIZATION -> Known.ORGANIZATION
-                PROJECT -> Known.PROJECT
-                FUNCTION -> Known.FUNCTION
-                else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws BraintrustInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is ObjectType && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

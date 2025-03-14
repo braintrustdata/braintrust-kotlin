@@ -9,10 +9,9 @@ class SpanAttributesTest {
 
     @Test
     fun createSpanAttributes() {
-        val spanAttributes =
-            SpanAttributes.builder().name("name").type(SpanAttributes.Type.LLM).build()
+        val spanAttributes = SpanAttributes.builder().name("name").type(SpanType.LLM).build()
         assertThat(spanAttributes).isNotNull
         assertThat(spanAttributes.name()).isEqualTo("name")
-        assertThat(spanAttributes.type()).isEqualTo(SpanAttributes.Type.LLM)
+        assertThat(spanAttributes.type()).isEqualTo(SpanType.LLM)
     }
 }

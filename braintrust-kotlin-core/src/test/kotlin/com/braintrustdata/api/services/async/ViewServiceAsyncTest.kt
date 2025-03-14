@@ -5,6 +5,7 @@ package com.braintrustdata.api.services.async
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClientAsync
 import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.models.AclObjectType
 import com.braintrustdata.api.models.ViewCreateParams
 import com.braintrustdata.api.models.ViewData
 import com.braintrustdata.api.models.ViewDataSearch
@@ -35,7 +36,7 @@ class ViewServiceAsyncTest {
                 ViewCreateParams.builder()
                     .name("name")
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(ViewCreateParams.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .viewType(ViewCreateParams.ViewType.PROJECTS)
                     .deletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                     .options(
@@ -89,7 +90,7 @@ class ViewServiceAsyncTest {
                 ViewRetrieveParams.builder()
                     .viewId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(ViewRetrieveParams.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .build()
             )
 
@@ -110,7 +111,7 @@ class ViewServiceAsyncTest {
                 ViewUpdateParams.builder()
                     .viewId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(ViewUpdateParams.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .name("name")
                     .options(
                         ViewOptions.builder()
@@ -163,7 +164,7 @@ class ViewServiceAsyncTest {
             viewServiceAsync.list(
                 ViewListParams.builder()
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(ViewListParams.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .build()
             )
 
@@ -184,7 +185,7 @@ class ViewServiceAsyncTest {
                 ViewDeleteParams.builder()
                     .viewId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(ViewDeleteParams.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .build()
             )
 
@@ -205,7 +206,7 @@ class ViewServiceAsyncTest {
                 ViewReplaceParams.builder()
                     .name("name")
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(ViewReplaceParams.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .viewType(ViewReplaceParams.ViewType.PROJECTS)
                     .deletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                     .options(
