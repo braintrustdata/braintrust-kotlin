@@ -113,8 +113,9 @@ private constructor(
         }
 
         /**
-         * Whether to summarize the scores and metrics. If false (or omitted), only the metadata
-         * will be returned.
+         * Alias for [Builder.summarizeScores].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun summarizeScores(summarizeScores: Boolean) = summarizeScores(summarizeScores as Boolean?)
 

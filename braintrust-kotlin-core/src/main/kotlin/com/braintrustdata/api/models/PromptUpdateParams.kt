@@ -14,6 +14,7 @@ import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -36,34 +37,79 @@ private constructor(
     /** Prompt id */
     fun promptId(): String = promptId
 
-    /** Textual description of the prompt */
+    /**
+     * Textual description of the prompt
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun description(): String? = body.description()
 
-    /** Name of the prompt */
+    /**
+     * Name of the prompt
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun name(): String? = body.name()
 
-    /** The prompt, model, and its parameters */
+    /**
+     * The prompt, model, and its parameters
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun promptData(): PromptData? = body.promptData()
 
-    /** Unique identifier for the prompt */
+    /**
+     * Unique identifier for the prompt
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun slug(): String? = body.slug()
 
-    /** A list of tags for the prompt */
+    /**
+     * A list of tags for the prompt
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun tags(): List<String>? = body.tags()
 
-    /** Textual description of the prompt */
+    /**
+     * Returns the raw JSON value of [description].
+     *
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _description(): JsonField<String> = body._description()
 
-    /** Name of the prompt */
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _name(): JsonField<String> = body._name()
 
-    /** The prompt, model, and its parameters */
+    /**
+     * Returns the raw JSON value of [promptData].
+     *
+     * Unlike [promptData], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _promptData(): JsonField<PromptData> = body._promptData()
 
-    /** Unique identifier for the prompt */
+    /**
+     * Returns the raw JSON value of [slug].
+     *
+     * Unlike [slug], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _slug(): JsonField<String> = body._slug()
 
-    /** A list of tags for the prompt */
+    /**
+     * Returns the raw JSON value of [tags].
+     *
+     * Unlike [tags], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _tags(): JsonField<List<String>> = body._tags()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
@@ -108,38 +154,83 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Textual description of the prompt */
+        /**
+         * Textual description of the prompt
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun description(): String? = description.getNullable("description")
 
-        /** Name of the prompt */
+        /**
+         * Name of the prompt
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun name(): String? = name.getNullable("name")
 
-        /** The prompt, model, and its parameters */
+        /**
+         * The prompt, model, and its parameters
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun promptData(): PromptData? = promptData.getNullable("prompt_data")
 
-        /** Unique identifier for the prompt */
+        /**
+         * Unique identifier for the prompt
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun slug(): String? = slug.getNullable("slug")
 
-        /** A list of tags for the prompt */
+        /**
+         * A list of tags for the prompt
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun tags(): List<String>? = tags.getNullable("tags")
 
-        /** Textual description of the prompt */
+        /**
+         * Returns the raw JSON value of [description].
+         *
+         * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("description")
         @ExcludeMissing
         fun _description(): JsonField<String> = description
 
-        /** Name of the prompt */
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
-        /** The prompt, model, and its parameters */
+        /**
+         * Returns the raw JSON value of [promptData].
+         *
+         * Unlike [promptData], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("prompt_data")
         @ExcludeMissing
         fun _promptData(): JsonField<PromptData> = promptData
 
-        /** Unique identifier for the prompt */
+        /**
+         * Returns the raw JSON value of [slug].
+         *
+         * Unlike [slug], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("slug") @ExcludeMissing fun _slug(): JsonField<String> = slug
 
-        /** A list of tags for the prompt */
+        /**
+         * Returns the raw JSON value of [tags].
+         *
+         * Unlike [tags], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("tags") @ExcludeMissing fun _tags(): JsonField<List<String>> = tags
 
         @JsonAnyGetter
@@ -191,7 +282,13 @@ private constructor(
             /** Textual description of the prompt */
             fun description(description: String?) = description(JsonField.ofNullable(description))
 
-            /** Textual description of the prompt */
+            /**
+             * Sets [Builder.description] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.description] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun description(description: JsonField<String>) = apply {
                 this.description = description
             }
@@ -199,13 +296,25 @@ private constructor(
             /** Name of the prompt */
             fun name(name: String?) = name(JsonField.ofNullable(name))
 
-            /** Name of the prompt */
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
             /** The prompt, model, and its parameters */
             fun promptData(promptData: PromptData?) = promptData(JsonField.ofNullable(promptData))
 
-            /** The prompt, model, and its parameters */
+            /**
+             * Sets [Builder.promptData] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptData] with a well-typed [PromptData] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun promptData(promptData: JsonField<PromptData>) = apply {
                 this.promptData = promptData
             }
@@ -213,18 +322,34 @@ private constructor(
             /** Unique identifier for the prompt */
             fun slug(slug: String?) = slug(JsonField.ofNullable(slug))
 
-            /** Unique identifier for the prompt */
+            /**
+             * Sets [Builder.slug] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.slug] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun slug(slug: JsonField<String>) = apply { this.slug = slug }
 
             /** A list of tags for the prompt */
             fun tags(tags: List<String>?) = tags(JsonField.ofNullable(tags))
 
-            /** A list of tags for the prompt */
+            /**
+             * Sets [Builder.tags] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.tags] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun tags(tags: JsonField<List<String>>) = apply {
                 this.tags = tags.map { it.toMutableList() }
             }
 
-            /** A list of tags for the prompt */
+            /**
+             * Adds a single [String] to [tags].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addTag(tag: String) = apply {
                 tags =
                     (tags ?: JsonField.of(mutableListOf())).also { checkKnown("tags", it).add(tag) }
@@ -315,34 +440,66 @@ private constructor(
         /** Textual description of the prompt */
         fun description(description: String?) = apply { body.description(description) }
 
-        /** Textual description of the prompt */
+        /**
+         * Sets [Builder.description] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun description(description: JsonField<String>) = apply { body.description(description) }
 
         /** Name of the prompt */
         fun name(name: String?) = apply { body.name(name) }
 
-        /** Name of the prompt */
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
         /** The prompt, model, and its parameters */
         fun promptData(promptData: PromptData?) = apply { body.promptData(promptData) }
 
-        /** The prompt, model, and its parameters */
+        /**
+         * Sets [Builder.promptData] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptData] with a well-typed [PromptData] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun promptData(promptData: JsonField<PromptData>) = apply { body.promptData(promptData) }
 
         /** Unique identifier for the prompt */
         fun slug(slug: String?) = apply { body.slug(slug) }
 
-        /** Unique identifier for the prompt */
+        /**
+         * Sets [Builder.slug] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.slug] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun slug(slug: JsonField<String>) = apply { body.slug(slug) }
 
         /** A list of tags for the prompt */
         fun tags(tags: List<String>?) = apply { body.tags(tags) }
 
-        /** A list of tags for the prompt */
+        /**
+         * Sets [Builder.tags] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.tags] with a well-typed `List<String>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun tags(tags: JsonField<List<String>>) = apply { body.tags(tags) }
 
-        /** A list of tags for the prompt */
+        /**
+         * Adds a single [String] to [tags].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addTag(tag: String) = apply { body.addTag(tag) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {

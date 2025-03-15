@@ -14,6 +14,7 @@ import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -36,41 +37,98 @@ private constructor(
     /** Role id */
     fun roleId(): String = roleId
 
-    /** A list of permissions to add to the role */
+    /**
+     * A list of permissions to add to the role
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun addMemberPermissions(): List<AddMemberPermission>? = body.addMemberPermissions()
 
-    /** A list of role IDs to add to the role's inheriting-from set */
+    /**
+     * A list of role IDs to add to the role's inheriting-from set
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun addMemberRoles(): List<String>? = body.addMemberRoles()
 
-    /** Textual description of the role */
+    /**
+     * Textual description of the role
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun description(): String? = body.description()
 
-    /** Name of the role */
+    /**
+     * Name of the role
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun name(): String? = body.name()
 
-    /** A list of permissions to remove from the role */
+    /**
+     * A list of permissions to remove from the role
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun removeMemberPermissions(): List<RemoveMemberPermission>? = body.removeMemberPermissions()
 
-    /** A list of role IDs to remove from the role's inheriting-from set */
+    /**
+     * A list of role IDs to remove from the role's inheriting-from set
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun removeMemberRoles(): List<String>? = body.removeMemberRoles()
 
-    /** A list of permissions to add to the role */
+    /**
+     * Returns the raw JSON value of [addMemberPermissions].
+     *
+     * Unlike [addMemberPermissions], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
     fun _addMemberPermissions(): JsonField<List<AddMemberPermission>> = body._addMemberPermissions()
 
-    /** A list of role IDs to add to the role's inheriting-from set */
+    /**
+     * Returns the raw JSON value of [addMemberRoles].
+     *
+     * Unlike [addMemberRoles], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _addMemberRoles(): JsonField<List<String>> = body._addMemberRoles()
 
-    /** Textual description of the role */
+    /**
+     * Returns the raw JSON value of [description].
+     *
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _description(): JsonField<String> = body._description()
 
-    /** Name of the role */
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _name(): JsonField<String> = body._name()
 
-    /** A list of permissions to remove from the role */
+    /**
+     * Returns the raw JSON value of [removeMemberPermissions].
+     *
+     * Unlike [removeMemberPermissions], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
     fun _removeMemberPermissions(): JsonField<List<RemoveMemberPermission>> =
         body._removeMemberPermissions()
 
-    /** A list of role IDs to remove from the role's inheriting-from set */
+    /**
+     * Returns the raw JSON value of [removeMemberRoles].
+     *
+     * Unlike [removeMemberRoles], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
     fun _removeMemberRoles(): JsonField<List<String>> = body._removeMemberRoles()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
@@ -119,52 +177,110 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** A list of permissions to add to the role */
+        /**
+         * A list of permissions to add to the role
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun addMemberPermissions(): List<AddMemberPermission>? =
             addMemberPermissions.getNullable("add_member_permissions")
 
-        /** A list of role IDs to add to the role's inheriting-from set */
+        /**
+         * A list of role IDs to add to the role's inheriting-from set
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun addMemberRoles(): List<String>? = addMemberRoles.getNullable("add_member_roles")
 
-        /** Textual description of the role */
+        /**
+         * Textual description of the role
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun description(): String? = description.getNullable("description")
 
-        /** Name of the role */
+        /**
+         * Name of the role
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun name(): String? = name.getNullable("name")
 
-        /** A list of permissions to remove from the role */
+        /**
+         * A list of permissions to remove from the role
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun removeMemberPermissions(): List<RemoveMemberPermission>? =
             removeMemberPermissions.getNullable("remove_member_permissions")
 
-        /** A list of role IDs to remove from the role's inheriting-from set */
+        /**
+         * A list of role IDs to remove from the role's inheriting-from set
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun removeMemberRoles(): List<String>? =
             removeMemberRoles.getNullable("remove_member_roles")
 
-        /** A list of permissions to add to the role */
+        /**
+         * Returns the raw JSON value of [addMemberPermissions].
+         *
+         * Unlike [addMemberPermissions], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("add_member_permissions")
         @ExcludeMissing
         fun _addMemberPermissions(): JsonField<List<AddMemberPermission>> = addMemberPermissions
 
-        /** A list of role IDs to add to the role's inheriting-from set */
+        /**
+         * Returns the raw JSON value of [addMemberRoles].
+         *
+         * Unlike [addMemberRoles], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("add_member_roles")
         @ExcludeMissing
         fun _addMemberRoles(): JsonField<List<String>> = addMemberRoles
 
-        /** Textual description of the role */
+        /**
+         * Returns the raw JSON value of [description].
+         *
+         * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("description")
         @ExcludeMissing
         fun _description(): JsonField<String> = description
 
-        /** Name of the role */
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
-        /** A list of permissions to remove from the role */
+        /**
+         * Returns the raw JSON value of [removeMemberPermissions].
+         *
+         * Unlike [removeMemberPermissions], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("remove_member_permissions")
         @ExcludeMissing
         fun _removeMemberPermissions(): JsonField<List<RemoveMemberPermission>> =
             removeMemberPermissions
 
-        /** A list of role IDs to remove from the role's inheriting-from set */
+        /**
+         * Returns the raw JSON value of [removeMemberRoles].
+         *
+         * Unlike [removeMemberRoles], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("remove_member_roles")
         @ExcludeMissing
         fun _removeMemberRoles(): JsonField<List<String>> = removeMemberRoles
@@ -223,13 +339,23 @@ private constructor(
             fun addMemberPermissions(addMemberPermissions: List<AddMemberPermission>?) =
                 addMemberPermissions(JsonField.ofNullable(addMemberPermissions))
 
-            /** A list of permissions to add to the role */
+            /**
+             * Sets [Builder.addMemberPermissions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.addMemberPermissions] with a well-typed
+             * `List<AddMemberPermission>` value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
+             */
             fun addMemberPermissions(addMemberPermissions: JsonField<List<AddMemberPermission>>) =
                 apply {
                     this.addMemberPermissions = addMemberPermissions.map { it.toMutableList() }
                 }
 
-            /** A list of permissions to add to the role */
+            /**
+             * Adds a single [AddMemberPermission] to [addMemberPermissions].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addAddMemberPermission(addMemberPermission: AddMemberPermission) = apply {
                 addMemberPermissions =
                     (addMemberPermissions ?: JsonField.of(mutableListOf())).also {
@@ -241,12 +367,22 @@ private constructor(
             fun addMemberRoles(addMemberRoles: List<String>?) =
                 addMemberRoles(JsonField.ofNullable(addMemberRoles))
 
-            /** A list of role IDs to add to the role's inheriting-from set */
+            /**
+             * Sets [Builder.addMemberRoles] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.addMemberRoles] with a well-typed `List<String>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun addMemberRoles(addMemberRoles: JsonField<List<String>>) = apply {
                 this.addMemberRoles = addMemberRoles.map { it.toMutableList() }
             }
 
-            /** A list of role IDs to add to the role's inheriting-from set */
+            /**
+             * Adds a single [String] to [addMemberRoles].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addAddMemberRole(addMemberRole: String) = apply {
                 addMemberRoles =
                     (addMemberRoles ?: JsonField.of(mutableListOf())).also {
@@ -257,7 +393,13 @@ private constructor(
             /** Textual description of the role */
             fun description(description: String?) = description(JsonField.ofNullable(description))
 
-            /** Textual description of the role */
+            /**
+             * Sets [Builder.description] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.description] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun description(description: JsonField<String>) = apply {
                 this.description = description
             }
@@ -265,21 +407,37 @@ private constructor(
             /** Name of the role */
             fun name(name: String?) = name(JsonField.ofNullable(name))
 
-            /** Name of the role */
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
             /** A list of permissions to remove from the role */
             fun removeMemberPermissions(removeMemberPermissions: List<RemoveMemberPermission>?) =
                 removeMemberPermissions(JsonField.ofNullable(removeMemberPermissions))
 
-            /** A list of permissions to remove from the role */
+            /**
+             * Sets [Builder.removeMemberPermissions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.removeMemberPermissions] with a well-typed
+             * `List<RemoveMemberPermission>` value instead. This method is primarily for setting
+             * the field to an undocumented or not yet supported value.
+             */
             fun removeMemberPermissions(
                 removeMemberPermissions: JsonField<List<RemoveMemberPermission>>
             ) = apply {
                 this.removeMemberPermissions = removeMemberPermissions.map { it.toMutableList() }
             }
 
-            /** A list of permissions to remove from the role */
+            /**
+             * Adds a single [RemoveMemberPermission] to [removeMemberPermissions].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addRemoveMemberPermission(removeMemberPermission: RemoveMemberPermission) = apply {
                 removeMemberPermissions =
                     (removeMemberPermissions ?: JsonField.of(mutableListOf())).also {
@@ -291,12 +449,22 @@ private constructor(
             fun removeMemberRoles(removeMemberRoles: List<String>?) =
                 removeMemberRoles(JsonField.ofNullable(removeMemberRoles))
 
-            /** A list of role IDs to remove from the role's inheriting-from set */
+            /**
+             * Sets [Builder.removeMemberRoles] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.removeMemberRoles] with a well-typed `List<String>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun removeMemberRoles(removeMemberRoles: JsonField<List<String>>) = apply {
                 this.removeMemberRoles = removeMemberRoles.map { it.toMutableList() }
             }
 
-            /** A list of role IDs to remove from the role's inheriting-from set */
+            /**
+             * Adds a single [String] to [removeMemberRoles].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addRemoveMemberRole(removeMemberRole: String) = apply {
                 removeMemberRoles =
                     (removeMemberRoles ?: JsonField.of(mutableListOf())).also {
@@ -392,13 +560,23 @@ private constructor(
             body.addMemberPermissions(addMemberPermissions)
         }
 
-        /** A list of permissions to add to the role */
+        /**
+         * Sets [Builder.addMemberPermissions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.addMemberPermissions] with a well-typed
+         * `List<AddMemberPermission>` value instead. This method is primarily for setting the field
+         * to an undocumented or not yet supported value.
+         */
         fun addMemberPermissions(addMemberPermissions: JsonField<List<AddMemberPermission>>) =
             apply {
                 body.addMemberPermissions(addMemberPermissions)
             }
 
-        /** A list of permissions to add to the role */
+        /**
+         * Adds a single [AddMemberPermission] to [addMemberPermissions].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addAddMemberPermission(addMemberPermission: AddMemberPermission) = apply {
             body.addAddMemberPermission(addMemberPermission)
         }
@@ -408,24 +586,45 @@ private constructor(
             body.addMemberRoles(addMemberRoles)
         }
 
-        /** A list of role IDs to add to the role's inheriting-from set */
+        /**
+         * Sets [Builder.addMemberRoles] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.addMemberRoles] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun addMemberRoles(addMemberRoles: JsonField<List<String>>) = apply {
             body.addMemberRoles(addMemberRoles)
         }
 
-        /** A list of role IDs to add to the role's inheriting-from set */
+        /**
+         * Adds a single [String] to [addMemberRoles].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addAddMemberRole(addMemberRole: String) = apply { body.addAddMemberRole(addMemberRole) }
 
         /** Textual description of the role */
         fun description(description: String?) = apply { body.description(description) }
 
-        /** Textual description of the role */
+        /**
+         * Sets [Builder.description] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun description(description: JsonField<String>) = apply { body.description(description) }
 
         /** Name of the role */
         fun name(name: String?) = apply { body.name(name) }
 
-        /** Name of the role */
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
         /** A list of permissions to remove from the role */
@@ -434,12 +633,22 @@ private constructor(
                 body.removeMemberPermissions(removeMemberPermissions)
             }
 
-        /** A list of permissions to remove from the role */
+        /**
+         * Sets [Builder.removeMemberPermissions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.removeMemberPermissions] with a well-typed
+         * `List<RemoveMemberPermission>` value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
         fun removeMemberPermissions(
             removeMemberPermissions: JsonField<List<RemoveMemberPermission>>
         ) = apply { body.removeMemberPermissions(removeMemberPermissions) }
 
-        /** A list of permissions to remove from the role */
+        /**
+         * Adds a single [RemoveMemberPermission] to [removeMemberPermissions].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addRemoveMemberPermission(removeMemberPermission: RemoveMemberPermission) = apply {
             body.addRemoveMemberPermission(removeMemberPermission)
         }
@@ -449,12 +658,22 @@ private constructor(
             body.removeMemberRoles(removeMemberRoles)
         }
 
-        /** A list of role IDs to remove from the role's inheriting-from set */
+        /**
+         * Sets [Builder.removeMemberRoles] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.removeMemberRoles] with a well-typed `List<String>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun removeMemberRoles(removeMemberRoles: JsonField<List<String>>) = apply {
             body.removeMemberRoles(removeMemberRoles)
         }
 
-        /** A list of role IDs to remove from the role's inheriting-from set */
+        /**
+         * Adds a single [String] to [removeMemberRoles].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addRemoveMemberRole(removeMemberRole: String) = apply {
             body.addRemoveMemberRole(removeMemberRole)
         }
@@ -603,23 +822,36 @@ private constructor(
          * Each permission permits a certain type of operation on an object in the system
          *
          * Permissions can be assigned to to objects on an individual basis, or grouped into roles
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun permission(): Permission = permission.getRequired("permission")
 
-        /** The object type that the ACL applies to */
+        /**
+         * The object type that the ACL applies to
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun restrictObjectType(): AclObjectType? =
             restrictObjectType.getNullable("restrict_object_type")
 
         /**
-         * Each permission permits a certain type of operation on an object in the system
+         * Returns the raw JSON value of [permission].
          *
-         * Permissions can be assigned to to objects on an individual basis, or grouped into roles
+         * Unlike [permission], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("permission")
         @ExcludeMissing
         fun _permission(): JsonField<Permission> = permission
 
-        /** The object type that the ACL applies to */
+        /**
+         * Returns the raw JSON value of [restrictObjectType].
+         *
+         * Unlike [restrictObjectType], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("restrict_object_type")
         @ExcludeMissing
         fun _restrictObjectType(): JsonField<AclObjectType> = restrictObjectType
@@ -677,10 +909,11 @@ private constructor(
             fun permission(permission: Permission) = permission(JsonField.of(permission))
 
             /**
-             * Each permission permits a certain type of operation on an object in the system
+             * Sets [Builder.permission] to an arbitrary JSON value.
              *
-             * Permissions can be assigned to to objects on an individual basis, or grouped into
-             * roles
+             * You should usually call [Builder.permission] with a well-typed [Permission] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun permission(permission: JsonField<Permission>) = apply {
                 this.permission = permission
@@ -690,7 +923,13 @@ private constructor(
             fun restrictObjectType(restrictObjectType: AclObjectType?) =
                 restrictObjectType(JsonField.ofNullable(restrictObjectType))
 
-            /** The object type that the ACL applies to */
+            /**
+             * Sets [Builder.restrictObjectType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.restrictObjectType] with a well-typed
+             * [AclObjectType] value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
+             */
             fun restrictObjectType(restrictObjectType: JsonField<AclObjectType>) = apply {
                 this.restrictObjectType = restrictObjectType
             }
@@ -758,23 +997,36 @@ private constructor(
          * Each permission permits a certain type of operation on an object in the system
          *
          * Permissions can be assigned to to objects on an individual basis, or grouped into roles
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun permission(): Permission = permission.getRequired("permission")
 
-        /** The object type that the ACL applies to */
+        /**
+         * The object type that the ACL applies to
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun restrictObjectType(): AclObjectType? =
             restrictObjectType.getNullable("restrict_object_type")
 
         /**
-         * Each permission permits a certain type of operation on an object in the system
+         * Returns the raw JSON value of [permission].
          *
-         * Permissions can be assigned to to objects on an individual basis, or grouped into roles
+         * Unlike [permission], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("permission")
         @ExcludeMissing
         fun _permission(): JsonField<Permission> = permission
 
-        /** The object type that the ACL applies to */
+        /**
+         * Returns the raw JSON value of [restrictObjectType].
+         *
+         * Unlike [restrictObjectType], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("restrict_object_type")
         @ExcludeMissing
         fun _restrictObjectType(): JsonField<AclObjectType> = restrictObjectType
@@ -832,10 +1084,11 @@ private constructor(
             fun permission(permission: Permission) = permission(JsonField.of(permission))
 
             /**
-             * Each permission permits a certain type of operation on an object in the system
+             * Sets [Builder.permission] to an arbitrary JSON value.
              *
-             * Permissions can be assigned to to objects on an individual basis, or grouped into
-             * roles
+             * You should usually call [Builder.permission] with a well-typed [Permission] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun permission(permission: JsonField<Permission>) = apply {
                 this.permission = permission
@@ -845,7 +1098,13 @@ private constructor(
             fun restrictObjectType(restrictObjectType: AclObjectType?) =
                 restrictObjectType(JsonField.ofNullable(restrictObjectType))
 
-            /** The object type that the ACL applies to */
+            /**
+             * Sets [Builder.restrictObjectType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.restrictObjectType] with a well-typed
+             * [AclObjectType] value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
+             */
             fun restrictObjectType(restrictObjectType: JsonField<AclObjectType>) = apply {
                 this.restrictObjectType = restrictObjectType
             }

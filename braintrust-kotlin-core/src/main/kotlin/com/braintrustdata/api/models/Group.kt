@@ -11,6 +11,7 @@ import com.braintrustdata.api.core.checkKnown
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -51,26 +52,54 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Unique identifier for the group */
+    /**
+     * Unique identifier for the group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** Name of the group */
+    /**
+     * Name of the group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun name(): String = name.getRequired("name")
 
     /**
      * Unique id for the organization that the group belongs under
      *
      * It is forbidden to change the org after creating a group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun orgId(): String = orgId.getRequired("org_id")
 
-    /** Date of group creation */
+    /**
+     * Date of group creation
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun created(): OffsetDateTime? = created.getNullable("created")
 
-    /** Date of group deletion, or null if the group is still active */
+    /**
+     * Date of group deletion, or null if the group is still active
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun deletedAt(): OffsetDateTime? = deletedAt.getNullable("deleted_at")
 
-    /** Textual description of the group */
+    /**
+     * Textual description of the group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun description(): String? = description.getNullable("description")
 
     /**
@@ -78,55 +107,95 @@ private constructor(
      *
      * An inheriting group has all the users contained in its member groups, as well as all of their
      * inherited users
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun memberGroups(): List<String>? = memberGroups.getNullable("member_groups")
 
-    /** Ids of users which belong to this group */
+    /**
+     * Ids of users which belong to this group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun memberUsers(): List<String>? = memberUsers.getNullable("member_users")
 
-    /** Identifies the user who created the group */
+    /**
+     * Identifies the user who created the group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun userId(): String? = userId.getNullable("user_id")
 
-    /** Unique identifier for the group */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** Name of the group */
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /**
-     * Unique id for the organization that the group belongs under
+     * Returns the raw JSON value of [orgId].
      *
-     * It is forbidden to change the org after creating a group
+     * Unlike [orgId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("org_id") @ExcludeMissing fun _orgId(): JsonField<String> = orgId
 
-    /** Date of group creation */
+    /**
+     * Returns the raw JSON value of [created].
+     *
+     * Unlike [created], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<OffsetDateTime> = created
 
-    /** Date of group deletion, or null if the group is still active */
+    /**
+     * Returns the raw JSON value of [deletedAt].
+     *
+     * Unlike [deletedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("deleted_at")
     @ExcludeMissing
     fun _deletedAt(): JsonField<OffsetDateTime> = deletedAt
 
-    /** Textual description of the group */
+    /**
+     * Returns the raw JSON value of [description].
+     *
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("description") @ExcludeMissing fun _description(): JsonField<String> = description
 
     /**
-     * Ids of the groups this group inherits from
+     * Returns the raw JSON value of [memberGroups].
      *
-     * An inheriting group has all the users contained in its member groups, as well as all of their
-     * inherited users
+     * Unlike [memberGroups], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("member_groups")
     @ExcludeMissing
     fun _memberGroups(): JsonField<List<String>> = memberGroups
 
-    /** Ids of users which belong to this group */
+    /**
+     * Returns the raw JSON value of [memberUsers].
+     *
+     * Unlike [memberUsers], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("member_users")
     @ExcludeMissing
     fun _memberUsers(): JsonField<List<String>> = memberUsers
 
-    /** Identifies the user who created the group */
+    /**
+     * Returns the raw JSON value of [userId].
+     *
+     * Unlike [userId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
 
     @JsonAnyGetter
@@ -199,13 +268,23 @@ private constructor(
         /** Unique identifier for the group */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** Unique identifier for the group */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** Name of the group */
         fun name(name: String) = name(JsonField.of(name))
 
-        /** Name of the group */
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun name(name: JsonField<String>) = apply { this.name = name }
 
         /**
@@ -216,28 +295,47 @@ private constructor(
         fun orgId(orgId: String) = orgId(JsonField.of(orgId))
 
         /**
-         * Unique id for the organization that the group belongs under
+         * Sets [Builder.orgId] to an arbitrary JSON value.
          *
-         * It is forbidden to change the org after creating a group
+         * You should usually call [Builder.orgId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun orgId(orgId: JsonField<String>) = apply { this.orgId = orgId }
 
         /** Date of group creation */
         fun created(created: OffsetDateTime?) = created(JsonField.ofNullable(created))
 
-        /** Date of group creation */
+        /**
+         * Sets [Builder.created] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.created] with a well-typed [OffsetDateTime] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
 
         /** Date of group deletion, or null if the group is still active */
         fun deletedAt(deletedAt: OffsetDateTime?) = deletedAt(JsonField.ofNullable(deletedAt))
 
-        /** Date of group deletion, or null if the group is still active */
+        /**
+         * Sets [Builder.deletedAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.deletedAt] with a well-typed [OffsetDateTime] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun deletedAt(deletedAt: JsonField<OffsetDateTime>) = apply { this.deletedAt = deletedAt }
 
         /** Textual description of the group */
         fun description(description: String?) = description(JsonField.ofNullable(description))
 
-        /** Textual description of the group */
+        /**
+         * Sets [Builder.description] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun description(description: JsonField<String>) = apply { this.description = description }
 
         /**
@@ -250,20 +348,20 @@ private constructor(
             memberGroups(JsonField.ofNullable(memberGroups))
 
         /**
-         * Ids of the groups this group inherits from
+         * Sets [Builder.memberGroups] to an arbitrary JSON value.
          *
-         * An inheriting group has all the users contained in its member groups, as well as all of
-         * their inherited users
+         * You should usually call [Builder.memberGroups] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun memberGroups(memberGroups: JsonField<List<String>>) = apply {
             this.memberGroups = memberGroups.map { it.toMutableList() }
         }
 
         /**
-         * Ids of the groups this group inherits from
+         * Adds a single [String] to [memberGroups].
          *
-         * An inheriting group has all the users contained in its member groups, as well as all of
-         * their inherited users
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addMemberGroup(memberGroup: String) = apply {
             memberGroups =
@@ -275,12 +373,22 @@ private constructor(
         /** Ids of users which belong to this group */
         fun memberUsers(memberUsers: List<String>?) = memberUsers(JsonField.ofNullable(memberUsers))
 
-        /** Ids of users which belong to this group */
+        /**
+         * Sets [Builder.memberUsers] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.memberUsers] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun memberUsers(memberUsers: JsonField<List<String>>) = apply {
             this.memberUsers = memberUsers.map { it.toMutableList() }
         }
 
-        /** Ids of users which belong to this group */
+        /**
+         * Adds a single [String] to [memberUsers].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addMemberUser(memberUser: String) = apply {
             memberUsers =
                 (memberUsers ?: JsonField.of(mutableListOf())).also {
@@ -291,7 +399,12 @@ private constructor(
         /** Identifies the user who created the group */
         fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
 
-        /** Identifies the user who created the group */
+        /**
+         * Sets [Builder.userId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.userId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun userId(userId: JsonField<String>) = apply { this.userId = userId }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
