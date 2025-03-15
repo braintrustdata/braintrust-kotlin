@@ -10,6 +10,7 @@ import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -45,55 +46,119 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Name of the experiment */
+    /**
+     * Name of the experiment
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun experimentName(): String = experimentName.getRequired("experiment_name")
 
-    /** URL to the experiment's page in the Braintrust app */
+    /**
+     * URL to the experiment's page in the Braintrust app
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun experimentUrl(): String = experimentUrl.getRequired("experiment_url")
 
-    /** Name of the project that the experiment belongs to */
+    /**
+     * Name of the project that the experiment belongs to
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun projectName(): String = projectName.getRequired("project_name")
 
-    /** URL to the project's page in the Braintrust app */
+    /**
+     * URL to the project's page in the Braintrust app
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun projectUrl(): String = projectUrl.getRequired("project_url")
 
-    /** The experiment which scores are baselined against */
+    /**
+     * The experiment which scores are baselined against
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun comparisonExperimentName(): String? =
         comparisonExperimentName.getNullable("comparison_experiment_name")
 
-    /** Summary of the experiment's metrics */
+    /**
+     * Summary of the experiment's metrics
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun metrics(): Metrics? = metrics.getNullable("metrics")
 
-    /** Summary of the experiment's scores */
+    /**
+     * Summary of the experiment's scores
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun scores(): Scores? = scores.getNullable("scores")
 
-    /** Name of the experiment */
+    /**
+     * Returns the raw JSON value of [experimentName].
+     *
+     * Unlike [experimentName], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("experiment_name")
     @ExcludeMissing
     fun _experimentName(): JsonField<String> = experimentName
 
-    /** URL to the experiment's page in the Braintrust app */
+    /**
+     * Returns the raw JSON value of [experimentUrl].
+     *
+     * Unlike [experimentUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("experiment_url")
     @ExcludeMissing
     fun _experimentUrl(): JsonField<String> = experimentUrl
 
-    /** Name of the project that the experiment belongs to */
+    /**
+     * Returns the raw JSON value of [projectName].
+     *
+     * Unlike [projectName], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("project_name")
     @ExcludeMissing
     fun _projectName(): JsonField<String> = projectName
 
-    /** URL to the project's page in the Braintrust app */
+    /**
+     * Returns the raw JSON value of [projectUrl].
+     *
+     * Unlike [projectUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("project_url") @ExcludeMissing fun _projectUrl(): JsonField<String> = projectUrl
 
-    /** The experiment which scores are baselined against */
+    /**
+     * Returns the raw JSON value of [comparisonExperimentName].
+     *
+     * Unlike [comparisonExperimentName], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
     @JsonProperty("comparison_experiment_name")
     @ExcludeMissing
     fun _comparisonExperimentName(): JsonField<String> = comparisonExperimentName
 
-    /** Summary of the experiment's metrics */
+    /**
+     * Returns the raw JSON value of [metrics].
+     *
+     * Unlike [metrics], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("metrics") @ExcludeMissing fun _metrics(): JsonField<Metrics> = metrics
 
-    /** Summary of the experiment's scores */
+    /**
+     * Returns the raw JSON value of [scores].
+     *
+     * Unlike [scores], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("scores") @ExcludeMissing fun _scores(): JsonField<Scores> = scores
 
     @JsonAnyGetter
@@ -161,7 +226,13 @@ private constructor(
         /** Name of the experiment */
         fun experimentName(experimentName: String) = experimentName(JsonField.of(experimentName))
 
-        /** Name of the experiment */
+        /**
+         * Sets [Builder.experimentName] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.experimentName] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun experimentName(experimentName: JsonField<String>) = apply {
             this.experimentName = experimentName
         }
@@ -169,7 +240,13 @@ private constructor(
         /** URL to the experiment's page in the Braintrust app */
         fun experimentUrl(experimentUrl: String) = experimentUrl(JsonField.of(experimentUrl))
 
-        /** URL to the experiment's page in the Braintrust app */
+        /**
+         * Sets [Builder.experimentUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.experimentUrl] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun experimentUrl(experimentUrl: JsonField<String>) = apply {
             this.experimentUrl = experimentUrl
         }
@@ -177,20 +254,38 @@ private constructor(
         /** Name of the project that the experiment belongs to */
         fun projectName(projectName: String) = projectName(JsonField.of(projectName))
 
-        /** Name of the project that the experiment belongs to */
+        /**
+         * Sets [Builder.projectName] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.projectName] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun projectName(projectName: JsonField<String>) = apply { this.projectName = projectName }
 
         /** URL to the project's page in the Braintrust app */
         fun projectUrl(projectUrl: String) = projectUrl(JsonField.of(projectUrl))
 
-        /** URL to the project's page in the Braintrust app */
+        /**
+         * Sets [Builder.projectUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.projectUrl] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun projectUrl(projectUrl: JsonField<String>) = apply { this.projectUrl = projectUrl }
 
         /** The experiment which scores are baselined against */
         fun comparisonExperimentName(comparisonExperimentName: String?) =
             comparisonExperimentName(JsonField.ofNullable(comparisonExperimentName))
 
-        /** The experiment which scores are baselined against */
+        /**
+         * Sets [Builder.comparisonExperimentName] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.comparisonExperimentName] with a well-typed [String]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun comparisonExperimentName(comparisonExperimentName: JsonField<String>) = apply {
             this.comparisonExperimentName = comparisonExperimentName
         }
@@ -198,13 +293,23 @@ private constructor(
         /** Summary of the experiment's metrics */
         fun metrics(metrics: Metrics?) = metrics(JsonField.ofNullable(metrics))
 
-        /** Summary of the experiment's metrics */
+        /**
+         * Sets [Builder.metrics] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.metrics] with a well-typed [Metrics] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun metrics(metrics: JsonField<Metrics>) = apply { this.metrics = metrics }
 
         /** Summary of the experiment's scores */
         fun scores(scores: Scores?) = scores(JsonField.ofNullable(scores))
 
-        /** Summary of the experiment's scores */
+        /**
+         * Sets [Builder.scores] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.scores] with a well-typed [Scores] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun scores(scores: JsonField<Scores>) = apply { this.scores = scores }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

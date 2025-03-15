@@ -132,8 +132,10 @@ private constructor(
 
         fun aiSecretType(aiSecretType: AiSecretType?) = apply { this.aiSecretType = aiSecretType }
 
+        /** Alias for calling [aiSecretType] with `AiSecretType.ofString(string)`. */
         fun aiSecretType(string: String) = aiSecretType(AiSecretType.ofString(string))
 
+        /** Alias for calling [aiSecretType] with `AiSecretType.ofStrings(strings)`. */
         fun aiSecretTypeOfStrings(strings: List<String>) =
             aiSecretType(AiSecretType.ofStrings(strings))
 
@@ -152,22 +154,20 @@ private constructor(
          */
         fun ids(ids: Ids?) = apply { this.ids = ids }
 
-        /**
-         * Filter search results to a particular set of object IDs. To specify a list of IDs,
-         * include the query param multiple times
-         */
+        /** Alias for calling [ids] with `Ids.ofString(string)`. */
         fun ids(string: String) = ids(Ids.ofString(string))
 
-        /**
-         * Filter search results to a particular set of object IDs. To specify a list of IDs,
-         * include the query param multiple times
-         */
+        /** Alias for calling [ids] with `Ids.ofStrings(strings)`. */
         fun idsOfStrings(strings: List<String>) = ids(Ids.ofStrings(strings))
 
         /** Limit the number of objects to return */
         fun limit(limit: Long?) = apply { this.limit = limit }
 
-        /** Limit the number of objects to return */
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun limit(limit: Long) = limit(limit as Long?)
 
         /** Filter search results to within a particular organization */

@@ -157,22 +157,20 @@ private constructor(
          */
         fun ids(ids: Ids?) = apply { this.ids = ids }
 
-        /**
-         * Filter search results to a particular set of object IDs. To specify a list of IDs,
-         * include the query param multiple times
-         */
+        /** Alias for calling [ids] with `Ids.ofString(string)`. */
         fun ids(string: String) = ids(Ids.ofString(string))
 
-        /**
-         * Filter search results to a particular set of object IDs. To specify a list of IDs,
-         * include the query param multiple times
-         */
+        /** Alias for calling [ids] with `Ids.ofStrings(strings)`. */
         fun idsOfStrings(strings: List<String>) = ids(Ids.ofStrings(strings))
 
         /** Limit the number of objects to return */
         fun limit(limit: Long?) = apply { this.limit = limit }
 
-        /** Limit the number of objects to return */
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun limit(limit: Long) = limit(limit as Long?)
 
         /** Filter search results to within a particular organization */
@@ -192,10 +190,12 @@ private constructor(
         /** The type of the configured score */
         fun scoreType(scoreType: ScoreType?) = apply { this.scoreType = scoreType }
 
-        /** The type of the configured score */
+        /** Alias for calling [scoreType] with `ScoreType.ofProject(project)`. */
         fun scoreType(project: ProjectScoreType) = scoreType(ScoreType.ofProject(project))
 
-        /** The type of the configured score */
+        /**
+         * Alias for calling [scoreType] with `ScoreType.ofProjectScoreTypes(projectScoreTypes)`.
+         */
         fun scoreTypeOfProjectScoreTypes(projectScoreTypes: List<ProjectScoreType>) =
             scoreType(ScoreType.ofProjectScoreTypes(projectScoreTypes))
 

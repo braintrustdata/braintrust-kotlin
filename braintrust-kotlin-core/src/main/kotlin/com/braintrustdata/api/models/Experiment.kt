@@ -10,6 +10,7 @@ import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -62,104 +63,220 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Unique identifier for the experiment */
+    /**
+     * Unique identifier for the experiment
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** Name of the experiment. Within a project, experiment names are unique */
+    /**
+     * Name of the experiment. Within a project, experiment names are unique
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun name(): String = name.getRequired("name")
 
-    /** Unique identifier for the project that the experiment belongs under */
+    /**
+     * Unique identifier for the project that the experiment belongs under
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun projectId(): String = projectId.getRequired("project_id")
 
     /**
      * Whether or not the experiment is public. Public experiments can be viewed by anybody inside
      * or outside the organization
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun public_(): Boolean = public_.getRequired("public")
 
-    /** Id of default base experiment to compare against when viewing this experiment */
+    /**
+     * Id of default base experiment to compare against when viewing this experiment
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun baseExpId(): String? = baseExpId.getNullable("base_exp_id")
 
-    /** Commit, taken directly from `repo_info.commit` */
+    /**
+     * Commit, taken directly from `repo_info.commit`
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun commit(): String? = commit.getNullable("commit")
 
-    /** Date of experiment creation */
+    /**
+     * Date of experiment creation
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun created(): OffsetDateTime? = created.getNullable("created")
 
-    /** Identifier of the linked dataset, or null if the experiment is not linked to a dataset */
+    /**
+     * Identifier of the linked dataset, or null if the experiment is not linked to a dataset
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun datasetId(): String? = datasetId.getNullable("dataset_id")
 
     /**
      * Version number of the linked dataset the experiment was run against. This can be used to
      * reproduce the experiment after the dataset has been modified.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun datasetVersion(): String? = datasetVersion.getNullable("dataset_version")
 
-    /** Date of experiment deletion, or null if the experiment is still active */
+    /**
+     * Date of experiment deletion, or null if the experiment is still active
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun deletedAt(): OffsetDateTime? = deletedAt.getNullable("deleted_at")
 
-    /** Textual description of the experiment */
+    /**
+     * Textual description of the experiment
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun description(): String? = description.getNullable("description")
 
-    /** User-controlled metadata about the experiment */
+    /**
+     * User-controlled metadata about the experiment
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun metadata(): Metadata? = metadata.getNullable("metadata")
 
-    /** Metadata about the state of the repo when the experiment was created */
+    /**
+     * Metadata about the state of the repo when the experiment was created
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun repoInfo(): RepoInfo? = repoInfo.getNullable("repo_info")
 
-    /** Identifies the user who created the experiment */
+    /**
+     * Identifies the user who created the experiment
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun userId(): String? = userId.getNullable("user_id")
 
-    /** Unique identifier for the experiment */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** Name of the experiment. Within a project, experiment names are unique */
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
-    /** Unique identifier for the project that the experiment belongs under */
+    /**
+     * Returns the raw JSON value of [projectId].
+     *
+     * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("project_id") @ExcludeMissing fun _projectId(): JsonField<String> = projectId
 
     /**
-     * Whether or not the experiment is public. Public experiments can be viewed by anybody inside
-     * or outside the organization
+     * Returns the raw JSON value of [public_].
+     *
+     * Unlike [public_], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("public") @ExcludeMissing fun _public_(): JsonField<Boolean> = public_
 
-    /** Id of default base experiment to compare against when viewing this experiment */
+    /**
+     * Returns the raw JSON value of [baseExpId].
+     *
+     * Unlike [baseExpId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("base_exp_id") @ExcludeMissing fun _baseExpId(): JsonField<String> = baseExpId
 
-    /** Commit, taken directly from `repo_info.commit` */
+    /**
+     * Returns the raw JSON value of [commit].
+     *
+     * Unlike [commit], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("commit") @ExcludeMissing fun _commit(): JsonField<String> = commit
 
-    /** Date of experiment creation */
+    /**
+     * Returns the raw JSON value of [created].
+     *
+     * Unlike [created], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<OffsetDateTime> = created
 
-    /** Identifier of the linked dataset, or null if the experiment is not linked to a dataset */
+    /**
+     * Returns the raw JSON value of [datasetId].
+     *
+     * Unlike [datasetId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("dataset_id") @ExcludeMissing fun _datasetId(): JsonField<String> = datasetId
 
     /**
-     * Version number of the linked dataset the experiment was run against. This can be used to
-     * reproduce the experiment after the dataset has been modified.
+     * Returns the raw JSON value of [datasetVersion].
+     *
+     * Unlike [datasetVersion], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("dataset_version")
     @ExcludeMissing
     fun _datasetVersion(): JsonField<String> = datasetVersion
 
-    /** Date of experiment deletion, or null if the experiment is still active */
+    /**
+     * Returns the raw JSON value of [deletedAt].
+     *
+     * Unlike [deletedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("deleted_at")
     @ExcludeMissing
     fun _deletedAt(): JsonField<OffsetDateTime> = deletedAt
 
-    /** Textual description of the experiment */
+    /**
+     * Returns the raw JSON value of [description].
+     *
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("description") @ExcludeMissing fun _description(): JsonField<String> = description
 
-    /** User-controlled metadata about the experiment */
+    /**
+     * Returns the raw JSON value of [metadata].
+     *
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
-    /** Metadata about the state of the repo when the experiment was created */
+    /**
+     * Returns the raw JSON value of [repoInfo].
+     *
+     * Unlike [repoInfo], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("repo_info") @ExcludeMissing fun _repoInfo(): JsonField<RepoInfo> = repoInfo
 
-    /** Identifies the user who created the experiment */
+    /**
+     * Returns the raw JSON value of [userId].
+     *
+     * Unlike [userId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
 
     @JsonAnyGetter
@@ -248,19 +365,35 @@ private constructor(
         /** Unique identifier for the experiment */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** Unique identifier for the experiment */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** Name of the experiment. Within a project, experiment names are unique */
         fun name(name: String) = name(JsonField.of(name))
 
-        /** Name of the experiment. Within a project, experiment names are unique */
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun name(name: JsonField<String>) = apply { this.name = name }
 
         /** Unique identifier for the project that the experiment belongs under */
         fun projectId(projectId: String) = projectId(JsonField.of(projectId))
 
-        /** Unique identifier for the project that the experiment belongs under */
+        /**
+         * Sets [Builder.projectId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.projectId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
 
         /**
@@ -270,27 +403,46 @@ private constructor(
         fun public_(public_: Boolean) = public_(JsonField.of(public_))
 
         /**
-         * Whether or not the experiment is public. Public experiments can be viewed by anybody
-         * inside or outside the organization
+         * Sets [Builder.public_] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.public_] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun public_(public_: JsonField<Boolean>) = apply { this.public_ = public_ }
 
         /** Id of default base experiment to compare against when viewing this experiment */
         fun baseExpId(baseExpId: String?) = baseExpId(JsonField.ofNullable(baseExpId))
 
-        /** Id of default base experiment to compare against when viewing this experiment */
+        /**
+         * Sets [Builder.baseExpId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.baseExpId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun baseExpId(baseExpId: JsonField<String>) = apply { this.baseExpId = baseExpId }
 
         /** Commit, taken directly from `repo_info.commit` */
         fun commit(commit: String?) = commit(JsonField.ofNullable(commit))
 
-        /** Commit, taken directly from `repo_info.commit` */
+        /**
+         * Sets [Builder.commit] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.commit] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun commit(commit: JsonField<String>) = apply { this.commit = commit }
 
         /** Date of experiment creation */
         fun created(created: OffsetDateTime?) = created(JsonField.ofNullable(created))
 
-        /** Date of experiment creation */
+        /**
+         * Sets [Builder.created] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.created] with a well-typed [OffsetDateTime] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
 
         /**
@@ -299,7 +451,11 @@ private constructor(
         fun datasetId(datasetId: String?) = datasetId(JsonField.ofNullable(datasetId))
 
         /**
-         * Identifier of the linked dataset, or null if the experiment is not linked to a dataset
+         * Sets [Builder.datasetId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.datasetId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun datasetId(datasetId: JsonField<String>) = apply { this.datasetId = datasetId }
 
@@ -311,8 +467,11 @@ private constructor(
             datasetVersion(JsonField.ofNullable(datasetVersion))
 
         /**
-         * Version number of the linked dataset the experiment was run against. This can be used to
-         * reproduce the experiment after the dataset has been modified.
+         * Sets [Builder.datasetVersion] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.datasetVersion] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun datasetVersion(datasetVersion: JsonField<String>) = apply {
             this.datasetVersion = datasetVersion
@@ -321,31 +480,60 @@ private constructor(
         /** Date of experiment deletion, or null if the experiment is still active */
         fun deletedAt(deletedAt: OffsetDateTime?) = deletedAt(JsonField.ofNullable(deletedAt))
 
-        /** Date of experiment deletion, or null if the experiment is still active */
+        /**
+         * Sets [Builder.deletedAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.deletedAt] with a well-typed [OffsetDateTime] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun deletedAt(deletedAt: JsonField<OffsetDateTime>) = apply { this.deletedAt = deletedAt }
 
         /** Textual description of the experiment */
         fun description(description: String?) = description(JsonField.ofNullable(description))
 
-        /** Textual description of the experiment */
+        /**
+         * Sets [Builder.description] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun description(description: JsonField<String>) = apply { this.description = description }
 
         /** User-controlled metadata about the experiment */
         fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-        /** User-controlled metadata about the experiment */
+        /**
+         * Sets [Builder.metadata] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /** Metadata about the state of the repo when the experiment was created */
         fun repoInfo(repoInfo: RepoInfo?) = repoInfo(JsonField.ofNullable(repoInfo))
 
-        /** Metadata about the state of the repo when the experiment was created */
+        /**
+         * Sets [Builder.repoInfo] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.repoInfo] with a well-typed [RepoInfo] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun repoInfo(repoInfo: JsonField<RepoInfo>) = apply { this.repoInfo = repoInfo }
 
         /** Identifies the user who created the experiment */
         fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
 
-        /** Identifies the user who created the experiment */
+        /**
+         * Sets [Builder.userId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.userId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun userId(userId: JsonField<String>) = apply { this.userId = userId }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

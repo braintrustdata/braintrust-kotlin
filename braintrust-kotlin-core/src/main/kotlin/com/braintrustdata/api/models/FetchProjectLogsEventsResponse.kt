@@ -11,6 +11,7 @@ import com.braintrustdata.api.core.checkKnown
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -30,7 +31,12 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** A list of fetched events */
+    /**
+     * A list of fetched events
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun events(): List<ProjectLogsEvent> = events.getRequired("events")
 
     /**
@@ -38,19 +44,25 @@ private constructor(
      *
      * Pass this string directly as the `cursor` param to your next fetch request to get the next
      * page of results. Not provided if the returned result set is empty.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun cursor(): String? = cursor.getNullable("cursor")
 
-    /** A list of fetched events */
+    /**
+     * Returns the raw JSON value of [events].
+     *
+     * Unlike [events], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("events")
     @ExcludeMissing
     fun _events(): JsonField<List<ProjectLogsEvent>> = events
 
     /**
-     * Pagination cursor
+     * Returns the raw JSON value of [cursor].
      *
-     * Pass this string directly as the `cursor` param to your next fetch request to get the next
-     * page of results. Not provided if the returned result set is empty.
+     * Unlike [cursor], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("cursor") @ExcludeMissing fun _cursor(): JsonField<String> = cursor
 
@@ -103,12 +115,22 @@ private constructor(
         /** A list of fetched events */
         fun events(events: List<ProjectLogsEvent>) = events(JsonField.of(events))
 
-        /** A list of fetched events */
+        /**
+         * Sets [Builder.events] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.events] with a well-typed `List<ProjectLogsEvent>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun events(events: JsonField<List<ProjectLogsEvent>>) = apply {
             this.events = events.map { it.toMutableList() }
         }
 
-        /** A list of fetched events */
+        /**
+         * Adds a single [ProjectLogsEvent] to [events].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addEvent(event: ProjectLogsEvent) = apply {
             events =
                 (events ?: JsonField.of(mutableListOf())).also {
@@ -125,10 +147,10 @@ private constructor(
         fun cursor(cursor: String?) = cursor(JsonField.ofNullable(cursor))
 
         /**
-         * Pagination cursor
+         * Sets [Builder.cursor] to an arbitrary JSON value.
          *
-         * Pass this string directly as the `cursor` param to your next fetch request to get the
-         * next page of results. Not provided if the returned result set is empty.
+         * You should usually call [Builder.cursor] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun cursor(cursor: JsonField<String>) = apply { this.cursor = cursor }
 

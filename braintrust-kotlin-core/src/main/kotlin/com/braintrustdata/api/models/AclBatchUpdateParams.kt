@@ -14,6 +14,7 @@ import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -40,6 +41,9 @@ private constructor(
      *
      * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in the
      * ACL, as part of a direct permission grant or as part of a role.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun addAcls(): List<AddAcl>? = body.addAcls()
 
@@ -52,30 +56,23 @@ private constructor(
      *
      * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in the
      * ACL, as part of a direct permission grant or as part of a role.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun removeAcls(): List<RemoveAcl>? = body.removeAcls()
 
     /**
-     * An ACL grants a certain permission or role to a certain user or group on an object.
+     * Returns the raw JSON value of [addAcls].
      *
-     * ACLs are inherited across the object hierarchy. So for example, if a user has read
-     * permissions on a project, they will also have read permissions on any experiment, dataset,
-     * etc. created within that project.
-     *
-     * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in the
-     * ACL, as part of a direct permission grant or as part of a role.
+     * Unlike [addAcls], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _addAcls(): JsonField<List<AddAcl>> = body._addAcls()
 
     /**
-     * An ACL grants a certain permission or role to a certain user or group on an object.
+     * Returns the raw JSON value of [removeAcls].
      *
-     * ACLs are inherited across the object hierarchy. So for example, if a user has read
-     * permissions on a project, they will also have read permissions on any experiment, dataset,
-     * etc. created within that project.
-     *
-     * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in the
-     * ACL, as part of a direct permission grant or as part of a role.
+     * Unlike [removeAcls], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _removeAcls(): JsonField<List<RemoveAcl>> = body._removeAcls()
 
@@ -114,6 +111,9 @@ private constructor(
          *
          * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
          * the ACL, as part of a direct permission grant or as part of a role.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun addAcls(): List<AddAcl>? = addAcls.getNullable("add_acls")
 
@@ -126,30 +126,23 @@ private constructor(
          *
          * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
          * the ACL, as part of a direct permission grant or as part of a role.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun removeAcls(): List<RemoveAcl>? = removeAcls.getNullable("remove_acls")
 
         /**
-         * An ACL grants a certain permission or role to a certain user or group on an object.
+         * Returns the raw JSON value of [addAcls].
          *
-         * ACLs are inherited across the object hierarchy. So for example, if a user has read
-         * permissions on a project, they will also have read permissions on any experiment,
-         * dataset, etc. created within that project.
-         *
-         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
-         * the ACL, as part of a direct permission grant or as part of a role.
+         * Unlike [addAcls], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("add_acls") @ExcludeMissing fun _addAcls(): JsonField<List<AddAcl>> = addAcls
 
         /**
-         * An ACL grants a certain permission or role to a certain user or group on an object.
+         * Returns the raw JSON value of [removeAcls].
          *
-         * ACLs are inherited across the object hierarchy. So for example, if a user has read
-         * permissions on a project, they will also have read permissions on any experiment,
-         * dataset, etc. created within that project.
-         *
-         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
-         * the ACL, as part of a direct permission grant or as part of a role.
+         * Unlike [removeAcls], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("remove_acls")
         @ExcludeMissing
@@ -206,30 +199,20 @@ private constructor(
             fun addAcls(addAcls: List<AddAcl>?) = addAcls(JsonField.ofNullable(addAcls))
 
             /**
-             * An ACL grants a certain permission or role to a certain user or group on an object.
+             * Sets [Builder.addAcls] to an arbitrary JSON value.
              *
-             * ACLs are inherited across the object hierarchy. So for example, if a user has read
-             * permissions on a project, they will also have read permissions on any experiment,
-             * dataset, etc. created within that project.
-             *
-             * To restrict a grant to a particular sub-object, you may specify
-             * `restrict_object_type` in the ACL, as part of a direct permission grant or as part of
-             * a role.
+             * You should usually call [Builder.addAcls] with a well-typed `List<AddAcl>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun addAcls(addAcls: JsonField<List<AddAcl>>) = apply {
                 this.addAcls = addAcls.map { it.toMutableList() }
             }
 
             /**
-             * An ACL grants a certain permission or role to a certain user or group on an object.
+             * Adds a single [AddAcl] to [addAcls].
              *
-             * ACLs are inherited across the object hierarchy. So for example, if a user has read
-             * permissions on a project, they will also have read permissions on any experiment,
-             * dataset, etc. created within that project.
-             *
-             * To restrict a grant to a particular sub-object, you may specify
-             * `restrict_object_type` in the ACL, as part of a direct permission grant or as part of
-             * a role.
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addAddAcl(addAcl: AddAcl) = apply {
                 addAcls =
@@ -253,30 +236,20 @@ private constructor(
                 removeAcls(JsonField.ofNullable(removeAcls))
 
             /**
-             * An ACL grants a certain permission or role to a certain user or group on an object.
+             * Sets [Builder.removeAcls] to an arbitrary JSON value.
              *
-             * ACLs are inherited across the object hierarchy. So for example, if a user has read
-             * permissions on a project, they will also have read permissions on any experiment,
-             * dataset, etc. created within that project.
-             *
-             * To restrict a grant to a particular sub-object, you may specify
-             * `restrict_object_type` in the ACL, as part of a direct permission grant or as part of
-             * a role.
+             * You should usually call [Builder.removeAcls] with a well-typed `List<RemoveAcl>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun removeAcls(removeAcls: JsonField<List<RemoveAcl>>) = apply {
                 this.removeAcls = removeAcls.map { it.toMutableList() }
             }
 
             /**
-             * An ACL grants a certain permission or role to a certain user or group on an object.
+             * Adds a single [RemoveAcl] to [removeAcls].
              *
-             * ACLs are inherited across the object hierarchy. So for example, if a user has read
-             * permissions on a project, they will also have read permissions on any experiment,
-             * dataset, etc. created within that project.
-             *
-             * To restrict a grant to a particular sub-object, you may specify
-             * `restrict_object_type` in the ACL, as part of a direct permission grant or as part of
-             * a role.
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addRemoveAcl(removeAcl: RemoveAcl) = apply {
                 removeAcls =
@@ -367,26 +340,18 @@ private constructor(
         fun addAcls(addAcls: List<AddAcl>?) = apply { body.addAcls(addAcls) }
 
         /**
-         * An ACL grants a certain permission or role to a certain user or group on an object.
+         * Sets [Builder.addAcls] to an arbitrary JSON value.
          *
-         * ACLs are inherited across the object hierarchy. So for example, if a user has read
-         * permissions on a project, they will also have read permissions on any experiment,
-         * dataset, etc. created within that project.
-         *
-         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
-         * the ACL, as part of a direct permission grant or as part of a role.
+         * You should usually call [Builder.addAcls] with a well-typed `List<AddAcl>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun addAcls(addAcls: JsonField<List<AddAcl>>) = apply { body.addAcls(addAcls) }
 
         /**
-         * An ACL grants a certain permission or role to a certain user or group on an object.
+         * Adds a single [AddAcl] to [addAcls].
          *
-         * ACLs are inherited across the object hierarchy. So for example, if a user has read
-         * permissions on a project, they will also have read permissions on any experiment,
-         * dataset, etc. created within that project.
-         *
-         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
-         * the ACL, as part of a direct permission grant or as part of a role.
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addAddAcl(addAcl: AddAcl) = apply { body.addAddAcl(addAcl) }
 
@@ -403,28 +368,20 @@ private constructor(
         fun removeAcls(removeAcls: List<RemoveAcl>?) = apply { body.removeAcls(removeAcls) }
 
         /**
-         * An ACL grants a certain permission or role to a certain user or group on an object.
+         * Sets [Builder.removeAcls] to an arbitrary JSON value.
          *
-         * ACLs are inherited across the object hierarchy. So for example, if a user has read
-         * permissions on a project, they will also have read permissions on any experiment,
-         * dataset, etc. created within that project.
-         *
-         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
-         * the ACL, as part of a direct permission grant or as part of a role.
+         * You should usually call [Builder.removeAcls] with a well-typed `List<RemoveAcl>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun removeAcls(removeAcls: JsonField<List<RemoveAcl>>) = apply {
             body.removeAcls(removeAcls)
         }
 
         /**
-         * An ACL grants a certain permission or role to a certain user or group on an object.
+         * Adds a single [RemoveAcl] to [removeAcls].
          *
-         * ACLs are inherited across the object hierarchy. So for example, if a user has read
-         * permissions on a project, they will also have read permissions on any experiment,
-         * dataset, etc. created within that project.
-         *
-         * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in
-         * the ACL, as part of a direct permission grant or as part of a role.
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addRemoveAcl(removeAcl: RemoveAcl) = apply { body.addRemoveAcl(removeAcl) }
 
@@ -592,74 +549,119 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The id of the object the ACL applies to */
+        /**
+         * The id of the object the ACL applies to
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun objectId(): String = objectId.getRequired("object_id")
 
-        /** The object type that the ACL applies to */
+        /**
+         * The object type that the ACL applies to
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun objectType(): AclObjectType = objectType.getRequired("object_type")
 
         /**
          * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
          * provided
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun groupId(): String? = groupId.getNullable("group_id")
 
-        /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
+        /**
+         * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun permission(): Permission? = permission.getNullable("permission")
 
         /**
          * When setting a permission directly, optionally restricts the permission grant to just the
          * specified object type. Cannot be set alongside a `role_id`.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun restrictObjectType(): AclObjectType? =
             restrictObjectType.getNullable("restrict_object_type")
 
         /**
          * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun roleId(): String? = roleId.getNullable("role_id")
 
         /**
          * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
          * provided
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun userId(): String? = userId.getNullable("user_id")
 
-        /** The id of the object the ACL applies to */
+        /**
+         * Returns the raw JSON value of [objectId].
+         *
+         * Unlike [objectId], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("object_id") @ExcludeMissing fun _objectId(): JsonField<String> = objectId
 
-        /** The object type that the ACL applies to */
+        /**
+         * Returns the raw JSON value of [objectType].
+         *
+         * Unlike [objectType], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("object_type")
         @ExcludeMissing
         fun _objectType(): JsonField<AclObjectType> = objectType
 
         /**
-         * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
-         * provided
+         * Returns the raw JSON value of [groupId].
+         *
+         * Unlike [groupId], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("group_id") @ExcludeMissing fun _groupId(): JsonField<String> = groupId
 
-        /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
+        /**
+         * Returns the raw JSON value of [permission].
+         *
+         * Unlike [permission], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("permission")
         @ExcludeMissing
         fun _permission(): JsonField<Permission> = permission
 
         /**
-         * When setting a permission directly, optionally restricts the permission grant to just the
-         * specified object type. Cannot be set alongside a `role_id`.
+         * Returns the raw JSON value of [restrictObjectType].
+         *
+         * Unlike [restrictObjectType], this method doesn't throw if the JSON field has an
+         * unexpected type.
          */
         @JsonProperty("restrict_object_type")
         @ExcludeMissing
         fun _restrictObjectType(): JsonField<AclObjectType> = restrictObjectType
 
         /**
-         * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided
+         * Returns the raw JSON value of [roleId].
+         *
+         * Unlike [roleId], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("role_id") @ExcludeMissing fun _roleId(): JsonField<String> = roleId
 
         /**
-         * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
-         * provided
+         * Returns the raw JSON value of [userId].
+         *
+         * Unlike [userId], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
 
@@ -726,13 +728,25 @@ private constructor(
             /** The id of the object the ACL applies to */
             fun objectId(objectId: String) = objectId(JsonField.of(objectId))
 
-            /** The id of the object the ACL applies to */
+            /**
+             * Sets [Builder.objectId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
 
             /** The object type that the ACL applies to */
             fun objectType(objectType: AclObjectType) = objectType(JsonField.of(objectType))
 
-            /** The object type that the ACL applies to */
+            /**
+             * Sets [Builder.objectType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectType] with a well-typed [AclObjectType] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun objectType(objectType: JsonField<AclObjectType>) = apply {
                 this.objectType = objectType
             }
@@ -744,8 +758,11 @@ private constructor(
             fun groupId(groupId: String?) = groupId(JsonField.ofNullable(groupId))
 
             /**
-             * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
-             * provided
+             * Sets [Builder.groupId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun groupId(groupId: JsonField<String>) = apply { this.groupId = groupId }
 
@@ -755,7 +772,11 @@ private constructor(
             fun permission(permission: Permission?) = permission(JsonField.ofNullable(permission))
 
             /**
-             * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
+             * Sets [Builder.permission] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.permission] with a well-typed [Permission] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun permission(permission: JsonField<Permission>) = apply {
                 this.permission = permission
@@ -769,8 +790,11 @@ private constructor(
                 restrictObjectType(JsonField.ofNullable(restrictObjectType))
 
             /**
-             * When setting a permission directly, optionally restricts the permission grant to just
-             * the specified object type. Cannot be set alongside a `role_id`.
+             * Sets [Builder.restrictObjectType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.restrictObjectType] with a well-typed
+             * [AclObjectType] value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
              */
             fun restrictObjectType(restrictObjectType: JsonField<AclObjectType>) = apply {
                 this.restrictObjectType = restrictObjectType
@@ -783,8 +807,11 @@ private constructor(
             fun roleId(roleId: String?) = roleId(JsonField.ofNullable(roleId))
 
             /**
-             * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be
-             * provided
+             * Sets [Builder.roleId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.roleId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun roleId(roleId: JsonField<String>) = apply { this.roleId = roleId }
 
@@ -795,8 +822,11 @@ private constructor(
             fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
 
             /**
-             * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
-             * provided
+             * Sets [Builder.userId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.userId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun userId(userId: JsonField<String>) = apply { this.userId = userId }
 
@@ -889,74 +919,119 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The id of the object the ACL applies to */
+        /**
+         * The id of the object the ACL applies to
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun objectId(): String = objectId.getRequired("object_id")
 
-        /** The object type that the ACL applies to */
+        /**
+         * The object type that the ACL applies to
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun objectType(): AclObjectType = objectType.getRequired("object_type")
 
         /**
          * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
          * provided
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun groupId(): String? = groupId.getNullable("group_id")
 
-        /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
+        /**
+         * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun permission(): Permission? = permission.getNullable("permission")
 
         /**
          * When setting a permission directly, optionally restricts the permission grant to just the
          * specified object type. Cannot be set alongside a `role_id`.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun restrictObjectType(): AclObjectType? =
             restrictObjectType.getNullable("restrict_object_type")
 
         /**
          * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun roleId(): String? = roleId.getNullable("role_id")
 
         /**
          * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
          * provided
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun userId(): String? = userId.getNullable("user_id")
 
-        /** The id of the object the ACL applies to */
+        /**
+         * Returns the raw JSON value of [objectId].
+         *
+         * Unlike [objectId], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("object_id") @ExcludeMissing fun _objectId(): JsonField<String> = objectId
 
-        /** The object type that the ACL applies to */
+        /**
+         * Returns the raw JSON value of [objectType].
+         *
+         * Unlike [objectType], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("object_type")
         @ExcludeMissing
         fun _objectType(): JsonField<AclObjectType> = objectType
 
         /**
-         * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
-         * provided
+         * Returns the raw JSON value of [groupId].
+         *
+         * Unlike [groupId], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("group_id") @ExcludeMissing fun _groupId(): JsonField<String> = groupId
 
-        /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
+        /**
+         * Returns the raw JSON value of [permission].
+         *
+         * Unlike [permission], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("permission")
         @ExcludeMissing
         fun _permission(): JsonField<Permission> = permission
 
         /**
-         * When setting a permission directly, optionally restricts the permission grant to just the
-         * specified object type. Cannot be set alongside a `role_id`.
+         * Returns the raw JSON value of [restrictObjectType].
+         *
+         * Unlike [restrictObjectType], this method doesn't throw if the JSON field has an
+         * unexpected type.
          */
         @JsonProperty("restrict_object_type")
         @ExcludeMissing
         fun _restrictObjectType(): JsonField<AclObjectType> = restrictObjectType
 
         /**
-         * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided
+         * Returns the raw JSON value of [roleId].
+         *
+         * Unlike [roleId], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("role_id") @ExcludeMissing fun _roleId(): JsonField<String> = roleId
 
         /**
-         * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
-         * provided
+         * Returns the raw JSON value of [userId].
+         *
+         * Unlike [userId], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
 
@@ -1023,13 +1098,25 @@ private constructor(
             /** The id of the object the ACL applies to */
             fun objectId(objectId: String) = objectId(JsonField.of(objectId))
 
-            /** The id of the object the ACL applies to */
+            /**
+             * Sets [Builder.objectId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
 
             /** The object type that the ACL applies to */
             fun objectType(objectType: AclObjectType) = objectType(JsonField.of(objectType))
 
-            /** The object type that the ACL applies to */
+            /**
+             * Sets [Builder.objectType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectType] with a well-typed [AclObjectType] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun objectType(objectType: JsonField<AclObjectType>) = apply {
                 this.objectType = objectType
             }
@@ -1041,8 +1128,11 @@ private constructor(
             fun groupId(groupId: String?) = groupId(JsonField.ofNullable(groupId))
 
             /**
-             * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
-             * provided
+             * Sets [Builder.groupId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun groupId(groupId: JsonField<String>) = apply { this.groupId = groupId }
 
@@ -1052,7 +1142,11 @@ private constructor(
             fun permission(permission: Permission?) = permission(JsonField.ofNullable(permission))
 
             /**
-             * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
+             * Sets [Builder.permission] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.permission] with a well-typed [Permission] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun permission(permission: JsonField<Permission>) = apply {
                 this.permission = permission
@@ -1066,8 +1160,11 @@ private constructor(
                 restrictObjectType(JsonField.ofNullable(restrictObjectType))
 
             /**
-             * When setting a permission directly, optionally restricts the permission grant to just
-             * the specified object type. Cannot be set alongside a `role_id`.
+             * Sets [Builder.restrictObjectType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.restrictObjectType] with a well-typed
+             * [AclObjectType] value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
              */
             fun restrictObjectType(restrictObjectType: JsonField<AclObjectType>) = apply {
                 this.restrictObjectType = restrictObjectType
@@ -1080,8 +1177,11 @@ private constructor(
             fun roleId(roleId: String?) = roleId(JsonField.ofNullable(roleId))
 
             /**
-             * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be
-             * provided
+             * Sets [Builder.roleId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.roleId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun roleId(roleId: JsonField<String>) = apply { this.roleId = roleId }
 
@@ -1092,8 +1192,11 @@ private constructor(
             fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
 
             /**
-             * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
-             * provided
+             * Sets [Builder.userId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.userId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun userId(userId: JsonField<String>) = apply { this.userId = userId }
 

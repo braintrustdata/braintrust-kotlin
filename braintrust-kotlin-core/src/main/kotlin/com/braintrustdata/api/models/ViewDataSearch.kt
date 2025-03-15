@@ -10,6 +10,7 @@ import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.checkKnown
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -35,20 +36,56 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun filter(): List<JsonValue?>? = filter.getNullable("filter")
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun match(): List<JsonValue?>? = match.getNullable("match")
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun sort(): List<JsonValue?>? = sort.getNullable("sort")
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun tag(): List<JsonValue?>? = tag.getNullable("tag")
 
+    /**
+     * Returns the raw JSON value of [filter].
+     *
+     * Unlike [filter], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("filter") @ExcludeMissing fun _filter(): JsonField<List<JsonValue?>> = filter
 
+    /**
+     * Returns the raw JSON value of [match].
+     *
+     * Unlike [match], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("match") @ExcludeMissing fun _match(): JsonField<List<JsonValue?>> = match
 
+    /**
+     * Returns the raw JSON value of [sort].
+     *
+     * Unlike [sort], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("sort") @ExcludeMissing fun _sort(): JsonField<List<JsonValue?>> = sort
 
+    /**
+     * Returns the raw JSON value of [tag].
+     *
+     * Unlike [tag], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("tag") @ExcludeMissing fun _tag(): JsonField<List<JsonValue?>> = tag
 
     @JsonAnyGetter
@@ -96,10 +133,22 @@ private constructor(
 
         fun filter(filter: List<JsonValue?>?) = filter(JsonField.ofNullable(filter))
 
+        /**
+         * Sets [Builder.filter] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.filter] with a well-typed `List<JsonValue?>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun filter(filter: JsonField<List<JsonValue?>>) = apply {
             this.filter = filter.map { it.toMutableList() }
         }
 
+        /**
+         * Adds a single [JsonValue] to [Builder.filter].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addFilter(filter: JsonValue) = apply {
             this.filter =
                 (this.filter ?: JsonField.of(mutableListOf())).also {
@@ -109,10 +158,22 @@ private constructor(
 
         fun match(match: List<JsonValue?>?) = match(JsonField.ofNullable(match))
 
+        /**
+         * Sets [Builder.match] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.match] with a well-typed `List<JsonValue?>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun match(match: JsonField<List<JsonValue?>>) = apply {
             this.match = match.map { it.toMutableList() }
         }
 
+        /**
+         * Adds a single [JsonValue] to [Builder.match].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addMatch(match: JsonValue) = apply {
             this.match =
                 (this.match ?: JsonField.of(mutableListOf())).also {
@@ -122,10 +183,22 @@ private constructor(
 
         fun sort(sort: List<JsonValue?>?) = sort(JsonField.ofNullable(sort))
 
+        /**
+         * Sets [Builder.sort] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sort] with a well-typed `List<JsonValue?>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun sort(sort: JsonField<List<JsonValue?>>) = apply {
             this.sort = sort.map { it.toMutableList() }
         }
 
+        /**
+         * Adds a single [JsonValue] to [Builder.sort].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addSort(sort: JsonValue) = apply {
             this.sort =
                 (this.sort ?: JsonField.of(mutableListOf())).also {
@@ -135,10 +208,22 @@ private constructor(
 
         fun tag(tag: List<JsonValue?>?) = tag(JsonField.ofNullable(tag))
 
+        /**
+         * Sets [Builder.tag] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.tag] with a well-typed `List<JsonValue?>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun tag(tag: JsonField<List<JsonValue?>>) = apply {
             this.tag = tag.map { it.toMutableList() }
         }
 
+        /**
+         * Adds a single [JsonValue] to [Builder.tag].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addTag(tag: JsonValue) = apply {
             this.tag =
                 (this.tag ?: JsonField.of(mutableListOf())).also { checkKnown("tag", it).add(tag) }
