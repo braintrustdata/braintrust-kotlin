@@ -13,6 +13,7 @@ import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -27,13 +28,21 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /** Users to invite to the organization */
+    /**
+     * Users to invite to the organization
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun inviteUsers(): InviteUsers? = body.inviteUsers()
 
     /**
      * For nearly all users, this parameter should be unnecessary. But in the rare case that your
      * API key belongs to multiple organizations, or in case you want to explicitly assert the
      * organization you are modifying, you may specify the id of the organization.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun orgId(): String? = body.orgId()
 
@@ -41,30 +50,46 @@ private constructor(
      * For nearly all users, this parameter should be unnecessary. But in the rare case that your
      * API key belongs to multiple organizations, or in case you want to explicitly assert the
      * organization you are modifying, you may specify the name of the organization.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun orgName(): String? = body.orgName()
 
-    /** Users to remove from the organization */
+    /**
+     * Users to remove from the organization
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun removeUsers(): RemoveUsers? = body.removeUsers()
 
-    /** Users to invite to the organization */
+    /**
+     * Returns the raw JSON value of [inviteUsers].
+     *
+     * Unlike [inviteUsers], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _inviteUsers(): JsonField<InviteUsers> = body._inviteUsers()
 
     /**
-     * For nearly all users, this parameter should be unnecessary. But in the rare case that your
-     * API key belongs to multiple organizations, or in case you want to explicitly assert the
-     * organization you are modifying, you may specify the id of the organization.
+     * Returns the raw JSON value of [orgId].
+     *
+     * Unlike [orgId], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _orgId(): JsonField<String> = body._orgId()
 
     /**
-     * For nearly all users, this parameter should be unnecessary. But in the rare case that your
-     * API key belongs to multiple organizations, or in case you want to explicitly assert the
-     * organization you are modifying, you may specify the name of the organization.
+     * Returns the raw JSON value of [orgName].
+     *
+     * Unlike [orgName], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _orgName(): JsonField<String> = body._orgName()
 
-    /** Users to remove from the organization */
+    /**
+     * Returns the raw JSON value of [removeUsers].
+     *
+     * Unlike [removeUsers], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _removeUsers(): JsonField<RemoveUsers> = body._removeUsers()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
@@ -99,13 +124,21 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Users to invite to the organization */
+        /**
+         * Users to invite to the organization
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun inviteUsers(): InviteUsers? = inviteUsers.getNullable("invite_users")
 
         /**
          * For nearly all users, this parameter should be unnecessary. But in the rare case that
          * your API key belongs to multiple organizations, or in case you want to explicitly assert
          * the organization you are modifying, you may specify the id of the organization.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun orgId(): String? = orgId.getNullable("org_id")
 
@@ -113,32 +146,48 @@ private constructor(
          * For nearly all users, this parameter should be unnecessary. But in the rare case that
          * your API key belongs to multiple organizations, or in case you want to explicitly assert
          * the organization you are modifying, you may specify the name of the organization.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun orgName(): String? = orgName.getNullable("org_name")
 
-        /** Users to remove from the organization */
+        /**
+         * Users to remove from the organization
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun removeUsers(): RemoveUsers? = removeUsers.getNullable("remove_users")
 
-        /** Users to invite to the organization */
+        /**
+         * Returns the raw JSON value of [inviteUsers].
+         *
+         * Unlike [inviteUsers], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("invite_users")
         @ExcludeMissing
         fun _inviteUsers(): JsonField<InviteUsers> = inviteUsers
 
         /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, or in case you want to explicitly assert
-         * the organization you are modifying, you may specify the id of the organization.
+         * Returns the raw JSON value of [orgId].
+         *
+         * Unlike [orgId], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("org_id") @ExcludeMissing fun _orgId(): JsonField<String> = orgId
 
         /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, or in case you want to explicitly assert
-         * the organization you are modifying, you may specify the name of the organization.
+         * Returns the raw JSON value of [orgName].
+         *
+         * Unlike [orgName], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("org_name") @ExcludeMissing fun _orgName(): JsonField<String> = orgName
 
-        /** Users to remove from the organization */
+        /**
+         * Returns the raw JSON value of [removeUsers].
+         *
+         * Unlike [removeUsers], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("remove_users")
         @ExcludeMissing
         fun _removeUsers(): JsonField<RemoveUsers> = removeUsers
@@ -190,7 +239,13 @@ private constructor(
             fun inviteUsers(inviteUsers: InviteUsers?) =
                 inviteUsers(JsonField.ofNullable(inviteUsers))
 
-            /** Users to invite to the organization */
+            /**
+             * Sets [Builder.inviteUsers] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.inviteUsers] with a well-typed [InviteUsers] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun inviteUsers(inviteUsers: JsonField<InviteUsers>) = apply {
                 this.inviteUsers = inviteUsers
             }
@@ -204,10 +259,11 @@ private constructor(
             fun orgId(orgId: String?) = orgId(JsonField.ofNullable(orgId))
 
             /**
-             * For nearly all users, this parameter should be unnecessary. But in the rare case that
-             * your API key belongs to multiple organizations, or in case you want to explicitly
-             * assert the organization you are modifying, you may specify the id of the
-             * organization.
+             * Sets [Builder.orgId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.orgId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun orgId(orgId: JsonField<String>) = apply { this.orgId = orgId }
 
@@ -220,10 +276,11 @@ private constructor(
             fun orgName(orgName: String?) = orgName(JsonField.ofNullable(orgName))
 
             /**
-             * For nearly all users, this parameter should be unnecessary. But in the rare case that
-             * your API key belongs to multiple organizations, or in case you want to explicitly
-             * assert the organization you are modifying, you may specify the name of the
-             * organization.
+             * Sets [Builder.orgName] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.orgName] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun orgName(orgName: JsonField<String>) = apply { this.orgName = orgName }
 
@@ -231,7 +288,13 @@ private constructor(
             fun removeUsers(removeUsers: RemoveUsers?) =
                 removeUsers(JsonField.ofNullable(removeUsers))
 
-            /** Users to remove from the organization */
+            /**
+             * Sets [Builder.removeUsers] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.removeUsers] with a well-typed [RemoveUsers] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun removeUsers(removeUsers: JsonField<RemoveUsers>) = apply {
                 this.removeUsers = removeUsers
             }
@@ -307,7 +370,13 @@ private constructor(
         /** Users to invite to the organization */
         fun inviteUsers(inviteUsers: InviteUsers?) = apply { body.inviteUsers(inviteUsers) }
 
-        /** Users to invite to the organization */
+        /**
+         * Sets [Builder.inviteUsers] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.inviteUsers] with a well-typed [InviteUsers] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun inviteUsers(inviteUsers: JsonField<InviteUsers>) = apply {
             body.inviteUsers(inviteUsers)
         }
@@ -320,9 +389,10 @@ private constructor(
         fun orgId(orgId: String?) = apply { body.orgId(orgId) }
 
         /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, or in case you want to explicitly assert
-         * the organization you are modifying, you may specify the id of the organization.
+         * Sets [Builder.orgId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.orgId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun orgId(orgId: JsonField<String>) = apply { body.orgId(orgId) }
 
@@ -334,16 +404,23 @@ private constructor(
         fun orgName(orgName: String?) = apply { body.orgName(orgName) }
 
         /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, or in case you want to explicitly assert
-         * the organization you are modifying, you may specify the name of the organization.
+         * Sets [Builder.orgName] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.orgName] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun orgName(orgName: JsonField<String>) = apply { body.orgName(orgName) }
 
         /** Users to remove from the organization */
         fun removeUsers(removeUsers: RemoveUsers?) = apply { body.removeUsers(removeUsers) }
 
-        /** Users to remove from the organization */
+        /**
+         * Sets [Builder.removeUsers] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.removeUsers] with a well-typed [RemoveUsers] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun removeUsers(removeUsers: JsonField<RemoveUsers>) = apply {
             body.removeUsers(removeUsers)
         }
@@ -503,50 +580,114 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Emails of users to invite */
+        /**
+         * Emails of users to invite
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun emails(): List<String>? = emails.getNullable("emails")
 
-        /** Singular form of group_ids */
+        /**
+         * Singular form of group_ids
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun groupId(): String? = groupId.getNullable("group_id")
 
-        /** Optional list of group ids to add newly-invited users to. */
+        /**
+         * Optional list of group ids to add newly-invited users to.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun groupIds(): List<String>? = groupIds.getNullable("group_ids")
 
-        /** Singular form of group_names */
+        /**
+         * Singular form of group_names
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun groupName(): String? = groupName.getNullable("group_name")
 
-        /** Optional list of group names to add newly-invited users to. */
+        /**
+         * Optional list of group names to add newly-invited users to.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun groupNames(): List<String>? = groupNames.getNullable("group_names")
 
-        /** Ids of existing users to invite */
+        /**
+         * Ids of existing users to invite
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun ids(): List<String>? = ids.getNullable("ids")
 
-        /** If true, send invite emails to the users who wore actually added */
+        /**
+         * If true, send invite emails to the users who wore actually added
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun sendInviteEmails(): Boolean? = sendInviteEmails.getNullable("send_invite_emails")
 
-        /** Emails of users to invite */
+        /**
+         * Returns the raw JSON value of [emails].
+         *
+         * Unlike [emails], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("emails") @ExcludeMissing fun _emails(): JsonField<List<String>> = emails
 
-        /** Singular form of group_ids */
+        /**
+         * Returns the raw JSON value of [groupId].
+         *
+         * Unlike [groupId], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("group_id") @ExcludeMissing fun _groupId(): JsonField<String> = groupId
 
-        /** Optional list of group ids to add newly-invited users to. */
+        /**
+         * Returns the raw JSON value of [groupIds].
+         *
+         * Unlike [groupIds], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("group_ids")
         @ExcludeMissing
         fun _groupIds(): JsonField<List<String>> = groupIds
 
-        /** Singular form of group_names */
+        /**
+         * Returns the raw JSON value of [groupName].
+         *
+         * Unlike [groupName], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("group_name") @ExcludeMissing fun _groupName(): JsonField<String> = groupName
 
-        /** Optional list of group names to add newly-invited users to. */
+        /**
+         * Returns the raw JSON value of [groupNames].
+         *
+         * Unlike [groupNames], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("group_names")
         @ExcludeMissing
         fun _groupNames(): JsonField<List<String>> = groupNames
 
-        /** Ids of existing users to invite */
+        /**
+         * Returns the raw JSON value of [ids].
+         *
+         * Unlike [ids], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("ids") @ExcludeMissing fun _ids(): JsonField<List<String>> = ids
 
-        /** If true, send invite emails to the users who wore actually added */
+        /**
+         * Returns the raw JSON value of [sendInviteEmails].
+         *
+         * Unlike [sendInviteEmails], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("send_invite_emails")
         @ExcludeMissing
         fun _sendInviteEmails(): JsonField<Boolean> = sendInviteEmails
@@ -606,12 +747,22 @@ private constructor(
             /** Emails of users to invite */
             fun emails(emails: List<String>?) = emails(JsonField.ofNullable(emails))
 
-            /** Emails of users to invite */
+            /**
+             * Sets [Builder.emails] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.emails] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun emails(emails: JsonField<List<String>>) = apply {
                 this.emails = emails.map { it.toMutableList() }
             }
 
-            /** Emails of users to invite */
+            /**
+             * Adds a single [String] to [emails].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addEmail(email: String) = apply {
                 emails =
                     (emails ?: JsonField.of(mutableListOf())).also {
@@ -622,18 +773,34 @@ private constructor(
             /** Singular form of group_ids */
             fun groupId(groupId: String?) = groupId(JsonField.ofNullable(groupId))
 
-            /** Singular form of group_ids */
+            /**
+             * Sets [Builder.groupId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun groupId(groupId: JsonField<String>) = apply { this.groupId = groupId }
 
             /** Optional list of group ids to add newly-invited users to. */
             fun groupIds(groupIds: List<String>?) = groupIds(JsonField.ofNullable(groupIds))
 
-            /** Optional list of group ids to add newly-invited users to. */
+            /**
+             * Sets [Builder.groupIds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupIds] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun groupIds(groupIds: JsonField<List<String>>) = apply {
                 this.groupIds = groupIds.map { it.toMutableList() }
             }
 
-            /** Optional list of group ids to add newly-invited users to. */
+            /**
+             * Adds a single [String] to [groupIds].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addGroupId(groupId: String) = apply {
                 groupIds =
                     (groupIds ?: JsonField.of(mutableListOf())).also {
@@ -644,18 +811,34 @@ private constructor(
             /** Singular form of group_names */
             fun groupName(groupName: String?) = groupName(JsonField.ofNullable(groupName))
 
-            /** Singular form of group_names */
+            /**
+             * Sets [Builder.groupName] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupName] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun groupName(groupName: JsonField<String>) = apply { this.groupName = groupName }
 
             /** Optional list of group names to add newly-invited users to. */
             fun groupNames(groupNames: List<String>?) = groupNames(JsonField.ofNullable(groupNames))
 
-            /** Optional list of group names to add newly-invited users to. */
+            /**
+             * Sets [Builder.groupNames] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupNames] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun groupNames(groupNames: JsonField<List<String>>) = apply {
                 this.groupNames = groupNames.map { it.toMutableList() }
             }
 
-            /** Optional list of group names to add newly-invited users to. */
+            /**
+             * Adds a single [String] to [groupNames].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addGroupName(groupName: String) = apply {
                 groupNames =
                     (groupNames ?: JsonField.of(mutableListOf())).also {
@@ -666,12 +849,22 @@ private constructor(
             /** Ids of existing users to invite */
             fun ids(ids: List<String>?) = ids(JsonField.ofNullable(ids))
 
-            /** Ids of existing users to invite */
+            /**
+             * Sets [Builder.ids] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ids] with a well-typed `List<String>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun ids(ids: JsonField<List<String>>) = apply {
                 this.ids = ids.map { it.toMutableList() }
             }
 
-            /** Ids of existing users to invite */
+            /**
+             * Adds a single [String] to [ids].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addId(id: String) = apply {
                 ids = (ids ?: JsonField.of(mutableListOf())).also { checkKnown("ids", it).add(id) }
             }
@@ -680,11 +873,21 @@ private constructor(
             fun sendInviteEmails(sendInviteEmails: Boolean?) =
                 sendInviteEmails(JsonField.ofNullable(sendInviteEmails))
 
-            /** If true, send invite emails to the users who wore actually added */
+            /**
+             * Alias for [Builder.sendInviteEmails].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
             fun sendInviteEmails(sendInviteEmails: Boolean) =
                 sendInviteEmails(sendInviteEmails as Boolean?)
 
-            /** If true, send invite emails to the users who wore actually added */
+            /**
+             * Sets [Builder.sendInviteEmails] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sendInviteEmails] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun sendInviteEmails(sendInviteEmails: JsonField<Boolean>) = apply {
                 this.sendInviteEmails = sendInviteEmails
             }
@@ -754,16 +957,34 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Emails of users to remove */
+        /**
+         * Emails of users to remove
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun emails(): List<String>? = emails.getNullable("emails")
 
-        /** Ids of users to remove */
+        /**
+         * Ids of users to remove
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun ids(): List<String>? = ids.getNullable("ids")
 
-        /** Emails of users to remove */
+        /**
+         * Returns the raw JSON value of [emails].
+         *
+         * Unlike [emails], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("emails") @ExcludeMissing fun _emails(): JsonField<List<String>> = emails
 
-        /** Ids of users to remove */
+        /**
+         * Returns the raw JSON value of [ids].
+         *
+         * Unlike [ids], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("ids") @ExcludeMissing fun _ids(): JsonField<List<String>> = ids
 
         @JsonAnyGetter
@@ -806,12 +1027,22 @@ private constructor(
             /** Emails of users to remove */
             fun emails(emails: List<String>?) = emails(JsonField.ofNullable(emails))
 
-            /** Emails of users to remove */
+            /**
+             * Sets [Builder.emails] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.emails] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun emails(emails: JsonField<List<String>>) = apply {
                 this.emails = emails.map { it.toMutableList() }
             }
 
-            /** Emails of users to remove */
+            /**
+             * Adds a single [String] to [emails].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addEmail(email: String) = apply {
                 emails =
                     (emails ?: JsonField.of(mutableListOf())).also {
@@ -822,12 +1053,22 @@ private constructor(
             /** Ids of users to remove */
             fun ids(ids: List<String>?) = ids(JsonField.ofNullable(ids))
 
-            /** Ids of users to remove */
+            /**
+             * Sets [Builder.ids] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ids] with a well-typed `List<String>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun ids(ids: JsonField<List<String>>) = apply {
                 this.ids = ids.map { it.toMutableList() }
             }
 
-            /** Ids of users to remove */
+            /**
+             * Adds a single [String] to [ids].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addId(id: String) = apply {
                 ids = (ids ?: JsonField.of(mutableListOf())).also { checkKnown("ids", it).add(id) }
             }

@@ -13,6 +13,7 @@ import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -35,26 +36,71 @@ private constructor(
     /** Organization id */
     fun organizationId(): String = organizationId
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun apiUrl(): String? = body.apiUrl()
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun isUniversalApi(): Boolean? = body.isUniversalApi()
 
-    /** Name of the organization */
+    /**
+     * Name of the organization
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun name(): String? = body.name()
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun proxyUrl(): String? = body.proxyUrl()
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun realtimeUrl(): String? = body.realtimeUrl()
 
+    /**
+     * Returns the raw JSON value of [apiUrl].
+     *
+     * Unlike [apiUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _apiUrl(): JsonField<String> = body._apiUrl()
 
+    /**
+     * Returns the raw JSON value of [isUniversalApi].
+     *
+     * Unlike [isUniversalApi], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _isUniversalApi(): JsonField<Boolean> = body._isUniversalApi()
 
-    /** Name of the organization */
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _name(): JsonField<String> = body._name()
 
+    /**
+     * Returns the raw JSON value of [proxyUrl].
+     *
+     * Unlike [proxyUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _proxyUrl(): JsonField<String> = body._proxyUrl()
 
+    /**
+     * Returns the raw JSON value of [realtimeUrl].
+     *
+     * Unlike [realtimeUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _realtimeUrl(): JsonField<String> = body._realtimeUrl()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
@@ -99,28 +145,74 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun apiUrl(): String? = apiUrl.getNullable("api_url")
 
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun isUniversalApi(): Boolean? = isUniversalApi.getNullable("is_universal_api")
 
-        /** Name of the organization */
+        /**
+         * Name of the organization
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun name(): String? = name.getNullable("name")
 
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun proxyUrl(): String? = proxyUrl.getNullable("proxy_url")
 
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun realtimeUrl(): String? = realtimeUrl.getNullable("realtime_url")
 
+        /**
+         * Returns the raw JSON value of [apiUrl].
+         *
+         * Unlike [apiUrl], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("api_url") @ExcludeMissing fun _apiUrl(): JsonField<String> = apiUrl
 
+        /**
+         * Returns the raw JSON value of [isUniversalApi].
+         *
+         * Unlike [isUniversalApi], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("is_universal_api")
         @ExcludeMissing
         fun _isUniversalApi(): JsonField<Boolean> = isUniversalApi
 
-        /** Name of the organization */
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+        /**
+         * Returns the raw JSON value of [proxyUrl].
+         *
+         * Unlike [proxyUrl], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("proxy_url") @ExcludeMissing fun _proxyUrl(): JsonField<String> = proxyUrl
 
+        /**
+         * Returns the raw JSON value of [realtimeUrl].
+         *
+         * Unlike [realtimeUrl], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("realtime_url")
         @ExcludeMissing
         fun _realtimeUrl(): JsonField<String> = realtimeUrl
@@ -173,13 +265,32 @@ private constructor(
 
             fun apiUrl(apiUrl: String?) = apiUrl(JsonField.ofNullable(apiUrl))
 
+            /**
+             * Sets [Builder.apiUrl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.apiUrl] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun apiUrl(apiUrl: JsonField<String>) = apply { this.apiUrl = apiUrl }
 
             fun isUniversalApi(isUniversalApi: Boolean?) =
                 isUniversalApi(JsonField.ofNullable(isUniversalApi))
 
+            /**
+             * Alias for [Builder.isUniversalApi].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
             fun isUniversalApi(isUniversalApi: Boolean) = isUniversalApi(isUniversalApi as Boolean?)
 
+            /**
+             * Sets [Builder.isUniversalApi] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.isUniversalApi] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun isUniversalApi(isUniversalApi: JsonField<Boolean>) = apply {
                 this.isUniversalApi = isUniversalApi
             }
@@ -187,15 +298,35 @@ private constructor(
             /** Name of the organization */
             fun name(name: String?) = name(JsonField.ofNullable(name))
 
-            /** Name of the organization */
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
             fun proxyUrl(proxyUrl: String?) = proxyUrl(JsonField.ofNullable(proxyUrl))
 
+            /**
+             * Sets [Builder.proxyUrl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.proxyUrl] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun proxyUrl(proxyUrl: JsonField<String>) = apply { this.proxyUrl = proxyUrl }
 
             fun realtimeUrl(realtimeUrl: String?) = realtimeUrl(JsonField.ofNullable(realtimeUrl))
 
+            /**
+             * Sets [Builder.realtimeUrl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.realtimeUrl] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun realtimeUrl(realtimeUrl: JsonField<String>) = apply {
                 this.realtimeUrl = realtimeUrl
             }
@@ -284,12 +415,30 @@ private constructor(
 
         fun apiUrl(apiUrl: String?) = apply { body.apiUrl(apiUrl) }
 
+        /**
+         * Sets [Builder.apiUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.apiUrl] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun apiUrl(apiUrl: JsonField<String>) = apply { body.apiUrl(apiUrl) }
 
         fun isUniversalApi(isUniversalApi: Boolean?) = apply { body.isUniversalApi(isUniversalApi) }
 
+        /**
+         * Alias for [Builder.isUniversalApi].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun isUniversalApi(isUniversalApi: Boolean) = isUniversalApi(isUniversalApi as Boolean?)
 
+        /**
+         * Sets [Builder.isUniversalApi] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.isUniversalApi] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun isUniversalApi(isUniversalApi: JsonField<Boolean>) = apply {
             body.isUniversalApi(isUniversalApi)
         }
@@ -297,15 +446,33 @@ private constructor(
         /** Name of the organization */
         fun name(name: String?) = apply { body.name(name) }
 
-        /** Name of the organization */
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
         fun proxyUrl(proxyUrl: String?) = apply { body.proxyUrl(proxyUrl) }
 
+        /**
+         * Sets [Builder.proxyUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.proxyUrl] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun proxyUrl(proxyUrl: JsonField<String>) = apply { body.proxyUrl(proxyUrl) }
 
         fun realtimeUrl(realtimeUrl: String?) = apply { body.realtimeUrl(realtimeUrl) }
 
+        /**
+         * Sets [Builder.realtimeUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.realtimeUrl] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun realtimeUrl(realtimeUrl: JsonField<String>) = apply { body.realtimeUrl(realtimeUrl) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {

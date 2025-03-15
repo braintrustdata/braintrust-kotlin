@@ -9,6 +9,7 @@ import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -31,18 +32,45 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun destination(): String? = destination.getNullable("destination")
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun multiSelect(): Boolean? = multiSelect.getNullable("multi_select")
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun online(): OnlineScoreConfig? = online.getNullable("online")
 
+    /**
+     * Returns the raw JSON value of [destination].
+     *
+     * Unlike [destination], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("destination") @ExcludeMissing fun _destination(): JsonField<String> = destination
 
+    /**
+     * Returns the raw JSON value of [multiSelect].
+     *
+     * Unlike [multiSelect], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("multi_select")
     @ExcludeMissing
     fun _multiSelect(): JsonField<Boolean> = multiSelect
 
+    /**
+     * Returns the raw JSON value of [online].
+     *
+     * Unlike [online], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("online") @ExcludeMissing fun _online(): JsonField<OnlineScoreConfig> = online
 
     @JsonAnyGetter
@@ -87,16 +115,42 @@ private constructor(
 
         fun destination(destination: String?) = destination(JsonField.ofNullable(destination))
 
+        /**
+         * Sets [Builder.destination] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.destination] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun destination(destination: JsonField<String>) = apply { this.destination = destination }
 
         fun multiSelect(multiSelect: Boolean?) = multiSelect(JsonField.ofNullable(multiSelect))
 
+        /**
+         * Alias for [Builder.multiSelect].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun multiSelect(multiSelect: Boolean) = multiSelect(multiSelect as Boolean?)
 
+        /**
+         * Sets [Builder.multiSelect] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.multiSelect] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun multiSelect(multiSelect: JsonField<Boolean>) = apply { this.multiSelect = multiSelect }
 
         fun online(online: OnlineScoreConfig?) = online(JsonField.ofNullable(online))
 
+        /**
+         * Sets [Builder.online] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.online] with a well-typed [OnlineScoreConfig] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun online(online: JsonField<OnlineScoreConfig>) = apply { this.online = online }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
