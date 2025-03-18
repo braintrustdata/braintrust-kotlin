@@ -179,6 +179,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CrossObjectInsertResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): CrossObjectInsertResponse =
             CrossObjectInsertResponse(
                 dataset,
@@ -247,6 +252,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Dataset].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Dataset = Dataset(additionalProperties.toImmutable())
         }
 
@@ -326,6 +336,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Experiment].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Experiment = Experiment(additionalProperties.toImmutable())
         }
 
@@ -405,6 +420,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ProjectLogs].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): ProjectLogs = ProjectLogs(additionalProperties.toImmutable())
         }
 

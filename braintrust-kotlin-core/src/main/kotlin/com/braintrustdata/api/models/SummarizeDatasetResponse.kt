@@ -258,6 +258,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [SummarizeDatasetResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .datasetName()
+         * .datasetUrl()
+         * .projectName()
+         * .projectUrl()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): SummarizeDatasetResponse =
             SummarizeDatasetResponse(
                 checkRequired("datasetName", datasetName),

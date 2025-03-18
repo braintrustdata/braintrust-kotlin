@@ -280,6 +280,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ViewOptions].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ViewOptions =
             ViewOptions(
                 (columnOrder ?: JsonMissing.of()).map { it.toImmutable() },
@@ -350,6 +355,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ColumnSizing].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): ColumnSizing = ColumnSizing(additionalProperties.toImmutable())
         }
 
@@ -428,6 +438,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ColumnVisibility].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): ColumnVisibility = ColumnVisibility(additionalProperties.toImmutable())
         }
 

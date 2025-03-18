@@ -243,6 +243,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ScoreSummary].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .improvements()
+         * .name()
+         * .regressions()
+         * .score()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ScoreSummary =
             ScoreSummary(
                 checkRequired("improvements", improvements),

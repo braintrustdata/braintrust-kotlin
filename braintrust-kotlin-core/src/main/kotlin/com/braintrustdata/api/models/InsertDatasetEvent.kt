@@ -736,6 +736,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [InsertDatasetEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): InsertDatasetEvent =
             InsertDatasetEvent(
                 id,
@@ -854,6 +859,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Metadata].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Metadata = Metadata(model, additionalProperties.toImmutable())
         }
 
