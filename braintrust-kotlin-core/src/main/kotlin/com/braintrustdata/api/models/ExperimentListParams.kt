@@ -285,6 +285,11 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [ExperimentListParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ExperimentListParams =
             ExperimentListParams(
                 endingBefore,

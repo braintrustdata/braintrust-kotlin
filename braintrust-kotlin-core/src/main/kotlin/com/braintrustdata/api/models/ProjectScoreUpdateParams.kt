@@ -385,6 +385,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Body =
                 Body(
                     categories,
@@ -634,6 +639,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [ProjectScoreUpdateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .projectScoreId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ProjectScoreUpdateParams =
             ProjectScoreUpdateParams(
                 checkRequired("projectScoreId", projectScoreId),
@@ -875,6 +892,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Weighted].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Weighted = Weighted(additionalProperties.toImmutable())
             }
 

@@ -203,6 +203,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ProjectSettings].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ProjectSettings =
             ProjectSettings(
                 baselineExperimentId,
@@ -401,6 +406,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [SpanFieldOrder].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .columnId()
+             * .objectType()
+             * .position()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): SpanFieldOrder =
                 SpanFieldOrder(
                     checkRequired("columnId", columnId),

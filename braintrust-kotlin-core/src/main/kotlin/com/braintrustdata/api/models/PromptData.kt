@@ -265,6 +265,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [PromptData].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): PromptData =
             PromptData(
                 options,
@@ -429,6 +434,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Origin].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Origin =
                 Origin(projectId, promptId, promptVersion, additionalProperties.toImmutable())
         }
@@ -611,6 +621,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Parser].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .choiceScores()
+             * .type()
+             * .useCot()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Parser =
                 Parser(
                     checkRequired("choiceScores", choiceScores),
@@ -681,6 +705,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [ChoiceScores].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): ChoiceScores = ChoiceScores(additionalProperties.toImmutable())
             }
 
@@ -1075,6 +1104,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Completion].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .content()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Completion =
                     Completion(
                         checkRequired("content", content),
@@ -1396,6 +1438,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Chat].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .messages()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Chat =
                     Chat(
                         checkRequired("messages", messages).map { it.toImmutable() },
@@ -1794,6 +1849,18 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [System].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): System =
                             System(
                                 checkRequired("role", role),
@@ -2093,6 +2160,18 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [User].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): User =
                             User(
                                 checkRequired("role", role),
@@ -2797,6 +2876,18 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [Assistant].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): Assistant =
                             Assistant(
                                 checkRequired("role", role),
@@ -3049,6 +3140,20 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [FunctionCall].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```kotlin
+                             * .arguments()
+                             * .name()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): FunctionCall =
                                 FunctionCall(
                                     checkRequired("arguments", arguments),
@@ -3262,6 +3367,18 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [Tool].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): Tool =
                             Tool(
                                 checkRequired("role", role),
@@ -3556,6 +3673,19 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [Function].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .name()
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): Function =
                             Function(
                                 checkRequired("name", name),
@@ -3817,6 +3947,18 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [Fallback].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): Fallback =
                             Fallback(
                                 checkRequired("role", role),
@@ -4326,6 +4468,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Function].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .id()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Function =
                     Function(
                         checkRequired("id", id),
@@ -4579,6 +4734,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Global].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .name()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Global =
                     Global(
                         checkRequired("name", name),

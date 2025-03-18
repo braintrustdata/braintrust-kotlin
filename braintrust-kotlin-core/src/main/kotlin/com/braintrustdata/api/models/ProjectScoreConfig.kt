@@ -172,6 +172,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ProjectScoreConfig].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ProjectScoreConfig =
             ProjectScoreConfig(destination, multiSelect, online, additionalProperties.toImmutable())
     }

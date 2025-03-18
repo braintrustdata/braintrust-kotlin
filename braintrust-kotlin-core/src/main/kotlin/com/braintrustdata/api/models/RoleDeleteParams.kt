@@ -196,6 +196,18 @@ private constructor(
             keys.forEach(::removeAdditionalBodyProperty)
         }
 
+        /**
+         * Returns an immutable instance of [RoleDeleteParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .roleId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): RoleDeleteParams =
             RoleDeleteParams(
                 checkRequired("roleId", roleId),

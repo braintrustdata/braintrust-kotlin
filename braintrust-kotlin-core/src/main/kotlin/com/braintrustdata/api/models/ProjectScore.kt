@@ -427,6 +427,22 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ProjectScore].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .name()
+         * .projectId()
+         * .scoreType()
+         * .userId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ProjectScore =
             ProjectScore(
                 checkRequired("id", id),
@@ -675,6 +691,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Weighted].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Weighted = Weighted(additionalProperties.toImmutable())
             }
 

@@ -165,6 +165,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [AiSecretRetrieveParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .aiSecretId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): AiSecretRetrieveParams =
             AiSecretRetrieveParams(
                 checkRequired("aiSecretId", aiSecretId),

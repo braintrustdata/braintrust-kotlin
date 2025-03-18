@@ -181,6 +181,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .feedback()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("feedback", feedback).map { it.toImmutable() },
@@ -379,6 +391,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [ProjectLogFeedbackParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .projectId()
+         * .feedback()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ProjectLogFeedbackParams =
             ProjectLogFeedbackParams(
                 checkRequired("projectId", projectId),
