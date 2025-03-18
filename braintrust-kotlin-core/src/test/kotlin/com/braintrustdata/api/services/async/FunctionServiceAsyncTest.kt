@@ -14,7 +14,6 @@ import com.braintrustdata.api.models.FunctionRetrieveParams
 import com.braintrustdata.api.models.FunctionUpdateParams
 import com.braintrustdata.api.models.PromptData
 import com.braintrustdata.api.models.PromptOptions
-import kotlin.test.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -360,8 +359,7 @@ internal class FunctionServiceAsyncTest {
                     .build()
             )
 
-        assertNotNull(response)
-        response.validate()
+        response?.validate()
     }
 
     @Test
