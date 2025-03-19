@@ -80,7 +80,7 @@ private constructor(
         QueryParams.builder()
             .apply {
                 put("object_id", objectId)
-                put("object_type", objectType.asString())
+                put("object_type", objectType.toString())
                 endingBefore?.let { put("ending_before", it) }
                 ids?.accept(
                     object : Ids.Visitor<Unit> {
