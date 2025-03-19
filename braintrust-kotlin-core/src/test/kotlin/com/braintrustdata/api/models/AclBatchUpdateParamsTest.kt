@@ -68,32 +68,28 @@ internal class AclBatchUpdateParamsTest {
 
         assertNotNull(body)
         assertThat(body.addAcls())
-            .isEqualTo(
-                listOf(
-                    AclBatchUpdateParams.AddAcl.builder()
-                        .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .objectType(AclObjectType.ORGANIZATION)
-                        .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .permission(Permission.CREATE)
-                        .restrictObjectType(AclObjectType.ORGANIZATION)
-                        .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .build()
-                )
+            .containsExactly(
+                AclBatchUpdateParams.AddAcl.builder()
+                    .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .objectType(AclObjectType.ORGANIZATION)
+                    .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .permission(Permission.CREATE)
+                    .restrictObjectType(AclObjectType.ORGANIZATION)
+                    .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
             )
         assertThat(body.removeAcls())
-            .isEqualTo(
-                listOf(
-                    AclBatchUpdateParams.RemoveAcl.builder()
-                        .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .objectType(AclObjectType.ORGANIZATION)
-                        .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .permission(Permission.CREATE)
-                        .restrictObjectType(AclObjectType.ORGANIZATION)
-                        .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .build()
-                )
+            .containsExactly(
+                AclBatchUpdateParams.RemoveAcl.builder()
+                    .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .objectType(AclObjectType.ORGANIZATION)
+                    .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .permission(Permission.CREATE)
+                    .restrictObjectType(AclObjectType.ORGANIZATION)
+                    .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
             )
     }
 

@@ -54,6 +54,18 @@ internal class FunctionInvokeParamsTest {
     }
 
     @Test
+    fun pathParams() {
+        val params =
+            FunctionInvokeParams.builder()
+                .functionId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .build()
+
+        assertThat(params._pathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
     fun body() {
         val params =
             FunctionInvokeParams.builder()
@@ -103,15 +115,13 @@ internal class FunctionInvokeParamsTest {
         assertThat(body._expected()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body._input()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.messages())
-            .isEqualTo(
-                listOf(
-                    FunctionInvokeParams.Message.ofSystem(
-                        FunctionInvokeParams.Message.System.builder()
-                            .role(FunctionInvokeParams.Message.System.Role.SYSTEM)
-                            .content("content")
-                            .name("name")
-                            .build()
-                    )
+            .containsExactly(
+                FunctionInvokeParams.Message.ofSystem(
+                    FunctionInvokeParams.Message.System.builder()
+                        .role(FunctionInvokeParams.Message.System.Role.SYSTEM)
+                        .content("content")
+                        .name("name")
+                        .build()
                 )
             )
         assertThat(body.metadata())
@@ -158,18 +168,5 @@ internal class FunctionInvokeParamsTest {
         val body = params._body()
 
         assertNotNull(body)
-    }
-
-    @Test
-    fun getPathParam() {
-        val params =
-            FunctionInvokeParams.builder()
-                .functionId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .build()
-        assertThat(params).isNotNull
-        // path param "functionId"
-        assertThat(params.getPathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
     }
 }
