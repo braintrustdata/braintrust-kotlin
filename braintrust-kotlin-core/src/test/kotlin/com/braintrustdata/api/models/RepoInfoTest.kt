@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class RepoInfoTest {
 
     @Test
-    fun createRepoInfo() {
+    fun create() {
         val repoInfo =
             RepoInfo.builder()
                 .authorEmail("author_email")
@@ -21,7 +21,7 @@ internal class RepoInfoTest {
                 .gitDiff("git_diff")
                 .tag("tag")
                 .build()
-        assertThat(repoInfo).isNotNull
+
         assertThat(repoInfo.authorEmail()).isEqualTo("author_email")
         assertThat(repoInfo.authorName()).isEqualTo("author_name")
         assertThat(repoInfo.branch()).isEqualTo("branch")

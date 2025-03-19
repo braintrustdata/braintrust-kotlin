@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class InsertExperimentEventTest {
 
     @Test
-    fun createInsertExperimentEvent() {
+    fun create() {
         val insertExperimentEvent =
             InsertExperimentEvent.builder()
                 .id("id")
@@ -63,7 +63,7 @@ internal class InsertExperimentEventTest {
                 .addSpanParent("string")
                 .addTag("string")
                 .build()
-        assertThat(insertExperimentEvent).isNotNull
+
         assertThat(insertExperimentEvent.id()).isEqualTo("id")
         assertThat(insertExperimentEvent._isMerge()).isEqualTo(true)
         assertThat(insertExperimentEvent._mergePaths()).containsExactly(listOf("string"))

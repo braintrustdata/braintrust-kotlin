@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class ViewOptionsTest {
 
     @Test
-    fun createViewOptions() {
+    fun create() {
         val viewOptions =
             ViewOptions.builder()
                 .addColumnOrder("string")
@@ -27,7 +27,7 @@ internal class ViewOptionsTest {
                 .layout("layout")
                 .rowHeight("rowHeight")
                 .build()
-        assertThat(viewOptions).isNotNull
+
         assertThat(viewOptions.columnOrder()).containsExactly("string")
         assertThat(viewOptions.columnSizing())
             .isEqualTo(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ExperimentEventTest {
 
     @Test
-    fun createExperimentEvent() {
+    fun create() {
         val experimentEvent =
             ExperimentEvent.builder()
                 .id("id")
@@ -63,7 +63,7 @@ internal class ExperimentEventTest {
                 .addSpanParent("string")
                 .addTag("string")
                 .build()
-        assertThat(experimentEvent).isNotNull
+
         assertThat(experimentEvent.id()).isEqualTo("id")
         assertThat(experimentEvent._xactId()).isEqualTo("_xact_id")
         assertThat(experimentEvent.created())
