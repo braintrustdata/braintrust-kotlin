@@ -46,15 +46,13 @@ internal class RoleReplaceParamsTest {
         assertThat(body.name()).isEqualTo("x")
         assertThat(body.description()).isEqualTo("description")
         assertThat(body.memberPermissions())
-            .isEqualTo(
-                listOf(
-                    RoleReplaceParams.MemberPermission.builder()
-                        .permission(Permission.CREATE)
-                        .restrictObjectType(AclObjectType.ORGANIZATION)
-                        .build()
-                )
+            .containsExactly(
+                RoleReplaceParams.MemberPermission.builder()
+                    .permission(Permission.CREATE)
+                    .restrictObjectType(AclObjectType.ORGANIZATION)
+                    .build()
             )
-        assertThat(body.memberRoles()).isEqualTo(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertThat(body.memberRoles()).containsExactly("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(body.orgName()).isEqualTo("org_name")
     }
 

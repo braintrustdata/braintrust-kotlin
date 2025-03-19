@@ -339,7 +339,7 @@ internal class FunctionCreateParamsTest {
                     )
                     .build()
             )
-        assertThat(body.tags()).isEqualTo(listOf("string"))
+        assertThat(body.tags()).containsExactly("string")
     }
 
     @Test
