@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class FeedbackDatasetItemTest {
 
     @Test
-    fun createFeedbackDatasetItem() {
+    fun create() {
         val feedbackDatasetItem =
             FeedbackDatasetItem.builder()
                 .id("id")
@@ -22,7 +22,7 @@ internal class FeedbackDatasetItemTest {
                 .source(FeedbackDatasetItem.Source.APP)
                 .addTag("string")
                 .build()
-        assertThat(feedbackDatasetItem).isNotNull
+
         assertThat(feedbackDatasetItem.id()).isEqualTo("id")
         assertThat(feedbackDatasetItem.comment()).isEqualTo("comment")
         assertThat(feedbackDatasetItem.metadata())
