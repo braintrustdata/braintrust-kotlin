@@ -35,8 +35,8 @@ internal class GroupCreateParamsTest {
         assertNotNull(body)
         assertThat(body.name()).isEqualTo("x")
         assertThat(body.description()).isEqualTo("description")
-        assertThat(body.memberGroups()).isEqualTo(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-        assertThat(body.memberUsers()).isEqualTo(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertThat(body.memberGroups()).containsExactly("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+        assertThat(body.memberUsers()).containsExactly("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(body.orgName()).isEqualTo("org_name")
     }
 

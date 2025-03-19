@@ -46,15 +46,13 @@ internal class RoleCreateParamsTest {
         assertThat(body.name()).isEqualTo("x")
         assertThat(body.description()).isEqualTo("description")
         assertThat(body.memberPermissions())
-            .isEqualTo(
-                listOf(
-                    RoleCreateParams.MemberPermission.builder()
-                        .permission(Permission.CREATE)
-                        .restrictObjectType(AclObjectType.ORGANIZATION)
-                        .build()
-                )
+            .containsExactly(
+                RoleCreateParams.MemberPermission.builder()
+                    .permission(Permission.CREATE)
+                    .restrictObjectType(AclObjectType.ORGANIZATION)
+                    .build()
             )
-        assertThat(body.memberRoles()).isEqualTo(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertThat(body.memberRoles()).containsExactly("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(body.orgName()).isEqualTo("org_name")
     }
 

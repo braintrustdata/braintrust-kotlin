@@ -76,7 +76,7 @@ class LogServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v1", "project_logs", params.getPathParam(0), "feedback")
+                    .addPathSegments("v1", "project_logs", params._pathParam(0), "feedback")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepareAsync(clientOptions, params)
@@ -104,7 +104,7 @@ class LogServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("v1", "project_logs", params.getPathParam(0), "fetch")
+                    .addPathSegments("v1", "project_logs", params._pathParam(0), "fetch")
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
@@ -131,7 +131,7 @@ class LogServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v1", "project_logs", params.getPathParam(0), "fetch")
+                    .addPathSegments("v1", "project_logs", params._pathParam(0), "fetch")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepareAsync(clientOptions, params)
@@ -159,7 +159,7 @@ class LogServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v1", "project_logs", params.getPathParam(0), "insert")
+                    .addPathSegments("v1", "project_logs", params._pathParam(0), "insert")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepareAsync(clientOptions, params)
