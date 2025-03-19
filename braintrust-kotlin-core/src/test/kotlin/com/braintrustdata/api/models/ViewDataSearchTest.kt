@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class ViewDataSearchTest {
 
     @Test
-    fun createViewDataSearch() {
+    fun create() {
         val viewDataSearch =
             ViewDataSearch.builder()
                 .addFilter(JsonValue.from(mapOf<String, Any>()))
@@ -17,7 +17,7 @@ internal class ViewDataSearchTest {
                 .addSort(JsonValue.from(mapOf<String, Any>()))
                 .addTag(JsonValue.from(mapOf<String, Any>()))
                 .build()
-        assertThat(viewDataSearch).isNotNull
+
         assertThat(viewDataSearch.filter()).containsExactly(JsonValue.from(mapOf<String, Any>()))
         assertThat(viewDataSearch.match()).containsExactly(JsonValue.from(mapOf<String, Any>()))
         assertThat(viewDataSearch.sort()).containsExactly(JsonValue.from(mapOf<String, Any>()))

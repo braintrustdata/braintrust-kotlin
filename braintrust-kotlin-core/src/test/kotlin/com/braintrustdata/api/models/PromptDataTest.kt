@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class PromptDataTest {
 
     @Test
-    fun createPromptData() {
+    fun create() {
         val promptData =
             PromptData.builder()
                 .options(
@@ -84,7 +84,7 @@ internal class PromptDataTest {
                         .build()
                 )
                 .build()
-        assertThat(promptData).isNotNull
+
         assertThat(promptData.options())
             .isEqualTo(
                 PromptOptions.builder()
