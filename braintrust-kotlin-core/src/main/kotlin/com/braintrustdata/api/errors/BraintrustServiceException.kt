@@ -1,21 +1,17 @@
+// File generated from our OpenAPI spec by Stainless.
+
 package com.braintrustdata.api.errors
 
+import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.http.Headers
 
-abstract class BraintrustServiceException(
-    private val statusCode: Int,
-    private val headers: Headers,
-    private val body: String,
-    private val error: BraintrustError,
-    message: String = "$statusCode: $error",
-    cause: Throwable? = null,
-) : BraintrustException(message, cause) {
+abstract class BraintrustServiceException
+protected constructor(message: String, cause: Throwable? = null) :
+    BraintrustException(message, cause) {
 
-    fun statusCode(): Int = statusCode
+    abstract fun statusCode(): Int
 
-    fun headers(): Headers = headers
+    abstract fun headers(): Headers
 
-    fun body(): String = body
-
-    fun error(): BraintrustError = error
+    abstract fun body(): JsonValue
 }
