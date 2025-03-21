@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -230,7 +229,6 @@ internal class FunctionReplaceParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.functionData())
             .isEqualTo(
                 FunctionReplaceParams.FunctionData.ofPrompt(
@@ -358,7 +356,6 @@ internal class FunctionReplaceParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.functionData())
             .isEqualTo(
                 FunctionReplaceParams.FunctionData.ofPrompt(
