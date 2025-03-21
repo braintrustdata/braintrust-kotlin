@@ -2,7 +2,6 @@
 
 package com.braintrustdata.api.models
 
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -32,7 +31,6 @@ internal class GroupReplaceParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.name()).isEqualTo("x")
         assertThat(body.description()).isEqualTo("description")
         assertThat(body.memberGroups()).containsExactly("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -46,7 +44,6 @@ internal class GroupReplaceParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.name()).isEqualTo("x")
     }
 }

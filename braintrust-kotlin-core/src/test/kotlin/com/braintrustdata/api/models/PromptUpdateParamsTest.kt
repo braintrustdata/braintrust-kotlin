@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -202,7 +201,6 @@ internal class PromptUpdateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.description()).isEqualTo("description")
         assertThat(body.name()).isEqualTo("name")
         assertThat(body.promptData())
@@ -295,7 +293,5 @@ internal class PromptUpdateParamsTest {
             PromptUpdateParams.builder().promptId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
 
         val body = params._body()
-
-        assertNotNull(body)
     }
 }
