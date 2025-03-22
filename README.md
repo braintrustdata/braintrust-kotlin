@@ -195,16 +195,16 @@ The SDK throws custom unchecked exception types:
 
 - [`BraintrustServiceException`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/errors/BraintrustServiceException.kt): Base class for HTTP errors. See this table for which exception subclass is thrown for each HTTP status code:
 
-  | Status | Exception                       |
-  | ------ | ------------------------------- |
-  | 400    | `BadRequestException`           |
-  | 401    | `AuthenticationException`       |
-  | 403    | `PermissionDeniedException`     |
-  | 404    | `NotFoundException`             |
-  | 422    | `UnprocessableEntityException`  |
-  | 429    | `RateLimitException`            |
-  | 5xx    | `InternalServerException`       |
-  | others | `UnexpectedStatusCodeException` |
+  | Status | Exception                                                                                                                                |
+  | ------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+  | 400    | [`BadRequestException`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/errors/BadRequestException.kt)                     |
+  | 401    | [`UnauthorizedException`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/errors/UnauthorizedException.kt)                 |
+  | 403    | [`PermissionDeniedException`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/errors/PermissionDeniedException.kt)         |
+  | 404    | [`NotFoundException`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/errors/NotFoundException.kt)                         |
+  | 422    | [`UnprocessableEntityException`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/errors/UnprocessableEntityException.kt)   |
+  | 429    | [`RateLimitException`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/errors/RateLimitException.kt)                       |
+  | 5xx    | [`InternalServerException`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/errors/InternalServerException.kt)             |
+  | others | [`UnexpectedStatusCodeException`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/errors/UnexpectedStatusCodeException.kt) |
 
 - [`BraintrustIoException`](braintrust-kotlin-core/src/main/kotlin/com/braintrustdata/api/errors/BraintrustIoException.kt): I/O networking errors.
 
