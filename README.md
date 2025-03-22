@@ -7,7 +7,7 @@
 
 <!-- x-release-please-end -->
 
-The Braintrust Kotlin SDK provides convenient access to the Braintrust REST API from applications written in Kotlin.
+The Braintrust Kotlin SDK provides convenient access to the [Braintrust REST API](https://www.braintrustdata.com/docs/api/spec) from applications written in Kotlin.
 
 The Braintrust Kotlin SDK is similar to the Braintrust Java SDK but with minor differences that make it more ergonomic for use in Kotlin, such as nullable values instead of `Optional`, `Sequence` instead of `Stream`, and suspend functions instead of `CompletableFuture`.
 
@@ -33,9 +33,9 @@ implementation("com.braintrustdata.api:braintrust-kotlin:0.3.0")
 
 ```xml
 <dependency>
-    <groupId>com.braintrustdata.api</groupId>
-    <artifactId>braintrust-kotlin</artifactId>
-    <version>0.3.0</version>
+  <groupId>com.braintrustdata.api</groupId>
+  <artifactId>braintrust-kotlin</artifactId>
+  <version>0.3.0</version>
 </dependency>
 ```
 
