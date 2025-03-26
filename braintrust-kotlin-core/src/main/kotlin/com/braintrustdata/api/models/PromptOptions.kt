@@ -9,11 +9,9 @@ import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.checkKnown
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
@@ -27,21 +25,23 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.util.Collections
 import java.util.Objects
 
-@NoAutoDetect
 class PromptOptions
-@JsonCreator
 private constructor(
-    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("params")
-    @ExcludeMissing
-    private val params: JsonField<Params> = JsonMissing.of(),
-    @JsonProperty("position")
-    @ExcludeMissing
-    private val position: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val model: JsonField<String>,
+    private val params: JsonField<Params>,
+    private val position: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("params") @ExcludeMissing params: JsonField<Params> = JsonMissing.of(),
+        @JsonProperty("position") @ExcludeMissing position: JsonField<String> = JsonMissing.of(),
+    ) : this(model, params, position, mutableMapOf())
 
     /**
      * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -82,22 +82,15 @@ private constructor(
      */
     @JsonProperty("position") @ExcludeMissing fun _position(): JsonField<String> = position
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): PromptOptions = apply {
-        if (validated) {
-            return@apply
-        }
-
-        model()
-        params()?.validate()
-        position()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -197,7 +190,20 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): PromptOptions =
-            PromptOptions(model, params, position, additionalProperties.toImmutable())
+            PromptOptions(model, params, position, additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): PromptOptions = apply {
+        if (validated) {
+            return@apply
+        }
+
+        model()
+        params()?.validate()
+        position()
+        validated = true
     }
 
     @JsonDeserialize(using = Params.Deserializer::class)
@@ -402,50 +408,77 @@ private constructor(
             }
         }
 
-        @NoAutoDetect
         class OpenAIModelParams
-        @JsonCreator
         private constructor(
-            @JsonProperty("frequency_penalty")
-            @ExcludeMissing
-            private val frequencyPenalty: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("function_call")
-            @ExcludeMissing
-            private val functionCall: JsonField<FunctionCall> = JsonMissing.of(),
-            @JsonProperty("max_completion_tokens")
-            @ExcludeMissing
-            private val maxCompletionTokens: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("max_tokens")
-            @ExcludeMissing
-            private val maxTokens: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("n") @ExcludeMissing private val n: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("presence_penalty")
-            @ExcludeMissing
-            private val presencePenalty: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("reasoning_effort")
-            @ExcludeMissing
-            private val reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of(),
-            @JsonProperty("response_format")
-            @ExcludeMissing
-            private val responseFormat: JsonField<ResponseFormat> = JsonMissing.of(),
-            @JsonProperty("stop")
-            @ExcludeMissing
-            private val stop: JsonField<List<String>> = JsonMissing.of(),
-            @JsonProperty("temperature")
-            @ExcludeMissing
-            private val temperature: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("tool_choice")
-            @ExcludeMissing
-            private val toolChoice: JsonField<ToolChoice> = JsonMissing.of(),
-            @JsonProperty("top_p")
-            @ExcludeMissing
-            private val topP: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("use_cache")
-            @ExcludeMissing
-            private val useCache: JsonField<Boolean> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val frequencyPenalty: JsonField<Double>,
+            private val functionCall: JsonField<FunctionCall>,
+            private val maxCompletionTokens: JsonField<Double>,
+            private val maxTokens: JsonField<Double>,
+            private val n: JsonField<Double>,
+            private val presencePenalty: JsonField<Double>,
+            private val reasoningEffort: JsonField<ReasoningEffort>,
+            private val responseFormat: JsonField<ResponseFormat>,
+            private val stop: JsonField<List<String>>,
+            private val temperature: JsonField<Double>,
+            private val toolChoice: JsonField<ToolChoice>,
+            private val topP: JsonField<Double>,
+            private val useCache: JsonField<Boolean>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("frequency_penalty")
+                @ExcludeMissing
+                frequencyPenalty: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("function_call")
+                @ExcludeMissing
+                functionCall: JsonField<FunctionCall> = JsonMissing.of(),
+                @JsonProperty("max_completion_tokens")
+                @ExcludeMissing
+                maxCompletionTokens: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("max_tokens")
+                @ExcludeMissing
+                maxTokens: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("n") @ExcludeMissing n: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("presence_penalty")
+                @ExcludeMissing
+                presencePenalty: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("reasoning_effort")
+                @ExcludeMissing
+                reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of(),
+                @JsonProperty("response_format")
+                @ExcludeMissing
+                responseFormat: JsonField<ResponseFormat> = JsonMissing.of(),
+                @JsonProperty("stop")
+                @ExcludeMissing
+                stop: JsonField<List<String>> = JsonMissing.of(),
+                @JsonProperty("temperature")
+                @ExcludeMissing
+                temperature: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("tool_choice")
+                @ExcludeMissing
+                toolChoice: JsonField<ToolChoice> = JsonMissing.of(),
+                @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("use_cache")
+                @ExcludeMissing
+                useCache: JsonField<Boolean> = JsonMissing.of(),
+            ) : this(
+                frequencyPenalty,
+                functionCall,
+                maxCompletionTokens,
+                maxTokens,
+                n,
+                presencePenalty,
+                reasoningEffort,
+                responseFormat,
+                stop,
+                temperature,
+                toolChoice,
+                topP,
+                useCache,
+                mutableMapOf(),
+            )
 
             /**
              * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g.
@@ -650,32 +683,15 @@ private constructor(
             @ExcludeMissing
             fun _useCache(): JsonField<Boolean> = useCache
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): OpenAIModelParams = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                frequencyPenalty()
-                functionCall()?.validate()
-                maxCompletionTokens()
-                maxTokens()
-                n()
-                presencePenalty()
-                reasoningEffort()
-                responseFormat()?.validate()
-                stop()
-                temperature()
-                toolChoice()?.validate()
-                topP()
-                useCache()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -983,8 +999,31 @@ private constructor(
                         toolChoice,
                         topP,
                         useCache,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): OpenAIModelParams = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                frequencyPenalty()
+                functionCall()?.validate()
+                maxCompletionTokens()
+                maxTokens()
+                n()
+                presencePenalty()
+                reasoningEffort()
+                responseFormat()?.validate()
+                stop()
+                temperature()
+                toolChoice()?.validate()
+                topP()
+                useCache()
+                validated = true
             }
 
             @JsonDeserialize(using = FunctionCall.Deserializer::class)
@@ -1229,16 +1268,18 @@ private constructor(
                     override fun toString() = value.toString()
                 }
 
-                @NoAutoDetect
                 class Function
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("name")
-                    @ExcludeMissing
-                    private val name: JsonField<String> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val name: JsonField<String>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<String> = JsonMissing.of()
+                    ) : this(name, mutableMapOf())
 
                     /**
                      * @throws BraintrustInvalidDataException if the JSON field has an unexpected
@@ -1255,20 +1296,15 @@ private constructor(
                      */
                     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): Function = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        name()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -1345,8 +1381,19 @@ private constructor(
                         fun build(): Function =
                             Function(
                                 checkRequired("name", name),
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Function = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        name()
+                        validated = true
                     }
 
                     override fun equals(other: Any?): Boolean {
@@ -1642,16 +1689,18 @@ private constructor(
                     }
                 }
 
-                @NoAutoDetect
                 class JsonObject
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val type: JsonField<Type>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of()
+                    ) : this(type, mutableMapOf())
 
                     /**
                      * @throws BraintrustInvalidDataException if the JSON field has an unexpected
@@ -1668,20 +1717,15 @@ private constructor(
                      */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): JsonObject = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        type()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -1758,8 +1802,19 @@ private constructor(
                         fun build(): JsonObject =
                             JsonObject(
                                 checkRequired("type", type),
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): JsonObject = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        type()
+                        validated = true
                     }
 
                     class Type
@@ -1880,19 +1935,22 @@ private constructor(
                         "JsonObject{type=$type, additionalProperties=$additionalProperties}"
                 }
 
-                @NoAutoDetect
                 class JsonSchema
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("json_schema")
-                    @ExcludeMissing
-                    private val jsonSchema: JsonField<InnerJsonSchema> = JsonMissing.of(),
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val jsonSchema: JsonField<InnerJsonSchema>,
+                    private val type: JsonField<Type>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("json_schema")
+                        @ExcludeMissing
+                        jsonSchema: JsonField<InnerJsonSchema> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                    ) : this(jsonSchema, type, mutableMapOf())
 
                     /**
                      * @throws BraintrustInvalidDataException if the JSON field has an unexpected
@@ -1926,21 +1984,15 @@ private constructor(
                      */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): JsonSchema = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        jsonSchema().validate()
-                        type()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -2036,30 +2088,46 @@ private constructor(
                             JsonSchema(
                                 checkRequired("jsonSchema", jsonSchema),
                                 checkRequired("type", type),
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
                     }
 
-                    @NoAutoDetect
+                    private var validated: Boolean = false
+
+                    fun validate(): JsonSchema = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        jsonSchema().validate()
+                        type()
+                        validated = true
+                    }
+
                     class InnerJsonSchema
-                    @JsonCreator
                     private constructor(
-                        @JsonProperty("name")
-                        @ExcludeMissing
-                        private val name: JsonField<String> = JsonMissing.of(),
-                        @JsonProperty("description")
-                        @ExcludeMissing
-                        private val description: JsonField<String> = JsonMissing.of(),
-                        @JsonProperty("schema")
-                        @ExcludeMissing
-                        private val schema: JsonField<Schema> = JsonMissing.of(),
-                        @JsonProperty("strict")
-                        @ExcludeMissing
-                        private val strict: JsonField<Boolean> = JsonMissing.of(),
-                        @JsonAnySetter
-                        private val additionalProperties: Map<String, JsonValue> =
-                            immutableEmptyMap(),
+                        private val name: JsonField<String>,
+                        private val description: JsonField<String>,
+                        private val schema: JsonField<Schema>,
+                        private val strict: JsonField<Boolean>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("name")
+                            @ExcludeMissing
+                            name: JsonField<String> = JsonMissing.of(),
+                            @JsonProperty("description")
+                            @ExcludeMissing
+                            description: JsonField<String> = JsonMissing.of(),
+                            @JsonProperty("schema")
+                            @ExcludeMissing
+                            schema: JsonField<Schema> = JsonMissing.of(),
+                            @JsonProperty("strict")
+                            @ExcludeMissing
+                            strict: JsonField<Boolean> = JsonMissing.of(),
+                        ) : this(name, description, schema, strict, mutableMapOf())
 
                         /**
                          * @throws BraintrustInvalidDataException if the JSON field has an
@@ -2127,23 +2195,15 @@ private constructor(
                         @ExcludeMissing
                         fun _strict(): JsonField<Boolean> = strict
 
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
                         @JsonAnyGetter
                         @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        private var validated: Boolean = false
-
-                        fun validate(): InnerJsonSchema = apply {
-                            if (validated) {
-                                return@apply
-                            }
-
-                            name()
-                            description()
-                            schema()?.validate()
-                            strict()
-                            validated = true
-                        }
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
 
                         fun toBuilder() = Builder().from(this)
 
@@ -2281,8 +2341,22 @@ private constructor(
                                     description,
                                     schema,
                                     strict,
-                                    additionalProperties.toImmutable(),
+                                    additionalProperties.toMutableMap(),
                                 )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): InnerJsonSchema = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            name()
+                            description()
+                            schema()?.validate()
+                            strict()
+                            validated = true
                         }
 
                         @JsonDeserialize(using = Schema.Deserializer::class)
@@ -2420,29 +2494,22 @@ private constructor(
                                 }
                             }
 
-                            @NoAutoDetect
                             class Object
-                            @JsonCreator
                             private constructor(
-                                @JsonAnySetter
-                                private val additionalProperties: Map<String, JsonValue> =
-                                    immutableEmptyMap()
+                                private val additionalProperties: MutableMap<String, JsonValue>
                             ) {
+
+                                @JsonCreator private constructor() : this(mutableMapOf())
+
+                                @JsonAnySetter
+                                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                    additionalProperties.put(key, value)
+                                }
 
                                 @JsonAnyGetter
                                 @ExcludeMissing
                                 fun _additionalProperties(): Map<String, JsonValue> =
-                                    additionalProperties
-
-                                private var validated: Boolean = false
-
-                                fun validate(): Object = apply {
-                                    if (validated) {
-                                        return@apply
-                                    }
-
-                                    validated = true
-                                }
+                                    Collections.unmodifiableMap(additionalProperties)
 
                                 fun toBuilder() = Builder().from(this)
 
@@ -2499,7 +2566,18 @@ private constructor(
                                      * Further updates to this [Builder] will not mutate the
                                      * returned instance.
                                      */
-                                    fun build(): Object = Object(additionalProperties.toImmutable())
+                                    fun build(): Object =
+                                        Object(additionalProperties.toMutableMap())
+                                }
+
+                                private var validated: Boolean = false
+
+                                fun validate(): Object = apply {
+                                    if (validated) {
+                                        return@apply
+                                    }
+
+                                    validated = true
                                 }
 
                                 override fun equals(other: Any?): Boolean {
@@ -2657,16 +2735,18 @@ private constructor(
                         "JsonSchema{jsonSchema=$jsonSchema, type=$type, additionalProperties=$additionalProperties}"
                 }
 
-                @NoAutoDetect
                 class Text
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val type: JsonField<Type>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of()
+                    ) : this(type, mutableMapOf())
 
                     /**
                      * @throws BraintrustInvalidDataException if the JSON field has an unexpected
@@ -2683,20 +2763,15 @@ private constructor(
                      */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): Text = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        type()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -2771,7 +2846,18 @@ private constructor(
                          * @throws IllegalStateException if any required field is unset.
                          */
                         fun build(): Text =
-                            Text(checkRequired("type", type), additionalProperties.toImmutable())
+                            Text(checkRequired("type", type), additionalProperties.toMutableMap())
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Text = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        type()
+                        validated = true
                     }
 
                     class Type
@@ -3141,19 +3227,22 @@ private constructor(
                     override fun toString() = value.toString()
                 }
 
-                @NoAutoDetect
                 class Function
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("function")
-                    @ExcludeMissing
-                    private val function: JsonField<InnerFunction> = JsonMissing.of(),
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val function: JsonField<InnerFunction>,
+                    private val type: JsonField<Type>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("function")
+                        @ExcludeMissing
+                        function: JsonField<InnerFunction> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                    ) : this(function, type, mutableMapOf())
 
                     /**
                      * @throws BraintrustInvalidDataException if the JSON field has an unexpected
@@ -3187,21 +3276,15 @@ private constructor(
                      */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): Function = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        function().validate()
-                        type()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -3296,21 +3379,34 @@ private constructor(
                             Function(
                                 checkRequired("function", function),
                                 checkRequired("type", type),
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
                     }
 
-                    @NoAutoDetect
+                    private var validated: Boolean = false
+
+                    fun validate(): Function = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        function().validate()
+                        type()
+                        validated = true
+                    }
+
                     class InnerFunction
-                    @JsonCreator
                     private constructor(
-                        @JsonProperty("name")
-                        @ExcludeMissing
-                        private val name: JsonField<String> = JsonMissing.of(),
-                        @JsonAnySetter
-                        private val additionalProperties: Map<String, JsonValue> =
-                            immutableEmptyMap(),
+                        private val name: JsonField<String>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
                     ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("name")
+                            @ExcludeMissing
+                            name: JsonField<String> = JsonMissing.of()
+                        ) : this(name, mutableMapOf())
 
                         /**
                          * @throws BraintrustInvalidDataException if the JSON field has an
@@ -3327,20 +3423,15 @@ private constructor(
                          */
                         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
                         @JsonAnyGetter
                         @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        private var validated: Boolean = false
-
-                        fun validate(): InnerFunction = apply {
-                            if (validated) {
-                                return@apply
-                            }
-
-                            name()
-                            validated = true
-                        }
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
 
                         fun toBuilder() = Builder().from(this)
 
@@ -3420,8 +3511,19 @@ private constructor(
                             fun build(): InnerFunction =
                                 InnerFunction(
                                     checkRequired("name", name),
-                                    additionalProperties.toImmutable(),
+                                    additionalProperties.toMutableMap(),
                                 )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): InnerFunction = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            name()
+                            validated = true
                         }
 
                         override fun equals(other: Any?): Boolean {
@@ -3579,34 +3681,47 @@ private constructor(
                 "OpenAIModelParams{frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, n=$n, presencePenalty=$presencePenalty, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, stop=$stop, temperature=$temperature, toolChoice=$toolChoice, topP=$topP, useCache=$useCache, additionalProperties=$additionalProperties}"
         }
 
-        @NoAutoDetect
         class AnthropicModelParams
-        @JsonCreator
         private constructor(
-            @JsonProperty("max_tokens")
-            @ExcludeMissing
-            private val maxTokens: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("temperature")
-            @ExcludeMissing
-            private val temperature: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("max_tokens_to_sample")
-            @ExcludeMissing
-            private val maxTokensToSample: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("stop_sequences")
-            @ExcludeMissing
-            private val stopSequences: JsonField<List<String>> = JsonMissing.of(),
-            @JsonProperty("top_k")
-            @ExcludeMissing
-            private val topK: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("top_p")
-            @ExcludeMissing
-            private val topP: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("use_cache")
-            @ExcludeMissing
-            private val useCache: JsonField<Boolean> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val maxTokens: JsonField<Double>,
+            private val temperature: JsonField<Double>,
+            private val maxTokensToSample: JsonField<Double>,
+            private val stopSequences: JsonField<List<String>>,
+            private val topK: JsonField<Double>,
+            private val topP: JsonField<Double>,
+            private val useCache: JsonField<Boolean>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("max_tokens")
+                @ExcludeMissing
+                maxTokens: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("temperature")
+                @ExcludeMissing
+                temperature: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("max_tokens_to_sample")
+                @ExcludeMissing
+                maxTokensToSample: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("stop_sequences")
+                @ExcludeMissing
+                stopSequences: JsonField<List<String>> = JsonMissing.of(),
+                @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("use_cache")
+                @ExcludeMissing
+                useCache: JsonField<Boolean> = JsonMissing.of(),
+            ) : this(
+                maxTokens,
+                temperature,
+                maxTokensToSample,
+                stopSequences,
+                topK,
+                topP,
+                useCache,
+                mutableMapOf(),
+            )
 
             /**
              * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
@@ -3718,26 +3833,15 @@ private constructor(
             @ExcludeMissing
             fun _useCache(): JsonField<Boolean> = useCache
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): AnthropicModelParams = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                maxTokens()
-                temperature()
-                maxTokensToSample()
-                stopSequences()
-                topK()
-                topP()
-                useCache()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -3920,8 +4024,25 @@ private constructor(
                         topK,
                         topP,
                         useCache,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): AnthropicModelParams = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                maxTokens()
+                temperature()
+                maxTokensToSample()
+                stopSequences()
+                topK()
+                topP()
+                useCache()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -3942,28 +4063,30 @@ private constructor(
                 "AnthropicModelParams{maxTokens=$maxTokens, temperature=$temperature, maxTokensToSample=$maxTokensToSample, stopSequences=$stopSequences, topK=$topK, topP=$topP, useCache=$useCache, additionalProperties=$additionalProperties}"
         }
 
-        @NoAutoDetect
         class GoogleModelParams
-        @JsonCreator
         private constructor(
-            @JsonProperty("maxOutputTokens")
-            @ExcludeMissing
-            private val maxOutputTokens: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("temperature")
-            @ExcludeMissing
-            private val temperature: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("topK")
-            @ExcludeMissing
-            private val topK: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("topP")
-            @ExcludeMissing
-            private val topP: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("use_cache")
-            @ExcludeMissing
-            private val useCache: JsonField<Boolean> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val maxOutputTokens: JsonField<Double>,
+            private val temperature: JsonField<Double>,
+            private val topK: JsonField<Double>,
+            private val topP: JsonField<Double>,
+            private val useCache: JsonField<Boolean>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("maxOutputTokens")
+                @ExcludeMissing
+                maxOutputTokens: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("temperature")
+                @ExcludeMissing
+                temperature: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("topK") @ExcludeMissing topK: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("topP") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("use_cache")
+                @ExcludeMissing
+                useCache: JsonField<Boolean> = JsonMissing.of(),
+            ) : this(maxOutputTokens, temperature, topK, topP, useCache, mutableMapOf())
 
             /**
              * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g.
@@ -4039,24 +4162,15 @@ private constructor(
             @ExcludeMissing
             fun _useCache(): JsonField<Boolean> = useCache
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): GoogleModelParams = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                maxOutputTokens()
-                temperature()
-                topK()
-                topP()
-                useCache()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -4181,8 +4295,23 @@ private constructor(
                         topK,
                         topP,
                         useCache,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): GoogleModelParams = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                maxOutputTokens()
+                temperature()
+                topK()
+                topP()
+                useCache()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -4203,22 +4332,24 @@ private constructor(
                 "GoogleModelParams{maxOutputTokens=$maxOutputTokens, temperature=$temperature, topK=$topK, topP=$topP, useCache=$useCache, additionalProperties=$additionalProperties}"
         }
 
-        @NoAutoDetect
         class WindowAiModelParams
-        @JsonCreator
         private constructor(
-            @JsonProperty("temperature")
-            @ExcludeMissing
-            private val temperature: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("topK")
-            @ExcludeMissing
-            private val topK: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("use_cache")
-            @ExcludeMissing
-            private val useCache: JsonField<Boolean> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val temperature: JsonField<Double>,
+            private val topK: JsonField<Double>,
+            private val useCache: JsonField<Boolean>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("temperature")
+                @ExcludeMissing
+                temperature: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("topK") @ExcludeMissing topK: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("use_cache")
+                @ExcludeMissing
+                useCache: JsonField<Boolean> = JsonMissing.of(),
+            ) : this(temperature, topK, useCache, mutableMapOf())
 
             /**
              * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g.
@@ -4265,22 +4396,15 @@ private constructor(
             @ExcludeMissing
             fun _useCache(): JsonField<Boolean> = useCache
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): WindowAiModelParams = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                temperature()
-                topK()
-                useCache()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -4374,8 +4498,21 @@ private constructor(
                         temperature,
                         topK,
                         useCache,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): WindowAiModelParams = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                temperature()
+                topK()
+                useCache()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -4396,16 +4533,18 @@ private constructor(
                 "WindowAiModelParams{temperature=$temperature, topK=$topK, useCache=$useCache, additionalProperties=$additionalProperties}"
         }
 
-        @NoAutoDetect
         class JsCompletionParams
-        @JsonCreator
         private constructor(
-            @JsonProperty("use_cache")
-            @ExcludeMissing
-            private val useCache: JsonField<Boolean> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val useCache: JsonField<Boolean>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("use_cache")
+                @ExcludeMissing
+                useCache: JsonField<Boolean> = JsonMissing.of()
+            ) : this(useCache, mutableMapOf())
 
             /**
              * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g.
@@ -4423,20 +4562,15 @@ private constructor(
             @ExcludeMissing
             fun _useCache(): JsonField<Boolean> = useCache
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): JsCompletionParams = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                useCache()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -4498,7 +4632,18 @@ private constructor(
                  * Further updates to this [Builder] will not mutate the returned instance.
                  */
                 fun build(): JsCompletionParams =
-                    JsCompletionParams(useCache, additionalProperties.toImmutable())
+                    JsCompletionParams(useCache, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): JsCompletionParams = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                useCache()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {

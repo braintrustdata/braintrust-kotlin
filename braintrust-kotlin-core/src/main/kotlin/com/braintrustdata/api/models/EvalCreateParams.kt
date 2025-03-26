@@ -9,14 +9,12 @@ import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
 import com.braintrustdata.api.core.Params
 import com.braintrustdata.api.core.checkKnown
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.getOrThrow
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
-import com.braintrustdata.api.core.immutableEmptyMap
 import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
@@ -30,6 +28,7 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.util.Collections
 import java.util.Objects
 
 /**
@@ -306,833 +305,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    internal fun _body(): Body = body
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Data> = JsonMissing.of(),
-        @JsonProperty("project_id")
-        @ExcludeMissing
-        private val projectId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("scores")
-        @ExcludeMissing
-        private val scores: JsonField<List<Score>> = JsonMissing.of(),
-        @JsonProperty("task") @ExcludeMissing private val task: JsonField<Task> = JsonMissing.of(),
-        @JsonProperty("base_experiment_id")
-        @ExcludeMissing
-        private val baseExperimentId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("base_experiment_name")
-        @ExcludeMissing
-        private val baseExperimentName: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("experiment_name")
-        @ExcludeMissing
-        private val experimentName: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("git_metadata_settings")
-        @ExcludeMissing
-        private val gitMetadataSettings: JsonField<GitMetadataSettings> = JsonMissing.of(),
-        @JsonProperty("is_public")
-        @ExcludeMissing
-        private val isPublic: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("max_concurrency")
-        @ExcludeMissing
-        private val maxConcurrency: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("metadata")
-        @ExcludeMissing
-        private val metadata: JsonField<Metadata> = JsonMissing.of(),
-        @JsonProperty("parent")
-        @ExcludeMissing
-        private val parent: JsonField<Parent> = JsonMissing.of(),
-        @JsonProperty("repo_info")
-        @ExcludeMissing
-        private val repoInfo: JsonField<RepoInfo> = JsonMissing.of(),
-        @JsonProperty("stream")
-        @ExcludeMissing
-        private val stream: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("timeout")
-        @ExcludeMissing
-        private val timeout: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("trial_count")
-        @ExcludeMissing
-        private val trialCount: JsonField<Double> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        /**
-         * The dataset to use
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun data(): Data = data.getRequired("data")
-
-        /**
-         * Unique identifier for the project to run the eval in
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun projectId(): String = projectId.getRequired("project_id")
-
-        /**
-         * The functions to score the eval on
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun scores(): List<Score> = scores.getRequired("scores")
-
-        /**
-         * The function to evaluate
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun task(): Task = task.getRequired("task")
-
-        /**
-         * An optional experiment id to use as a base. If specified, the new experiment will be
-         * summarized and compared to this experiment.
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun baseExperimentId(): String? = baseExperimentId.getNullable("base_experiment_id")
-
-        /**
-         * An optional experiment name to use as a base. If specified, the new experiment will be
-         * summarized and compared to this experiment.
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun baseExperimentName(): String? = baseExperimentName.getNullable("base_experiment_name")
-
-        /**
-         * An optional name for the experiment created by this eval. If it conflicts with an
-         * existing experiment, it will be suffixed with a unique identifier.
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun experimentName(): String? = experimentName.getNullable("experiment_name")
-
-        /**
-         * Optional settings for collecting git metadata. By default, will collect all git metadata
-         * fields allowed in org-level settings.
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun gitMetadataSettings(): GitMetadataSettings? =
-            gitMetadataSettings.getNullable("git_metadata_settings")
-
-        /**
-         * Whether the experiment should be public. Defaults to false.
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun isPublic(): Boolean? = isPublic.getNullable("is_public")
-
-        /**
-         * The maximum number of tasks/scorers that will be run concurrently. Defaults to undefined,
-         * in which case there is no max concurrency.
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun maxConcurrency(): Double? = maxConcurrency.getNullable("max_concurrency")
-
-        /**
-         * Optional experiment-level metadata to store about the evaluation. You can later use this
-         * to slice & dice across experiments.
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun metadata(): Metadata? = metadata.getNullable("metadata")
-
-        /**
-         * Options for tracing the evaluation
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun parent(): Parent? = parent.getNullable("parent")
-
-        /**
-         * Metadata about the state of the repo when the experiment was created
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun repoInfo(): RepoInfo? = repoInfo.getNullable("repo_info")
-
-        /**
-         * Whether to stream the results of the eval. If true, the request will return two events:
-         * one to indicate the experiment has started, and another upon completion. If false, the
-         * request will return the evaluation's summary upon completion.
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun stream(): Boolean? = stream.getNullable("stream")
-
-        /**
-         * The maximum duration, in milliseconds, to run the evaluation. Defaults to undefined, in
-         * which case there is no timeout.
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun timeout(): Double? = timeout.getNullable("timeout")
-
-        /**
-         * The number of times to run the evaluator per input. This is useful for evaluating
-         * applications that have non-deterministic behavior and gives you both a stronger aggregate
-         * measure and a sense of the variance in the results.
-         *
-         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun trialCount(): Double? = trialCount.getNullable("trial_count")
-
-        /**
-         * Returns the raw JSON value of [data].
-         *
-         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Data> = data
-
-        /**
-         * Returns the raw JSON value of [projectId].
-         *
-         * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("project_id") @ExcludeMissing fun _projectId(): JsonField<String> = projectId
-
-        /**
-         * Returns the raw JSON value of [scores].
-         *
-         * Unlike [scores], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("scores") @ExcludeMissing fun _scores(): JsonField<List<Score>> = scores
-
-        /**
-         * Returns the raw JSON value of [task].
-         *
-         * Unlike [task], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("task") @ExcludeMissing fun _task(): JsonField<Task> = task
-
-        /**
-         * Returns the raw JSON value of [baseExperimentId].
-         *
-         * Unlike [baseExperimentId], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("base_experiment_id")
-        @ExcludeMissing
-        fun _baseExperimentId(): JsonField<String> = baseExperimentId
-
-        /**
-         * Returns the raw JSON value of [baseExperimentName].
-         *
-         * Unlike [baseExperimentName], this method doesn't throw if the JSON field has an
-         * unexpected type.
-         */
-        @JsonProperty("base_experiment_name")
-        @ExcludeMissing
-        fun _baseExperimentName(): JsonField<String> = baseExperimentName
-
-        /**
-         * Returns the raw JSON value of [experimentName].
-         *
-         * Unlike [experimentName], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("experiment_name")
-        @ExcludeMissing
-        fun _experimentName(): JsonField<String> = experimentName
-
-        /**
-         * Returns the raw JSON value of [gitMetadataSettings].
-         *
-         * Unlike [gitMetadataSettings], this method doesn't throw if the JSON field has an
-         * unexpected type.
-         */
-        @JsonProperty("git_metadata_settings")
-        @ExcludeMissing
-        fun _gitMetadataSettings(): JsonField<GitMetadataSettings> = gitMetadataSettings
-
-        /**
-         * Returns the raw JSON value of [isPublic].
-         *
-         * Unlike [isPublic], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("is_public") @ExcludeMissing fun _isPublic(): JsonField<Boolean> = isPublic
-
-        /**
-         * Returns the raw JSON value of [maxConcurrency].
-         *
-         * Unlike [maxConcurrency], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("max_concurrency")
-        @ExcludeMissing
-        fun _maxConcurrency(): JsonField<Double> = maxConcurrency
-
-        /**
-         * Returns the raw JSON value of [metadata].
-         *
-         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
-
-        /**
-         * Returns the raw JSON value of [parent].
-         *
-         * Unlike [parent], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("parent") @ExcludeMissing fun _parent(): JsonField<Parent> = parent
-
-        /**
-         * Returns the raw JSON value of [repoInfo].
-         *
-         * Unlike [repoInfo], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("repo_info") @ExcludeMissing fun _repoInfo(): JsonField<RepoInfo> = repoInfo
-
-        /**
-         * Returns the raw JSON value of [stream].
-         *
-         * Unlike [stream], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("stream") @ExcludeMissing fun _stream(): JsonField<Boolean> = stream
-
-        /**
-         * Returns the raw JSON value of [timeout].
-         *
-         * Unlike [timeout], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("timeout") @ExcludeMissing fun _timeout(): JsonField<Double> = timeout
-
-        /**
-         * Returns the raw JSON value of [trialCount].
-         *
-         * Unlike [trialCount], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("trial_count")
-        @ExcludeMissing
-        fun _trialCount(): JsonField<Double> = trialCount
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            data().validate()
-            projectId()
-            scores().forEach { it.validate() }
-            task().validate()
-            baseExperimentId()
-            baseExperimentName()
-            experimentName()
-            gitMetadataSettings()?.validate()
-            isPublic()
-            maxConcurrency()
-            metadata()?.validate()
-            parent()?.validate()
-            repoInfo()?.validate()
-            stream()
-            timeout()
-            trialCount()
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```kotlin
-             * .data()
-             * .projectId()
-             * .scores()
-             * .task()
-             * ```
-             */
-            fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var data: JsonField<Data>? = null
-            private var projectId: JsonField<String>? = null
-            private var scores: JsonField<MutableList<Score>>? = null
-            private var task: JsonField<Task>? = null
-            private var baseExperimentId: JsonField<String> = JsonMissing.of()
-            private var baseExperimentName: JsonField<String> = JsonMissing.of()
-            private var experimentName: JsonField<String> = JsonMissing.of()
-            private var gitMetadataSettings: JsonField<GitMetadataSettings> = JsonMissing.of()
-            private var isPublic: JsonField<Boolean> = JsonMissing.of()
-            private var maxConcurrency: JsonField<Double> = JsonMissing.of()
-            private var metadata: JsonField<Metadata> = JsonMissing.of()
-            private var parent: JsonField<Parent> = JsonMissing.of()
-            private var repoInfo: JsonField<RepoInfo> = JsonMissing.of()
-            private var stream: JsonField<Boolean> = JsonMissing.of()
-            private var timeout: JsonField<Double> = JsonMissing.of()
-            private var trialCount: JsonField<Double> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(body: Body) = apply {
-                data = body.data
-                projectId = body.projectId
-                scores = body.scores.map { it.toMutableList() }
-                task = body.task
-                baseExperimentId = body.baseExperimentId
-                baseExperimentName = body.baseExperimentName
-                experimentName = body.experimentName
-                gitMetadataSettings = body.gitMetadataSettings
-                isPublic = body.isPublic
-                maxConcurrency = body.maxConcurrency
-                metadata = body.metadata
-                parent = body.parent
-                repoInfo = body.repoInfo
-                stream = body.stream
-                timeout = body.timeout
-                trialCount = body.trialCount
-                additionalProperties = body.additionalProperties.toMutableMap()
-            }
-
-            /** The dataset to use */
-            fun data(data: Data) = data(JsonField.of(data))
-
-            /**
-             * Sets [Builder.data] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.data] with a well-typed [Data] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun data(data: JsonField<Data>) = apply { this.data = data }
-
-            /** Alias for calling [data] with `Data.ofDatasetId(datasetId)`. */
-            fun data(datasetId: Data.DatasetId) = data(Data.ofDatasetId(datasetId))
-
-            /** Alias for calling [data] with `Data.ofProjectDatasetName(projectDatasetName)`. */
-            fun data(projectDatasetName: Data.ProjectDatasetName) =
-                data(Data.ofProjectDatasetName(projectDatasetName))
-
-            /** Alias for calling [data] with `Data.ofDatasetRows(datasetRows)`. */
-            fun data(datasetRows: Data.DatasetRows) = data(Data.ofDatasetRows(datasetRows))
-
-            /** Unique identifier for the project to run the eval in */
-            fun projectId(projectId: String) = projectId(JsonField.of(projectId))
-
-            /**
-             * Sets [Builder.projectId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.projectId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
-
-            /** The functions to score the eval on */
-            fun scores(scores: List<Score>) = scores(JsonField.of(scores))
-
-            /**
-             * Sets [Builder.scores] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.scores] with a well-typed `List<Score>` value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun scores(scores: JsonField<List<Score>>) = apply {
-                this.scores = scores.map { it.toMutableList() }
-            }
-
-            /**
-             * Adds a single [Score] to [scores].
-             *
-             * @throws IllegalStateException if the field was previously set to a non-list.
-             */
-            fun addScore(score: Score) = apply {
-                scores =
-                    (scores ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("scores", it).add(score)
-                    }
-            }
-
-            /** Alias for calling [addScore] with `Score.ofFunctionId(functionId)`. */
-            fun addScore(functionId: Score.FunctionId) = addScore(Score.ofFunctionId(functionId))
-
-            /** Alias for calling [addScore] with `Score.ofProjectSlug(projectSlug)`. */
-            fun addScore(projectSlug: Score.ProjectSlug) =
-                addScore(Score.ofProjectSlug(projectSlug))
-
-            /** Alias for calling [addScore] with `Score.ofGlobalFunction(globalFunction)`. */
-            fun addScore(globalFunction: Score.GlobalFunction) =
-                addScore(Score.ofGlobalFunction(globalFunction))
-
-            /** Alias for calling [addScore] with `Score.ofPromptSessionId(promptSessionId)`. */
-            fun addScore(promptSessionId: Score.PromptSessionId) =
-                addScore(Score.ofPromptSessionId(promptSessionId))
-
-            /** Alias for calling [addScore] with `Score.ofInlineCode(inlineCode)`. */
-            fun addScore(inlineCode: Score.InlineCode) = addScore(Score.ofInlineCode(inlineCode))
-
-            /** Alias for calling [addScore] with `Score.ofInlinePrompt(inlinePrompt)`. */
-            fun addScore(inlinePrompt: Score.InlinePrompt) =
-                addScore(Score.ofInlinePrompt(inlinePrompt))
-
-            /** The function to evaluate */
-            fun task(task: Task) = task(JsonField.of(task))
-
-            /**
-             * Sets [Builder.task] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.task] with a well-typed [Task] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun task(task: JsonField<Task>) = apply { this.task = task }
-
-            /** Alias for calling [task] with `Task.ofFunctionId(functionId)`. */
-            fun task(functionId: Task.FunctionId) = task(Task.ofFunctionId(functionId))
-
-            /** Alias for calling [task] with `Task.ofProjectSlug(projectSlug)`. */
-            fun task(projectSlug: Task.ProjectSlug) = task(Task.ofProjectSlug(projectSlug))
-
-            /** Alias for calling [task] with `Task.ofGlobalFunction(globalFunction)`. */
-            fun task(globalFunction: Task.GlobalFunction) =
-                task(Task.ofGlobalFunction(globalFunction))
-
-            /** Alias for calling [task] with `Task.ofPromptSessionId(promptSessionId)`. */
-            fun task(promptSessionId: Task.PromptSessionId) =
-                task(Task.ofPromptSessionId(promptSessionId))
-
-            /** Alias for calling [task] with `Task.ofInlineCode(inlineCode)`. */
-            fun task(inlineCode: Task.InlineCode) = task(Task.ofInlineCode(inlineCode))
-
-            /** Alias for calling [task] with `Task.ofInlinePrompt(inlinePrompt)`. */
-            fun task(inlinePrompt: Task.InlinePrompt) = task(Task.ofInlinePrompt(inlinePrompt))
-
-            /**
-             * An optional experiment id to use as a base. If specified, the new experiment will be
-             * summarized and compared to this experiment.
-             */
-            fun baseExperimentId(baseExperimentId: String?) =
-                baseExperimentId(JsonField.ofNullable(baseExperimentId))
-
-            /**
-             * Sets [Builder.baseExperimentId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.baseExperimentId] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun baseExperimentId(baseExperimentId: JsonField<String>) = apply {
-                this.baseExperimentId = baseExperimentId
-            }
-
-            /**
-             * An optional experiment name to use as a base. If specified, the new experiment will
-             * be summarized and compared to this experiment.
-             */
-            fun baseExperimentName(baseExperimentName: String?) =
-                baseExperimentName(JsonField.ofNullable(baseExperimentName))
-
-            /**
-             * Sets [Builder.baseExperimentName] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.baseExperimentName] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun baseExperimentName(baseExperimentName: JsonField<String>) = apply {
-                this.baseExperimentName = baseExperimentName
-            }
-
-            /**
-             * An optional name for the experiment created by this eval. If it conflicts with an
-             * existing experiment, it will be suffixed with a unique identifier.
-             */
-            fun experimentName(experimentName: String) =
-                experimentName(JsonField.of(experimentName))
-
-            /**
-             * Sets [Builder.experimentName] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.experimentName] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun experimentName(experimentName: JsonField<String>) = apply {
-                this.experimentName = experimentName
-            }
-
-            /**
-             * Optional settings for collecting git metadata. By default, will collect all git
-             * metadata fields allowed in org-level settings.
-             */
-            fun gitMetadataSettings(gitMetadataSettings: GitMetadataSettings?) =
-                gitMetadataSettings(JsonField.ofNullable(gitMetadataSettings))
-
-            /**
-             * Sets [Builder.gitMetadataSettings] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.gitMetadataSettings] with a well-typed
-             * [GitMetadataSettings] value instead. This method is primarily for setting the field
-             * to an undocumented or not yet supported value.
-             */
-            fun gitMetadataSettings(gitMetadataSettings: JsonField<GitMetadataSettings>) = apply {
-                this.gitMetadataSettings = gitMetadataSettings
-            }
-
-            /** Whether the experiment should be public. Defaults to false. */
-            fun isPublic(isPublic: Boolean?) = isPublic(JsonField.ofNullable(isPublic))
-
-            /**
-             * Alias for [Builder.isPublic].
-             *
-             * This unboxed primitive overload exists for backwards compatibility.
-             */
-            fun isPublic(isPublic: Boolean) = isPublic(isPublic as Boolean?)
-
-            /**
-             * Sets [Builder.isPublic] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.isPublic] with a well-typed [Boolean] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun isPublic(isPublic: JsonField<Boolean>) = apply { this.isPublic = isPublic }
-
-            /**
-             * The maximum number of tasks/scorers that will be run concurrently. Defaults to
-             * undefined, in which case there is no max concurrency.
-             */
-            fun maxConcurrency(maxConcurrency: Double?) =
-                maxConcurrency(JsonField.ofNullable(maxConcurrency))
-
-            /**
-             * Alias for [Builder.maxConcurrency].
-             *
-             * This unboxed primitive overload exists for backwards compatibility.
-             */
-            fun maxConcurrency(maxConcurrency: Double) = maxConcurrency(maxConcurrency as Double?)
-
-            /**
-             * Sets [Builder.maxConcurrency] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.maxConcurrency] with a well-typed [Double] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun maxConcurrency(maxConcurrency: JsonField<Double>) = apply {
-                this.maxConcurrency = maxConcurrency
-            }
-
-            /**
-             * Optional experiment-level metadata to store about the evaluation. You can later use
-             * this to slice & dice across experiments.
-             */
-            fun metadata(metadata: Metadata) = metadata(JsonField.of(metadata))
-
-            /**
-             * Sets [Builder.metadata] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
-
-            /** Options for tracing the evaluation */
-            fun parent(parent: Parent) = parent(JsonField.of(parent))
-
-            /**
-             * Sets [Builder.parent] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.parent] with a well-typed [Parent] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun parent(parent: JsonField<Parent>) = apply { this.parent = parent }
-
-            /** Alias for calling [parent] with `Parent.ofSpanParentStruct(spanParentStruct)`. */
-            fun parent(spanParentStruct: Parent.SpanParentStruct) =
-                parent(Parent.ofSpanParentStruct(spanParentStruct))
-
-            /** Alias for calling [parent] with `Parent.ofString(string)`. */
-            fun parent(string: String) = parent(Parent.ofString(string))
-
-            /** Metadata about the state of the repo when the experiment was created */
-            fun repoInfo(repoInfo: RepoInfo?) = repoInfo(JsonField.ofNullable(repoInfo))
-
-            /**
-             * Sets [Builder.repoInfo] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.repoInfo] with a well-typed [RepoInfo] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun repoInfo(repoInfo: JsonField<RepoInfo>) = apply { this.repoInfo = repoInfo }
-
-            /**
-             * Whether to stream the results of the eval. If true, the request will return two
-             * events: one to indicate the experiment has started, and another upon completion. If
-             * false, the request will return the evaluation's summary upon completion.
-             */
-            fun stream(stream: Boolean) = stream(JsonField.of(stream))
-
-            /**
-             * Sets [Builder.stream] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.stream] with a well-typed [Boolean] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun stream(stream: JsonField<Boolean>) = apply { this.stream = stream }
-
-            /**
-             * The maximum duration, in milliseconds, to run the evaluation. Defaults to undefined,
-             * in which case there is no timeout.
-             */
-            fun timeout(timeout: Double?) = timeout(JsonField.ofNullable(timeout))
-
-            /**
-             * Alias for [Builder.timeout].
-             *
-             * This unboxed primitive overload exists for backwards compatibility.
-             */
-            fun timeout(timeout: Double) = timeout(timeout as Double?)
-
-            /**
-             * Sets [Builder.timeout] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.timeout] with a well-typed [Double] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun timeout(timeout: JsonField<Double>) = apply { this.timeout = timeout }
-
-            /**
-             * The number of times to run the evaluator per input. This is useful for evaluating
-             * applications that have non-deterministic behavior and gives you both a stronger
-             * aggregate measure and a sense of the variance in the results.
-             */
-            fun trialCount(trialCount: Double?) = trialCount(JsonField.ofNullable(trialCount))
-
-            /**
-             * Alias for [Builder.trialCount].
-             *
-             * This unboxed primitive overload exists for backwards compatibility.
-             */
-            fun trialCount(trialCount: Double) = trialCount(trialCount as Double?)
-
-            /**
-             * Sets [Builder.trialCount] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.trialCount] with a well-typed [Double] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun trialCount(trialCount: JsonField<Double>) = apply { this.trialCount = trialCount }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```kotlin
-             * .data()
-             * .projectId()
-             * .scores()
-             * .task()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body =
-                Body(
-                    checkRequired("data", data),
-                    checkRequired("projectId", projectId),
-                    checkRequired("scores", scores).map { it.toImmutable() },
-                    checkRequired("task", task),
-                    baseExperimentId,
-                    baseExperimentName,
-                    experimentName,
-                    gitMetadataSettings,
-                    isPublic,
-                    maxConcurrency,
-                    metadata,
-                    parent,
-                    repoInfo,
-                    stream,
-                    timeout,
-                    trialCount,
-                    additionalProperties.toImmutable(),
-                )
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && data == other.data && projectId == other.projectId && scores == other.scores && task == other.task && baseExperimentId == other.baseExperimentId && baseExperimentName == other.baseExperimentName && experimentName == other.experimentName && gitMetadataSettings == other.gitMetadataSettings && isPublic == other.isPublic && maxConcurrency == other.maxConcurrency && metadata == other.metadata && parent == other.parent && repoInfo == other.repoInfo && stream == other.stream && timeout == other.timeout && trialCount == other.trialCount && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(data, projectId, scores, task, baseExperimentId, baseExperimentName, experimentName, gitMetadataSettings, isPublic, maxConcurrency, metadata, parent, repoInfo, stream, timeout, trialCount, additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Body{data=$data, projectId=$projectId, scores=$scores, task=$task, baseExperimentId=$baseExperimentId, baseExperimentName=$baseExperimentName, experimentName=$experimentName, gitMetadataSettings=$gitMetadataSettings, isPublic=$isPublic, maxConcurrency=$maxConcurrency, metadata=$metadata, parent=$parent, repoInfo=$repoInfo, stream=$stream, timeout=$timeout, trialCount=$trialCount, additionalProperties=$additionalProperties}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -1152,7 +324,6 @@ private constructor(
     }
 
     /** A builder for [EvalCreateParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -1625,6 +796,868 @@ private constructor(
             EvalCreateParams(body.build(), additionalHeaders.build(), additionalQueryParams.build())
     }
 
+    internal fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    private constructor(
+        private val data: JsonField<Data>,
+        private val projectId: JsonField<String>,
+        private val scores: JsonField<List<Score>>,
+        private val task: JsonField<Task>,
+        private val baseExperimentId: JsonField<String>,
+        private val baseExperimentName: JsonField<String>,
+        private val experimentName: JsonField<String>,
+        private val gitMetadataSettings: JsonField<GitMetadataSettings>,
+        private val isPublic: JsonField<Boolean>,
+        private val maxConcurrency: JsonField<Double>,
+        private val metadata: JsonField<Metadata>,
+        private val parent: JsonField<Parent>,
+        private val repoInfo: JsonField<RepoInfo>,
+        private val stream: JsonField<Boolean>,
+        private val timeout: JsonField<Double>,
+        private val trialCount: JsonField<Double>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("data") @ExcludeMissing data: JsonField<Data> = JsonMissing.of(),
+            @JsonProperty("project_id")
+            @ExcludeMissing
+            projectId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("scores")
+            @ExcludeMissing
+            scores: JsonField<List<Score>> = JsonMissing.of(),
+            @JsonProperty("task") @ExcludeMissing task: JsonField<Task> = JsonMissing.of(),
+            @JsonProperty("base_experiment_id")
+            @ExcludeMissing
+            baseExperimentId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("base_experiment_name")
+            @ExcludeMissing
+            baseExperimentName: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("experiment_name")
+            @ExcludeMissing
+            experimentName: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("git_metadata_settings")
+            @ExcludeMissing
+            gitMetadataSettings: JsonField<GitMetadataSettings> = JsonMissing.of(),
+            @JsonProperty("is_public")
+            @ExcludeMissing
+            isPublic: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("max_concurrency")
+            @ExcludeMissing
+            maxConcurrency: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("metadata")
+            @ExcludeMissing
+            metadata: JsonField<Metadata> = JsonMissing.of(),
+            @JsonProperty("parent") @ExcludeMissing parent: JsonField<Parent> = JsonMissing.of(),
+            @JsonProperty("repo_info")
+            @ExcludeMissing
+            repoInfo: JsonField<RepoInfo> = JsonMissing.of(),
+            @JsonProperty("stream") @ExcludeMissing stream: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("timeout") @ExcludeMissing timeout: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("trial_count")
+            @ExcludeMissing
+            trialCount: JsonField<Double> = JsonMissing.of(),
+        ) : this(
+            data,
+            projectId,
+            scores,
+            task,
+            baseExperimentId,
+            baseExperimentName,
+            experimentName,
+            gitMetadataSettings,
+            isPublic,
+            maxConcurrency,
+            metadata,
+            parent,
+            repoInfo,
+            stream,
+            timeout,
+            trialCount,
+            mutableMapOf(),
+        )
+
+        /**
+         * The dataset to use
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun data(): Data = data.getRequired("data")
+
+        /**
+         * Unique identifier for the project to run the eval in
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun projectId(): String = projectId.getRequired("project_id")
+
+        /**
+         * The functions to score the eval on
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun scores(): List<Score> = scores.getRequired("scores")
+
+        /**
+         * The function to evaluate
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun task(): Task = task.getRequired("task")
+
+        /**
+         * An optional experiment id to use as a base. If specified, the new experiment will be
+         * summarized and compared to this experiment.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun baseExperimentId(): String? = baseExperimentId.getNullable("base_experiment_id")
+
+        /**
+         * An optional experiment name to use as a base. If specified, the new experiment will be
+         * summarized and compared to this experiment.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun baseExperimentName(): String? = baseExperimentName.getNullable("base_experiment_name")
+
+        /**
+         * An optional name for the experiment created by this eval. If it conflicts with an
+         * existing experiment, it will be suffixed with a unique identifier.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun experimentName(): String? = experimentName.getNullable("experiment_name")
+
+        /**
+         * Optional settings for collecting git metadata. By default, will collect all git metadata
+         * fields allowed in org-level settings.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun gitMetadataSettings(): GitMetadataSettings? =
+            gitMetadataSettings.getNullable("git_metadata_settings")
+
+        /**
+         * Whether the experiment should be public. Defaults to false.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun isPublic(): Boolean? = isPublic.getNullable("is_public")
+
+        /**
+         * The maximum number of tasks/scorers that will be run concurrently. Defaults to undefined,
+         * in which case there is no max concurrency.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun maxConcurrency(): Double? = maxConcurrency.getNullable("max_concurrency")
+
+        /**
+         * Optional experiment-level metadata to store about the evaluation. You can later use this
+         * to slice & dice across experiments.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun metadata(): Metadata? = metadata.getNullable("metadata")
+
+        /**
+         * Options for tracing the evaluation
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun parent(): Parent? = parent.getNullable("parent")
+
+        /**
+         * Metadata about the state of the repo when the experiment was created
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun repoInfo(): RepoInfo? = repoInfo.getNullable("repo_info")
+
+        /**
+         * Whether to stream the results of the eval. If true, the request will return two events:
+         * one to indicate the experiment has started, and another upon completion. If false, the
+         * request will return the evaluation's summary upon completion.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun stream(): Boolean? = stream.getNullable("stream")
+
+        /**
+         * The maximum duration, in milliseconds, to run the evaluation. Defaults to undefined, in
+         * which case there is no timeout.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun timeout(): Double? = timeout.getNullable("timeout")
+
+        /**
+         * The number of times to run the evaluator per input. This is useful for evaluating
+         * applications that have non-deterministic behavior and gives you both a stronger aggregate
+         * measure and a sense of the variance in the results.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun trialCount(): Double? = trialCount.getNullable("trial_count")
+
+        /**
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Data> = data
+
+        /**
+         * Returns the raw JSON value of [projectId].
+         *
+         * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("project_id") @ExcludeMissing fun _projectId(): JsonField<String> = projectId
+
+        /**
+         * Returns the raw JSON value of [scores].
+         *
+         * Unlike [scores], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("scores") @ExcludeMissing fun _scores(): JsonField<List<Score>> = scores
+
+        /**
+         * Returns the raw JSON value of [task].
+         *
+         * Unlike [task], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("task") @ExcludeMissing fun _task(): JsonField<Task> = task
+
+        /**
+         * Returns the raw JSON value of [baseExperimentId].
+         *
+         * Unlike [baseExperimentId], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("base_experiment_id")
+        @ExcludeMissing
+        fun _baseExperimentId(): JsonField<String> = baseExperimentId
+
+        /**
+         * Returns the raw JSON value of [baseExperimentName].
+         *
+         * Unlike [baseExperimentName], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("base_experiment_name")
+        @ExcludeMissing
+        fun _baseExperimentName(): JsonField<String> = baseExperimentName
+
+        /**
+         * Returns the raw JSON value of [experimentName].
+         *
+         * Unlike [experimentName], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("experiment_name")
+        @ExcludeMissing
+        fun _experimentName(): JsonField<String> = experimentName
+
+        /**
+         * Returns the raw JSON value of [gitMetadataSettings].
+         *
+         * Unlike [gitMetadataSettings], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("git_metadata_settings")
+        @ExcludeMissing
+        fun _gitMetadataSettings(): JsonField<GitMetadataSettings> = gitMetadataSettings
+
+        /**
+         * Returns the raw JSON value of [isPublic].
+         *
+         * Unlike [isPublic], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("is_public") @ExcludeMissing fun _isPublic(): JsonField<Boolean> = isPublic
+
+        /**
+         * Returns the raw JSON value of [maxConcurrency].
+         *
+         * Unlike [maxConcurrency], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("max_concurrency")
+        @ExcludeMissing
+        fun _maxConcurrency(): JsonField<Double> = maxConcurrency
+
+        /**
+         * Returns the raw JSON value of [metadata].
+         *
+         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
+        /**
+         * Returns the raw JSON value of [parent].
+         *
+         * Unlike [parent], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("parent") @ExcludeMissing fun _parent(): JsonField<Parent> = parent
+
+        /**
+         * Returns the raw JSON value of [repoInfo].
+         *
+         * Unlike [repoInfo], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("repo_info") @ExcludeMissing fun _repoInfo(): JsonField<RepoInfo> = repoInfo
+
+        /**
+         * Returns the raw JSON value of [stream].
+         *
+         * Unlike [stream], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("stream") @ExcludeMissing fun _stream(): JsonField<Boolean> = stream
+
+        /**
+         * Returns the raw JSON value of [timeout].
+         *
+         * Unlike [timeout], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("timeout") @ExcludeMissing fun _timeout(): JsonField<Double> = timeout
+
+        /**
+         * Returns the raw JSON value of [trialCount].
+         *
+         * Unlike [trialCount], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("trial_count")
+        @ExcludeMissing
+        fun _trialCount(): JsonField<Double> = trialCount
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .data()
+             * .projectId()
+             * .scores()
+             * .task()
+             * ```
+             */
+            fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var data: JsonField<Data>? = null
+            private var projectId: JsonField<String>? = null
+            private var scores: JsonField<MutableList<Score>>? = null
+            private var task: JsonField<Task>? = null
+            private var baseExperimentId: JsonField<String> = JsonMissing.of()
+            private var baseExperimentName: JsonField<String> = JsonMissing.of()
+            private var experimentName: JsonField<String> = JsonMissing.of()
+            private var gitMetadataSettings: JsonField<GitMetadataSettings> = JsonMissing.of()
+            private var isPublic: JsonField<Boolean> = JsonMissing.of()
+            private var maxConcurrency: JsonField<Double> = JsonMissing.of()
+            private var metadata: JsonField<Metadata> = JsonMissing.of()
+            private var parent: JsonField<Parent> = JsonMissing.of()
+            private var repoInfo: JsonField<RepoInfo> = JsonMissing.of()
+            private var stream: JsonField<Boolean> = JsonMissing.of()
+            private var timeout: JsonField<Double> = JsonMissing.of()
+            private var trialCount: JsonField<Double> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            internal fun from(body: Body) = apply {
+                data = body.data
+                projectId = body.projectId
+                scores = body.scores.map { it.toMutableList() }
+                task = body.task
+                baseExperimentId = body.baseExperimentId
+                baseExperimentName = body.baseExperimentName
+                experimentName = body.experimentName
+                gitMetadataSettings = body.gitMetadataSettings
+                isPublic = body.isPublic
+                maxConcurrency = body.maxConcurrency
+                metadata = body.metadata
+                parent = body.parent
+                repoInfo = body.repoInfo
+                stream = body.stream
+                timeout = body.timeout
+                trialCount = body.trialCount
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /** The dataset to use */
+            fun data(data: Data) = data(JsonField.of(data))
+
+            /**
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [Data] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun data(data: JsonField<Data>) = apply { this.data = data }
+
+            /** Alias for calling [data] with `Data.ofDatasetId(datasetId)`. */
+            fun data(datasetId: Data.DatasetId) = data(Data.ofDatasetId(datasetId))
+
+            /** Alias for calling [data] with `Data.ofProjectDatasetName(projectDatasetName)`. */
+            fun data(projectDatasetName: Data.ProjectDatasetName) =
+                data(Data.ofProjectDatasetName(projectDatasetName))
+
+            /** Alias for calling [data] with `Data.ofDatasetRows(datasetRows)`. */
+            fun data(datasetRows: Data.DatasetRows) = data(Data.ofDatasetRows(datasetRows))
+
+            /** Unique identifier for the project to run the eval in */
+            fun projectId(projectId: String) = projectId(JsonField.of(projectId))
+
+            /**
+             * Sets [Builder.projectId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.projectId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
+
+            /** The functions to score the eval on */
+            fun scores(scores: List<Score>) = scores(JsonField.of(scores))
+
+            /**
+             * Sets [Builder.scores] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.scores] with a well-typed `List<Score>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun scores(scores: JsonField<List<Score>>) = apply {
+                this.scores = scores.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [Score] to [scores].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addScore(score: Score) = apply {
+                scores =
+                    (scores ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("scores", it).add(score)
+                    }
+            }
+
+            /** Alias for calling [addScore] with `Score.ofFunctionId(functionId)`. */
+            fun addScore(functionId: Score.FunctionId) = addScore(Score.ofFunctionId(functionId))
+
+            /** Alias for calling [addScore] with `Score.ofProjectSlug(projectSlug)`. */
+            fun addScore(projectSlug: Score.ProjectSlug) =
+                addScore(Score.ofProjectSlug(projectSlug))
+
+            /** Alias for calling [addScore] with `Score.ofGlobalFunction(globalFunction)`. */
+            fun addScore(globalFunction: Score.GlobalFunction) =
+                addScore(Score.ofGlobalFunction(globalFunction))
+
+            /** Alias for calling [addScore] with `Score.ofPromptSessionId(promptSessionId)`. */
+            fun addScore(promptSessionId: Score.PromptSessionId) =
+                addScore(Score.ofPromptSessionId(promptSessionId))
+
+            /** Alias for calling [addScore] with `Score.ofInlineCode(inlineCode)`. */
+            fun addScore(inlineCode: Score.InlineCode) = addScore(Score.ofInlineCode(inlineCode))
+
+            /** Alias for calling [addScore] with `Score.ofInlinePrompt(inlinePrompt)`. */
+            fun addScore(inlinePrompt: Score.InlinePrompt) =
+                addScore(Score.ofInlinePrompt(inlinePrompt))
+
+            /** The function to evaluate */
+            fun task(task: Task) = task(JsonField.of(task))
+
+            /**
+             * Sets [Builder.task] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.task] with a well-typed [Task] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun task(task: JsonField<Task>) = apply { this.task = task }
+
+            /** Alias for calling [task] with `Task.ofFunctionId(functionId)`. */
+            fun task(functionId: Task.FunctionId) = task(Task.ofFunctionId(functionId))
+
+            /** Alias for calling [task] with `Task.ofProjectSlug(projectSlug)`. */
+            fun task(projectSlug: Task.ProjectSlug) = task(Task.ofProjectSlug(projectSlug))
+
+            /** Alias for calling [task] with `Task.ofGlobalFunction(globalFunction)`. */
+            fun task(globalFunction: Task.GlobalFunction) =
+                task(Task.ofGlobalFunction(globalFunction))
+
+            /** Alias for calling [task] with `Task.ofPromptSessionId(promptSessionId)`. */
+            fun task(promptSessionId: Task.PromptSessionId) =
+                task(Task.ofPromptSessionId(promptSessionId))
+
+            /** Alias for calling [task] with `Task.ofInlineCode(inlineCode)`. */
+            fun task(inlineCode: Task.InlineCode) = task(Task.ofInlineCode(inlineCode))
+
+            /** Alias for calling [task] with `Task.ofInlinePrompt(inlinePrompt)`. */
+            fun task(inlinePrompt: Task.InlinePrompt) = task(Task.ofInlinePrompt(inlinePrompt))
+
+            /**
+             * An optional experiment id to use as a base. If specified, the new experiment will be
+             * summarized and compared to this experiment.
+             */
+            fun baseExperimentId(baseExperimentId: String?) =
+                baseExperimentId(JsonField.ofNullable(baseExperimentId))
+
+            /**
+             * Sets [Builder.baseExperimentId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.baseExperimentId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun baseExperimentId(baseExperimentId: JsonField<String>) = apply {
+                this.baseExperimentId = baseExperimentId
+            }
+
+            /**
+             * An optional experiment name to use as a base. If specified, the new experiment will
+             * be summarized and compared to this experiment.
+             */
+            fun baseExperimentName(baseExperimentName: String?) =
+                baseExperimentName(JsonField.ofNullable(baseExperimentName))
+
+            /**
+             * Sets [Builder.baseExperimentName] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.baseExperimentName] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun baseExperimentName(baseExperimentName: JsonField<String>) = apply {
+                this.baseExperimentName = baseExperimentName
+            }
+
+            /**
+             * An optional name for the experiment created by this eval. If it conflicts with an
+             * existing experiment, it will be suffixed with a unique identifier.
+             */
+            fun experimentName(experimentName: String) =
+                experimentName(JsonField.of(experimentName))
+
+            /**
+             * Sets [Builder.experimentName] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.experimentName] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun experimentName(experimentName: JsonField<String>) = apply {
+                this.experimentName = experimentName
+            }
+
+            /**
+             * Optional settings for collecting git metadata. By default, will collect all git
+             * metadata fields allowed in org-level settings.
+             */
+            fun gitMetadataSettings(gitMetadataSettings: GitMetadataSettings?) =
+                gitMetadataSettings(JsonField.ofNullable(gitMetadataSettings))
+
+            /**
+             * Sets [Builder.gitMetadataSettings] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.gitMetadataSettings] with a well-typed
+             * [GitMetadataSettings] value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
+             */
+            fun gitMetadataSettings(gitMetadataSettings: JsonField<GitMetadataSettings>) = apply {
+                this.gitMetadataSettings = gitMetadataSettings
+            }
+
+            /** Whether the experiment should be public. Defaults to false. */
+            fun isPublic(isPublic: Boolean?) = isPublic(JsonField.ofNullable(isPublic))
+
+            /**
+             * Alias for [Builder.isPublic].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun isPublic(isPublic: Boolean) = isPublic(isPublic as Boolean?)
+
+            /**
+             * Sets [Builder.isPublic] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.isPublic] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun isPublic(isPublic: JsonField<Boolean>) = apply { this.isPublic = isPublic }
+
+            /**
+             * The maximum number of tasks/scorers that will be run concurrently. Defaults to
+             * undefined, in which case there is no max concurrency.
+             */
+            fun maxConcurrency(maxConcurrency: Double?) =
+                maxConcurrency(JsonField.ofNullable(maxConcurrency))
+
+            /**
+             * Alias for [Builder.maxConcurrency].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun maxConcurrency(maxConcurrency: Double) = maxConcurrency(maxConcurrency as Double?)
+
+            /**
+             * Sets [Builder.maxConcurrency] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.maxConcurrency] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun maxConcurrency(maxConcurrency: JsonField<Double>) = apply {
+                this.maxConcurrency = maxConcurrency
+            }
+
+            /**
+             * Optional experiment-level metadata to store about the evaluation. You can later use
+             * this to slice & dice across experiments.
+             */
+            fun metadata(metadata: Metadata) = metadata(JsonField.of(metadata))
+
+            /**
+             * Sets [Builder.metadata] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+
+            /** Options for tracing the evaluation */
+            fun parent(parent: Parent) = parent(JsonField.of(parent))
+
+            /**
+             * Sets [Builder.parent] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.parent] with a well-typed [Parent] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun parent(parent: JsonField<Parent>) = apply { this.parent = parent }
+
+            /** Alias for calling [parent] with `Parent.ofSpanParentStruct(spanParentStruct)`. */
+            fun parent(spanParentStruct: Parent.SpanParentStruct) =
+                parent(Parent.ofSpanParentStruct(spanParentStruct))
+
+            /** Alias for calling [parent] with `Parent.ofString(string)`. */
+            fun parent(string: String) = parent(Parent.ofString(string))
+
+            /** Metadata about the state of the repo when the experiment was created */
+            fun repoInfo(repoInfo: RepoInfo?) = repoInfo(JsonField.ofNullable(repoInfo))
+
+            /**
+             * Sets [Builder.repoInfo] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.repoInfo] with a well-typed [RepoInfo] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun repoInfo(repoInfo: JsonField<RepoInfo>) = apply { this.repoInfo = repoInfo }
+
+            /**
+             * Whether to stream the results of the eval. If true, the request will return two
+             * events: one to indicate the experiment has started, and another upon completion. If
+             * false, the request will return the evaluation's summary upon completion.
+             */
+            fun stream(stream: Boolean) = stream(JsonField.of(stream))
+
+            /**
+             * Sets [Builder.stream] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.stream] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun stream(stream: JsonField<Boolean>) = apply { this.stream = stream }
+
+            /**
+             * The maximum duration, in milliseconds, to run the evaluation. Defaults to undefined,
+             * in which case there is no timeout.
+             */
+            fun timeout(timeout: Double?) = timeout(JsonField.ofNullable(timeout))
+
+            /**
+             * Alias for [Builder.timeout].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun timeout(timeout: Double) = timeout(timeout as Double?)
+
+            /**
+             * Sets [Builder.timeout] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.timeout] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun timeout(timeout: JsonField<Double>) = apply { this.timeout = timeout }
+
+            /**
+             * The number of times to run the evaluator per input. This is useful for evaluating
+             * applications that have non-deterministic behavior and gives you both a stronger
+             * aggregate measure and a sense of the variance in the results.
+             */
+            fun trialCount(trialCount: Double?) = trialCount(JsonField.ofNullable(trialCount))
+
+            /**
+             * Alias for [Builder.trialCount].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun trialCount(trialCount: Double) = trialCount(trialCount as Double?)
+
+            /**
+             * Sets [Builder.trialCount] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.trialCount] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun trialCount(trialCount: JsonField<Double>) = apply { this.trialCount = trialCount }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .data()
+             * .projectId()
+             * .scores()
+             * .task()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("data", data),
+                    checkRequired("projectId", projectId),
+                    checkRequired("scores", scores).map { it.toImmutable() },
+                    checkRequired("task", task),
+                    baseExperimentId,
+                    baseExperimentName,
+                    experimentName,
+                    gitMetadataSettings,
+                    isPublic,
+                    maxConcurrency,
+                    metadata,
+                    parent,
+                    repoInfo,
+                    stream,
+                    timeout,
+                    trialCount,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            data().validate()
+            projectId()
+            scores().forEach { it.validate() }
+            task().validate()
+            baseExperimentId()
+            baseExperimentName()
+            experimentName()
+            gitMetadataSettings()?.validate()
+            isPublic()
+            maxConcurrency()
+            metadata()?.validate()
+            parent()?.validate()
+            repoInfo()?.validate()
+            stream()
+            timeout()
+            trialCount()
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && data == other.data && projectId == other.projectId && scores == other.scores && task == other.task && baseExperimentId == other.baseExperimentId && baseExperimentName == other.baseExperimentName && experimentName == other.experimentName && gitMetadataSettings == other.gitMetadataSettings && isPublic == other.isPublic && maxConcurrency == other.maxConcurrency && metadata == other.metadata && parent == other.parent && repoInfo == other.repoInfo && stream == other.stream && timeout == other.timeout && trialCount == other.trialCount && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(data, projectId, scores, task, baseExperimentId, baseExperimentName, experimentName, gitMetadataSettings, isPublic, maxConcurrency, metadata, parent, repoInfo, stream, timeout, trialCount, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{data=$data, projectId=$projectId, scores=$scores, task=$task, baseExperimentId=$baseExperimentId, baseExperimentName=$baseExperimentName, experimentName=$experimentName, gitMetadataSettings=$gitMetadataSettings, isPublic=$isPublic, maxConcurrency=$maxConcurrency, metadata=$metadata, parent=$parent, repoInfo=$repoInfo, stream=$stream, timeout=$timeout, trialCount=$trialCount, additionalProperties=$additionalProperties}"
+    }
+
     /** The dataset to use */
     @JsonDeserialize(using = Data.Deserializer::class)
     @JsonSerialize(using = Data.Serializer::class)
@@ -1796,19 +1829,22 @@ private constructor(
         }
 
         /** Dataset id */
-        @NoAutoDetect
         class DatasetId
-        @JsonCreator
         private constructor(
-            @JsonProperty("dataset_id")
-            @ExcludeMissing
-            private val datasetId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("_internal_btql")
-            @ExcludeMissing
-            private val _internalBtql: JsonField<_InternalBtql> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val datasetId: JsonField<String>,
+            private val _internalBtql: JsonField<_InternalBtql>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("dataset_id")
+                @ExcludeMissing
+                datasetId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("_internal_btql")
+                @ExcludeMissing
+                _internalBtql: JsonField<_InternalBtql> = JsonMissing.of(),
+            ) : this(datasetId, _internalBtql, mutableMapOf())
 
             /**
              * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
@@ -1843,21 +1879,15 @@ private constructor(
             @ExcludeMissing
             fun __internalBtql(): JsonField<_InternalBtql> = _internalBtql
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): DatasetId = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                datasetId()
-                _internalBtql()?.validate()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1950,31 +1980,36 @@ private constructor(
                     DatasetId(
                         checkRequired("datasetId", datasetId),
                         _internalBtql,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
             }
 
-            @NoAutoDetect
+            private var validated: Boolean = false
+
+            fun validate(): DatasetId = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                datasetId()
+                _internalBtql()?.validate()
+                validated = true
+            }
+
             class _InternalBtql
-            @JsonCreator
-            private constructor(
+            private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+                @JsonCreator private constructor() : this(mutableMapOf())
+
                 @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-            ) {
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
 
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): _InternalBtql = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -2022,7 +2057,17 @@ private constructor(
                      *
                      * Further updates to this [Builder] will not mutate the returned instance.
                      */
-                    fun build(): _InternalBtql = _InternalBtql(additionalProperties.toImmutable())
+                    fun build(): _InternalBtql = _InternalBtql(additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): _InternalBtql = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -2062,22 +2107,26 @@ private constructor(
         }
 
         /** Project and dataset name */
-        @NoAutoDetect
         class ProjectDatasetName
-        @JsonCreator
         private constructor(
-            @JsonProperty("dataset_name")
-            @ExcludeMissing
-            private val datasetName: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("project_name")
-            @ExcludeMissing
-            private val projectName: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("_internal_btql")
-            @ExcludeMissing
-            private val _internalBtql: JsonField<_InternalBtql> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val datasetName: JsonField<String>,
+            private val projectName: JsonField<String>,
+            private val _internalBtql: JsonField<_InternalBtql>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("dataset_name")
+                @ExcludeMissing
+                datasetName: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("project_name")
+                @ExcludeMissing
+                projectName: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("_internal_btql")
+                @ExcludeMissing
+                _internalBtql: JsonField<_InternalBtql> = JsonMissing.of(),
+            ) : this(datasetName, projectName, _internalBtql, mutableMapOf())
 
             /**
              * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
@@ -2129,22 +2178,15 @@ private constructor(
             @ExcludeMissing
             fun __internalBtql(): JsonField<_InternalBtql> = _internalBtql
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): ProjectDatasetName = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                datasetName()
-                projectName()
-                _internalBtql()?.validate()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -2257,31 +2299,37 @@ private constructor(
                         checkRequired("datasetName", datasetName),
                         checkRequired("projectName", projectName),
                         _internalBtql,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
             }
 
-            @NoAutoDetect
+            private var validated: Boolean = false
+
+            fun validate(): ProjectDatasetName = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                datasetName()
+                projectName()
+                _internalBtql()?.validate()
+                validated = true
+            }
+
             class _InternalBtql
-            @JsonCreator
-            private constructor(
+            private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+                @JsonCreator private constructor() : this(mutableMapOf())
+
                 @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-            ) {
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
 
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): _InternalBtql = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -2329,7 +2377,17 @@ private constructor(
                      *
                      * Further updates to this [Builder] will not mutate the returned instance.
                      */
-                    fun build(): _InternalBtql = _InternalBtql(additionalProperties.toImmutable())
+                    fun build(): _InternalBtql = _InternalBtql(additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): _InternalBtql = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -2369,16 +2427,18 @@ private constructor(
         }
 
         /** Dataset rows */
-        @NoAutoDetect
         class DatasetRows
-        @JsonCreator
         private constructor(
-            @JsonProperty("data")
-            @ExcludeMissing
-            private val data: JsonField<List<JsonValue?>> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val data: JsonField<List<JsonValue?>>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("data")
+                @ExcludeMissing
+                data: JsonField<List<JsonValue?>> = JsonMissing.of()
+            ) : this(data, mutableMapOf())
 
             /**
              * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
@@ -2394,20 +2454,15 @@ private constructor(
              */
             @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<List<JsonValue?>> = data
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): DatasetRows = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                data()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -2497,8 +2552,19 @@ private constructor(
                 fun build(): DatasetRows =
                     DatasetRows(
                         checkRequired("data", data).map { it.toImmutable() },
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): DatasetRows = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                data()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -2769,19 +2835,22 @@ private constructor(
         }
 
         /** Function id */
-        @NoAutoDetect
         class FunctionId
-        @JsonCreator
         private constructor(
-            @JsonProperty("function_id")
-            @ExcludeMissing
-            private val functionId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("version")
-            @ExcludeMissing
-            private val version: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val functionId: JsonField<String>,
+            private val version: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("function_id")
+                @ExcludeMissing
+                functionId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("version")
+                @ExcludeMissing
+                version: JsonField<String> = JsonMissing.of(),
+            ) : this(functionId, version, mutableMapOf())
 
             /**
              * The ID of the function
@@ -2817,21 +2886,15 @@ private constructor(
              */
             @JsonProperty("version") @ExcludeMissing fun _version(): JsonField<String> = version
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): FunctionId = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                functionId()
-                version()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -2925,8 +2988,20 @@ private constructor(
                     FunctionId(
                         checkRequired("functionId", functionId),
                         version,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): FunctionId = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                functionId()
+                version()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -2948,22 +3023,24 @@ private constructor(
         }
 
         /** Project name and slug */
-        @NoAutoDetect
         class ProjectSlug
-        @JsonCreator
         private constructor(
-            @JsonProperty("project_name")
-            @ExcludeMissing
-            private val projectName: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("slug")
-            @ExcludeMissing
-            private val slug: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("version")
-            @ExcludeMissing
-            private val version: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val projectName: JsonField<String>,
+            private val slug: JsonField<String>,
+            private val version: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("project_name")
+                @ExcludeMissing
+                projectName: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("slug") @ExcludeMissing slug: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("version")
+                @ExcludeMissing
+                version: JsonField<String> = JsonMissing.of(),
+            ) : this(projectName, slug, version, mutableMapOf())
 
             /**
              * The name of the project containing the function
@@ -3015,22 +3092,15 @@ private constructor(
              */
             @JsonProperty("version") @ExcludeMissing fun _version(): JsonField<String> = version
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): ProjectSlug = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                projectName()
-                slug()
-                version()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -3141,8 +3211,21 @@ private constructor(
                         checkRequired("projectName", projectName),
                         checkRequired("slug", slug),
                         version,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): ProjectSlug = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                projectName()
+                slug()
+                version()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -3164,16 +3247,18 @@ private constructor(
         }
 
         /** Global function name */
-        @NoAutoDetect
         class GlobalFunction
-        @JsonCreator
         private constructor(
-            @JsonProperty("global_function")
-            @ExcludeMissing
-            private val globalFunction: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val globalFunction: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("global_function")
+                @ExcludeMissing
+                globalFunction: JsonField<String> = JsonMissing.of()
+            ) : this(globalFunction, mutableMapOf())
 
             /**
              * The name of the global function. Currently, the global namespace includes the
@@ -3195,20 +3280,15 @@ private constructor(
             @ExcludeMissing
             fun _globalFunction(): JsonField<String> = globalFunction
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): GlobalFunction = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                globalFunction()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -3291,8 +3371,19 @@ private constructor(
                 fun build(): GlobalFunction =
                     GlobalFunction(
                         checkRequired("globalFunction", globalFunction),
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): GlobalFunction = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                globalFunction()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -3314,22 +3405,26 @@ private constructor(
         }
 
         /** Prompt session id */
-        @NoAutoDetect
         class PromptSessionId
-        @JsonCreator
         private constructor(
-            @JsonProperty("prompt_session_function_id")
-            @ExcludeMissing
-            private val promptSessionFunctionId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("prompt_session_id")
-            @ExcludeMissing
-            private val promptSessionId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("version")
-            @ExcludeMissing
-            private val version: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val promptSessionFunctionId: JsonField<String>,
+            private val promptSessionId: JsonField<String>,
+            private val version: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("prompt_session_function_id")
+                @ExcludeMissing
+                promptSessionFunctionId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("prompt_session_id")
+                @ExcludeMissing
+                promptSessionId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("version")
+                @ExcludeMissing
+                version: JsonField<String> = JsonMissing.of(),
+            ) : this(promptSessionFunctionId, promptSessionId, version, mutableMapOf())
 
             /**
              * The ID of the function in the prompt session
@@ -3385,22 +3480,15 @@ private constructor(
              */
             @JsonProperty("version") @ExcludeMissing fun _version(): JsonField<String> = version
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): PromptSessionId = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                promptSessionFunctionId()
-                promptSessionId()
-                version()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -3515,8 +3603,21 @@ private constructor(
                         checkRequired("promptSessionFunctionId", promptSessionFunctionId),
                         checkRequired("promptSessionId", promptSessionId),
                         version,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): PromptSessionId = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                promptSessionFunctionId()
+                promptSessionId()
+                version()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -3538,22 +3639,22 @@ private constructor(
         }
 
         /** Inline code function */
-        @NoAutoDetect
         class InlineCode
-        @JsonCreator
         private constructor(
-            @JsonProperty("code")
-            @ExcludeMissing
-            private val code: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("inline_context")
-            @ExcludeMissing
-            private val inlineContext: JsonField<InlineContext> = JsonMissing.of(),
-            @JsonProperty("name")
-            @ExcludeMissing
-            private val name: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val code: JsonField<String>,
+            private val inlineContext: JsonField<InlineContext>,
+            private val name: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("code") @ExcludeMissing code: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("inline_context")
+                @ExcludeMissing
+                inlineContext: JsonField<InlineContext> = JsonMissing.of(),
+                @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            ) : this(code, inlineContext, name, mutableMapOf())
 
             /**
              * The inline code to execute
@@ -3603,22 +3704,15 @@ private constructor(
              */
             @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): InlineCode = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                code()
-                inlineContext().validate()
-                name()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -3729,23 +3823,39 @@ private constructor(
                         checkRequired("code", code),
                         checkRequired("inlineContext", inlineContext),
                         name,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
             }
 
-            @NoAutoDetect
+            private var validated: Boolean = false
+
+            fun validate(): InlineCode = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                code()
+                inlineContext().validate()
+                name()
+                validated = true
+            }
+
             class InlineContext
-            @JsonCreator
             private constructor(
-                @JsonProperty("runtime")
-                @ExcludeMissing
-                private val runtime: JsonField<Runtime> = JsonMissing.of(),
-                @JsonProperty("version")
-                @ExcludeMissing
-                private val version: JsonField<String> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val runtime: JsonField<Runtime>,
+                private val version: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("runtime")
+                    @ExcludeMissing
+                    runtime: JsonField<Runtime> = JsonMissing.of(),
+                    @JsonProperty("version")
+                    @ExcludeMissing
+                    version: JsonField<String> = JsonMissing.of(),
+                ) : this(runtime, version, mutableMapOf())
 
                 /**
                  * @throws BraintrustInvalidDataException if the JSON field has an unexpected type
@@ -3779,21 +3889,15 @@ private constructor(
                  */
                 @JsonProperty("version") @ExcludeMissing fun _version(): JsonField<String> = version
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): InlineContext = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    runtime()
-                    version()
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -3885,8 +3989,20 @@ private constructor(
                         InlineContext(
                             checkRequired("runtime", runtime),
                             checkRequired("version", version),
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): InlineContext = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    runtime()
+                    version()
+                    validated = true
                 }
 
                 class Runtime
@@ -4031,19 +4147,20 @@ private constructor(
         }
 
         /** Inline prompt definition */
-        @NoAutoDetect
         class InlinePrompt
-        @JsonCreator
         private constructor(
-            @JsonProperty("inline_prompt")
-            @ExcludeMissing
-            private val inlinePrompt: JsonField<PromptData> = JsonMissing.of(),
-            @JsonProperty("name")
-            @ExcludeMissing
-            private val name: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val inlinePrompt: JsonField<PromptData>,
+            private val name: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("inline_prompt")
+                @ExcludeMissing
+                inlinePrompt: JsonField<PromptData> = JsonMissing.of(),
+                @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            ) : this(inlinePrompt, name, mutableMapOf())
 
             /**
              * The prompt, model, and its parameters
@@ -4078,21 +4195,15 @@ private constructor(
              */
             @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): InlinePrompt = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                inlinePrompt()?.validate()
-                name()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -4187,8 +4298,20 @@ private constructor(
                     InlinePrompt(
                         checkRequired("inlinePrompt", inlinePrompt),
                         name,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): InlinePrompt = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                inlinePrompt()?.validate()
+                name()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -4458,19 +4581,22 @@ private constructor(
         }
 
         /** Function id */
-        @NoAutoDetect
         class FunctionId
-        @JsonCreator
         private constructor(
-            @JsonProperty("function_id")
-            @ExcludeMissing
-            private val functionId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("version")
-            @ExcludeMissing
-            private val version: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val functionId: JsonField<String>,
+            private val version: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("function_id")
+                @ExcludeMissing
+                functionId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("version")
+                @ExcludeMissing
+                version: JsonField<String> = JsonMissing.of(),
+            ) : this(functionId, version, mutableMapOf())
 
             /**
              * The ID of the function
@@ -4506,21 +4632,15 @@ private constructor(
              */
             @JsonProperty("version") @ExcludeMissing fun _version(): JsonField<String> = version
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): FunctionId = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                functionId()
-                version()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -4614,8 +4734,20 @@ private constructor(
                     FunctionId(
                         checkRequired("functionId", functionId),
                         version,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): FunctionId = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                functionId()
+                version()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -4637,22 +4769,24 @@ private constructor(
         }
 
         /** Project name and slug */
-        @NoAutoDetect
         class ProjectSlug
-        @JsonCreator
         private constructor(
-            @JsonProperty("project_name")
-            @ExcludeMissing
-            private val projectName: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("slug")
-            @ExcludeMissing
-            private val slug: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("version")
-            @ExcludeMissing
-            private val version: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val projectName: JsonField<String>,
+            private val slug: JsonField<String>,
+            private val version: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("project_name")
+                @ExcludeMissing
+                projectName: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("slug") @ExcludeMissing slug: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("version")
+                @ExcludeMissing
+                version: JsonField<String> = JsonMissing.of(),
+            ) : this(projectName, slug, version, mutableMapOf())
 
             /**
              * The name of the project containing the function
@@ -4704,22 +4838,15 @@ private constructor(
              */
             @JsonProperty("version") @ExcludeMissing fun _version(): JsonField<String> = version
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): ProjectSlug = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                projectName()
-                slug()
-                version()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -4830,8 +4957,21 @@ private constructor(
                         checkRequired("projectName", projectName),
                         checkRequired("slug", slug),
                         version,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): ProjectSlug = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                projectName()
+                slug()
+                version()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -4853,16 +4993,18 @@ private constructor(
         }
 
         /** Global function name */
-        @NoAutoDetect
         class GlobalFunction
-        @JsonCreator
         private constructor(
-            @JsonProperty("global_function")
-            @ExcludeMissing
-            private val globalFunction: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val globalFunction: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("global_function")
+                @ExcludeMissing
+                globalFunction: JsonField<String> = JsonMissing.of()
+            ) : this(globalFunction, mutableMapOf())
 
             /**
              * The name of the global function. Currently, the global namespace includes the
@@ -4884,20 +5026,15 @@ private constructor(
             @ExcludeMissing
             fun _globalFunction(): JsonField<String> = globalFunction
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): GlobalFunction = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                globalFunction()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -4980,8 +5117,19 @@ private constructor(
                 fun build(): GlobalFunction =
                     GlobalFunction(
                         checkRequired("globalFunction", globalFunction),
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): GlobalFunction = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                globalFunction()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -5003,22 +5151,26 @@ private constructor(
         }
 
         /** Prompt session id */
-        @NoAutoDetect
         class PromptSessionId
-        @JsonCreator
         private constructor(
-            @JsonProperty("prompt_session_function_id")
-            @ExcludeMissing
-            private val promptSessionFunctionId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("prompt_session_id")
-            @ExcludeMissing
-            private val promptSessionId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("version")
-            @ExcludeMissing
-            private val version: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val promptSessionFunctionId: JsonField<String>,
+            private val promptSessionId: JsonField<String>,
+            private val version: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("prompt_session_function_id")
+                @ExcludeMissing
+                promptSessionFunctionId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("prompt_session_id")
+                @ExcludeMissing
+                promptSessionId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("version")
+                @ExcludeMissing
+                version: JsonField<String> = JsonMissing.of(),
+            ) : this(promptSessionFunctionId, promptSessionId, version, mutableMapOf())
 
             /**
              * The ID of the function in the prompt session
@@ -5074,22 +5226,15 @@ private constructor(
              */
             @JsonProperty("version") @ExcludeMissing fun _version(): JsonField<String> = version
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): PromptSessionId = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                promptSessionFunctionId()
-                promptSessionId()
-                version()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -5204,8 +5349,21 @@ private constructor(
                         checkRequired("promptSessionFunctionId", promptSessionFunctionId),
                         checkRequired("promptSessionId", promptSessionId),
                         version,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): PromptSessionId = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                promptSessionFunctionId()
+                promptSessionId()
+                version()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -5227,22 +5385,22 @@ private constructor(
         }
 
         /** Inline code function */
-        @NoAutoDetect
         class InlineCode
-        @JsonCreator
         private constructor(
-            @JsonProperty("code")
-            @ExcludeMissing
-            private val code: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("inline_context")
-            @ExcludeMissing
-            private val inlineContext: JsonField<InlineContext> = JsonMissing.of(),
-            @JsonProperty("name")
-            @ExcludeMissing
-            private val name: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val code: JsonField<String>,
+            private val inlineContext: JsonField<InlineContext>,
+            private val name: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("code") @ExcludeMissing code: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("inline_context")
+                @ExcludeMissing
+                inlineContext: JsonField<InlineContext> = JsonMissing.of(),
+                @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            ) : this(code, inlineContext, name, mutableMapOf())
 
             /**
              * The inline code to execute
@@ -5292,22 +5450,15 @@ private constructor(
              */
             @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): InlineCode = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                code()
-                inlineContext().validate()
-                name()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -5418,23 +5569,39 @@ private constructor(
                         checkRequired("code", code),
                         checkRequired("inlineContext", inlineContext),
                         name,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
             }
 
-            @NoAutoDetect
+            private var validated: Boolean = false
+
+            fun validate(): InlineCode = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                code()
+                inlineContext().validate()
+                name()
+                validated = true
+            }
+
             class InlineContext
-            @JsonCreator
             private constructor(
-                @JsonProperty("runtime")
-                @ExcludeMissing
-                private val runtime: JsonField<Runtime> = JsonMissing.of(),
-                @JsonProperty("version")
-                @ExcludeMissing
-                private val version: JsonField<String> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val runtime: JsonField<Runtime>,
+                private val version: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("runtime")
+                    @ExcludeMissing
+                    runtime: JsonField<Runtime> = JsonMissing.of(),
+                    @JsonProperty("version")
+                    @ExcludeMissing
+                    version: JsonField<String> = JsonMissing.of(),
+                ) : this(runtime, version, mutableMapOf())
 
                 /**
                  * @throws BraintrustInvalidDataException if the JSON field has an unexpected type
@@ -5468,21 +5635,15 @@ private constructor(
                  */
                 @JsonProperty("version") @ExcludeMissing fun _version(): JsonField<String> = version
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): InlineContext = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    runtime()
-                    version()
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -5574,8 +5735,20 @@ private constructor(
                         InlineContext(
                             checkRequired("runtime", runtime),
                             checkRequired("version", version),
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): InlineContext = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    runtime()
+                    version()
+                    validated = true
                 }
 
                 class Runtime
@@ -5720,19 +5893,20 @@ private constructor(
         }
 
         /** Inline prompt definition */
-        @NoAutoDetect
         class InlinePrompt
-        @JsonCreator
         private constructor(
-            @JsonProperty("inline_prompt")
-            @ExcludeMissing
-            private val inlinePrompt: JsonField<PromptData> = JsonMissing.of(),
-            @JsonProperty("name")
-            @ExcludeMissing
-            private val name: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val inlinePrompt: JsonField<PromptData>,
+            private val name: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("inline_prompt")
+                @ExcludeMissing
+                inlinePrompt: JsonField<PromptData> = JsonMissing.of(),
+                @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            ) : this(inlinePrompt, name, mutableMapOf())
 
             /**
              * The prompt, model, and its parameters
@@ -5767,21 +5941,15 @@ private constructor(
              */
             @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): InlinePrompt = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                inlinePrompt()?.validate()
-                name()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -5876,8 +6044,20 @@ private constructor(
                     InlinePrompt(
                         checkRequired("inlinePrompt", inlinePrompt),
                         name,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): InlinePrompt = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                inlinePrompt()?.validate()
+                name()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -5903,19 +6083,20 @@ private constructor(
      * Optional settings for collecting git metadata. By default, will collect all git metadata
      * fields allowed in org-level settings.
      */
-    @NoAutoDetect
     class GitMetadataSettings
-    @JsonCreator
     private constructor(
-        @JsonProperty("collect")
-        @ExcludeMissing
-        private val collect: JsonField<Collect> = JsonMissing.of(),
-        @JsonProperty("fields")
-        @ExcludeMissing
-        private val fields: JsonField<List<Field>> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val collect: JsonField<Collect>,
+        private val fields: JsonField<List<Field>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("collect") @ExcludeMissing collect: JsonField<Collect> = JsonMissing.of(),
+            @JsonProperty("fields")
+            @ExcludeMissing
+            fields: JsonField<List<Field>> = JsonMissing.of(),
+        ) : this(collect, fields, mutableMapOf())
 
         /**
          * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
@@ -5943,21 +6124,15 @@ private constructor(
          */
         @JsonProperty("fields") @ExcludeMissing fun _fields(): JsonField<List<Field>> = fields
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): GitMetadataSettings = apply {
-            if (validated) {
-                return@apply
-            }
-
-            collect()
-            fields()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -6058,8 +6233,20 @@ private constructor(
                 GitMetadataSettings(
                     checkRequired("collect", collect),
                     (fields ?: JsonMissing.of()).map { it.toImmutable() },
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): GitMetadataSettings = apply {
+            if (validated) {
+                return@apply
+            }
+
+            collect()
+            fields()
+            validated = true
         }
 
         class Collect @JsonCreator private constructor(private val value: JsonField<String>) :
@@ -6333,27 +6520,20 @@ private constructor(
      * Optional experiment-level metadata to store about the evaluation. You can later use this to
      * slice & dice across experiments.
      */
-    @NoAutoDetect
     class Metadata
-    @JsonCreator
-    private constructor(
+    private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+        @JsonCreator private constructor() : this(mutableMapOf())
+
         @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-    ) {
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Metadata = apply {
-            if (validated) {
-                return@apply
-            }
-
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -6396,7 +6576,17 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Metadata = Metadata(additionalProperties.toImmutable())
+            fun build(): Metadata = Metadata(additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Metadata = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -6557,25 +6747,30 @@ private constructor(
         }
 
         /** Span parent properties */
-        @NoAutoDetect
         class SpanParentStruct
-        @JsonCreator
         private constructor(
-            @JsonProperty("object_id")
-            @ExcludeMissing
-            private val objectId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("object_type")
-            @ExcludeMissing
-            private val objectType: JsonField<ObjectType> = JsonMissing.of(),
-            @JsonProperty("propagated_event")
-            @ExcludeMissing
-            private val propagatedEvent: JsonField<PropagatedEvent> = JsonMissing.of(),
-            @JsonProperty("row_ids")
-            @ExcludeMissing
-            private val rowIds: JsonField<RowIds> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val objectId: JsonField<String>,
+            private val objectType: JsonField<ObjectType>,
+            private val propagatedEvent: JsonField<PropagatedEvent>,
+            private val rowIds: JsonField<RowIds>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("object_id")
+                @ExcludeMissing
+                objectId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("object_type")
+                @ExcludeMissing
+                objectType: JsonField<ObjectType> = JsonMissing.of(),
+                @JsonProperty("propagated_event")
+                @ExcludeMissing
+                propagatedEvent: JsonField<PropagatedEvent> = JsonMissing.of(),
+                @JsonProperty("row_ids")
+                @ExcludeMissing
+                rowIds: JsonField<RowIds> = JsonMissing.of(),
+            ) : this(objectId, objectType, propagatedEvent, rowIds, mutableMapOf())
 
             /**
              * The id of the container object you are logging to
@@ -6645,23 +6840,15 @@ private constructor(
              */
             @JsonProperty("row_ids") @ExcludeMissing fun _rowIds(): JsonField<RowIds> = rowIds
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): SpanParentStruct = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                objectId()
-                objectType()
-                propagatedEvent()?.validate()
-                rowIds()?.validate()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -6789,8 +6976,22 @@ private constructor(
                         checkRequired("objectType", objectType),
                         propagatedEvent,
                         rowIds,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): SpanParentStruct = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                objectId()
+                objectType()
+                propagatedEvent()?.validate()
+                rowIds()?.validate()
+                validated = true
             }
 
             class ObjectType
@@ -6904,27 +7105,20 @@ private constructor(
             }
 
             /** Include these properties in every span created under this parent */
-            @NoAutoDetect
             class PropagatedEvent
-            @JsonCreator
-            private constructor(
+            private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+                @JsonCreator private constructor() : this(mutableMapOf())
+
                 @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-            ) {
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
 
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): PropagatedEvent = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -6973,7 +7167,17 @@ private constructor(
                      * Further updates to this [Builder] will not mutate the returned instance.
                      */
                     fun build(): PropagatedEvent =
-                        PropagatedEvent(additionalProperties.toImmutable())
+                        PropagatedEvent(additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): PropagatedEvent = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -6995,22 +7199,24 @@ private constructor(
             }
 
             /** Identifiers for the row to to log a subspan under */
-            @NoAutoDetect
             class RowIds
-            @JsonCreator
             private constructor(
-                @JsonProperty("id")
-                @ExcludeMissing
-                private val id: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("root_span_id")
-                @ExcludeMissing
-                private val rootSpanId: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("span_id")
-                @ExcludeMissing
-                private val spanId: JsonField<String> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val id: JsonField<String>,
+                private val rootSpanId: JsonField<String>,
+                private val spanId: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("root_span_id")
+                    @ExcludeMissing
+                    rootSpanId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("span_id")
+                    @ExcludeMissing
+                    spanId: JsonField<String> = JsonMissing.of(),
+                ) : this(id, rootSpanId, spanId, mutableMapOf())
 
                 /**
                  * The id of the row
@@ -7064,22 +7270,15 @@ private constructor(
                  */
                 @JsonProperty("span_id") @ExcludeMissing fun _spanId(): JsonField<String> = spanId
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): RowIds = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    id()
-                    rootSpanId()
-                    spanId()
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -7192,8 +7391,21 @@ private constructor(
                             checkRequired("id", id),
                             checkRequired("rootSpanId", rootSpanId),
                             checkRequired("spanId", spanId),
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): RowIds = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    id()
+                    rootSpanId()
+                    spanId()
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {
