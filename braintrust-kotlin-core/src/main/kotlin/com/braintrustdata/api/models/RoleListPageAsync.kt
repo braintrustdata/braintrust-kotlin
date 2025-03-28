@@ -54,9 +54,9 @@ private constructor(
         }
 
         return if (params.endingBefore() != null) {
-            RoleListParams.builder().from(params).endingBefore(objects().first().id()).build()
+            params.toBuilder().endingBefore(objects().first().id()).build()
         } else {
-            RoleListParams.builder().from(params).startingAfter(objects().last().id()).build()
+            params.toBuilder().startingAfter(objects().last().id()).build()
         }
     }
 

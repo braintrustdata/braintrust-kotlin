@@ -54,15 +54,9 @@ private constructor(
         }
 
         return if (params.endingBefore() != null) {
-            ProjectScoreListParams.builder()
-                .from(params)
-                .endingBefore(objects().first().id())
-                .build()
+            params.toBuilder().endingBefore(objects().first().id()).build()
         } else {
-            ProjectScoreListParams.builder()
-                .from(params)
-                .startingAfter(objects().last().id())
-                .build()
+            params.toBuilder().startingAfter(objects().last().id()).build()
         }
     }
 

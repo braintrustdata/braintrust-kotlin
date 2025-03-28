@@ -54,9 +54,9 @@ private constructor(
         }
 
         return if (params.endingBefore() != null) {
-            AclListParams.builder().from(params).endingBefore(objects().first().id()).build()
+            params.toBuilder().endingBefore(objects().first().id()).build()
         } else {
-            AclListParams.builder().from(params).startingAfter(objects().last().id()).build()
+            params.toBuilder().startingAfter(objects().last().id()).build()
         }
     }
 
