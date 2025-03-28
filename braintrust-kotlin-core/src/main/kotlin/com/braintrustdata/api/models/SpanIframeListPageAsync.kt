@@ -54,9 +54,9 @@ private constructor(
         }
 
         return if (params.endingBefore() != null) {
-            SpanIframeListParams.builder().from(params).endingBefore(objects().first().id()).build()
+            params.toBuilder().endingBefore(objects().first().id()).build()
         } else {
-            SpanIframeListParams.builder().from(params).startingAfter(objects().last().id()).build()
+            params.toBuilder().startingAfter(objects().last().id()).build()
         }
     }
 
