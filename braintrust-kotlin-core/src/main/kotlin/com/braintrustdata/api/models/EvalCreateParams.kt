@@ -10,6 +10,7 @@ import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.allMaxBy
 import com.braintrustdata.api.core.checkKnown
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.getOrThrow
@@ -1640,6 +1641,38 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (data.asKnown()?.validity() ?: 0) +
+                (if (projectId.asKnown() == null) 0 else 1) +
+                (scores.asKnown()?.sumOf { it.validity().toInt() } ?: 0) +
+                (task.asKnown()?.validity() ?: 0) +
+                (if (baseExperimentId.asKnown() == null) 0 else 1) +
+                (if (baseExperimentName.asKnown() == null) 0 else 1) +
+                (if (experimentName.asKnown() == null) 0 else 1) +
+                (gitMetadataSettings.asKnown()?.validity() ?: 0) +
+                (if (isPublic.asKnown() == null) 0 else 1) +
+                (if (maxConcurrency.asKnown() == null) 0 else 1) +
+                (metadata.asKnown()?.validity() ?: 0) +
+                (parent.asKnown()?.validity() ?: 0) +
+                (repoInfo.asKnown()?.validity() ?: 0) +
+                (if (stream.asKnown() == null) 0 else 1) +
+                (if (timeout.asKnown() == null) 0 else 1) +
+                (if (trialCount.asKnown() == null) 0 else 1)
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1696,14 +1729,13 @@ private constructor(
 
         fun _json(): JsonValue? = _json
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 datasetId != null -> visitor.visitDatasetId(datasetId)
                 projectDatasetName != null -> visitor.visitProjectDatasetName(projectDatasetName)
                 datasetRows != null -> visitor.visitDatasetRows(datasetRows)
                 else -> visitor.unknown(_json)
             }
-        }
 
         private var validated: Boolean = false
 
@@ -1729,6 +1761,34 @@ private constructor(
             )
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitDatasetId(datasetId: DatasetId) = datasetId.validity()
+
+                    override fun visitProjectDatasetName(projectDatasetName: ProjectDatasetName) =
+                        projectDatasetName.validity()
+
+                    override fun visitDatasetRows(datasetRows: DatasetRows) = datasetRows.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1793,20 +1853,31 @@ private constructor(
             override fun ObjectCodec.deserialize(node: JsonNode): Data {
                 val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<DatasetId>()) { it.validate() }
-                    ?.let {
-                        return Data(datasetId = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<ProjectDatasetName>()) { it.validate() }
-                    ?.let {
-                        return Data(projectDatasetName = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<DatasetRows>()) { it.validate() }
-                    ?.let {
-                        return Data(datasetRows = it, _json = json)
-                    }
-
-                return Data(_json = json)
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<DatasetId>())?.let {
+                                Data(datasetId = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<ProjectDatasetName>())?.let {
+                                Data(projectDatasetName = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<DatasetRows>())?.let {
+                                Data(datasetRows = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Data(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
             }
         }
 
@@ -1996,6 +2067,24 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (datasetId.asKnown() == null) 0 else 1) +
+                    (_internalBtql.asKnown()?.validity() ?: 0)
+
             class _InternalBtql
             @JsonCreator
             private constructor(
@@ -2065,6 +2154,25 @@ private constructor(
 
                     validated = true
                 }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int =
+                    additionalProperties.count { (_, value) ->
+                        !value.isNull() && !value.isMissing()
+                    }
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -2312,6 +2420,25 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (datasetName.asKnown() == null) 0 else 1) +
+                    (if (projectName.asKnown() == null) 0 else 1) +
+                    (_internalBtql.asKnown()?.validity() ?: 0)
+
             class _InternalBtql
             @JsonCreator
             private constructor(
@@ -2381,6 +2508,25 @@ private constructor(
 
                     validated = true
                 }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int =
+                    additionalProperties.count { (_, value) ->
+                        !value.isNull() && !value.isMissing()
+                    }
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -2559,6 +2705,22 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int = (data.asKnown()?.size ?: 0)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -2642,8 +2804,8 @@ private constructor(
 
         fun _json(): JsonValue? = _json
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 functionId != null -> visitor.visitFunctionId(functionId)
                 projectSlug != null -> visitor.visitProjectSlug(projectSlug)
                 globalFunction != null -> visitor.visitGlobalFunction(globalFunction)
@@ -2652,7 +2814,6 @@ private constructor(
                 inlinePrompt != null -> visitor.visitInlinePrompt(inlinePrompt)
                 else -> visitor.unknown(_json)
             }
-        }
 
         private var validated: Boolean = false
 
@@ -2690,6 +2851,42 @@ private constructor(
             )
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitFunctionId(functionId: FunctionId) = functionId.validity()
+
+                    override fun visitProjectSlug(projectSlug: ProjectSlug) = projectSlug.validity()
+
+                    override fun visitGlobalFunction(globalFunction: GlobalFunction) =
+                        globalFunction.validity()
+
+                    override fun visitPromptSessionId(promptSessionId: PromptSessionId) =
+                        promptSessionId.validity()
+
+                    override fun visitInlineCode(inlineCode: InlineCode) = inlineCode.validity()
+
+                    override fun visitInlinePrompt(inlinePrompt: InlinePrompt) =
+                        inlinePrompt.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -2777,32 +2974,40 @@ private constructor(
             override fun ObjectCodec.deserialize(node: JsonNode): Score {
                 val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<FunctionId>()) { it.validate() }
-                    ?.let {
-                        return Score(functionId = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<ProjectSlug>()) { it.validate() }
-                    ?.let {
-                        return Score(projectSlug = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<GlobalFunction>()) { it.validate() }
-                    ?.let {
-                        return Score(globalFunction = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<PromptSessionId>()) { it.validate() }
-                    ?.let {
-                        return Score(promptSessionId = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<InlineCode>()) { it.validate() }
-                    ?.let {
-                        return Score(inlineCode = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<InlinePrompt>()) { it.validate() }
-                    ?.let {
-                        return Score(inlinePrompt = it, _json = json)
-                    }
-
-                return Score(_json = json)
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<FunctionId>())?.let {
+                                Score(functionId = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<ProjectSlug>())?.let {
+                                Score(projectSlug = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<GlobalFunction>())?.let {
+                                Score(globalFunction = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<PromptSessionId>())?.let {
+                                Score(promptSessionId = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<InlineCode>())?.let {
+                                Score(inlineCode = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<InlinePrompt>())?.let {
+                                Score(inlinePrompt = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Score(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
             }
         }
 
@@ -2996,6 +3201,24 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (functionId.asKnown() == null) 0 else 1) +
+                    (if (version.asKnown() == null) 0 else 1)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -3220,6 +3443,25 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (projectName.asKnown() == null) 0 else 1) +
+                    (if (slug.asKnown() == null) 0 else 1) +
+                    (if (version.asKnown() == null) 0 else 1)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -3377,6 +3619,22 @@ private constructor(
                 globalFunction()
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int = (if (globalFunction.asKnown() == null) 0 else 1)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -3612,6 +3870,25 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (promptSessionFunctionId.asKnown() == null) 0 else 1) +
+                    (if (promptSessionId.asKnown() == null) 0 else 1) +
+                    (if (version.asKnown() == null) 0 else 1)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -3832,6 +4109,25 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (code.asKnown() == null) 0 else 1) +
+                    (inlineContext.asKnown()?.validity() ?: 0) +
+                    (if (name.asKnown() == null) 0 else 1)
+
             class InlineContext
             private constructor(
                 private val runtime: JsonField<Runtime>,
@@ -3992,10 +4288,27 @@ private constructor(
                         return@apply
                     }
 
-                    runtime()
+                    runtime().validate()
                     version()
                     validated = true
                 }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int =
+                    (runtime.asKnown()?.validity() ?: 0) + (if (version.asKnown() == null) 0 else 1)
 
                 class Runtime
                 @JsonCreator
@@ -4088,6 +4401,33 @@ private constructor(
                     fun asString(): String =
                         _value().asString()
                             ?: throw BraintrustInvalidDataException("Value is not a String")
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Runtime = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: BraintrustInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -4306,6 +4646,23 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (inlinePrompt.asKnown()?.validity() ?: 0) + (if (name.asKnown() == null) 0 else 1)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -4389,8 +4746,8 @@ private constructor(
 
         fun _json(): JsonValue? = _json
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 functionId != null -> visitor.visitFunctionId(functionId)
                 projectSlug != null -> visitor.visitProjectSlug(projectSlug)
                 globalFunction != null -> visitor.visitGlobalFunction(globalFunction)
@@ -4399,7 +4756,6 @@ private constructor(
                 inlinePrompt != null -> visitor.visitInlinePrompt(inlinePrompt)
                 else -> visitor.unknown(_json)
             }
-        }
 
         private var validated: Boolean = false
 
@@ -4437,6 +4793,42 @@ private constructor(
             )
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitFunctionId(functionId: FunctionId) = functionId.validity()
+
+                    override fun visitProjectSlug(projectSlug: ProjectSlug) = projectSlug.validity()
+
+                    override fun visitGlobalFunction(globalFunction: GlobalFunction) =
+                        globalFunction.validity()
+
+                    override fun visitPromptSessionId(promptSessionId: PromptSessionId) =
+                        promptSessionId.validity()
+
+                    override fun visitInlineCode(inlineCode: InlineCode) = inlineCode.validity()
+
+                    override fun visitInlinePrompt(inlinePrompt: InlinePrompt) =
+                        inlinePrompt.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -4523,32 +4915,40 @@ private constructor(
             override fun ObjectCodec.deserialize(node: JsonNode): Task {
                 val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<FunctionId>()) { it.validate() }
-                    ?.let {
-                        return Task(functionId = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<ProjectSlug>()) { it.validate() }
-                    ?.let {
-                        return Task(projectSlug = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<GlobalFunction>()) { it.validate() }
-                    ?.let {
-                        return Task(globalFunction = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<PromptSessionId>()) { it.validate() }
-                    ?.let {
-                        return Task(promptSessionId = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<InlineCode>()) { it.validate() }
-                    ?.let {
-                        return Task(inlineCode = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<InlinePrompt>()) { it.validate() }
-                    ?.let {
-                        return Task(inlinePrompt = it, _json = json)
-                    }
-
-                return Task(_json = json)
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<FunctionId>())?.let {
+                                Task(functionId = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<ProjectSlug>())?.let {
+                                Task(projectSlug = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<GlobalFunction>())?.let {
+                                Task(globalFunction = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<PromptSessionId>())?.let {
+                                Task(promptSessionId = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<InlineCode>())?.let {
+                                Task(inlineCode = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<InlinePrompt>())?.let {
+                                Task(inlinePrompt = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Task(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
             }
         }
 
@@ -4742,6 +5142,24 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (functionId.asKnown() == null) 0 else 1) +
+                    (if (version.asKnown() == null) 0 else 1)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -4966,6 +5384,25 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (projectName.asKnown() == null) 0 else 1) +
+                    (if (slug.asKnown() == null) 0 else 1) +
+                    (if (version.asKnown() == null) 0 else 1)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -5123,6 +5560,22 @@ private constructor(
                 globalFunction()
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int = (if (globalFunction.asKnown() == null) 0 else 1)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -5358,6 +5811,25 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (promptSessionFunctionId.asKnown() == null) 0 else 1) +
+                    (if (promptSessionId.asKnown() == null) 0 else 1) +
+                    (if (version.asKnown() == null) 0 else 1)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -5578,6 +6050,25 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (code.asKnown() == null) 0 else 1) +
+                    (inlineContext.asKnown()?.validity() ?: 0) +
+                    (if (name.asKnown() == null) 0 else 1)
+
             class InlineContext
             private constructor(
                 private val runtime: JsonField<Runtime>,
@@ -5738,10 +6229,27 @@ private constructor(
                         return@apply
                     }
 
-                    runtime()
+                    runtime().validate()
                     version()
                     validated = true
                 }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int =
+                    (runtime.asKnown()?.validity() ?: 0) + (if (version.asKnown() == null) 0 else 1)
 
                 class Runtime
                 @JsonCreator
@@ -5834,6 +6342,33 @@ private constructor(
                     fun asString(): String =
                         _value().asString()
                             ?: throw BraintrustInvalidDataException("Value is not a String")
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Runtime = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: BraintrustInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -6052,6 +6587,23 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (inlinePrompt.asKnown()?.validity() ?: 0) + (if (name.asKnown() == null) 0 else 1)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -6236,10 +6788,28 @@ private constructor(
                 return@apply
             }
 
-            collect()
-            fields()
+            collect().validate()
+            fields()?.forEach { it.validate() }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (collect.asKnown()?.validity() ?: 0) +
+                (fields.asKnown()?.sumOf { it.validity().toInt() } ?: 0)
 
         class Collect @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
@@ -6334,6 +6904,33 @@ private constructor(
              */
             fun asString(): String =
                 _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
+
+            private var validated: Boolean = false
+
+            fun validate(): Collect = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -6477,6 +7074,33 @@ private constructor(
             fun asString(): String =
                 _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
 
+            private var validated: Boolean = false
+
+            fun validate(): Field = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -6577,6 +7201,23 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -6622,13 +7263,12 @@ private constructor(
 
         fun _json(): JsonValue? = _json
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 spanParentStruct != null -> visitor.visitSpanParentStruct(spanParentStruct)
                 string != null -> visitor.visitString(string)
                 else -> visitor.unknown(_json)
             }
-        }
 
         private var validated: Boolean = false
 
@@ -6648,6 +7288,32 @@ private constructor(
             )
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitSpanParentStruct(spanParentStruct: SpanParentStruct) =
+                        spanParentStruct.validity()
+
+                    override fun visitString(string: String) = 1
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -6706,15 +7372,28 @@ private constructor(
             override fun ObjectCodec.deserialize(node: JsonNode): Parent {
                 val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<SpanParentStruct>()) { it.validate() }
-                    ?.let {
-                        return Parent(spanParentStruct = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return Parent(string = it, _json = json)
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<SpanParentStruct>())?.let {
+                                Parent(spanParentStruct = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                Parent(string = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from array).
+                    0 -> Parent(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                 }
-
-                return Parent(_json = json)
             }
         }
 
@@ -6976,11 +7655,31 @@ private constructor(
                 }
 
                 objectId()
-                objectType()
+                objectType().validate()
                 propagatedEvent()?.validate()
                 rowIds()?.validate()
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (objectId.asKnown() == null) 0 else 1) +
+                    (objectType.asKnown()?.validity() ?: 0) +
+                    (propagatedEvent.asKnown()?.validity() ?: 0) +
+                    (rowIds.asKnown()?.validity() ?: 0)
 
             class ObjectType
             @JsonCreator
@@ -7079,6 +7778,33 @@ private constructor(
                     _value().asString()
                         ?: throw BraintrustInvalidDataException("Value is not a String")
 
+                private var validated: Boolean = false
+
+                fun validate(): ObjectType = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
@@ -7163,6 +7889,25 @@ private constructor(
 
                     validated = true
                 }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int =
+                    additionalProperties.count { (_, value) ->
+                        !value.isNull() && !value.isMissing()
+                    }
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -7391,6 +8136,25 @@ private constructor(
                     spanId()
                     validated = true
                 }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int =
+                    (if (id.asKnown() == null) 0 else 1) +
+                        (if (rootSpanId.asKnown() == null) 0 else 1) +
+                        (if (spanId.asKnown() == null) 0 else 1)
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {

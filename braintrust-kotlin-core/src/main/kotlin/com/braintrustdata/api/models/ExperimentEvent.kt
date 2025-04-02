@@ -854,6 +854,37 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (if (id.asKnown() == null) 0 else 1) +
+            (if (_xactId.asKnown() == null) 0 else 1) +
+            (if (created.asKnown() == null) 0 else 1) +
+            (if (experimentId.asKnown() == null) 0 else 1) +
+            (if (projectId.asKnown() == null) 0 else 1) +
+            (if (rootSpanId.asKnown() == null) 0 else 1) +
+            (if (spanId.asKnown() == null) 0 else 1) +
+            (context.asKnown()?.validity() ?: 0) +
+            (if (isRoot.asKnown() == null) 0 else 1) +
+            (metadata.asKnown()?.validity() ?: 0) +
+            (metrics.asKnown()?.validity() ?: 0) +
+            (origin.asKnown()?.validity() ?: 0) +
+            (scores.asKnown()?.validity() ?: 0) +
+            (spanAttributes.asKnown()?.validity() ?: 0) +
+            (spanParents.asKnown()?.size ?: 0) +
+            (tags.asKnown()?.size ?: 0)
+
     /**
      * Context is additional information about the code that produced the experiment event. It is
      * essentially the textual counterpart to `metrics`. Use the `caller_*` attributes to track the
@@ -1064,6 +1095,25 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (if (callerFilename.asKnown() == null) 0 else 1) +
+                (if (callerFunctionname.asKnown() == null) 0 else 1) +
+                (if (callerLineno.asKnown() == null) 0 else 1)
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1193,6 +1243,22 @@ private constructor(
             model()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int = (if (model.asKnown() == null) 0 else 1)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1582,6 +1648,27 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (if (completionTokens.asKnown() == null) 0 else 1) +
+                (if (end.asKnown() == null) 0 else 1) +
+                (if (promptTokens.asKnown() == null) 0 else 1) +
+                (if (start.asKnown() == null) 0 else 1) +
+                (if (tokens.asKnown() == null) 0 else 1)
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1673,6 +1760,23 @@ private constructor(
 
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
