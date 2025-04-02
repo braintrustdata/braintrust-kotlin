@@ -88,7 +88,7 @@ internal class EnvVarServiceAsyncTest {
                 .build()
         val envVarServiceAsync = client.envVars()
 
-        val envVar =
+        val envVars =
             envVarServiceAsync.list(
                 EnvVarListParams.builder()
                     .envVarName("env_var_name")
@@ -99,7 +99,7 @@ internal class EnvVarServiceAsyncTest {
                     .build()
             )
 
-        envVar.validate()
+        envVars.validate()
     }
 
     @Test
