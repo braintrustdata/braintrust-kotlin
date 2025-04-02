@@ -420,6 +420,30 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (if (authorEmail.asKnown() == null) 0 else 1) +
+            (if (authorName.asKnown() == null) 0 else 1) +
+            (if (branch.asKnown() == null) 0 else 1) +
+            (if (commit.asKnown() == null) 0 else 1) +
+            (if (commitMessage.asKnown() == null) 0 else 1) +
+            (if (commitTime.asKnown() == null) 0 else 1) +
+            (if (dirty.asKnown() == null) 0 else 1) +
+            (if (gitDiff.asKnown() == null) 0 else 1) +
+            (if (tag.asKnown() == null) 0 else 1)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true

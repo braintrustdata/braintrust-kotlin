@@ -2,21 +2,10 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
 import com.braintrustdata.api.core.getOrThrow
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.util.Objects
 
 /**
@@ -384,13 +373,10 @@ private constructor(
      * Email of the user to search for. You may pass the param multiple times to filter for more
      * than one email
      */
-    @JsonDeserialize(using = Email.Deserializer::class)
-    @JsonSerialize(using = Email.Serializer::class)
     class Email
     private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
     ) {
 
         fun string(): String? = string
@@ -405,15 +391,12 @@ private constructor(
 
         fun asStrings(): List<String> = strings.getOrThrow("strings")
 
-        fun _json(): JsonValue? = _json
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
+                else -> throw IllegalStateException("Invalid Email")
             }
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -429,7 +412,6 @@ private constructor(
             when {
                 string != null -> "Email{string=$string}"
                 strings != null -> "Email{strings=$strings}"
-                _json != null -> "Email{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Email")
             }
 
@@ -446,52 +428,6 @@ private constructor(
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
-
-            /**
-             * Maps an unknown variant of [Email] to a value of type [T].
-             *
-             * An instance of [Email] can contain an unknown variant if it was deserialized from
-             * data that doesn't match any known variant. For example, if the SDK is on an older
-             * version than the API, then the API may respond with new variants that the SDK is
-             * unaware of.
-             *
-             * @throws BraintrustInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown Email: $json")
-            }
-        }
-
-        internal class Deserializer : BaseDeserializer<Email>(Email::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): Email {
-                val json = JsonValue.fromJsonNode(node)
-
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return Email(string = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                    return Email(strings = it, _json = json)
-                }
-
-                return Email(_json = json)
-            }
-        }
-
-        internal class Serializer : BaseSerializer<Email>(Email::class) {
-
-            override fun serialize(
-                value: Email,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Email")
-                }
-            }
         }
     }
 
@@ -499,13 +435,10 @@ private constructor(
      * Family name of the user to search for. You may pass the param multiple times to filter for
      * more than one family name
      */
-    @JsonDeserialize(using = FamilyName.Deserializer::class)
-    @JsonSerialize(using = FamilyName.Serializer::class)
     class FamilyName
     private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
     ) {
 
         fun string(): String? = string
@@ -520,15 +453,12 @@ private constructor(
 
         fun asStrings(): List<String> = strings.getOrThrow("strings")
 
-        fun _json(): JsonValue? = _json
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
+                else -> throw IllegalStateException("Invalid FamilyName")
             }
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -544,7 +474,6 @@ private constructor(
             when {
                 string != null -> "FamilyName{string=$string}"
                 strings != null -> "FamilyName{strings=$strings}"
-                _json != null -> "FamilyName{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid FamilyName")
             }
 
@@ -563,52 +492,6 @@ private constructor(
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
-
-            /**
-             * Maps an unknown variant of [FamilyName] to a value of type [T].
-             *
-             * An instance of [FamilyName] can contain an unknown variant if it was deserialized
-             * from data that doesn't match any known variant. For example, if the SDK is on an
-             * older version than the API, then the API may respond with new variants that the SDK
-             * is unaware of.
-             *
-             * @throws BraintrustInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown FamilyName: $json")
-            }
-        }
-
-        internal class Deserializer : BaseDeserializer<FamilyName>(FamilyName::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): FamilyName {
-                val json = JsonValue.fromJsonNode(node)
-
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return FamilyName(string = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                    return FamilyName(strings = it, _json = json)
-                }
-
-                return FamilyName(_json = json)
-            }
-        }
-
-        internal class Serializer : BaseSerializer<FamilyName>(FamilyName::class) {
-
-            override fun serialize(
-                value: FamilyName,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid FamilyName")
-                }
-            }
         }
     }
 
@@ -616,13 +499,10 @@ private constructor(
      * Given name of the user to search for. You may pass the param multiple times to filter for
      * more than one given name
      */
-    @JsonDeserialize(using = GivenName.Deserializer::class)
-    @JsonSerialize(using = GivenName.Serializer::class)
     class GivenName
     private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
     ) {
 
         fun string(): String? = string
@@ -637,15 +517,12 @@ private constructor(
 
         fun asStrings(): List<String> = strings.getOrThrow("strings")
 
-        fun _json(): JsonValue? = _json
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
+                else -> throw IllegalStateException("Invalid GivenName")
             }
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -661,7 +538,6 @@ private constructor(
             when {
                 string != null -> "GivenName{string=$string}"
                 strings != null -> "GivenName{strings=$strings}"
-                _json != null -> "GivenName{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid GivenName")
             }
 
@@ -680,52 +556,6 @@ private constructor(
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
-
-            /**
-             * Maps an unknown variant of [GivenName] to a value of type [T].
-             *
-             * An instance of [GivenName] can contain an unknown variant if it was deserialized from
-             * data that doesn't match any known variant. For example, if the SDK is on an older
-             * version than the API, then the API may respond with new variants that the SDK is
-             * unaware of.
-             *
-             * @throws BraintrustInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown GivenName: $json")
-            }
-        }
-
-        internal class Deserializer : BaseDeserializer<GivenName>(GivenName::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): GivenName {
-                val json = JsonValue.fromJsonNode(node)
-
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return GivenName(string = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                    return GivenName(strings = it, _json = json)
-                }
-
-                return GivenName(_json = json)
-            }
-        }
-
-        internal class Serializer : BaseSerializer<GivenName>(GivenName::class) {
-
-            override fun serialize(
-                value: GivenName,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid GivenName")
-                }
-            }
         }
     }
 
@@ -733,13 +563,10 @@ private constructor(
      * Filter search results to a particular set of object IDs. To specify a list of IDs, include
      * the query param multiple times
      */
-    @JsonDeserialize(using = Ids.Deserializer::class)
-    @JsonSerialize(using = Ids.Serializer::class)
     class Ids
     private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
     ) {
 
         fun string(): String? = string
@@ -754,15 +581,12 @@ private constructor(
 
         fun asStrings(): List<String> = strings.getOrThrow("strings")
 
-        fun _json(): JsonValue? = _json
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
+                else -> throw IllegalStateException("Invalid Ids")
             }
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -778,7 +602,6 @@ private constructor(
             when {
                 string != null -> "Ids{string=$string}"
                 strings != null -> "Ids{strings=$strings}"
-                _json != null -> "Ids{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Ids")
             }
 
@@ -795,51 +618,6 @@ private constructor(
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
-
-            /**
-             * Maps an unknown variant of [Ids] to a value of type [T].
-             *
-             * An instance of [Ids] can contain an unknown variant if it was deserialized from data
-             * that doesn't match any known variant. For example, if the SDK is on an older version
-             * than the API, then the API may respond with new variants that the SDK is unaware of.
-             *
-             * @throws BraintrustInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown Ids: $json")
-            }
-        }
-
-        internal class Deserializer : BaseDeserializer<Ids>(Ids::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): Ids {
-                val json = JsonValue.fromJsonNode(node)
-
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return Ids(string = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                    return Ids(strings = it, _json = json)
-                }
-
-                return Ids(_json = json)
-            }
-        }
-
-        internal class Serializer : BaseSerializer<Ids>(Ids::class) {
-
-            override fun serialize(
-                value: Ids,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Ids")
-                }
-            }
         }
     }
 

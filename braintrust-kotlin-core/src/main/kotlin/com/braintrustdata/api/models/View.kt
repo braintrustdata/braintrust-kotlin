@@ -455,8 +455,8 @@ private constructor(
         id()
         name()
         objectId()
-        objectType()
-        viewType()
+        objectType().validate()
+        viewType()?.validate()
         created()
         deletedAt()
         options()?.validate()
@@ -464,6 +464,31 @@ private constructor(
         viewData()?.validate()
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (if (id.asKnown() == null) 0 else 1) +
+            (if (name.asKnown() == null) 0 else 1) +
+            (if (objectId.asKnown() == null) 0 else 1) +
+            (objectType.asKnown()?.validity() ?: 0) +
+            (viewType.asKnown()?.validity() ?: 0) +
+            (if (created.asKnown() == null) 0 else 1) +
+            (if (deletedAt.asKnown() == null) 0 else 1) +
+            (options.asKnown()?.validity() ?: 0) +
+            (if (userId.asKnown() == null) 0 else 1) +
+            (viewData.asKnown()?.validity() ?: 0)
 
     /** Type of table that the view corresponds to. */
     class ViewType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -604,6 +629,33 @@ private constructor(
          */
         fun asString(): String =
             _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
+
+        private var validated: Boolean = false
+
+        fun validate(): ViewType = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
