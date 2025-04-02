@@ -780,14 +780,37 @@ private constructor(
             }
 
             objectId()
-            objectType()
+            objectType().validate()
             groupId()
-            permission()
-            restrictObjectType()
+            permission()?.validate()
+            restrictObjectType()?.validate()
             roleId()
             userId()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (if (objectId.asKnown() == null) 0 else 1) +
+                (objectType.asKnown()?.validity() ?: 0) +
+                (if (groupId.asKnown() == null) 0 else 1) +
+                (permission.asKnown()?.validity() ?: 0) +
+                (restrictObjectType.asKnown()?.validity() ?: 0) +
+                (if (roleId.asKnown() == null) 0 else 1) +
+                (if (userId.asKnown() == null) 0 else 1)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

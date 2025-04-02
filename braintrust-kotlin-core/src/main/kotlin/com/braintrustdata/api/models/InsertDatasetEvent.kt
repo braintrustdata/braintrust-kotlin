@@ -788,6 +788,33 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (if (id.asKnown() == null) 0 else 1) +
+            (if (_isMerge.asKnown() == null) 0 else 1) +
+            (_mergePaths.asKnown()?.sumOf { it.size.toInt() } ?: 0) +
+            (if (_objectDelete.asKnown() == null) 0 else 1) +
+            (if (_parentId.asKnown() == null) 0 else 1) +
+            (if (created.asKnown() == null) 0 else 1) +
+            (metadata.asKnown()?.validity() ?: 0) +
+            (origin.asKnown()?.validity() ?: 0) +
+            (if (rootSpanId.asKnown() == null) 0 else 1) +
+            (if (spanId.asKnown() == null) 0 else 1) +
+            (spanParents.asKnown()?.size ?: 0) +
+            (tags.asKnown()?.size ?: 0)
+
     /**
      * A dictionary with additional data about the test example, model outputs, or just about
      * anything else that's relevant, that you can use to help find and analyze examples later. For
@@ -899,6 +926,22 @@ private constructor(
             model()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int = (if (model.asKnown() == null) 0 else 1)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
