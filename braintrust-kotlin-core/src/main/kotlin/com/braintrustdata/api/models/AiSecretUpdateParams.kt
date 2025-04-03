@@ -128,6 +128,18 @@ private constructor(
         /** AiSecret id */
         fun aiSecretId(aiSecretId: String) = apply { this.aiSecretId = aiSecretId }
 
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [metadata]
+         * - [name]
+         * - [secret]
+         * - [type]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
         fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
 
         /**
@@ -308,7 +320,7 @@ private constructor(
             )
     }
 
-    internal fun _body(): Body = body
+    fun _body(): Body = body
 
     fun _pathParam(index: Int): String =
         when (index) {

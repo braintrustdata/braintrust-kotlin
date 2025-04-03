@@ -123,6 +123,18 @@ private constructor(
             additionalQueryParams = organizationMemberUpdateParams.additionalQueryParams.toBuilder()
         }
 
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [inviteUsers]
+         * - [orgId]
+         * - [orgName]
+         * - [removeUsers]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
         /** Users to invite to the organization */
         fun inviteUsers(inviteUsers: InviteUsers?) = apply { body.inviteUsers(inviteUsers) }
 
@@ -311,7 +323,7 @@ private constructor(
             )
     }
 
-    internal fun _body(): Body = body
+    fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 

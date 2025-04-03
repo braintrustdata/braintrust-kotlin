@@ -188,6 +188,20 @@ private constructor(
             additionalQueryParams = viewReplaceParams.additionalQueryParams.toBuilder()
         }
 
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [name]
+         * - [objectId]
+         * - [objectType]
+         * - [viewType]
+         * - [deletedAt]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
         /** Name of the view */
         fun name(name: String) = apply { body.name(name) }
 
@@ -421,7 +435,7 @@ private constructor(
             )
     }
 
-    internal fun _body(): Body = body
+    fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
