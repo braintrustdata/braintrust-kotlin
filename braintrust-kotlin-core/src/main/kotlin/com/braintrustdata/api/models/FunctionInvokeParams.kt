@@ -180,6 +180,20 @@ private constructor(
         /** Function id */
         fun functionId(functionId: String) = apply { this.functionId = functionId }
 
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [expected]
+         * - [input]
+         * - [messages]
+         * - [metadata]
+         * - [mode]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
         /** The expected output of the function */
         fun expected(expected: JsonValue) = apply { body.expected(expected) }
 
@@ -435,7 +449,7 @@ private constructor(
             )
     }
 
-    internal fun _body(): Body = body
+    fun _body(): Body = body
 
     fun _pathParam(index: Int): String =
         when (index) {

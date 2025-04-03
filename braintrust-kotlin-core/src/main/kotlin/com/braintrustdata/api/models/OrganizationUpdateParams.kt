@@ -140,6 +140,20 @@ private constructor(
         /** Organization id */
         fun organizationId(organizationId: String) = apply { this.organizationId = organizationId }
 
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [apiUrl]
+         * - [isUniversalApi]
+         * - [name]
+         * - [proxyUrl]
+         * - [realtimeUrl]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
         fun apiUrl(apiUrl: String?) = apply { body.apiUrl(apiUrl) }
 
         /**
@@ -340,7 +354,7 @@ private constructor(
             )
     }
 
-    internal fun _body(): Body = body
+    fun _body(): Body = body
 
     fun _pathParam(index: Int): String =
         when (index) {
