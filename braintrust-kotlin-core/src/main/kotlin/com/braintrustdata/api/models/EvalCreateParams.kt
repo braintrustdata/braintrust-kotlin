@@ -2733,7 +2733,8 @@ private constructor(
              *
              * Used for best match union deserialization.
              */
-            internal fun validity(): Int = (data.asKnown()?.size ?: 0)
+            internal fun validity(): Int =
+                (data.asKnown()?.sumOf { (if (it == null) 0 else 1).toInt() } ?: 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
