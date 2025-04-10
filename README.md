@@ -53,7 +53,7 @@ import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
 import com.braintrustdata.api.models.Project
 import com.braintrustdata.api.models.ProjectCreateParams
 
-// Configures using the `BRAINTRUST_API_KEY` environment variable
+// Configures using the `BRAINTRUST_API_KEY` and `BRAINTRUST_BASE_URL` environment variables
 val client: BraintrustClient = BraintrustOkHttpClient.fromEnv()
 
 val params: ProjectCreateParams = ProjectCreateParams.builder()
@@ -70,7 +70,7 @@ Configure the client using environment variables:
 import com.braintrustdata.api.client.BraintrustClient
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
 
-// Configures using the `BRAINTRUST_API_KEY` environment variable
+// Configures using the `BRAINTRUST_API_KEY` and `BRAINTRUST_BASE_URL` environment variables
 val client: BraintrustClient = BraintrustOkHttpClient.fromEnv()
 ```
 
@@ -92,7 +92,7 @@ import com.braintrustdata.api.client.BraintrustClient
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
 
 val client: BraintrustClient = BraintrustOkHttpClient.builder()
-    // Configures using the `BRAINTRUST_API_KEY` environment variable
+    // Configures using the `BRAINTRUST_API_KEY` and `BRAINTRUST_BASE_URL` environment variables
     .fromEnv()
     .apiKey("My API Key")
     .build()
@@ -100,9 +100,10 @@ val client: BraintrustClient = BraintrustOkHttpClient.builder()
 
 See this table for the available options:
 
-| Setter   | Environment variable | Required | Default value |
-| -------- | -------------------- | -------- | ------------- |
-| `apiKey` | `BRAINTRUST_API_KEY` | false    | -             |
+| Setter    | Environment variable  | Required | Default value                  |
+| --------- | --------------------- | -------- | ------------------------------ |
+| `apiKey`  | `BRAINTRUST_API_KEY`  | false    | -                              |
+| `baseUrl` | `BRAINTRUST_BASE_URL` | true     | `"https://api.braintrust.dev"` |
 
 > [!TIP]
 > Don't create more than one client in the same application. Each client has a connection pool and
@@ -132,7 +133,7 @@ import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
 import com.braintrustdata.api.models.Project
 import com.braintrustdata.api.models.ProjectCreateParams
 
-// Configures using the `BRAINTRUST_API_KEY` environment variable
+// Configures using the `BRAINTRUST_API_KEY` and `BRAINTRUST_BASE_URL` environment variables
 val client: BraintrustClient = BraintrustOkHttpClient.fromEnv()
 
 val params: ProjectCreateParams = ProjectCreateParams.builder()
@@ -149,7 +150,7 @@ import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClientAsync
 import com.braintrustdata.api.models.Project
 import com.braintrustdata.api.models.ProjectCreateParams
 
-// Configures using the `BRAINTRUST_API_KEY` environment variable
+// Configures using the `BRAINTRUST_API_KEY` and `BRAINTRUST_BASE_URL` environment variables
 val client: BraintrustClientAsync = BraintrustOkHttpClientAsync.fromEnv()
 
 val params: ProjectCreateParams = ProjectCreateParams.builder()
