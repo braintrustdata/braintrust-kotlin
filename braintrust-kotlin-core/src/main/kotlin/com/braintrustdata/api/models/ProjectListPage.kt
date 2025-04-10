@@ -2,22 +2,17 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.ProjectService
 import java.util.Objects
 
-/**
- * List out all projects. The projects are sorted by creation date, with the most recently-created
- * projects coming first
- */
+/** @see [ProjectService.list] */
 class ProjectListPage
 private constructor(
-    private val projectsService: ProjectService,
+    private val service: ProjectService,
     private val params: ProjectListParams,
     private val response: ProjectListPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): ProjectListPageResponse = response
 
     /**
      * Delegates to [ProjectListPageResponse], but gracefully handles missing data.
@@ -25,19 +20,6 @@ private constructor(
      * @see [ProjectListPageResponse.objects]
      */
     fun objects(): List<Project> = response._objects().getNullable("objects") ?: emptyList()
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ProjectListPage && projectsService == other.projectsService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(projectsService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "ProjectListPage{projectsService=$projectsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean = objects().isNotEmpty()
 
@@ -53,19 +35,74 @@ private constructor(
         }
     }
 
-    fun getNextPage(): ProjectListPage? {
-        return getNextPageParams()?.let { projectsService.list(it) }
-    }
+    fun getNextPage(): ProjectListPage? = getNextPageParams()?.let { service.list(it) }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): ProjectListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): ProjectListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        fun of(
-            projectsService: ProjectService,
-            params: ProjectListParams,
-            response: ProjectListPageResponse,
-        ) = ProjectListPage(projectsService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [ProjectListPage].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [ProjectListPage]. */
+    class Builder internal constructor() {
+
+        private var service: ProjectService? = null
+        private var params: ProjectListParams? = null
+        private var response: ProjectListPageResponse? = null
+
+        internal fun from(projectListPage: ProjectListPage) = apply {
+            service = projectListPage.service
+            params = projectListPage.params
+            response = projectListPage.response
+        }
+
+        fun service(service: ProjectService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: ProjectListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: ProjectListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [ProjectListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): ProjectListPage =
+            ProjectListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: ProjectListPage) : Sequence<Project> {
@@ -82,4 +119,17 @@ private constructor(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ProjectListPage && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "ProjectListPage{service=$service, params=$params, response=$response}"
 }
