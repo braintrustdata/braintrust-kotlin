@@ -173,7 +173,13 @@ class ViewServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             it.validate()
                         }
                     }
-                    .let { ViewListPageAsync.of(ViewServiceAsyncImpl(clientOptions), params, it) }
+                    .let {
+                        ViewListPageAsync.builder()
+                            .service(ViewServiceAsyncImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
 

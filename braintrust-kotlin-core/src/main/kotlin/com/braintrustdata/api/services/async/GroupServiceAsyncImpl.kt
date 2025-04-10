@@ -176,7 +176,13 @@ class GroupServiceAsyncImpl internal constructor(private val clientOptions: Clie
                             it.validate()
                         }
                     }
-                    .let { GroupListPageAsync.of(GroupServiceAsyncImpl(clientOptions), params, it) }
+                    .let {
+                        GroupListPageAsync.builder()
+                            .service(GroupServiceAsyncImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
 

@@ -2,22 +2,17 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.ApiKeyService
 import java.util.Objects
 
-/**
- * List out all api_keys. The api_keys are sorted by creation date, with the most recently-created
- * api_keys coming first
- */
+/** @see [ApiKeyService.list] */
 class ApiKeyListPage
 private constructor(
-    private val apiKeysService: ApiKeyService,
+    private val service: ApiKeyService,
     private val params: ApiKeyListParams,
     private val response: ApiKeyListPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): ApiKeyListPageResponse = response
 
     /**
      * Delegates to [ApiKeyListPageResponse], but gracefully handles missing data.
@@ -25,19 +20,6 @@ private constructor(
      * @see [ApiKeyListPageResponse.objects]
      */
     fun objects(): List<ApiKey> = response._objects().getNullable("objects") ?: emptyList()
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ApiKeyListPage && apiKeysService == other.apiKeysService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(apiKeysService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "ApiKeyListPage{apiKeysService=$apiKeysService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean = objects().isNotEmpty()
 
@@ -53,19 +35,74 @@ private constructor(
         }
     }
 
-    fun getNextPage(): ApiKeyListPage? {
-        return getNextPageParams()?.let { apiKeysService.list(it) }
-    }
+    fun getNextPage(): ApiKeyListPage? = getNextPageParams()?.let { service.list(it) }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): ApiKeyListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): ApiKeyListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        fun of(
-            apiKeysService: ApiKeyService,
-            params: ApiKeyListParams,
-            response: ApiKeyListPageResponse,
-        ) = ApiKeyListPage(apiKeysService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [ApiKeyListPage].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [ApiKeyListPage]. */
+    class Builder internal constructor() {
+
+        private var service: ApiKeyService? = null
+        private var params: ApiKeyListParams? = null
+        private var response: ApiKeyListPageResponse? = null
+
+        internal fun from(apiKeyListPage: ApiKeyListPage) = apply {
+            service = apiKeyListPage.service
+            params = apiKeyListPage.params
+            response = apiKeyListPage.response
+        }
+
+        fun service(service: ApiKeyService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: ApiKeyListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: ApiKeyListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [ApiKeyListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): ApiKeyListPage =
+            ApiKeyListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: ApiKeyListPage) : Sequence<ApiKey> {
@@ -82,4 +119,16 @@ private constructor(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ApiKeyListPage && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() = "ApiKeyListPage{service=$service, params=$params, response=$response}"
 }

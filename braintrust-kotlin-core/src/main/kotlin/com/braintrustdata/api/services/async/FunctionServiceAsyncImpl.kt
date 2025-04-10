@@ -195,11 +195,11 @@ class FunctionServiceAsyncImpl internal constructor(private val clientOptions: C
                         }
                     }
                     .let {
-                        FunctionListPageAsync.of(
-                            FunctionServiceAsyncImpl(clientOptions),
-                            params,
-                            it,
-                        )
+                        FunctionListPageAsync.builder()
+                            .service(FunctionServiceAsyncImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
                     }
             }
         }

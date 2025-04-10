@@ -186,7 +186,11 @@ class PromptServiceAsyncImpl internal constructor(private val clientOptions: Cli
                         }
                     }
                     .let {
-                        PromptListPageAsync.of(PromptServiceAsyncImpl(clientOptions), params, it)
+                        PromptListPageAsync.builder()
+                            .service(PromptServiceAsyncImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
                     }
             }
         }

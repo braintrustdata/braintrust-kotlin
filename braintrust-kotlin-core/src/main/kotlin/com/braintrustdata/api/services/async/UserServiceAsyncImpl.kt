@@ -98,7 +98,13 @@ class UserServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             it.validate()
                         }
                     }
-                    .let { UserListPageAsync.of(UserServiceAsyncImpl(clientOptions), params, it) }
+                    .let {
+                        UserListPageAsync.builder()
+                            .service(UserServiceAsyncImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
     }

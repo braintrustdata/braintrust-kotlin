@@ -2,22 +2,17 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.OrganizationService
 import java.util.Objects
 
-/**
- * List out all organizations. The organizations are sorted by creation date, with the most
- * recently-created organizations coming first
- */
+/** @see [OrganizationService.list] */
 class OrganizationListPage
 private constructor(
-    private val organizationsService: OrganizationService,
+    private val service: OrganizationService,
     private val params: OrganizationListParams,
     private val response: OrganizationListPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): OrganizationListPageResponse = response
 
     /**
      * Delegates to [OrganizationListPageResponse], but gracefully handles missing data.
@@ -25,19 +20,6 @@ private constructor(
      * @see [OrganizationListPageResponse.objects]
      */
     fun objects(): List<Organization> = response._objects().getNullable("objects") ?: emptyList()
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is OrganizationListPage && organizationsService == other.organizationsService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(organizationsService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "OrganizationListPage{organizationsService=$organizationsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean = objects().isNotEmpty()
 
@@ -53,19 +35,74 @@ private constructor(
         }
     }
 
-    fun getNextPage(): OrganizationListPage? {
-        return getNextPageParams()?.let { organizationsService.list(it) }
-    }
+    fun getNextPage(): OrganizationListPage? = getNextPageParams()?.let { service.list(it) }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): OrganizationListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): OrganizationListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        fun of(
-            organizationsService: OrganizationService,
-            params: OrganizationListParams,
-            response: OrganizationListPageResponse,
-        ) = OrganizationListPage(organizationsService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [OrganizationListPage].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [OrganizationListPage]. */
+    class Builder internal constructor() {
+
+        private var service: OrganizationService? = null
+        private var params: OrganizationListParams? = null
+        private var response: OrganizationListPageResponse? = null
+
+        internal fun from(organizationListPage: OrganizationListPage) = apply {
+            service = organizationListPage.service
+            params = organizationListPage.params
+            response = organizationListPage.response
+        }
+
+        fun service(service: OrganizationService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: OrganizationListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: OrganizationListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [OrganizationListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): OrganizationListPage =
+            OrganizationListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: OrganizationListPage) : Sequence<Organization> {
@@ -82,4 +119,17 @@ private constructor(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is OrganizationListPage && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "OrganizationListPage{service=$service, params=$params, response=$response}"
 }

@@ -2,24 +2,19 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.AiSecretServiceAsync
 import java.util.Objects
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 
-/**
- * List out all ai_secrets. The ai_secrets are sorted by creation date, with the most
- * recently-created ai_secrets coming first
- */
+/** @see [AiSecretServiceAsync.list] */
 class AiSecretListPageAsync
 private constructor(
-    private val aiSecretsService: AiSecretServiceAsync,
+    private val service: AiSecretServiceAsync,
     private val params: AiSecretListParams,
     private val response: AiSecretListPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): AiSecretListPageResponse = response
 
     /**
      * Delegates to [AiSecretListPageResponse], but gracefully handles missing data.
@@ -27,19 +22,6 @@ private constructor(
      * @see [AiSecretListPageResponse.objects]
      */
     fun objects(): List<AISecret> = response._objects().getNullable("objects") ?: emptyList()
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is AiSecretListPageAsync && aiSecretsService == other.aiSecretsService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(aiSecretsService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "AiSecretListPageAsync{aiSecretsService=$aiSecretsService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean = objects().isNotEmpty()
 
@@ -55,19 +37,75 @@ private constructor(
         }
     }
 
-    suspend fun getNextPage(): AiSecretListPageAsync? {
-        return getNextPageParams()?.let { aiSecretsService.list(it) }
-    }
+    suspend fun getNextPage(): AiSecretListPageAsync? =
+        getNextPageParams()?.let { service.list(it) }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): AiSecretListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): AiSecretListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        fun of(
-            aiSecretsService: AiSecretServiceAsync,
-            params: AiSecretListParams,
-            response: AiSecretListPageResponse,
-        ) = AiSecretListPageAsync(aiSecretsService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [AiSecretListPageAsync].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [AiSecretListPageAsync]. */
+    class Builder internal constructor() {
+
+        private var service: AiSecretServiceAsync? = null
+        private var params: AiSecretListParams? = null
+        private var response: AiSecretListPageResponse? = null
+
+        internal fun from(aiSecretListPageAsync: AiSecretListPageAsync) = apply {
+            service = aiSecretListPageAsync.service
+            params = aiSecretListPageAsync.params
+            response = aiSecretListPageAsync.response
+        }
+
+        fun service(service: AiSecretServiceAsync) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: AiSecretListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: AiSecretListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [AiSecretListPageAsync].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): AiSecretListPageAsync =
+            AiSecretListPageAsync(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: AiSecretListPageAsync) : Flow<AISecret> {
@@ -84,4 +122,17 @@ private constructor(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is AiSecretListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "AiSecretListPageAsync{service=$service, params=$params, response=$response}"
 }
