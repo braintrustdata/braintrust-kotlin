@@ -15,7 +15,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [www.braintrustdata.com](https://www.braintrustdata.com/docs/api/spec). KDocs are also available on [javadoc.io](https://javadoc.io/doc/com.braintrustdata.api/braintrust-kotlin/0.3.0).
+The REST API documentation can be found on [www.braintrustdata.com](https://www.braintrustdata.com/docs/api/spec). KDocs are available on [javadoc.io](https://javadoc.io/doc/com.braintrustdata.api/braintrust-kotlin/0.3.0).
 
 <!-- x-release-please-end -->
 
