@@ -2,11 +2,11 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.AutoPagerAsync
+import com.braintrustdata.api.core.PageAsync
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.SpanIframeServiceAsync
 import java.util.Objects
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 
 /** @see [SpanIframeServiceAsync.list] */
 class SpanIframeListPageAsync
@@ -14,7 +14,7 @@ private constructor(
     private val service: SpanIframeServiceAsync,
     private val params: SpanIframeListParams,
     private val response: SpanIframeListPageResponse,
-) {
+) : PageAsync<SpanIFrame> {
 
     /**
      * Delegates to [SpanIframeListPageResponse], but gracefully handles missing data.
@@ -23,24 +23,20 @@ private constructor(
      */
     fun objects(): List<SpanIFrame> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun hasNextPage(): Boolean = objects().isNotEmpty()
+    override fun items(): List<SpanIFrame> = objects()
 
-    fun getNextPageParams(): SpanIframeListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return if (params.endingBefore() != null) {
-            params.toBuilder().endingBefore(objects().first()._id().getNullable("id")).build()
+    fun nextPageParams(): SpanIframeListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
         } else {
-            params.toBuilder().startingAfter(objects().last()._id().getNullable("id")).build()
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
         }
-    }
 
-    suspend fun getNextPage(): SpanIframeListPageAsync? =
-        getNextPageParams()?.let { service.list(it) }
+    override suspend fun nextPage(): SpanIframeListPageAsync = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<SpanIFrame> = AutoPagerAsync.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): SpanIframeListParams = params
@@ -106,21 +102,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: SpanIframeListPageAsync) : Flow<SpanIFrame> {
-
-        override suspend fun collect(collector: FlowCollector<SpanIFrame>) {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    collector.emit(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
     }
 
     override fun equals(other: Any?): Boolean {

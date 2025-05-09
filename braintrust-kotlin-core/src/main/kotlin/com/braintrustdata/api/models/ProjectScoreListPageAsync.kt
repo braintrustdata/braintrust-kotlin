@@ -2,11 +2,11 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.AutoPagerAsync
+import com.braintrustdata.api.core.PageAsync
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.ProjectScoreServiceAsync
 import java.util.Objects
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 
 /** @see [ProjectScoreServiceAsync.list] */
 class ProjectScoreListPageAsync
@@ -14,7 +14,7 @@ private constructor(
     private val service: ProjectScoreServiceAsync,
     private val params: ProjectScoreListParams,
     private val response: ProjectScoreListPageResponse,
-) {
+) : PageAsync<ProjectScore> {
 
     /**
      * Delegates to [ProjectScoreListPageResponse], but gracefully handles missing data.
@@ -23,24 +23,20 @@ private constructor(
      */
     fun objects(): List<ProjectScore> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun hasNextPage(): Boolean = objects().isNotEmpty()
+    override fun items(): List<ProjectScore> = objects()
 
-    fun getNextPageParams(): ProjectScoreListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return if (params.endingBefore() != null) {
-            params.toBuilder().endingBefore(objects().first()._id().getNullable("id")).build()
+    fun nextPageParams(): ProjectScoreListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
         } else {
-            params.toBuilder().startingAfter(objects().last()._id().getNullable("id")).build()
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
         }
-    }
 
-    suspend fun getNextPage(): ProjectScoreListPageAsync? =
-        getNextPageParams()?.let { service.list(it) }
+    override suspend fun nextPage(): ProjectScoreListPageAsync = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<ProjectScore> = AutoPagerAsync.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): ProjectScoreListParams = params
@@ -106,21 +102,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: ProjectScoreListPageAsync) : Flow<ProjectScore> {
-
-        override suspend fun collect(collector: FlowCollector<ProjectScore>) {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    collector.emit(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
     }
 
     override fun equals(other: Any?): Boolean {

@@ -2,11 +2,11 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.AutoPagerAsync
+import com.braintrustdata.api.core.PageAsync
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.PromptServiceAsync
 import java.util.Objects
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 
 /** @see [PromptServiceAsync.list] */
 class PromptListPageAsync
@@ -14,7 +14,7 @@ private constructor(
     private val service: PromptServiceAsync,
     private val params: PromptListParams,
     private val response: PromptListPageResponse,
-) {
+) : PageAsync<Prompt> {
 
     /**
      * Delegates to [PromptListPageResponse], but gracefully handles missing data.
@@ -23,23 +23,20 @@ private constructor(
      */
     fun objects(): List<Prompt> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun hasNextPage(): Boolean = objects().isNotEmpty()
+    override fun items(): List<Prompt> = objects()
 
-    fun getNextPageParams(): PromptListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return if (params.endingBefore() != null) {
-            params.toBuilder().endingBefore(objects().first()._id().getNullable("id")).build()
+    fun nextPageParams(): PromptListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
         } else {
-            params.toBuilder().startingAfter(objects().last()._id().getNullable("id")).build()
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
         }
-    }
 
-    suspend fun getNextPage(): PromptListPageAsync? = getNextPageParams()?.let { service.list(it) }
+    override suspend fun nextPage(): PromptListPageAsync = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<Prompt> = AutoPagerAsync.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): PromptListParams = params
@@ -105,21 +102,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: PromptListPageAsync) : Flow<Prompt> {
-
-        override suspend fun collect(collector: FlowCollector<Prompt>) {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    collector.emit(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
     }
 
     override fun equals(other: Any?): Boolean {
