@@ -33,9 +33,21 @@ interface ProjectScoreServiceAsync {
 
     /** Get a project_score object by its id */
     suspend fun retrieve(
+        projectScoreId: String,
+        params: ProjectScoreRetrieveParams = ProjectScoreRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectScore =
+        retrieve(params.toBuilder().projectScoreId(projectScoreId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    suspend fun retrieve(
         params: ProjectScoreRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScore
+
+    /** @see [retrieve] */
+    suspend fun retrieve(projectScoreId: String, requestOptions: RequestOptions): ProjectScore =
+        retrieve(projectScoreId, ProjectScoreRetrieveParams.none(), requestOptions)
 
     /**
      * Partially update a project_score object. Specify the fields to update in the payload. Any
@@ -43,9 +55,21 @@ interface ProjectScoreServiceAsync {
      * removing fields or setting them to null.
      */
     suspend fun update(
+        projectScoreId: String,
+        params: ProjectScoreUpdateParams = ProjectScoreUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectScore =
+        update(params.toBuilder().projectScoreId(projectScoreId).build(), requestOptions)
+
+    /** @see [update] */
+    suspend fun update(
         params: ProjectScoreUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScore
+
+    /** @see [update] */
+    suspend fun update(projectScoreId: String, requestOptions: RequestOptions): ProjectScore =
+        update(projectScoreId, ProjectScoreUpdateParams.none(), requestOptions)
 
     /**
      * List out all project_scores. The project_scores are sorted by creation date, with the most
@@ -62,9 +86,21 @@ interface ProjectScoreServiceAsync {
 
     /** Delete a project_score object by its id */
     suspend fun delete(
+        projectScoreId: String,
+        params: ProjectScoreDeleteParams = ProjectScoreDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectScore =
+        delete(params.toBuilder().projectScoreId(projectScoreId).build(), requestOptions)
+
+    /** @see [delete] */
+    suspend fun delete(
         params: ProjectScoreDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScore
+
+    /** @see [delete] */
+    suspend fun delete(projectScoreId: String, requestOptions: RequestOptions): ProjectScore =
+        delete(projectScoreId, ProjectScoreDeleteParams.none(), requestOptions)
 
     /**
      * Create or replace project_score. If there is an existing project_score in the project with
@@ -98,9 +134,26 @@ interface ProjectScoreServiceAsync {
          */
         @MustBeClosed
         suspend fun retrieve(
+            projectScoreId: String,
+            params: ProjectScoreRetrieveParams = ProjectScoreRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectScore> =
+            retrieve(params.toBuilder().projectScoreId(projectScoreId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
             params: ProjectScoreRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectScore>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
+            projectScoreId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ProjectScore> =
+            retrieve(projectScoreId, ProjectScoreRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /v1/project_score/{project_score_id}`, but is
@@ -108,9 +161,26 @@ interface ProjectScoreServiceAsync {
          */
         @MustBeClosed
         suspend fun update(
+            projectScoreId: String,
+            params: ProjectScoreUpdateParams = ProjectScoreUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectScore> =
+            update(params.toBuilder().projectScoreId(projectScoreId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        suspend fun update(
             params: ProjectScoreUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectScore>
+
+        /** @see [update] */
+        @MustBeClosed
+        suspend fun update(
+            projectScoreId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ProjectScore> =
+            update(projectScoreId, ProjectScoreUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/project_score`, but is otherwise the same as
@@ -135,9 +205,26 @@ interface ProjectScoreServiceAsync {
          */
         @MustBeClosed
         suspend fun delete(
+            projectScoreId: String,
+            params: ProjectScoreDeleteParams = ProjectScoreDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectScore> =
+            delete(params.toBuilder().projectScoreId(projectScoreId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
             params: ProjectScoreDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectScore>
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
+            projectScoreId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ProjectScore> =
+            delete(projectScoreId, ProjectScoreDeleteParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `put /v1/project_score`, but is otherwise the same as

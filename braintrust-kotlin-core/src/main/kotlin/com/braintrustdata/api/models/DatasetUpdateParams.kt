@@ -7,7 +7,6 @@ import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -26,14 +25,14 @@ import java.util.Objects
  */
 class DatasetUpdateParams
 private constructor(
-    private val datasetId: String,
+    private val datasetId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Dataset id */
-    fun datasetId(): String = datasetId
+    fun datasetId(): String? = datasetId
 
     /**
      * Textual description of the dataset
@@ -90,14 +89,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [DatasetUpdateParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .datasetId()
-         * ```
-         */
+        fun none(): DatasetUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [DatasetUpdateParams]. */
         fun builder() = Builder()
     }
 
@@ -117,7 +111,7 @@ private constructor(
         }
 
         /** Dataset id */
-        fun datasetId(datasetId: String) = apply { this.datasetId = datasetId }
+        fun datasetId(datasetId: String?) = apply { this.datasetId = datasetId }
 
         /**
          * Sets the entire request body.
@@ -286,17 +280,10 @@ private constructor(
          * Returns an immutable instance of [DatasetUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .datasetId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): DatasetUpdateParams =
             DatasetUpdateParams(
-                checkRequired("datasetId", datasetId),
+                datasetId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -307,7 +294,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> datasetId
+            0 -> datasetId ?: ""
             else -> ""
         }
 

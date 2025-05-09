@@ -8,7 +8,6 @@ import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
 import com.braintrustdata.api.core.checkKnown
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -27,14 +26,14 @@ import java.util.Objects
  */
 class GroupUpdateParams
 private constructor(
-    private val groupId: String,
+    private val groupId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Group id */
-    fun groupId(): String = groupId
+    fun groupId(): String? = groupId
 
     /**
      * A list of group IDs to add to the group's inheriting-from set
@@ -138,14 +137,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [GroupUpdateParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .groupId()
-         * ```
-         */
+        fun none(): GroupUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [GroupUpdateParams]. */
         fun builder() = Builder()
     }
 
@@ -165,7 +159,7 @@ private constructor(
         }
 
         /** Group id */
-        fun groupId(groupId: String) = apply { this.groupId = groupId }
+        fun groupId(groupId: String?) = apply { this.groupId = groupId }
 
         /**
          * Sets the entire request body.
@@ -423,17 +417,10 @@ private constructor(
          * Returns an immutable instance of [GroupUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .groupId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): GroupUpdateParams =
             GroupUpdateParams(
-                checkRequired("groupId", groupId),
+                groupId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -444,7 +431,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> groupId
+            0 -> groupId ?: ""
             else -> ""
         }
 

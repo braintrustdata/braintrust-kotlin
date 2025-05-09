@@ -32,15 +32,33 @@ interface EnvVarServiceAsync {
 
     /** Get an env_var object by its id */
     suspend fun retrieve(
+        envVarId: String,
+        params: EnvVarRetrieveParams = EnvVarRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): EnvVar = retrieve(params.toBuilder().envVarId(envVarId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    suspend fun retrieve(
         params: EnvVarRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar
+
+    /** @see [retrieve] */
+    suspend fun retrieve(envVarId: String, requestOptions: RequestOptions): EnvVar =
+        retrieve(envVarId, EnvVarRetrieveParams.none(), requestOptions)
 
     /**
      * Partially update an env_var object. Specify the fields to update in the payload. Any
      * object-type fields will be deep-merged with existing content. Currently we do not support
      * removing fields or setting them to null.
      */
+    suspend fun update(
+        envVarId: String,
+        params: EnvVarUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): EnvVar = update(params.toBuilder().envVarId(envVarId).build(), requestOptions)
+
+    /** @see [update] */
     suspend fun update(
         params: EnvVarUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -61,9 +79,20 @@ interface EnvVarServiceAsync {
 
     /** Delete an env_var object by its id */
     suspend fun delete(
+        envVarId: String,
+        params: EnvVarDeleteParams = EnvVarDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): EnvVar = delete(params.toBuilder().envVarId(envVarId).build(), requestOptions)
+
+    /** @see [delete] */
+    suspend fun delete(
         params: EnvVarDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar
+
+    /** @see [delete] */
+    suspend fun delete(envVarId: String, requestOptions: RequestOptions): EnvVar =
+        delete(envVarId, EnvVarDeleteParams.none(), requestOptions)
 
     /**
      * Create or replace env_var. If there is an existing env_var with the same name as the one
@@ -95,14 +124,39 @@ interface EnvVarServiceAsync {
          */
         @MustBeClosed
         suspend fun retrieve(
+            envVarId: String,
+            params: EnvVarRetrieveParams = EnvVarRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<EnvVar> =
+            retrieve(params.toBuilder().envVarId(envVarId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
             params: EnvVarRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<EnvVar>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
+            envVarId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<EnvVar> = retrieve(envVarId, EnvVarRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /v1/env_var/{env_var_id}`, but is otherwise the
          * same as [EnvVarServiceAsync.update].
          */
+        @MustBeClosed
+        suspend fun update(
+            envVarId: String,
+            params: EnvVarUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<EnvVar> =
+            update(params.toBuilder().envVarId(envVarId).build(), requestOptions)
+
+        /** @see [update] */
         @MustBeClosed
         suspend fun update(
             params: EnvVarUpdateParams,
@@ -130,9 +184,25 @@ interface EnvVarServiceAsync {
          */
         @MustBeClosed
         suspend fun delete(
+            envVarId: String,
+            params: EnvVarDeleteParams = EnvVarDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<EnvVar> =
+            delete(params.toBuilder().envVarId(envVarId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
             params: EnvVarDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<EnvVar>
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
+            envVarId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<EnvVar> = delete(envVarId, EnvVarDeleteParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `put /v1/env_var`, but is otherwise the same as

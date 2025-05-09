@@ -4,7 +4,6 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -13,14 +12,14 @@ import java.util.Objects
 /** Delete an organization object by its id */
 class OrganizationDeleteParams
 private constructor(
-    private val organizationId: String,
+    private val organizationId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     /** Organization id */
-    fun organizationId(): String = organizationId
+    fun organizationId(): String? = organizationId
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +31,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [OrganizationDeleteParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .organizationId()
-         * ```
-         */
+        fun none(): OrganizationDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [OrganizationDeleteParams]. */
         fun builder() = Builder()
     }
 
@@ -60,7 +54,7 @@ private constructor(
         }
 
         /** Organization id */
-        fun organizationId(organizationId: String) = apply { this.organizationId = organizationId }
+        fun organizationId(organizationId: String?) = apply { this.organizationId = organizationId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -186,17 +180,10 @@ private constructor(
          * Returns an immutable instance of [OrganizationDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .organizationId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): OrganizationDeleteParams =
             OrganizationDeleteParams(
-                checkRequired("organizationId", organizationId),
+                organizationId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -207,7 +194,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> organizationId
+            0 -> organizationId ?: ""
             else -> ""
         }
 

@@ -7,7 +7,6 @@ import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
@@ -25,14 +24,14 @@ import java.util.Objects
  */
 class OrganizationUpdateParams
 private constructor(
-    private val organizationId: String,
+    private val organizationId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Organization id */
-    fun organizationId(): String = organizationId
+    fun organizationId(): String? = organizationId
 
     /**
      * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -111,14 +110,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [OrganizationUpdateParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .organizationId()
-         * ```
-         */
+        fun none(): OrganizationUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [OrganizationUpdateParams]. */
         fun builder() = Builder()
     }
 
@@ -138,7 +132,7 @@ private constructor(
         }
 
         /** Organization id */
-        fun organizationId(organizationId: String) = apply { this.organizationId = organizationId }
+        fun organizationId(organizationId: String?) = apply { this.organizationId = organizationId }
 
         /**
          * Sets the entire request body.
@@ -337,17 +331,10 @@ private constructor(
          * Returns an immutable instance of [OrganizationUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .organizationId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): OrganizationUpdateParams =
             OrganizationUpdateParams(
-                checkRequired("organizationId", organizationId),
+                organizationId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -358,7 +345,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> organizationId
+            0 -> organizationId ?: ""
             else -> ""
         }
 

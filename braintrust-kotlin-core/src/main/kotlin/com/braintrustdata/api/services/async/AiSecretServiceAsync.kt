@@ -33,9 +33,20 @@ interface AiSecretServiceAsync {
 
     /** Get an ai_secret object by its id */
     suspend fun retrieve(
+        aiSecretId: String,
+        params: AiSecretRetrieveParams = AiSecretRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AISecret = retrieve(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    suspend fun retrieve(
         params: AiSecretRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
+
+    /** @see [retrieve] */
+    suspend fun retrieve(aiSecretId: String, requestOptions: RequestOptions): AISecret =
+        retrieve(aiSecretId, AiSecretRetrieveParams.none(), requestOptions)
 
     /**
      * Partially update an ai_secret object. Specify the fields to update in the payload. Any
@@ -43,9 +54,20 @@ interface AiSecretServiceAsync {
      * removing fields or setting them to null.
      */
     suspend fun update(
+        aiSecretId: String,
+        params: AiSecretUpdateParams = AiSecretUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AISecret = update(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
+
+    /** @see [update] */
+    suspend fun update(
         params: AiSecretUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
+
+    /** @see [update] */
+    suspend fun update(aiSecretId: String, requestOptions: RequestOptions): AISecret =
+        update(aiSecretId, AiSecretUpdateParams.none(), requestOptions)
 
     /**
      * List out all ai_secrets. The ai_secrets are sorted by creation date, with the most
@@ -62,9 +84,20 @@ interface AiSecretServiceAsync {
 
     /** Delete an ai_secret object by its id */
     suspend fun delete(
+        aiSecretId: String,
+        params: AiSecretDeleteParams = AiSecretDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AISecret = delete(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
+
+    /** @see [delete] */
+    suspend fun delete(
         params: AiSecretDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
+
+    /** @see [delete] */
+    suspend fun delete(aiSecretId: String, requestOptions: RequestOptions): AISecret =
+        delete(aiSecretId, AiSecretDeleteParams.none(), requestOptions)
 
     /** Delete a single ai_secret */
     suspend fun findAndDelete(
@@ -102,9 +135,26 @@ interface AiSecretServiceAsync {
          */
         @MustBeClosed
         suspend fun retrieve(
+            aiSecretId: String,
+            params: AiSecretRetrieveParams = AiSecretRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<AISecret> =
+            retrieve(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
             params: AiSecretRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AISecret>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
+            aiSecretId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<AISecret> =
+            retrieve(aiSecretId, AiSecretRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /v1/ai_secret/{ai_secret_id}`, but is otherwise
@@ -112,9 +162,26 @@ interface AiSecretServiceAsync {
          */
         @MustBeClosed
         suspend fun update(
+            aiSecretId: String,
+            params: AiSecretUpdateParams = AiSecretUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<AISecret> =
+            update(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        suspend fun update(
             params: AiSecretUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AISecret>
+
+        /** @see [update] */
+        @MustBeClosed
+        suspend fun update(
+            aiSecretId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<AISecret> =
+            update(aiSecretId, AiSecretUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/ai_secret`, but is otherwise the same as
@@ -137,9 +204,26 @@ interface AiSecretServiceAsync {
          */
         @MustBeClosed
         suspend fun delete(
+            aiSecretId: String,
+            params: AiSecretDeleteParams = AiSecretDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<AISecret> =
+            delete(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
             params: AiSecretDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AISecret>
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
+            aiSecretId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<AISecret> =
+            delete(aiSecretId, AiSecretDeleteParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `delete /v1/ai_secret`, but is otherwise the same as

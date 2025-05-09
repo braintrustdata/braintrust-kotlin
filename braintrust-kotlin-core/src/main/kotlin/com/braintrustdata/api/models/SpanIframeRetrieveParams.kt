@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
@@ -11,13 +10,13 @@ import java.util.Objects
 /** Get a span_iframe object by its id */
 class SpanIframeRetrieveParams
 private constructor(
-    private val spanIframeId: String,
+    private val spanIframeId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** SpanIframe id */
-    fun spanIframeId(): String = spanIframeId
+    fun spanIframeId(): String? = spanIframeId
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -27,14 +26,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [SpanIframeRetrieveParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .spanIframeId()
-         * ```
-         */
+        fun none(): SpanIframeRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [SpanIframeRetrieveParams]. */
         fun builder() = Builder()
     }
 
@@ -52,7 +46,7 @@ private constructor(
         }
 
         /** SpanIframe id */
-        fun spanIframeId(spanIframeId: String) = apply { this.spanIframeId = spanIframeId }
+        fun spanIframeId(spanIframeId: String?) = apply { this.spanIframeId = spanIframeId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -156,17 +150,10 @@ private constructor(
          * Returns an immutable instance of [SpanIframeRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .spanIframeId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): SpanIframeRetrieveParams =
             SpanIframeRetrieveParams(
-                checkRequired("spanIframeId", spanIframeId),
+                spanIframeId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -174,7 +161,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> spanIframeId
+            0 -> spanIframeId ?: ""
             else -> ""
         }
 

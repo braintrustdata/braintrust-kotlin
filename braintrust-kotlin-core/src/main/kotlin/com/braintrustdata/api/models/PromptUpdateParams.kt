@@ -8,7 +8,6 @@ import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
 import com.braintrustdata.api.core.checkKnown
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -27,14 +26,14 @@ import java.util.Objects
  */
 class PromptUpdateParams
 private constructor(
-    private val promptId: String,
+    private val promptId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Prompt id */
-    fun promptId(): String = promptId
+    fun promptId(): String? = promptId
 
     /**
      * Textual description of the prompt
@@ -121,14 +120,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [PromptUpdateParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .promptId()
-         * ```
-         */
+        fun none(): PromptUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [PromptUpdateParams]. */
         fun builder() = Builder()
     }
 
@@ -148,7 +142,7 @@ private constructor(
         }
 
         /** Prompt id */
-        fun promptId(promptId: String) = apply { this.promptId = promptId }
+        fun promptId(promptId: String?) = apply { this.promptId = promptId }
 
         /**
          * Sets the entire request body.
@@ -350,17 +344,10 @@ private constructor(
          * Returns an immutable instance of [PromptUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .promptId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): PromptUpdateParams =
             PromptUpdateParams(
-                checkRequired("promptId", promptId),
+                promptId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -371,7 +358,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> promptId
+            0 -> promptId ?: ""
             else -> ""
         }
 

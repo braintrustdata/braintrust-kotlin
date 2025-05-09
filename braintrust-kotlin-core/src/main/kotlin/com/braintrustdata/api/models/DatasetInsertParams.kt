@@ -23,14 +23,14 @@ import java.util.Objects
 /** Insert a set of events into the dataset */
 class DatasetInsertParams
 private constructor(
-    private val datasetId: String,
+    private val datasetId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Dataset id */
-    fun datasetId(): String = datasetId
+    fun datasetId(): String? = datasetId
 
     /**
      * A list of dataset events to insert
@@ -62,7 +62,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .datasetId()
          * .events()
          * ```
          */
@@ -85,7 +84,7 @@ private constructor(
         }
 
         /** Dataset id */
-        fun datasetId(datasetId: String) = apply { this.datasetId = datasetId }
+        fun datasetId(datasetId: String?) = apply { this.datasetId = datasetId }
 
         /**
          * Sets the entire request body.
@@ -239,7 +238,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .datasetId()
          * .events()
          * ```
          *
@@ -247,7 +245,7 @@ private constructor(
          */
         fun build(): DatasetInsertParams =
             DatasetInsertParams(
-                checkRequired("datasetId", datasetId),
+                datasetId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -258,7 +256,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> datasetId
+            0 -> datasetId ?: ""
             else -> ""
         }
 

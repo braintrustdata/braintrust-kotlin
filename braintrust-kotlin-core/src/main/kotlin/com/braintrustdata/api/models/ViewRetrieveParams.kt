@@ -11,7 +11,7 @@ import java.util.Objects
 /** Get a view object by its id */
 class ViewRetrieveParams
 private constructor(
-    private val viewId: String,
+    private val viewId: String?,
     private val objectId: String,
     private val objectType: AclObjectType,
     private val additionalHeaders: Headers,
@@ -19,7 +19,7 @@ private constructor(
 ) : Params {
 
     /** View id */
-    fun viewId(): String = viewId
+    fun viewId(): String? = viewId
 
     /** The id of the object the ACL applies to */
     fun objectId(): String = objectId
@@ -40,7 +40,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .viewId()
          * .objectId()
          * .objectType()
          * ```
@@ -66,7 +65,7 @@ private constructor(
         }
 
         /** View id */
-        fun viewId(viewId: String) = apply { this.viewId = viewId }
+        fun viewId(viewId: String?) = apply { this.viewId = viewId }
 
         /** The id of the object the ACL applies to */
         fun objectId(objectId: String) = apply { this.objectId = objectId }
@@ -179,7 +178,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .viewId()
          * .objectId()
          * .objectType()
          * ```
@@ -188,7 +186,7 @@ private constructor(
          */
         fun build(): ViewRetrieveParams =
             ViewRetrieveParams(
-                checkRequired("viewId", viewId),
+                viewId,
                 checkRequired("objectId", objectId),
                 checkRequired("objectType", objectType),
                 additionalHeaders.build(),
@@ -198,7 +196,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> viewId
+            0 -> viewId ?: ""
             else -> ""
         }
 

@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
@@ -15,7 +14,7 @@ import java.util.Objects
  */
 class ExperimentFetchParams
 private constructor(
-    private val experimentId: String,
+    private val experimentId: String?,
     private val limit: Long?,
     private val maxRootSpanId: String?,
     private val maxXactId: String?,
@@ -25,7 +24,7 @@ private constructor(
 ) : Params {
 
     /** Experiment id */
-    fun experimentId(): String = experimentId
+    fun experimentId(): String? = experimentId
 
     /**
      * limit the number of traces fetched
@@ -87,14 +86,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ExperimentFetchParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .experimentId()
-         * ```
-         */
+        fun none(): ExperimentFetchParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ExperimentFetchParams]. */
         fun builder() = Builder()
     }
 
@@ -120,7 +114,7 @@ private constructor(
         }
 
         /** Experiment id */
-        fun experimentId(experimentId: String) = apply { this.experimentId = experimentId }
+        fun experimentId(experimentId: String?) = apply { this.experimentId = experimentId }
 
         /**
          * limit the number of traces fetched
@@ -284,17 +278,10 @@ private constructor(
          * Returns an immutable instance of [ExperimentFetchParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .experimentId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ExperimentFetchParams =
             ExperimentFetchParams(
-                checkRequired("experimentId", experimentId),
+                experimentId,
                 limit,
                 maxRootSpanId,
                 maxXactId,
@@ -306,7 +293,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> experimentId
+            0 -> experimentId ?: ""
             else -> ""
         }
 

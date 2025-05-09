@@ -4,7 +4,6 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -13,14 +12,14 @@ import java.util.Objects
 /** Delete an acl object by its id */
 class AclDeleteParams
 private constructor(
-    private val aclId: String,
+    private val aclId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     /** Acl id */
-    fun aclId(): String = aclId
+    fun aclId(): String? = aclId
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +31,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [AclDeleteParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .aclId()
-         * ```
-         */
+        fun none(): AclDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [AclDeleteParams]. */
         fun builder() = Builder()
     }
 
@@ -59,7 +53,7 @@ private constructor(
         }
 
         /** Acl id */
-        fun aclId(aclId: String) = apply { this.aclId = aclId }
+        fun aclId(aclId: String?) = apply { this.aclId = aclId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +179,10 @@ private constructor(
          * Returns an immutable instance of [AclDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .aclId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): AclDeleteParams =
             AclDeleteParams(
-                checkRequired("aclId", aclId),
+                aclId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -206,7 +193,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> aclId
+            0 -> aclId ?: ""
             else -> ""
         }
 

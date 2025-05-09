@@ -23,14 +23,14 @@ import java.util.Objects
 /** Log feedback for a set of dataset events */
 class DatasetFeedbackParams
 private constructor(
-    private val datasetId: String,
+    private val datasetId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Dataset id */
-    fun datasetId(): String = datasetId
+    fun datasetId(): String? = datasetId
 
     /**
      * A list of dataset feedback items
@@ -62,7 +62,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .datasetId()
          * .feedback()
          * ```
          */
@@ -85,7 +84,7 @@ private constructor(
         }
 
         /** Dataset id */
-        fun datasetId(datasetId: String) = apply { this.datasetId = datasetId }
+        fun datasetId(datasetId: String?) = apply { this.datasetId = datasetId }
 
         /**
          * Sets the entire request body.
@@ -241,7 +240,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .datasetId()
          * .feedback()
          * ```
          *
@@ -249,7 +247,7 @@ private constructor(
          */
         fun build(): DatasetFeedbackParams =
             DatasetFeedbackParams(
-                checkRequired("datasetId", datasetId),
+                datasetId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -260,7 +258,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> datasetId
+            0 -> datasetId ?: ""
             else -> ""
         }
 

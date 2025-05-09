@@ -19,9 +19,20 @@ interface UserService {
 
     /** Get a user object by its id */
     fun retrieve(
+        userId: String,
+        params: UserRetrieveParams = UserRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): User = retrieve(params.toBuilder().userId(userId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
         params: UserRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): User
+
+    /** @see [retrieve] */
+    fun retrieve(userId: String, requestOptions: RequestOptions): User =
+        retrieve(userId, UserRetrieveParams.none(), requestOptions)
 
     /**
      * List out all users. The users are sorted by creation date, with the most recently-created
@@ -45,9 +56,23 @@ interface UserService {
          */
         @MustBeClosed
         fun retrieve(
+            userId: String,
+            params: UserRetrieveParams = UserRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<User> =
+            retrieve(params.toBuilder().userId(userId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
             params: UserRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<User>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(userId: String, requestOptions: RequestOptions): HttpResponseFor<User> =
+            retrieve(userId, UserRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/user`, but is otherwise the same as

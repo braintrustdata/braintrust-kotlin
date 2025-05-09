@@ -32,9 +32,20 @@ interface ProjectTagService {
 
     /** Get a project_tag object by its id */
     fun retrieve(
+        projectTagId: String,
+        params: ProjectTagRetrieveParams = ProjectTagRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectTag = retrieve(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
         params: ProjectTagRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
+
+    /** @see [retrieve] */
+    fun retrieve(projectTagId: String, requestOptions: RequestOptions): ProjectTag =
+        retrieve(projectTagId, ProjectTagRetrieveParams.none(), requestOptions)
 
     /**
      * Partially update a project_tag object. Specify the fields to update in the payload. Any
@@ -42,9 +53,20 @@ interface ProjectTagService {
      * removing fields or setting them to null.
      */
     fun update(
+        projectTagId: String,
+        params: ProjectTagUpdateParams = ProjectTagUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectTag = update(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
+
+    /** @see [update] */
+    fun update(
         params: ProjectTagUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
+
+    /** @see [update] */
+    fun update(projectTagId: String, requestOptions: RequestOptions): ProjectTag =
+        update(projectTagId, ProjectTagUpdateParams.none(), requestOptions)
 
     /**
      * List out all project_tags. The project_tags are sorted by creation date, with the most
@@ -61,9 +83,20 @@ interface ProjectTagService {
 
     /** Delete a project_tag object by its id */
     fun delete(
+        projectTagId: String,
+        params: ProjectTagDeleteParams = ProjectTagDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectTag = delete(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(
         params: ProjectTagDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
+
+    /** @see [delete] */
+    fun delete(projectTagId: String, requestOptions: RequestOptions): ProjectTag =
+        delete(projectTagId, ProjectTagDeleteParams.none(), requestOptions)
 
     /**
      * Create or replace project_tag. If there is an existing project_tag in the project with the
@@ -94,9 +127,26 @@ interface ProjectTagService {
          */
         @MustBeClosed
         fun retrieve(
+            projectTagId: String,
+            params: ProjectTagRetrieveParams = ProjectTagRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectTag> =
+            retrieve(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
             params: ProjectTagRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTag>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            projectTagId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ProjectTag> =
+            retrieve(projectTagId, ProjectTagRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /v1/project_tag/{project_tag_id}`, but is
@@ -104,9 +154,26 @@ interface ProjectTagService {
          */
         @MustBeClosed
         fun update(
+            projectTagId: String,
+            params: ProjectTagUpdateParams = ProjectTagUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectTag> =
+            update(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
             params: ProjectTagUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTag>
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            projectTagId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ProjectTag> =
+            update(projectTagId, ProjectTagUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/project_tag`, but is otherwise the same as
@@ -129,9 +196,26 @@ interface ProjectTagService {
          */
         @MustBeClosed
         fun delete(
+            projectTagId: String,
+            params: ProjectTagDeleteParams = ProjectTagDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectTag> =
+            delete(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
             params: ProjectTagDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTag>
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            projectTagId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ProjectTag> =
+            delete(projectTagId, ProjectTagDeleteParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `put /v1/project_tag`, but is otherwise the same as

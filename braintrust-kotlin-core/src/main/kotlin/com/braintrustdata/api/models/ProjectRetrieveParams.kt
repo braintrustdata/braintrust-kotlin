@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
@@ -11,13 +10,13 @@ import java.util.Objects
 /** Get a project object by its id */
 class ProjectRetrieveParams
 private constructor(
-    private val projectId: String,
+    private val projectId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Project id */
-    fun projectId(): String = projectId
+    fun projectId(): String? = projectId
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -27,14 +26,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ProjectRetrieveParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .projectId()
-         * ```
-         */
+        fun none(): ProjectRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ProjectRetrieveParams]. */
         fun builder() = Builder()
     }
 
@@ -52,7 +46,7 @@ private constructor(
         }
 
         /** Project id */
-        fun projectId(projectId: String) = apply { this.projectId = projectId }
+        fun projectId(projectId: String?) = apply { this.projectId = projectId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -156,17 +150,10 @@ private constructor(
          * Returns an immutable instance of [ProjectRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .projectId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ProjectRetrieveParams =
             ProjectRetrieveParams(
-                checkRequired("projectId", projectId),
+                projectId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -174,7 +161,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> projectId
+            0 -> projectId ?: ""
             else -> ""
         }
 

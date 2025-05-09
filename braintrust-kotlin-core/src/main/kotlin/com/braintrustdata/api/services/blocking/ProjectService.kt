@@ -34,9 +34,20 @@ interface ProjectService {
 
     /** Get a project object by its id */
     fun retrieve(
+        projectId: String,
+        params: ProjectRetrieveParams = ProjectRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Project = retrieve(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
         params: ProjectRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
+
+    /** @see [retrieve] */
+    fun retrieve(projectId: String, requestOptions: RequestOptions): Project =
+        retrieve(projectId, ProjectRetrieveParams.none(), requestOptions)
 
     /**
      * Partially update a project object. Specify the fields to update in the payload. Any
@@ -44,9 +55,20 @@ interface ProjectService {
      * removing fields or setting them to null.
      */
     fun update(
+        projectId: String,
+        params: ProjectUpdateParams = ProjectUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Project = update(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+    /** @see [update] */
+    fun update(
         params: ProjectUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
+
+    /** @see [update] */
+    fun update(projectId: String, requestOptions: RequestOptions): Project =
+        update(projectId, ProjectUpdateParams.none(), requestOptions)
 
     /**
      * List out all projects. The projects are sorted by creation date, with the most
@@ -63,9 +85,20 @@ interface ProjectService {
 
     /** Delete a project object by its id */
     fun delete(
+        projectId: String,
+        params: ProjectDeleteParams = ProjectDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Project = delete(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(
         params: ProjectDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
+
+    /** @see [delete] */
+    fun delete(projectId: String, requestOptions: RequestOptions): Project =
+        delete(projectId, ProjectDeleteParams.none(), requestOptions)
 
     /** A view of [ProjectService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -88,9 +121,23 @@ interface ProjectService {
          */
         @MustBeClosed
         fun retrieve(
+            projectId: String,
+            params: ProjectRetrieveParams = ProjectRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Project> =
+            retrieve(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
             params: ProjectRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(projectId: String, requestOptions: RequestOptions): HttpResponseFor<Project> =
+            retrieve(projectId, ProjectRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /v1/project/{project_id}`, but is otherwise the
@@ -98,9 +145,23 @@ interface ProjectService {
          */
         @MustBeClosed
         fun update(
+            projectId: String,
+            params: ProjectUpdateParams = ProjectUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Project> =
+            update(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
             params: ProjectUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project>
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(projectId: String, requestOptions: RequestOptions): HttpResponseFor<Project> =
+            update(projectId, ProjectUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/project`, but is otherwise the same as
@@ -123,8 +184,22 @@ interface ProjectService {
          */
         @MustBeClosed
         fun delete(
+            projectId: String,
+            params: ProjectDeleteParams = ProjectDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Project> =
+            delete(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
             params: ProjectDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project>
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(projectId: String, requestOptions: RequestOptions): HttpResponseFor<Project> =
+            delete(projectId, ProjectDeleteParams.none(), requestOptions)
     }
 }

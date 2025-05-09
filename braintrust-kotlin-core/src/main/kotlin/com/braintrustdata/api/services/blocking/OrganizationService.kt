@@ -24,9 +24,21 @@ interface OrganizationService {
 
     /** Get an organization object by its id */
     fun retrieve(
+        organizationId: String,
+        params: OrganizationRetrieveParams = OrganizationRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Organization =
+        retrieve(params.toBuilder().organizationId(organizationId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
         params: OrganizationRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
+
+    /** @see [retrieve] */
+    fun retrieve(organizationId: String, requestOptions: RequestOptions): Organization =
+        retrieve(organizationId, OrganizationRetrieveParams.none(), requestOptions)
 
     /**
      * Partially update an organization object. Specify the fields to update in the payload. Any
@@ -34,9 +46,21 @@ interface OrganizationService {
      * removing fields or setting them to null.
      */
     fun update(
+        organizationId: String,
+        params: OrganizationUpdateParams = OrganizationUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Organization =
+        update(params.toBuilder().organizationId(organizationId).build(), requestOptions)
+
+    /** @see [update] */
+    fun update(
         params: OrganizationUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
+
+    /** @see [update] */
+    fun update(organizationId: String, requestOptions: RequestOptions): Organization =
+        update(organizationId, OrganizationUpdateParams.none(), requestOptions)
 
     /**
      * List out all organizations. The organizations are sorted by creation date, with the most
@@ -53,9 +77,21 @@ interface OrganizationService {
 
     /** Delete an organization object by its id */
     fun delete(
+        organizationId: String,
+        params: OrganizationDeleteParams = OrganizationDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Organization =
+        delete(params.toBuilder().organizationId(organizationId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(
         params: OrganizationDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
+
+    /** @see [delete] */
+    fun delete(organizationId: String, requestOptions: RequestOptions): Organization =
+        delete(organizationId, OrganizationDeleteParams.none(), requestOptions)
 
     /**
      * A view of [OrganizationService] that provides access to raw HTTP responses for each method.
@@ -70,9 +106,26 @@ interface OrganizationService {
          */
         @MustBeClosed
         fun retrieve(
+            organizationId: String,
+            params: OrganizationRetrieveParams = OrganizationRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Organization> =
+            retrieve(params.toBuilder().organizationId(organizationId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
             params: OrganizationRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Organization>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            organizationId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Organization> =
+            retrieve(organizationId, OrganizationRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /v1/organization/{organization_id}`, but is
@@ -80,9 +133,26 @@ interface OrganizationService {
          */
         @MustBeClosed
         fun update(
+            organizationId: String,
+            params: OrganizationUpdateParams = OrganizationUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Organization> =
+            update(params.toBuilder().organizationId(organizationId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
             params: OrganizationUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Organization>
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            organizationId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Organization> =
+            update(organizationId, OrganizationUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/organization`, but is otherwise the same as
@@ -105,8 +175,25 @@ interface OrganizationService {
          */
         @MustBeClosed
         fun delete(
+            organizationId: String,
+            params: OrganizationDeleteParams = OrganizationDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Organization> =
+            delete(params.toBuilder().organizationId(organizationId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
             params: OrganizationDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Organization>
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            organizationId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Organization> =
+            delete(organizationId, OrganizationDeleteParams.none(), requestOptions)
     }
 }

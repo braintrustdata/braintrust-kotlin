@@ -32,9 +32,20 @@ interface GroupService {
 
     /** Get a group object by its id */
     fun retrieve(
+        groupId: String,
+        params: GroupRetrieveParams = GroupRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group = retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
         params: GroupRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
+
+    /** @see [retrieve] */
+    fun retrieve(groupId: String, requestOptions: RequestOptions): Group =
+        retrieve(groupId, GroupRetrieveParams.none(), requestOptions)
 
     /**
      * Partially update a group object. Specify the fields to update in the payload. Any object-type
@@ -42,9 +53,20 @@ interface GroupService {
      * or setting them to null.
      */
     fun update(
+        groupId: String,
+        params: GroupUpdateParams = GroupUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group = update(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+    /** @see [update] */
+    fun update(
         params: GroupUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
+
+    /** @see [update] */
+    fun update(groupId: String, requestOptions: RequestOptions): Group =
+        update(groupId, GroupUpdateParams.none(), requestOptions)
 
     /**
      * List out all groups. The groups are sorted by creation date, with the most recently-created
@@ -61,9 +83,20 @@ interface GroupService {
 
     /** Delete a group object by its id */
     fun delete(
+        groupId: String,
+        params: GroupDeleteParams = GroupDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group = delete(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(
         params: GroupDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
+
+    /** @see [delete] */
+    fun delete(groupId: String, requestOptions: RequestOptions): Group =
+        delete(groupId, GroupDeleteParams.none(), requestOptions)
 
     /**
      * Create or replace group. If there is an existing group with the same name as the one
@@ -93,9 +126,23 @@ interface GroupService {
          */
         @MustBeClosed
         fun retrieve(
+            groupId: String,
+            params: GroupRetrieveParams = GroupRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group> =
+            retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
             params: GroupRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Group>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(groupId: String, requestOptions: RequestOptions): HttpResponseFor<Group> =
+            retrieve(groupId, GroupRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /v1/group/{group_id}`, but is otherwise the same
@@ -103,9 +150,23 @@ interface GroupService {
          */
         @MustBeClosed
         fun update(
+            groupId: String,
+            params: GroupUpdateParams = GroupUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group> =
+            update(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
             params: GroupUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Group>
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(groupId: String, requestOptions: RequestOptions): HttpResponseFor<Group> =
+            update(groupId, GroupUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/group`, but is otherwise the same as
@@ -128,9 +189,23 @@ interface GroupService {
          */
         @MustBeClosed
         fun delete(
+            groupId: String,
+            params: GroupDeleteParams = GroupDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group> =
+            delete(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
             params: GroupDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Group>
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(groupId: String, requestOptions: RequestOptions): HttpResponseFor<Group> =
+            delete(groupId, GroupDeleteParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `put /v1/group`, but is otherwise the same as

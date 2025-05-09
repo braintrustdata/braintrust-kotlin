@@ -7,7 +7,6 @@ import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
@@ -25,14 +24,14 @@ import java.util.Objects
  */
 class SpanIframeUpdateParams
 private constructor(
-    private val spanIframeId: String,
+    private val spanIframeId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** SpanIframe id */
-    fun spanIframeId(): String = spanIframeId
+    fun spanIframeId(): String? = spanIframeId
 
     /**
      * Textual description of the span iframe
@@ -105,14 +104,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [SpanIframeUpdateParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .spanIframeId()
-         * ```
-         */
+        fun none(): SpanIframeUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [SpanIframeUpdateParams]. */
         fun builder() = Builder()
     }
 
@@ -132,7 +126,7 @@ private constructor(
         }
 
         /** SpanIframe id */
-        fun spanIframeId(spanIframeId: String) = apply { this.spanIframeId = spanIframeId }
+        fun spanIframeId(spanIframeId: String?) = apply { this.spanIframeId = spanIframeId }
 
         /**
          * Sets the entire request body.
@@ -323,17 +317,10 @@ private constructor(
          * Returns an immutable instance of [SpanIframeUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .spanIframeId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): SpanIframeUpdateParams =
             SpanIframeUpdateParams(
-                checkRequired("spanIframeId", spanIframeId),
+                spanIframeId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -344,7 +331,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> spanIframeId
+            0 -> spanIframeId ?: ""
             else -> ""
         }
 

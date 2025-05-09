@@ -32,9 +32,20 @@ interface PromptServiceAsync {
 
     /** Get a prompt object by its id */
     suspend fun retrieve(
+        promptId: String,
+        params: PromptRetrieveParams = PromptRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Prompt = retrieve(params.toBuilder().promptId(promptId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    suspend fun retrieve(
         params: PromptRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
+
+    /** @see [retrieve] */
+    suspend fun retrieve(promptId: String, requestOptions: RequestOptions): Prompt =
+        retrieve(promptId, PromptRetrieveParams.none(), requestOptions)
 
     /**
      * Partially update a prompt object. Specify the fields to update in the payload. Any
@@ -42,9 +53,20 @@ interface PromptServiceAsync {
      * removing fields or setting them to null.
      */
     suspend fun update(
+        promptId: String,
+        params: PromptUpdateParams = PromptUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Prompt = update(params.toBuilder().promptId(promptId).build(), requestOptions)
+
+    /** @see [update] */
+    suspend fun update(
         params: PromptUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
+
+    /** @see [update] */
+    suspend fun update(promptId: String, requestOptions: RequestOptions): Prompt =
+        update(promptId, PromptUpdateParams.none(), requestOptions)
 
     /**
      * List out all prompts. The prompts are sorted by creation date, with the most recently-created
@@ -61,9 +83,20 @@ interface PromptServiceAsync {
 
     /** Delete a prompt object by its id */
     suspend fun delete(
+        promptId: String,
+        params: PromptDeleteParams = PromptDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Prompt = delete(params.toBuilder().promptId(promptId).build(), requestOptions)
+
+    /** @see [delete] */
+    suspend fun delete(
         params: PromptDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
+
+    /** @see [delete] */
+    suspend fun delete(promptId: String, requestOptions: RequestOptions): Prompt =
+        delete(promptId, PromptDeleteParams.none(), requestOptions)
 
     /**
      * Create or replace prompt. If there is an existing prompt in the project with the same slug as
@@ -95,9 +128,25 @@ interface PromptServiceAsync {
          */
         @MustBeClosed
         suspend fun retrieve(
+            promptId: String,
+            params: PromptRetrieveParams = PromptRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt> =
+            retrieve(params.toBuilder().promptId(promptId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
             params: PromptRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Prompt>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
+            promptId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Prompt> = retrieve(promptId, PromptRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /v1/prompt/{prompt_id}`, but is otherwise the same
@@ -105,9 +154,25 @@ interface PromptServiceAsync {
          */
         @MustBeClosed
         suspend fun update(
+            promptId: String,
+            params: PromptUpdateParams = PromptUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt> =
+            update(params.toBuilder().promptId(promptId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        suspend fun update(
             params: PromptUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Prompt>
+
+        /** @see [update] */
+        @MustBeClosed
+        suspend fun update(
+            promptId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Prompt> = update(promptId, PromptUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/prompt`, but is otherwise the same as
@@ -130,9 +195,25 @@ interface PromptServiceAsync {
          */
         @MustBeClosed
         suspend fun delete(
+            promptId: String,
+            params: PromptDeleteParams = PromptDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Prompt> =
+            delete(params.toBuilder().promptId(promptId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
             params: PromptDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Prompt>
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
+            promptId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Prompt> = delete(promptId, PromptDeleteParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `put /v1/prompt`, but is otherwise the same as

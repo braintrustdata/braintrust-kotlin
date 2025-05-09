@@ -34,9 +34,20 @@ interface ProjectServiceAsync {
 
     /** Get a project object by its id */
     suspend fun retrieve(
+        projectId: String,
+        params: ProjectRetrieveParams = ProjectRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Project = retrieve(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    suspend fun retrieve(
         params: ProjectRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
+
+    /** @see [retrieve] */
+    suspend fun retrieve(projectId: String, requestOptions: RequestOptions): Project =
+        retrieve(projectId, ProjectRetrieveParams.none(), requestOptions)
 
     /**
      * Partially update a project object. Specify the fields to update in the payload. Any
@@ -44,9 +55,20 @@ interface ProjectServiceAsync {
      * removing fields or setting them to null.
      */
     suspend fun update(
+        projectId: String,
+        params: ProjectUpdateParams = ProjectUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Project = update(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+    /** @see [update] */
+    suspend fun update(
         params: ProjectUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
+
+    /** @see [update] */
+    suspend fun update(projectId: String, requestOptions: RequestOptions): Project =
+        update(projectId, ProjectUpdateParams.none(), requestOptions)
 
     /**
      * List out all projects. The projects are sorted by creation date, with the most
@@ -63,9 +85,20 @@ interface ProjectServiceAsync {
 
     /** Delete a project object by its id */
     suspend fun delete(
+        projectId: String,
+        params: ProjectDeleteParams = ProjectDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Project = delete(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+    /** @see [delete] */
+    suspend fun delete(
         params: ProjectDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
+
+    /** @see [delete] */
+    suspend fun delete(projectId: String, requestOptions: RequestOptions): Project =
+        delete(projectId, ProjectDeleteParams.none(), requestOptions)
 
     /**
      * A view of [ProjectServiceAsync] that provides access to raw HTTP responses for each method.
@@ -90,9 +123,26 @@ interface ProjectServiceAsync {
          */
         @MustBeClosed
         suspend fun retrieve(
+            projectId: String,
+            params: ProjectRetrieveParams = ProjectRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Project> =
+            retrieve(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
             params: ProjectRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
+            projectId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Project> =
+            retrieve(projectId, ProjectRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /v1/project/{project_id}`, but is otherwise the
@@ -100,9 +150,25 @@ interface ProjectServiceAsync {
          */
         @MustBeClosed
         suspend fun update(
+            projectId: String,
+            params: ProjectUpdateParams = ProjectUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Project> =
+            update(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        suspend fun update(
             params: ProjectUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project>
+
+        /** @see [update] */
+        @MustBeClosed
+        suspend fun update(
+            projectId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Project> = update(projectId, ProjectUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/project`, but is otherwise the same as
@@ -125,8 +191,24 @@ interface ProjectServiceAsync {
          */
         @MustBeClosed
         suspend fun delete(
+            projectId: String,
+            params: ProjectDeleteParams = ProjectDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Project> =
+            delete(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
             params: ProjectDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project>
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
+            projectId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Project> = delete(projectId, ProjectDeleteParams.none(), requestOptions)
     }
 }

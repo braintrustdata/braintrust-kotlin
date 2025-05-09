@@ -4,7 +4,6 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -13,14 +12,14 @@ import java.util.Objects
 /** Delete an ai_secret object by its id */
 class AiSecretDeleteParams
 private constructor(
-    private val aiSecretId: String,
+    private val aiSecretId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     /** AiSecret id */
-    fun aiSecretId(): String = aiSecretId
+    fun aiSecretId(): String? = aiSecretId
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +31,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [AiSecretDeleteParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .aiSecretId()
-         * ```
-         */
+        fun none(): AiSecretDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [AiSecretDeleteParams]. */
         fun builder() = Builder()
     }
 
@@ -59,7 +53,7 @@ private constructor(
         }
 
         /** AiSecret id */
-        fun aiSecretId(aiSecretId: String) = apply { this.aiSecretId = aiSecretId }
+        fun aiSecretId(aiSecretId: String?) = apply { this.aiSecretId = aiSecretId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +179,10 @@ private constructor(
          * Returns an immutable instance of [AiSecretDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .aiSecretId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): AiSecretDeleteParams =
             AiSecretDeleteParams(
-                checkRequired("aiSecretId", aiSecretId),
+                aiSecretId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -206,7 +193,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> aiSecretId
+            0 -> aiSecretId ?: ""
             else -> ""
         }
 

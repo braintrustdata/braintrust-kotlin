@@ -4,7 +4,6 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -13,14 +12,14 @@ import java.util.Objects
 /** Delete a group object by its id */
 class GroupDeleteParams
 private constructor(
-    private val groupId: String,
+    private val groupId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     /** Group id */
-    fun groupId(): String = groupId
+    fun groupId(): String? = groupId
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +31,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [GroupDeleteParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .groupId()
-         * ```
-         */
+        fun none(): GroupDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [GroupDeleteParams]. */
         fun builder() = Builder()
     }
 
@@ -59,7 +53,7 @@ private constructor(
         }
 
         /** Group id */
-        fun groupId(groupId: String) = apply { this.groupId = groupId }
+        fun groupId(groupId: String?) = apply { this.groupId = groupId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +179,10 @@ private constructor(
          * Returns an immutable instance of [GroupDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .groupId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): GroupDeleteParams =
             GroupDeleteParams(
-                checkRequired("groupId", groupId),
+                groupId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -206,7 +193,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> groupId
+            0 -> groupId ?: ""
             else -> ""
         }
 

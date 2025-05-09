@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
@@ -11,13 +10,13 @@ import java.util.Objects
 /** Get a project_tag object by its id */
 class ProjectTagRetrieveParams
 private constructor(
-    private val projectTagId: String,
+    private val projectTagId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** ProjectTag id */
-    fun projectTagId(): String = projectTagId
+    fun projectTagId(): String? = projectTagId
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -27,14 +26,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ProjectTagRetrieveParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .projectTagId()
-         * ```
-         */
+        fun none(): ProjectTagRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ProjectTagRetrieveParams]. */
         fun builder() = Builder()
     }
 
@@ -52,7 +46,7 @@ private constructor(
         }
 
         /** ProjectTag id */
-        fun projectTagId(projectTagId: String) = apply { this.projectTagId = projectTagId }
+        fun projectTagId(projectTagId: String?) = apply { this.projectTagId = projectTagId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -156,17 +150,10 @@ private constructor(
          * Returns an immutable instance of [ProjectTagRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .projectTagId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ProjectTagRetrieveParams =
             ProjectTagRetrieveParams(
-                checkRequired("projectTagId", projectTagId),
+                projectTagId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -174,7 +161,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> projectTagId
+            0 -> projectTagId ?: ""
             else -> ""
         }
 

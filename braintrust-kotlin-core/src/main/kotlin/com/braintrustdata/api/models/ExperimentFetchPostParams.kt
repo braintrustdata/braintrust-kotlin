@@ -7,7 +7,6 @@ import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
@@ -25,14 +24,14 @@ import java.util.Objects
  */
 class ExperimentFetchPostParams
 private constructor(
-    private val experimentId: String,
+    private val experimentId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Experiment id */
-    fun experimentId(): String = experimentId
+    fun experimentId(): String? = experimentId
 
     /**
      * An opaque string to be used as a cursor for the next page of results, in order from latest to
@@ -154,13 +153,10 @@ private constructor(
 
     companion object {
 
+        fun none(): ExperimentFetchPostParams = builder().build()
+
         /**
          * Returns a mutable builder for constructing an instance of [ExperimentFetchPostParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .experimentId()
-         * ```
          */
         fun builder() = Builder()
     }
@@ -181,7 +177,7 @@ private constructor(
         }
 
         /** Experiment id */
-        fun experimentId(experimentId: String) = apply { this.experimentId = experimentId }
+        fun experimentId(experimentId: String?) = apply { this.experimentId = experimentId }
 
         /**
          * Sets the entire request body.
@@ -431,17 +427,10 @@ private constructor(
          * Returns an immutable instance of [ExperimentFetchPostParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .experimentId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ExperimentFetchPostParams =
             ExperimentFetchPostParams(
-                checkRequired("experimentId", experimentId),
+                experimentId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -452,7 +441,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> experimentId
+            0 -> experimentId ?: ""
             else -> ""
         }
 

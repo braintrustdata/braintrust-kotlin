@@ -35,14 +35,14 @@ import java.util.Objects
 /** Invoke a function. */
 class FunctionInvokeParams
 private constructor(
-    private val functionId: String,
+    private val functionId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Function id */
-    fun functionId(): String = functionId
+    fun functionId(): String? = functionId
 
     /** The expected output of the function */
     fun _expected(): JsonValue = body._expected()
@@ -151,14 +151,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [FunctionInvokeParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .functionId()
-         * ```
-         */
+        fun none(): FunctionInvokeParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [FunctionInvokeParams]. */
         fun builder() = Builder()
     }
 
@@ -178,7 +173,7 @@ private constructor(
         }
 
         /** Function id */
-        fun functionId(functionId: String) = apply { this.functionId = functionId }
+        fun functionId(functionId: String?) = apply { this.functionId = functionId }
 
         /**
          * Sets the entire request body.
@@ -432,17 +427,10 @@ private constructor(
          * Returns an immutable instance of [FunctionInvokeParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .functionId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): FunctionInvokeParams =
             FunctionInvokeParams(
-                checkRequired("functionId", functionId),
+                functionId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -453,7 +441,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> functionId
+            0 -> functionId ?: ""
             else -> ""
         }
 
