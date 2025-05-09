@@ -2,6 +2,8 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.AutoPager
+import com.braintrustdata.api.core.Page
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.ProjectScoreService
 import java.util.Objects
@@ -12,7 +14,7 @@ private constructor(
     private val service: ProjectScoreService,
     private val params: ProjectScoreListParams,
     private val response: ProjectScoreListPageResponse,
-) {
+) : Page<ProjectScore> {
 
     /**
      * Delegates to [ProjectScoreListPageResponse], but gracefully handles missing data.
@@ -21,23 +23,20 @@ private constructor(
      */
     fun objects(): List<ProjectScore> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun hasNextPage(): Boolean = objects().isNotEmpty()
+    override fun items(): List<ProjectScore> = objects()
 
-    fun getNextPageParams(): ProjectScoreListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return if (params.endingBefore() != null) {
-            params.toBuilder().endingBefore(objects().first()._id().getNullable("id")).build()
+    fun nextPageParams(): ProjectScoreListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
         } else {
-            params.toBuilder().startingAfter(objects().last()._id().getNullable("id")).build()
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
         }
-    }
 
-    fun getNextPage(): ProjectScoreListPage? = getNextPageParams()?.let { service.list(it) }
+    override fun nextPage(): ProjectScoreListPage = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPager<ProjectScore> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): ProjectScoreListParams = params
@@ -103,21 +102,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: ProjectScoreListPage) : Sequence<ProjectScore> {
-
-        override fun iterator(): Iterator<ProjectScore> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    yield(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
     }
 
     override fun equals(other: Any?): Boolean {

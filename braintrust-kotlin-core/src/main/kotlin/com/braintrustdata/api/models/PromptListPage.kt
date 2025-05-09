@@ -2,6 +2,8 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.AutoPager
+import com.braintrustdata.api.core.Page
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.PromptService
 import java.util.Objects
@@ -12,7 +14,7 @@ private constructor(
     private val service: PromptService,
     private val params: PromptListParams,
     private val response: PromptListPageResponse,
-) {
+) : Page<Prompt> {
 
     /**
      * Delegates to [PromptListPageResponse], but gracefully handles missing data.
@@ -21,23 +23,20 @@ private constructor(
      */
     fun objects(): List<Prompt> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun hasNextPage(): Boolean = objects().isNotEmpty()
+    override fun items(): List<Prompt> = objects()
 
-    fun getNextPageParams(): PromptListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return if (params.endingBefore() != null) {
-            params.toBuilder().endingBefore(objects().first()._id().getNullable("id")).build()
+    fun nextPageParams(): PromptListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
         } else {
-            params.toBuilder().startingAfter(objects().last()._id().getNullable("id")).build()
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
         }
-    }
 
-    fun getNextPage(): PromptListPage? = getNextPageParams()?.let { service.list(it) }
+    override fun nextPage(): PromptListPage = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPager<Prompt> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): PromptListParams = params
@@ -103,21 +102,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: PromptListPage) : Sequence<Prompt> {
-
-        override fun iterator(): Iterator<Prompt> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    yield(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
     }
 
     override fun equals(other: Any?): Boolean {

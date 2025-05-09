@@ -2,11 +2,11 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.AutoPagerAsync
+import com.braintrustdata.api.core.PageAsync
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.RoleServiceAsync
 import java.util.Objects
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 
 /** @see [RoleServiceAsync.list] */
 class RoleListPageAsync
@@ -14,7 +14,7 @@ private constructor(
     private val service: RoleServiceAsync,
     private val params: RoleListParams,
     private val response: RoleListPageResponse,
-) {
+) : PageAsync<Role> {
 
     /**
      * Delegates to [RoleListPageResponse], but gracefully handles missing data.
@@ -23,23 +23,20 @@ private constructor(
      */
     fun objects(): List<Role> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun hasNextPage(): Boolean = objects().isNotEmpty()
+    override fun items(): List<Role> = objects()
 
-    fun getNextPageParams(): RoleListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return if (params.endingBefore() != null) {
-            params.toBuilder().endingBefore(objects().first()._id().getNullable("id")).build()
+    fun nextPageParams(): RoleListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
         } else {
-            params.toBuilder().startingAfter(objects().last()._id().getNullable("id")).build()
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
         }
-    }
 
-    suspend fun getNextPage(): RoleListPageAsync? = getNextPageParams()?.let { service.list(it) }
+    override suspend fun nextPage(): RoleListPageAsync = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<Role> = AutoPagerAsync.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): RoleListParams = params
@@ -105,21 +102,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: RoleListPageAsync) : Flow<Role> {
-
-        override suspend fun collect(collector: FlowCollector<Role>) {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    collector.emit(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
     }
 
     override fun equals(other: Any?): Boolean {

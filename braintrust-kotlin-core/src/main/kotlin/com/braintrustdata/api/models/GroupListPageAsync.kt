@@ -2,11 +2,11 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.AutoPagerAsync
+import com.braintrustdata.api.core.PageAsync
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.GroupServiceAsync
 import java.util.Objects
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 
 /** @see [GroupServiceAsync.list] */
 class GroupListPageAsync
@@ -14,7 +14,7 @@ private constructor(
     private val service: GroupServiceAsync,
     private val params: GroupListParams,
     private val response: GroupListPageResponse,
-) {
+) : PageAsync<Group> {
 
     /**
      * Delegates to [GroupListPageResponse], but gracefully handles missing data.
@@ -23,23 +23,20 @@ private constructor(
      */
     fun objects(): List<Group> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun hasNextPage(): Boolean = objects().isNotEmpty()
+    override fun items(): List<Group> = objects()
 
-    fun getNextPageParams(): GroupListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return if (params.endingBefore() != null) {
-            params.toBuilder().endingBefore(objects().first()._id().getNullable("id")).build()
+    fun nextPageParams(): GroupListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
         } else {
-            params.toBuilder().startingAfter(objects().last()._id().getNullable("id")).build()
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
         }
-    }
 
-    suspend fun getNextPage(): GroupListPageAsync? = getNextPageParams()?.let { service.list(it) }
+    override suspend fun nextPage(): GroupListPageAsync = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<Group> = AutoPagerAsync.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): GroupListParams = params
@@ -105,21 +102,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: GroupListPageAsync) : Flow<Group> {
-
-        override suspend fun collect(collector: FlowCollector<Group>) {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    collector.emit(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
     }
 
     override fun equals(other: Any?): Boolean {

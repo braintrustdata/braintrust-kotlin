@@ -2,6 +2,8 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.AutoPager
+import com.braintrustdata.api.core.Page
 import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.DatasetService
 import java.util.Objects
@@ -12,7 +14,7 @@ private constructor(
     private val service: DatasetService,
     private val params: DatasetListParams,
     private val response: DatasetListPageResponse,
-) {
+) : Page<Dataset> {
 
     /**
      * Delegates to [DatasetListPageResponse], but gracefully handles missing data.
@@ -21,23 +23,20 @@ private constructor(
      */
     fun objects(): List<Dataset> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun hasNextPage(): Boolean = objects().isNotEmpty()
+    override fun items(): List<Dataset> = objects()
 
-    fun getNextPageParams(): DatasetListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return if (params.endingBefore() != null) {
-            params.toBuilder().endingBefore(objects().first()._id().getNullable("id")).build()
+    fun nextPageParams(): DatasetListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
         } else {
-            params.toBuilder().startingAfter(objects().last()._id().getNullable("id")).build()
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
         }
-    }
 
-    fun getNextPage(): DatasetListPage? = getNextPageParams()?.let { service.list(it) }
+    override fun nextPage(): DatasetListPage = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPager<Dataset> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): DatasetListParams = params
@@ -103,21 +102,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: DatasetListPage) : Sequence<Dataset> {
-
-        override fun iterator(): Iterator<Dataset> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    yield(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
     }
 
     override fun equals(other: Any?): Boolean {
