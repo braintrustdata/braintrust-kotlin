@@ -40,9 +40,20 @@ interface ExperimentServiceAsync {
 
     /** Get an experiment object by its id */
     suspend fun retrieve(
+        experimentId: String,
+        params: ExperimentRetrieveParams = ExperimentRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Experiment = retrieve(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    suspend fun retrieve(
         params: ExperimentRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment
+
+    /** @see [retrieve] */
+    suspend fun retrieve(experimentId: String, requestOptions: RequestOptions): Experiment =
+        retrieve(experimentId, ExperimentRetrieveParams.none(), requestOptions)
 
     /**
      * Partially update an experiment object. Specify the fields to update in the payload. Any
@@ -50,9 +61,20 @@ interface ExperimentServiceAsync {
      * removing fields or setting them to null.
      */
     suspend fun update(
+        experimentId: String,
+        params: ExperimentUpdateParams = ExperimentUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Experiment = update(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+    /** @see [update] */
+    suspend fun update(
         params: ExperimentUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment
+
+    /** @see [update] */
+    suspend fun update(experimentId: String, requestOptions: RequestOptions): Experiment =
+        update(experimentId, ExperimentUpdateParams.none(), requestOptions)
 
     /**
      * List out all experiments. The experiments are sorted by creation date, with the most
@@ -69,11 +91,30 @@ interface ExperimentServiceAsync {
 
     /** Delete an experiment object by its id */
     suspend fun delete(
+        experimentId: String,
+        params: ExperimentDeleteParams = ExperimentDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Experiment = delete(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+    /** @see [delete] */
+    suspend fun delete(
         params: ExperimentDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment
 
+    /** @see [delete] */
+    suspend fun delete(experimentId: String, requestOptions: RequestOptions): Experiment =
+        delete(experimentId, ExperimentDeleteParams.none(), requestOptions)
+
     /** Log feedback for a set of experiment events */
+    suspend fun feedback(
+        experimentId: String,
+        params: ExperimentFeedbackParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): FeedbackResponseSchema =
+        feedback(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+    /** @see [feedback] */
     suspend fun feedback(
         params: ExperimentFeedbackParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -85,9 +126,24 @@ interface ExperimentServiceAsync {
      * the `POST /btql` endpoint.
      */
     suspend fun fetch(
+        experimentId: String,
+        params: ExperimentFetchParams = ExperimentFetchParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): FetchExperimentEventsResponse =
+        fetch(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+    /** @see [fetch] */
+    suspend fun fetch(
         params: ExperimentFetchParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchExperimentEventsResponse
+
+    /** @see [fetch] */
+    suspend fun fetch(
+        experimentId: String,
+        requestOptions: RequestOptions,
+    ): FetchExperimentEventsResponse =
+        fetch(experimentId, ExperimentFetchParams.none(), requestOptions)
 
     /**
      * Fetch the events in an experiment. Equivalent to the GET form of the same path, but with the
@@ -95,11 +151,34 @@ interface ExperimentServiceAsync {
      * the `POST /btql` endpoint.
      */
     suspend fun fetchPost(
+        experimentId: String,
+        params: ExperimentFetchPostParams = ExperimentFetchPostParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): FetchExperimentEventsResponse =
+        fetchPost(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+    /** @see [fetchPost] */
+    suspend fun fetchPost(
         params: ExperimentFetchPostParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchExperimentEventsResponse
 
+    /** @see [fetchPost] */
+    suspend fun fetchPost(
+        experimentId: String,
+        requestOptions: RequestOptions,
+    ): FetchExperimentEventsResponse =
+        fetchPost(experimentId, ExperimentFetchPostParams.none(), requestOptions)
+
     /** Insert a set of events into the experiment */
+    suspend fun insert(
+        experimentId: String,
+        params: ExperimentInsertParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): InsertEventsResponse =
+        insert(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+    /** @see [insert] */
     suspend fun insert(
         params: ExperimentInsertParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -107,9 +186,24 @@ interface ExperimentServiceAsync {
 
     /** Summarize experiment */
     suspend fun summarize(
+        experimentId: String,
+        params: ExperimentSummarizeParams = ExperimentSummarizeParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): SummarizeExperimentResponse =
+        summarize(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+    /** @see [summarize] */
+    suspend fun summarize(
         params: ExperimentSummarizeParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SummarizeExperimentResponse
+
+    /** @see [summarize] */
+    suspend fun summarize(
+        experimentId: String,
+        requestOptions: RequestOptions,
+    ): SummarizeExperimentResponse =
+        summarize(experimentId, ExperimentSummarizeParams.none(), requestOptions)
 
     /**
      * A view of [ExperimentServiceAsync] that provides access to raw HTTP responses for each
@@ -133,9 +227,26 @@ interface ExperimentServiceAsync {
          */
         @MustBeClosed
         suspend fun retrieve(
+            experimentId: String,
+            params: ExperimentRetrieveParams = ExperimentRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Experiment> =
+            retrieve(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
             params: ExperimentRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Experiment>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
+            experimentId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Experiment> =
+            retrieve(experimentId, ExperimentRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /v1/experiment/{experiment_id}`, but is otherwise
@@ -143,9 +254,26 @@ interface ExperimentServiceAsync {
          */
         @MustBeClosed
         suspend fun update(
+            experimentId: String,
+            params: ExperimentUpdateParams = ExperimentUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Experiment> =
+            update(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        suspend fun update(
             params: ExperimentUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Experiment>
+
+        /** @see [update] */
+        @MustBeClosed
+        suspend fun update(
+            experimentId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Experiment> =
+            update(experimentId, ExperimentUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/experiment`, but is otherwise the same as
@@ -168,14 +296,40 @@ interface ExperimentServiceAsync {
          */
         @MustBeClosed
         suspend fun delete(
+            experimentId: String,
+            params: ExperimentDeleteParams = ExperimentDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Experiment> =
+            delete(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
             params: ExperimentDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Experiment>
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
+            experimentId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Experiment> =
+            delete(experimentId, ExperimentDeleteParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v1/experiment/{experiment_id}/feedback`, but is
          * otherwise the same as [ExperimentServiceAsync.feedback].
          */
+        @MustBeClosed
+        suspend fun feedback(
+            experimentId: String,
+            params: ExperimentFeedbackParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<FeedbackResponseSchema> =
+            feedback(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+        /** @see [feedback] */
         @MustBeClosed
         suspend fun feedback(
             params: ExperimentFeedbackParams,
@@ -188,9 +342,26 @@ interface ExperimentServiceAsync {
          */
         @MustBeClosed
         suspend fun fetch(
+            experimentId: String,
+            params: ExperimentFetchParams = ExperimentFetchParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<FetchExperimentEventsResponse> =
+            fetch(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+        /** @see [fetch] */
+        @MustBeClosed
+        suspend fun fetch(
             params: ExperimentFetchParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FetchExperimentEventsResponse>
+
+        /** @see [fetch] */
+        @MustBeClosed
+        suspend fun fetch(
+            experimentId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<FetchExperimentEventsResponse> =
+            fetch(experimentId, ExperimentFetchParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v1/experiment/{experiment_id}/fetch`, but is
@@ -198,14 +369,40 @@ interface ExperimentServiceAsync {
          */
         @MustBeClosed
         suspend fun fetchPost(
+            experimentId: String,
+            params: ExperimentFetchPostParams = ExperimentFetchPostParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<FetchExperimentEventsResponse> =
+            fetchPost(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+        /** @see [fetchPost] */
+        @MustBeClosed
+        suspend fun fetchPost(
             params: ExperimentFetchPostParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FetchExperimentEventsResponse>
+
+        /** @see [fetchPost] */
+        @MustBeClosed
+        suspend fun fetchPost(
+            experimentId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<FetchExperimentEventsResponse> =
+            fetchPost(experimentId, ExperimentFetchPostParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v1/experiment/{experiment_id}/insert`, but is
          * otherwise the same as [ExperimentServiceAsync.insert].
          */
+        @MustBeClosed
+        suspend fun insert(
+            experimentId: String,
+            params: ExperimentInsertParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<InsertEventsResponse> =
+            insert(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+        /** @see [insert] */
         @MustBeClosed
         suspend fun insert(
             params: ExperimentInsertParams,
@@ -218,8 +415,25 @@ interface ExperimentServiceAsync {
          */
         @MustBeClosed
         suspend fun summarize(
+            experimentId: String,
+            params: ExperimentSummarizeParams = ExperimentSummarizeParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<SummarizeExperimentResponse> =
+            summarize(params.toBuilder().experimentId(experimentId).build(), requestOptions)
+
+        /** @see [summarize] */
+        @MustBeClosed
+        suspend fun summarize(
             params: ExperimentSummarizeParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<SummarizeExperimentResponse>
+
+        /** @see [summarize] */
+        @MustBeClosed
+        suspend fun summarize(
+            experimentId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<SummarizeExperimentResponse> =
+            summarize(experimentId, ExperimentSummarizeParams.none(), requestOptions)
     }
 }

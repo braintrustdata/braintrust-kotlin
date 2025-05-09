@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
@@ -11,13 +10,13 @@ import java.util.Objects
 /** Get an env_var object by its id */
 class EnvVarRetrieveParams
 private constructor(
-    private val envVarId: String,
+    private val envVarId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** EnvVar id */
-    fun envVarId(): String = envVarId
+    fun envVarId(): String? = envVarId
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -27,14 +26,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [EnvVarRetrieveParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .envVarId()
-         * ```
-         */
+        fun none(): EnvVarRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [EnvVarRetrieveParams]. */
         fun builder() = Builder()
     }
 
@@ -52,7 +46,7 @@ private constructor(
         }
 
         /** EnvVar id */
-        fun envVarId(envVarId: String) = apply { this.envVarId = envVarId }
+        fun envVarId(envVarId: String?) = apply { this.envVarId = envVarId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -156,25 +150,14 @@ private constructor(
          * Returns an immutable instance of [EnvVarRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .envVarId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): EnvVarRetrieveParams =
-            EnvVarRetrieveParams(
-                checkRequired("envVarId", envVarId),
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
+            EnvVarRetrieveParams(envVarId, additionalHeaders.build(), additionalQueryParams.build())
     }
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> envVarId
+            0 -> envVarId ?: ""
             else -> ""
         }
 

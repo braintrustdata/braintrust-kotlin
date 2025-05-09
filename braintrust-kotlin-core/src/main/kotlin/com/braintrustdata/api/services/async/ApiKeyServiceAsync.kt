@@ -31,9 +31,20 @@ interface ApiKeyServiceAsync {
 
     /** Get an api_key object by its id */
     suspend fun retrieve(
+        apiKeyId: String,
+        params: ApiKeyRetrieveParams = ApiKeyRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ApiKey = retrieve(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    suspend fun retrieve(
         params: ApiKeyRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKey
+
+    /** @see [retrieve] */
+    suspend fun retrieve(apiKeyId: String, requestOptions: RequestOptions): ApiKey =
+        retrieve(apiKeyId, ApiKeyRetrieveParams.none(), requestOptions)
 
     /**
      * List out all api_keys. The api_keys are sorted by creation date, with the most
@@ -50,9 +61,20 @@ interface ApiKeyServiceAsync {
 
     /** Delete an api_key object by its id */
     suspend fun delete(
+        apiKeyId: String,
+        params: ApiKeyDeleteParams = ApiKeyDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ApiKey = delete(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
+
+    /** @see [delete] */
+    suspend fun delete(
         params: ApiKeyDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKey
+
+    /** @see [delete] */
+    suspend fun delete(apiKeyId: String, requestOptions: RequestOptions): ApiKey =
+        delete(apiKeyId, ApiKeyDeleteParams.none(), requestOptions)
 
     /**
      * A view of [ApiKeyServiceAsync] that provides access to raw HTTP responses for each method.
@@ -75,9 +97,25 @@ interface ApiKeyServiceAsync {
          */
         @MustBeClosed
         suspend fun retrieve(
+            apiKeyId: String,
+            params: ApiKeyRetrieveParams = ApiKeyRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ApiKey> =
+            retrieve(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
             params: ApiKeyRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ApiKey>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
+            apiKeyId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ApiKey> = retrieve(apiKeyId, ApiKeyRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/api_key`, but is otherwise the same as
@@ -100,8 +138,24 @@ interface ApiKeyServiceAsync {
          */
         @MustBeClosed
         suspend fun delete(
+            apiKeyId: String,
+            params: ApiKeyDeleteParams = ApiKeyDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ApiKey> =
+            delete(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
             params: ApiKeyDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ApiKey>
+
+        /** @see [delete] */
+        @MustBeClosed
+        suspend fun delete(
+            apiKeyId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ApiKey> = delete(apiKeyId, ApiKeyDeleteParams.none(), requestOptions)
     }
 }

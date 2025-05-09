@@ -4,7 +4,6 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -13,14 +12,14 @@ import java.util.Objects
 /** Delete a dataset object by its id */
 class DatasetDeleteParams
 private constructor(
-    private val datasetId: String,
+    private val datasetId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     /** Dataset id */
-    fun datasetId(): String = datasetId
+    fun datasetId(): String? = datasetId
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +31,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [DatasetDeleteParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .datasetId()
-         * ```
-         */
+        fun none(): DatasetDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [DatasetDeleteParams]. */
         fun builder() = Builder()
     }
 
@@ -59,7 +53,7 @@ private constructor(
         }
 
         /** Dataset id */
-        fun datasetId(datasetId: String) = apply { this.datasetId = datasetId }
+        fun datasetId(datasetId: String?) = apply { this.datasetId = datasetId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +179,10 @@ private constructor(
          * Returns an immutable instance of [DatasetDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .datasetId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): DatasetDeleteParams =
             DatasetDeleteParams(
-                checkRequired("datasetId", datasetId),
+                datasetId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -206,7 +193,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> datasetId
+            0 -> datasetId ?: ""
             else -> ""
         }
 

@@ -30,9 +30,20 @@ interface AclService {
 
     /** Get an acl object by its id */
     fun retrieve(
+        aclId: String,
+        params: AclRetrieveParams = AclRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Acl = retrieve(params.toBuilder().aclId(aclId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
         params: AclRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Acl
+
+    /** @see [retrieve] */
+    fun retrieve(aclId: String, requestOptions: RequestOptions): Acl =
+        retrieve(aclId, AclRetrieveParams.none(), requestOptions)
 
     /**
      * List out all acls. The acls are sorted by creation date, with the most recently-created acls
@@ -44,7 +55,18 @@ interface AclService {
     ): AclListPage
 
     /** Delete an acl object by its id */
+    fun delete(
+        aclId: String,
+        params: AclDeleteParams = AclDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Acl = delete(params.toBuilder().aclId(aclId).build(), requestOptions)
+
+    /** @see [delete] */
     fun delete(params: AclDeleteParams, requestOptions: RequestOptions = RequestOptions.none()): Acl
+
+    /** @see [delete] */
+    fun delete(aclId: String, requestOptions: RequestOptions): Acl =
+        delete(aclId, AclDeleteParams.none(), requestOptions)
 
     /**
      * Batch update acls. This operation is idempotent, so adding acls which already exist will have
@@ -84,9 +106,22 @@ interface AclService {
          */
         @MustBeClosed
         fun retrieve(
+            aclId: String,
+            params: AclRetrieveParams = AclRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Acl> = retrieve(params.toBuilder().aclId(aclId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
             params: AclRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Acl>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(aclId: String, requestOptions: RequestOptions): HttpResponseFor<Acl> =
+            retrieve(aclId, AclRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/acl`, but is otherwise the same as
@@ -104,9 +139,22 @@ interface AclService {
          */
         @MustBeClosed
         fun delete(
+            aclId: String,
+            params: AclDeleteParams = AclDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Acl> = delete(params.toBuilder().aclId(aclId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
             params: AclDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Acl>
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(aclId: String, requestOptions: RequestOptions): HttpResponseFor<Acl> =
+            delete(aclId, AclDeleteParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v1/acl/batch_update`, but is otherwise the same as

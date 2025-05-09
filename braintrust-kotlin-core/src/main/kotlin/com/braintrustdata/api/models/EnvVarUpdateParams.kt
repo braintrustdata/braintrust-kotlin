@@ -25,14 +25,14 @@ import java.util.Objects
  */
 class EnvVarUpdateParams
 private constructor(
-    private val envVarId: String,
+    private val envVarId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** EnvVar id */
-    fun envVarId(): String = envVarId
+    fun envVarId(): String? = envVarId
 
     /**
      * The name of the environment variable
@@ -79,7 +79,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .envVarId()
          * .name()
          * ```
          */
@@ -102,7 +101,7 @@ private constructor(
         }
 
         /** EnvVar id */
-        fun envVarId(envVarId: String) = apply { this.envVarId = envVarId }
+        fun envVarId(envVarId: String?) = apply { this.envVarId = envVarId }
 
         /**
          * Sets the entire request body.
@@ -260,7 +259,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .envVarId()
          * .name()
          * ```
          *
@@ -268,7 +266,7 @@ private constructor(
          */
         fun build(): EnvVarUpdateParams =
             EnvVarUpdateParams(
-                checkRequired("envVarId", envVarId),
+                envVarId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -279,7 +277,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> envVarId
+            0 -> envVarId ?: ""
             else -> ""
         }
 

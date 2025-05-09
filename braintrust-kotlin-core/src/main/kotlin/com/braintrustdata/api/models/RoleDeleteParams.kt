@@ -4,7 +4,6 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -13,14 +12,14 @@ import java.util.Objects
 /** Delete a role object by its id */
 class RoleDeleteParams
 private constructor(
-    private val roleId: String,
+    private val roleId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     /** Role id */
-    fun roleId(): String = roleId
+    fun roleId(): String? = roleId
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +31,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [RoleDeleteParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .roleId()
-         * ```
-         */
+        fun none(): RoleDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [RoleDeleteParams]. */
         fun builder() = Builder()
     }
 
@@ -59,7 +53,7 @@ private constructor(
         }
 
         /** Role id */
-        fun roleId(roleId: String) = apply { this.roleId = roleId }
+        fun roleId(roleId: String?) = apply { this.roleId = roleId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +179,10 @@ private constructor(
          * Returns an immutable instance of [RoleDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .roleId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): RoleDeleteParams =
             RoleDeleteParams(
-                checkRequired("roleId", roleId),
+                roleId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -206,7 +193,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> roleId
+            0 -> roleId ?: ""
             else -> ""
         }
 

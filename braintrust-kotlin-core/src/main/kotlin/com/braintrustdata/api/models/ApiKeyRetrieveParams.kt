@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
@@ -11,13 +10,13 @@ import java.util.Objects
 /** Get an api_key object by its id */
 class ApiKeyRetrieveParams
 private constructor(
-    private val apiKeyId: String,
+    private val apiKeyId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** ApiKey id */
-    fun apiKeyId(): String = apiKeyId
+    fun apiKeyId(): String? = apiKeyId
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -27,14 +26,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ApiKeyRetrieveParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .apiKeyId()
-         * ```
-         */
+        fun none(): ApiKeyRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ApiKeyRetrieveParams]. */
         fun builder() = Builder()
     }
 
@@ -52,7 +46,7 @@ private constructor(
         }
 
         /** ApiKey id */
-        fun apiKeyId(apiKeyId: String) = apply { this.apiKeyId = apiKeyId }
+        fun apiKeyId(apiKeyId: String?) = apply { this.apiKeyId = apiKeyId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -156,25 +150,14 @@ private constructor(
          * Returns an immutable instance of [ApiKeyRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .apiKeyId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ApiKeyRetrieveParams =
-            ApiKeyRetrieveParams(
-                checkRequired("apiKeyId", apiKeyId),
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
+            ApiKeyRetrieveParams(apiKeyId, additionalHeaders.build(), additionalQueryParams.build())
     }
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> apiKeyId
+            0 -> apiKeyId ?: ""
             else -> ""
         }
 

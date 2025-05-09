@@ -39,14 +39,14 @@ import java.util.Objects
  */
 class FunctionUpdateParams
 private constructor(
-    private val functionId: String,
+    private val functionId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Function id */
-    fun functionId(): String = functionId
+    fun functionId(): String? = functionId
 
     /**
      * Textual description of the prompt
@@ -131,14 +131,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [FunctionUpdateParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .functionId()
-         * ```
-         */
+        fun none(): FunctionUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [FunctionUpdateParams]. */
         fun builder() = Builder()
     }
 
@@ -158,7 +153,7 @@ private constructor(
         }
 
         /** Function id */
-        fun functionId(functionId: String) = apply { this.functionId = functionId }
+        fun functionId(functionId: String?) = apply { this.functionId = functionId }
 
         /**
          * Sets the entire request body.
@@ -371,17 +366,10 @@ private constructor(
          * Returns an immutable instance of [FunctionUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .functionId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): FunctionUpdateParams =
             FunctionUpdateParams(
-                checkRequired("functionId", functionId),
+                functionId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -392,7 +380,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> functionId
+            0 -> functionId ?: ""
             else -> ""
         }
 

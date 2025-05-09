@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
@@ -11,13 +10,13 @@ import java.util.Objects
 /** Get an ai_secret object by its id */
 class AiSecretRetrieveParams
 private constructor(
-    private val aiSecretId: String,
+    private val aiSecretId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** AiSecret id */
-    fun aiSecretId(): String = aiSecretId
+    fun aiSecretId(): String? = aiSecretId
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -27,14 +26,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [AiSecretRetrieveParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .aiSecretId()
-         * ```
-         */
+        fun none(): AiSecretRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [AiSecretRetrieveParams]. */
         fun builder() = Builder()
     }
 
@@ -52,7 +46,7 @@ private constructor(
         }
 
         /** AiSecret id */
-        fun aiSecretId(aiSecretId: String) = apply { this.aiSecretId = aiSecretId }
+        fun aiSecretId(aiSecretId: String?) = apply { this.aiSecretId = aiSecretId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -156,17 +150,10 @@ private constructor(
          * Returns an immutable instance of [AiSecretRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .aiSecretId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): AiSecretRetrieveParams =
             AiSecretRetrieveParams(
-                checkRequired("aiSecretId", aiSecretId),
+                aiSecretId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -174,7 +161,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> aiSecretId
+            0 -> aiSecretId ?: ""
             else -> ""
         }
 

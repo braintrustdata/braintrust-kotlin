@@ -5,9 +5,7 @@ package com.braintrustdata.api.services.async
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClientAsync
 import com.braintrustdata.api.models.ProjectTagCreateParams
-import com.braintrustdata.api.models.ProjectTagDeleteParams
 import com.braintrustdata.api.models.ProjectTagReplaceParams
-import com.braintrustdata.api.models.ProjectTagRetrieveParams
 import com.braintrustdata.api.models.ProjectTagUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -46,12 +44,7 @@ internal class ProjectTagServiceAsyncTest {
                 .build()
         val projectTagServiceAsync = client.projectTags()
 
-        val projectTag =
-            projectTagServiceAsync.retrieve(
-                ProjectTagRetrieveParams.builder()
-                    .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
+        val projectTag = projectTagServiceAsync.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 
         projectTag.validate()
     }
@@ -101,12 +94,7 @@ internal class ProjectTagServiceAsyncTest {
                 .build()
         val projectTagServiceAsync = client.projectTags()
 
-        val projectTag =
-            projectTagServiceAsync.delete(
-                ProjectTagDeleteParams.builder()
-                    .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
+        val projectTag = projectTagServiceAsync.delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 
         projectTag.validate()
     }

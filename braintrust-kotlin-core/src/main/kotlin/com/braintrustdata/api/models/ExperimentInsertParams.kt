@@ -23,14 +23,14 @@ import java.util.Objects
 /** Insert a set of events into the experiment */
 class ExperimentInsertParams
 private constructor(
-    private val experimentId: String,
+    private val experimentId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Experiment id */
-    fun experimentId(): String = experimentId
+    fun experimentId(): String? = experimentId
 
     /**
      * A list of experiment events to insert
@@ -62,7 +62,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .experimentId()
          * .events()
          * ```
          */
@@ -85,7 +84,7 @@ private constructor(
         }
 
         /** Experiment id */
-        fun experimentId(experimentId: String) = apply { this.experimentId = experimentId }
+        fun experimentId(experimentId: String?) = apply { this.experimentId = experimentId }
 
         /**
          * Sets the entire request body.
@@ -239,7 +238,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .experimentId()
          * .events()
          * ```
          *
@@ -247,7 +245,7 @@ private constructor(
          */
         fun build(): ExperimentInsertParams =
             ExperimentInsertParams(
-                checkRequired("experimentId", experimentId),
+                experimentId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -258,7 +256,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> experimentId
+            0 -> experimentId ?: ""
             else -> ""
         }
 

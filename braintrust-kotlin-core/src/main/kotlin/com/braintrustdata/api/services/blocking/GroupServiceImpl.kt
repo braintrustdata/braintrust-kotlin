@@ -5,6 +5,7 @@ package com.braintrustdata.api.services.blocking
 import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.handlers.errorHandler
 import com.braintrustdata.api.core.handlers.jsonHandler
 import com.braintrustdata.api.core.handlers.withErrorHandler
@@ -97,6 +98,9 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: GroupRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Group> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("groupId", params.groupId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -123,6 +127,9 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: GroupUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Group> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("groupId", params.groupId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.PATCH)
@@ -184,6 +191,9 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: GroupDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Group> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("groupId", params.groupId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

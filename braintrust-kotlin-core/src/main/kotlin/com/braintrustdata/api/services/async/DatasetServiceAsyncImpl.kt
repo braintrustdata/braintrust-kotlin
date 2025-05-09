@@ -5,6 +5,7 @@ package com.braintrustdata.api.services.async
 import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.handlers.errorHandler
 import com.braintrustdata.api.core.handlers.jsonHandler
 import com.braintrustdata.api.core.handlers.withErrorHandler
@@ -151,6 +152,9 @@ class DatasetServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: DatasetRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Dataset> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("datasetId", params.datasetId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -177,6 +181,9 @@ class DatasetServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: DatasetUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Dataset> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("datasetId", params.datasetId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.PATCH)
@@ -238,6 +245,9 @@ class DatasetServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: DatasetDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Dataset> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("datasetId", params.datasetId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -266,6 +276,9 @@ class DatasetServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: DatasetFeedbackParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FeedbackResponseSchema> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("datasetId", params.datasetId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -294,6 +307,9 @@ class DatasetServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: DatasetFetchParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FetchDatasetEventsResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("datasetId", params.datasetId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -321,6 +337,9 @@ class DatasetServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: DatasetFetchPostParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FetchDatasetEventsResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("datasetId", params.datasetId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -349,6 +368,9 @@ class DatasetServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: DatasetInsertParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<InsertEventsResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("datasetId", params.datasetId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -377,6 +399,9 @@ class DatasetServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: DatasetSummarizeParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<SummarizeDatasetResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("datasetId", params.datasetId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

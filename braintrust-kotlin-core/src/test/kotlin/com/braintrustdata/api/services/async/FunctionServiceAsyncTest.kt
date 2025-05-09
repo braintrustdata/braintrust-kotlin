@@ -7,10 +7,8 @@ import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClientAsync
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.models.AclObjectType
 import com.braintrustdata.api.models.FunctionCreateParams
-import com.braintrustdata.api.models.FunctionDeleteParams
 import com.braintrustdata.api.models.FunctionInvokeParams
 import com.braintrustdata.api.models.FunctionReplaceParams
-import com.braintrustdata.api.models.FunctionRetrieveParams
 import com.braintrustdata.api.models.FunctionUpdateParams
 import com.braintrustdata.api.models.PromptData
 import com.braintrustdata.api.models.PromptOptions
@@ -153,12 +151,7 @@ internal class FunctionServiceAsyncTest {
                 .build()
         val functionServiceAsync = client.functions()
 
-        val function =
-            functionServiceAsync.retrieve(
-                FunctionRetrieveParams.builder()
-                    .functionId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
+        val function = functionServiceAsync.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 
         function.validate()
     }
@@ -295,12 +288,7 @@ internal class FunctionServiceAsyncTest {
                 .build()
         val functionServiceAsync = client.functions()
 
-        val function =
-            functionServiceAsync.delete(
-                FunctionDeleteParams.builder()
-                    .functionId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
+        val function = functionServiceAsync.delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 
         function.validate()
     }

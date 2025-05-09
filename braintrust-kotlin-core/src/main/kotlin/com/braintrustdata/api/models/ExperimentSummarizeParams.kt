@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
@@ -11,7 +10,7 @@ import java.util.Objects
 /** Summarize experiment */
 class ExperimentSummarizeParams
 private constructor(
-    private val experimentId: String,
+    private val experimentId: String?,
     private val comparisonExperimentId: String?,
     private val summarizeScores: Boolean?,
     private val additionalHeaders: Headers,
@@ -19,7 +18,7 @@ private constructor(
 ) : Params {
 
     /** Experiment id */
-    fun experimentId(): String = experimentId
+    fun experimentId(): String? = experimentId
 
     /**
      * The experiment to compare against, if summarizing scores and metrics. If omitted, will fall
@@ -42,13 +41,10 @@ private constructor(
 
     companion object {
 
+        fun none(): ExperimentSummarizeParams = builder().build()
+
         /**
          * Returns a mutable builder for constructing an instance of [ExperimentSummarizeParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .experimentId()
-         * ```
          */
         fun builder() = Builder()
     }
@@ -71,7 +67,7 @@ private constructor(
         }
 
         /** Experiment id */
-        fun experimentId(experimentId: String) = apply { this.experimentId = experimentId }
+        fun experimentId(experimentId: String?) = apply { this.experimentId = experimentId }
 
         /**
          * The experiment to compare against, if summarizing scores and metrics. If omitted, will
@@ -200,17 +196,10 @@ private constructor(
          * Returns an immutable instance of [ExperimentSummarizeParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .experimentId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ExperimentSummarizeParams =
             ExperimentSummarizeParams(
-                checkRequired("experimentId", experimentId),
+                experimentId,
                 comparisonExperimentId,
                 summarizeScores,
                 additionalHeaders.build(),
@@ -220,7 +209,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> experimentId
+            0 -> experimentId ?: ""
             else -> ""
         }
 

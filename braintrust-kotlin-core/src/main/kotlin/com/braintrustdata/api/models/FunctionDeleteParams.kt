@@ -4,7 +4,6 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -13,14 +12,14 @@ import java.util.Objects
 /** Delete a function object by its id */
 class FunctionDeleteParams
 private constructor(
-    private val functionId: String,
+    private val functionId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     /** Function id */
-    fun functionId(): String = functionId
+    fun functionId(): String? = functionId
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +31,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [FunctionDeleteParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .functionId()
-         * ```
-         */
+        fun none(): FunctionDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [FunctionDeleteParams]. */
         fun builder() = Builder()
     }
 
@@ -59,7 +53,7 @@ private constructor(
         }
 
         /** Function id */
-        fun functionId(functionId: String) = apply { this.functionId = functionId }
+        fun functionId(functionId: String?) = apply { this.functionId = functionId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +179,10 @@ private constructor(
          * Returns an immutable instance of [FunctionDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .functionId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): FunctionDeleteParams =
             FunctionDeleteParams(
-                checkRequired("functionId", functionId),
+                functionId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -206,7 +193,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> functionId
+            0 -> functionId ?: ""
             else -> ""
         }
 

@@ -19,9 +19,20 @@ interface UserServiceAsync {
 
     /** Get a user object by its id */
     suspend fun retrieve(
+        userId: String,
+        params: UserRetrieveParams = UserRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): User = retrieve(params.toBuilder().userId(userId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    suspend fun retrieve(
         params: UserRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): User
+
+    /** @see [retrieve] */
+    suspend fun retrieve(userId: String, requestOptions: RequestOptions): User =
+        retrieve(userId, UserRetrieveParams.none(), requestOptions)
 
     /**
      * List out all users. The users are sorted by creation date, with the most recently-created
@@ -45,9 +56,25 @@ interface UserServiceAsync {
          */
         @MustBeClosed
         suspend fun retrieve(
+            userId: String,
+            params: UserRetrieveParams = UserRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<User> =
+            retrieve(params.toBuilder().userId(userId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
             params: UserRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<User>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        suspend fun retrieve(
+            userId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<User> = retrieve(userId, UserRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/user`, but is otherwise the same as

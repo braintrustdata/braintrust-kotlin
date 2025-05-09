@@ -4,7 +4,6 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -13,14 +12,14 @@ import java.util.Objects
 /** Delete an env_var object by its id */
 class EnvVarDeleteParams
 private constructor(
-    private val envVarId: String,
+    private val envVarId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     /** EnvVar id */
-    fun envVarId(): String = envVarId
+    fun envVarId(): String? = envVarId
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +31,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [EnvVarDeleteParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .envVarId()
-         * ```
-         */
+        fun none(): EnvVarDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [EnvVarDeleteParams]. */
         fun builder() = Builder()
     }
 
@@ -59,7 +53,7 @@ private constructor(
         }
 
         /** EnvVar id */
-        fun envVarId(envVarId: String) = apply { this.envVarId = envVarId }
+        fun envVarId(envVarId: String?) = apply { this.envVarId = envVarId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +179,10 @@ private constructor(
          * Returns an immutable instance of [EnvVarDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .envVarId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): EnvVarDeleteParams =
             EnvVarDeleteParams(
-                checkRequired("envVarId", envVarId),
+                envVarId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -206,7 +193,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> envVarId
+            0 -> envVarId ?: ""
             else -> ""
         }
 

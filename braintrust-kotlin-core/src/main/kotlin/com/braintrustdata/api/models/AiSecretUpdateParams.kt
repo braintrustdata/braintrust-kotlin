@@ -7,7 +7,6 @@ import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -26,14 +25,14 @@ import java.util.Objects
  */
 class AiSecretUpdateParams
 private constructor(
-    private val aiSecretId: String,
+    private val aiSecretId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** AiSecret id */
-    fun aiSecretId(): String = aiSecretId
+    fun aiSecretId(): String? = aiSecretId
 
     /**
      * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -99,14 +98,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [AiSecretUpdateParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .aiSecretId()
-         * ```
-         */
+        fun none(): AiSecretUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [AiSecretUpdateParams]. */
         fun builder() = Builder()
     }
 
@@ -126,7 +120,7 @@ private constructor(
         }
 
         /** AiSecret id */
-        fun aiSecretId(aiSecretId: String) = apply { this.aiSecretId = aiSecretId }
+        fun aiSecretId(aiSecretId: String?) = apply { this.aiSecretId = aiSecretId }
 
         /**
          * Sets the entire request body.
@@ -303,17 +297,10 @@ private constructor(
          * Returns an immutable instance of [AiSecretUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .aiSecretId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): AiSecretUpdateParams =
             AiSecretUpdateParams(
-                checkRequired("aiSecretId", aiSecretId),
+                aiSecretId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -324,7 +311,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> aiSecretId
+            0 -> aiSecretId ?: ""
             else -> ""
         }
 

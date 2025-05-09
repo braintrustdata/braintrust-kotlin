@@ -5,6 +5,7 @@ package com.braintrustdata.api.services.async
 import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.handlers.errorHandler
 import com.braintrustdata.api.core.handlers.jsonHandler
 import com.braintrustdata.api.core.handlers.withErrorHandler
@@ -123,6 +124,9 @@ class AiSecretServiceAsyncImpl internal constructor(private val clientOptions: C
             params: AiSecretRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<AISecret> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("aiSecretId", params.aiSecretId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -149,6 +153,9 @@ class AiSecretServiceAsyncImpl internal constructor(private val clientOptions: C
             params: AiSecretUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<AISecret> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("aiSecretId", params.aiSecretId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.PATCH)
@@ -210,6 +217,9 @@ class AiSecretServiceAsyncImpl internal constructor(private val clientOptions: C
             params: AiSecretDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<AISecret> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("aiSecretId", params.aiSecretId())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
@@ -11,13 +10,13 @@ import java.util.Objects
 /** Get a group object by its id */
 class GroupRetrieveParams
 private constructor(
-    private val groupId: String,
+    private val groupId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Group id */
-    fun groupId(): String = groupId
+    fun groupId(): String? = groupId
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -27,14 +26,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [GroupRetrieveParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .groupId()
-         * ```
-         */
+        fun none(): GroupRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [GroupRetrieveParams]. */
         fun builder() = Builder()
     }
 
@@ -52,7 +46,7 @@ private constructor(
         }
 
         /** Group id */
-        fun groupId(groupId: String) = apply { this.groupId = groupId }
+        fun groupId(groupId: String?) = apply { this.groupId = groupId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -156,25 +150,14 @@ private constructor(
          * Returns an immutable instance of [GroupRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .groupId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): GroupRetrieveParams =
-            GroupRetrieveParams(
-                checkRequired("groupId", groupId),
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
+            GroupRetrieveParams(groupId, additionalHeaders.build(), additionalQueryParams.build())
     }
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> groupId
+            0 -> groupId ?: ""
             else -> ""
         }
 

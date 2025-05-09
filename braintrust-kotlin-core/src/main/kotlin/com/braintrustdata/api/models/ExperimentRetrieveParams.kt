@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
@@ -11,13 +10,13 @@ import java.util.Objects
 /** Get an experiment object by its id */
 class ExperimentRetrieveParams
 private constructor(
-    private val experimentId: String,
+    private val experimentId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Experiment id */
-    fun experimentId(): String = experimentId
+    fun experimentId(): String? = experimentId
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -27,14 +26,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ExperimentRetrieveParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .experimentId()
-         * ```
-         */
+        fun none(): ExperimentRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ExperimentRetrieveParams]. */
         fun builder() = Builder()
     }
 
@@ -52,7 +46,7 @@ private constructor(
         }
 
         /** Experiment id */
-        fun experimentId(experimentId: String) = apply { this.experimentId = experimentId }
+        fun experimentId(experimentId: String?) = apply { this.experimentId = experimentId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -156,17 +150,10 @@ private constructor(
          * Returns an immutable instance of [ExperimentRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .experimentId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ExperimentRetrieveParams =
             ExperimentRetrieveParams(
-                checkRequired("experimentId", experimentId),
+                experimentId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -174,7 +161,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> experimentId
+            0 -> experimentId ?: ""
             else -> ""
         }
 

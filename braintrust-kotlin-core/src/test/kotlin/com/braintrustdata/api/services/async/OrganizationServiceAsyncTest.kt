@@ -4,8 +4,6 @@ package com.braintrustdata.api.services.async
 
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClientAsync
-import com.braintrustdata.api.models.OrganizationDeleteParams
-import com.braintrustdata.api.models.OrganizationRetrieveParams
 import com.braintrustdata.api.models.OrganizationUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -22,12 +20,7 @@ internal class OrganizationServiceAsyncTest {
                 .build()
         val organizationServiceAsync = client.organizations()
 
-        val organization =
-            organizationServiceAsync.retrieve(
-                OrganizationRetrieveParams.builder()
-                    .organizationId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
+        val organization = organizationServiceAsync.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 
         organization.validate()
     }
@@ -79,12 +72,7 @@ internal class OrganizationServiceAsyncTest {
                 .build()
         val organizationServiceAsync = client.organizations()
 
-        val organization =
-            organizationServiceAsync.delete(
-                OrganizationDeleteParams.builder()
-                    .organizationId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
+        val organization = organizationServiceAsync.delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 
         organization.validate()
     }

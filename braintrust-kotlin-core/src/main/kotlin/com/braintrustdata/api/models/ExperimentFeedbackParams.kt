@@ -23,14 +23,14 @@ import java.util.Objects
 /** Log feedback for a set of experiment events */
 class ExperimentFeedbackParams
 private constructor(
-    private val experimentId: String,
+    private val experimentId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** Experiment id */
-    fun experimentId(): String = experimentId
+    fun experimentId(): String? = experimentId
 
     /**
      * A list of experiment feedback items
@@ -62,7 +62,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .experimentId()
          * .feedback()
          * ```
          */
@@ -85,7 +84,7 @@ private constructor(
         }
 
         /** Experiment id */
-        fun experimentId(experimentId: String) = apply { this.experimentId = experimentId }
+        fun experimentId(experimentId: String?) = apply { this.experimentId = experimentId }
 
         /**
          * Sets the entire request body.
@@ -241,7 +240,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .experimentId()
          * .feedback()
          * ```
          *
@@ -249,7 +247,7 @@ private constructor(
          */
         fun build(): ExperimentFeedbackParams =
             ExperimentFeedbackParams(
-                checkRequired("experimentId", experimentId),
+                experimentId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -260,7 +258,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> experimentId
+            0 -> experimentId ?: ""
             else -> ""
         }
 

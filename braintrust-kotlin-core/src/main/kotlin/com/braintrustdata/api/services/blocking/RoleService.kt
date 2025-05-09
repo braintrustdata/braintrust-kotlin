@@ -32,9 +32,20 @@ interface RoleService {
 
     /** Get a role object by its id */
     fun retrieve(
+        roleId: String,
+        params: RoleRetrieveParams = RoleRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Role = retrieve(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
         params: RoleRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Role
+
+    /** @see [retrieve] */
+    fun retrieve(roleId: String, requestOptions: RequestOptions): Role =
+        retrieve(roleId, RoleRetrieveParams.none(), requestOptions)
 
     /**
      * Partially update a role object. Specify the fields to update in the payload. Any object-type
@@ -42,9 +53,20 @@ interface RoleService {
      * or setting them to null.
      */
     fun update(
+        roleId: String,
+        params: RoleUpdateParams = RoleUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Role = update(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+    /** @see [update] */
+    fun update(
         params: RoleUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Role
+
+    /** @see [update] */
+    fun update(roleId: String, requestOptions: RequestOptions): Role =
+        update(roleId, RoleUpdateParams.none(), requestOptions)
 
     /**
      * List out all roles. The roles are sorted by creation date, with the most recently-created
@@ -61,9 +83,20 @@ interface RoleService {
 
     /** Delete a role object by its id */
     fun delete(
+        roleId: String,
+        params: RoleDeleteParams = RoleDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Role = delete(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(
         params: RoleDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Role
+
+    /** @see [delete] */
+    fun delete(roleId: String, requestOptions: RequestOptions): Role =
+        delete(roleId, RoleDeleteParams.none(), requestOptions)
 
     /**
      * Create or replace role. If there is an existing role with the same name as the one specified
@@ -93,9 +126,23 @@ interface RoleService {
          */
         @MustBeClosed
         fun retrieve(
+            roleId: String,
+            params: RoleRetrieveParams = RoleRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Role> =
+            retrieve(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
             params: RoleRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Role>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(roleId: String, requestOptions: RequestOptions): HttpResponseFor<Role> =
+            retrieve(roleId, RoleRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `patch /v1/role/{role_id}`, but is otherwise the same as
@@ -103,9 +150,22 @@ interface RoleService {
          */
         @MustBeClosed
         fun update(
+            roleId: String,
+            params: RoleUpdateParams = RoleUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Role> = update(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
             params: RoleUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Role>
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(roleId: String, requestOptions: RequestOptions): HttpResponseFor<Role> =
+            update(roleId, RoleUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/role`, but is otherwise the same as
@@ -128,9 +188,22 @@ interface RoleService {
          */
         @MustBeClosed
         fun delete(
+            roleId: String,
+            params: RoleDeleteParams = RoleDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Role> = delete(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
             params: RoleDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Role>
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(roleId: String, requestOptions: RequestOptions): HttpResponseFor<Role> =
+            delete(roleId, RoleDeleteParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `put /v1/role`, but is otherwise the same as

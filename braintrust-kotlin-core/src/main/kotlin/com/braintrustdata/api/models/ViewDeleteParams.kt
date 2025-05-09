@@ -21,14 +21,14 @@ import java.util.Objects
 /** Delete a view object by its id */
 class ViewDeleteParams
 private constructor(
-    private val viewId: String,
+    private val viewId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     /** View id */
-    fun viewId(): String = viewId
+    fun viewId(): String? = viewId
 
     /**
      * The id of the object the view applies to
@@ -75,7 +75,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .viewId()
          * .objectId()
          * .objectType()
          * ```
@@ -99,7 +98,7 @@ private constructor(
         }
 
         /** View id */
-        fun viewId(viewId: String) = apply { this.viewId = viewId }
+        fun viewId(viewId: String?) = apply { this.viewId = viewId }
 
         /**
          * Sets the entire request body.
@@ -258,7 +257,6 @@ private constructor(
          *
          * The following fields are required:
          * ```kotlin
-         * .viewId()
          * .objectId()
          * .objectType()
          * ```
@@ -267,7 +265,7 @@ private constructor(
          */
         fun build(): ViewDeleteParams =
             ViewDeleteParams(
-                checkRequired("viewId", viewId),
+                viewId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -278,7 +276,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> viewId
+            0 -> viewId ?: ""
             else -> ""
         }
 

@@ -4,7 +4,6 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.core.toImmutable
@@ -13,14 +12,14 @@ import java.util.Objects
 /** Delete an api_key object by its id */
 class ApiKeyDeleteParams
 private constructor(
-    private val apiKeyId: String,
+    private val apiKeyId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     /** ApiKey id */
-    fun apiKeyId(): String = apiKeyId
+    fun apiKeyId(): String? = apiKeyId
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +31,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ApiKeyDeleteParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .apiKeyId()
-         * ```
-         */
+        fun none(): ApiKeyDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ApiKeyDeleteParams]. */
         fun builder() = Builder()
     }
 
@@ -59,7 +53,7 @@ private constructor(
         }
 
         /** ApiKey id */
-        fun apiKeyId(apiKeyId: String) = apply { this.apiKeyId = apiKeyId }
+        fun apiKeyId(apiKeyId: String?) = apply { this.apiKeyId = apiKeyId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +179,10 @@ private constructor(
          * Returns an immutable instance of [ApiKeyDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .apiKeyId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ApiKeyDeleteParams =
             ApiKeyDeleteParams(
-                checkRequired("apiKeyId", apiKeyId),
+                apiKeyId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -206,7 +193,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> apiKeyId
+            0 -> apiKeyId ?: ""
             else -> ""
         }
 

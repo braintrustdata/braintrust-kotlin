@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
@@ -15,7 +14,7 @@ import java.util.Objects
  */
 class DatasetFetchParams
 private constructor(
-    private val datasetId: String,
+    private val datasetId: String?,
     private val limit: Long?,
     private val maxRootSpanId: String?,
     private val maxXactId: String?,
@@ -25,7 +24,7 @@ private constructor(
 ) : Params {
 
     /** Dataset id */
-    fun datasetId(): String = datasetId
+    fun datasetId(): String? = datasetId
 
     /**
      * limit the number of traces fetched
@@ -87,14 +86,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [DatasetFetchParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .datasetId()
-         * ```
-         */
+        fun none(): DatasetFetchParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [DatasetFetchParams]. */
         fun builder() = Builder()
     }
 
@@ -120,7 +114,7 @@ private constructor(
         }
 
         /** Dataset id */
-        fun datasetId(datasetId: String) = apply { this.datasetId = datasetId }
+        fun datasetId(datasetId: String?) = apply { this.datasetId = datasetId }
 
         /**
          * limit the number of traces fetched
@@ -284,17 +278,10 @@ private constructor(
          * Returns an immutable instance of [DatasetFetchParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .datasetId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): DatasetFetchParams =
             DatasetFetchParams(
-                checkRequired("datasetId", datasetId),
+                datasetId,
                 limit,
                 maxRootSpanId,
                 maxXactId,
@@ -306,7 +293,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> datasetId
+            0 -> datasetId ?: ""
             else -> ""
         }
 

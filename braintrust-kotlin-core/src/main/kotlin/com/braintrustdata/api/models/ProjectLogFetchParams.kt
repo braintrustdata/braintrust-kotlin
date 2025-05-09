@@ -3,7 +3,6 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.Params
-import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.http.Headers
 import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
@@ -15,7 +14,7 @@ import java.util.Objects
  */
 class ProjectLogFetchParams
 private constructor(
-    private val projectId: String,
+    private val projectId: String?,
     private val limit: Long?,
     private val maxRootSpanId: String?,
     private val maxXactId: String?,
@@ -25,7 +24,7 @@ private constructor(
 ) : Params {
 
     /** Project id */
-    fun projectId(): String = projectId
+    fun projectId(): String? = projectId
 
     /**
      * limit the number of traces fetched
@@ -87,14 +86,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ProjectLogFetchParams].
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .projectId()
-         * ```
-         */
+        fun none(): ProjectLogFetchParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ProjectLogFetchParams]. */
         fun builder() = Builder()
     }
 
@@ -120,7 +114,7 @@ private constructor(
         }
 
         /** Project id */
-        fun projectId(projectId: String) = apply { this.projectId = projectId }
+        fun projectId(projectId: String?) = apply { this.projectId = projectId }
 
         /**
          * limit the number of traces fetched
@@ -284,17 +278,10 @@ private constructor(
          * Returns an immutable instance of [ProjectLogFetchParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```kotlin
-         * .projectId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ProjectLogFetchParams =
             ProjectLogFetchParams(
-                checkRequired("projectId", projectId),
+                projectId,
                 limit,
                 maxRootSpanId,
                 maxXactId,
@@ -306,7 +293,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> projectId
+            0 -> projectId ?: ""
             else -> ""
         }
 
