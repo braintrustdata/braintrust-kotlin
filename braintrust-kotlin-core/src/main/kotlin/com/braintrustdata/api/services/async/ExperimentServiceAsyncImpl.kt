@@ -128,6 +128,7 @@ class ExperimentServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "experiment")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -158,6 +159,7 @@ class ExperimentServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "experiment", params._pathParam(0))
                     .build()
                     .prepareAsync(clientOptions, params)
@@ -187,6 +189,7 @@ class ExperimentServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.PATCH)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "experiment", params._pathParam(0))
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -215,6 +218,7 @@ class ExperimentServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "experiment")
                     .build()
                     .prepareAsync(clientOptions, params)
@@ -251,6 +255,7 @@ class ExperimentServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "experiment", params._pathParam(0))
                     .apply { params._body()?.let { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
@@ -282,6 +287,7 @@ class ExperimentServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "experiment", params._pathParam(0), "feedback")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -313,6 +319,7 @@ class ExperimentServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "experiment", params._pathParam(0), "fetch")
                     .build()
                     .prepareAsync(clientOptions, params)
@@ -343,6 +350,7 @@ class ExperimentServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "experiment", params._pathParam(0), "fetch")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -374,6 +382,7 @@ class ExperimentServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "experiment", params._pathParam(0), "insert")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -405,6 +414,7 @@ class ExperimentServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "experiment", params._pathParam(0), "summarize")
                     .build()
                     .prepareAsync(clientOptions, params)

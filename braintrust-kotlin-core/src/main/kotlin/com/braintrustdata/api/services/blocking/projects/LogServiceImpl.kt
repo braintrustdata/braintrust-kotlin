@@ -79,6 +79,7 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "project_logs", params._pathParam(0), "feedback")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -110,6 +111,7 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "project_logs", params._pathParam(0), "fetch")
                     .build()
                     .prepare(clientOptions, params)
@@ -140,6 +142,7 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "project_logs", params._pathParam(0), "fetch")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -171,6 +174,7 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "project_logs", params._pathParam(0), "insert")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
