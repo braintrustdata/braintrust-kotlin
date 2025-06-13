@@ -29,6 +29,9 @@ class UserServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun withRawResponse(): UserService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): UserService =
+        UserServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun retrieve(params: UserRetrieveParams, requestOptions: RequestOptions): User =
         // get /v1/user/{user_id}
         withRawResponse().retrieve(params, requestOptions).parse()
@@ -41,6 +44,11 @@ class UserServiceImpl internal constructor(private val clientOptions: ClientOpti
         UserService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): UserService.WithRawResponse =
+            UserServiceImpl.WithRawResponseImpl(clientOptions.toBuilder().apply(modifier).build())
 
         private val retrieveHandler: Handler<User> =
             jsonHandler<User>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

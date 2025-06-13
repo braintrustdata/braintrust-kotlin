@@ -34,6 +34,9 @@ class EnvVarServiceAsyncImpl internal constructor(private val clientOptions: Cli
 
     override fun withRawResponse(): EnvVarServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): EnvVarServiceAsync =
+        EnvVarServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun create(
         params: EnvVarCreateParams,
         requestOptions: RequestOptions,
@@ -80,6 +83,13 @@ class EnvVarServiceAsyncImpl internal constructor(private val clientOptions: Cli
         EnvVarServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): EnvVarServiceAsync.WithRawResponse =
+            EnvVarServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<EnvVar> =
             jsonHandler<EnvVar>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

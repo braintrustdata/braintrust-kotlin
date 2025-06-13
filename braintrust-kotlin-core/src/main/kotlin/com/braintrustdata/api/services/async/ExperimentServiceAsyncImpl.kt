@@ -43,6 +43,9 @@ class ExperimentServiceAsyncImpl internal constructor(private val clientOptions:
 
     override fun withRawResponse(): ExperimentServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ExperimentServiceAsync =
+        ExperimentServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun create(
         params: ExperimentCreateParams,
         requestOptions: RequestOptions,
@@ -117,6 +120,13 @@ class ExperimentServiceAsyncImpl internal constructor(private val clientOptions:
         ExperimentServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): ExperimentServiceAsync.WithRawResponse =
+            ExperimentServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<Experiment> =
             jsonHandler<Experiment>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

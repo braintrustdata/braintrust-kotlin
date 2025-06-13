@@ -36,6 +36,9 @@ class AiSecretServiceAsyncImpl internal constructor(private val clientOptions: C
 
     override fun withRawResponse(): AiSecretServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): AiSecretServiceAsync =
+        AiSecretServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun create(
         params: AiSecretCreateParams,
         requestOptions: RequestOptions,
@@ -89,6 +92,13 @@ class AiSecretServiceAsyncImpl internal constructor(private val clientOptions: C
         AiSecretServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): AiSecretServiceAsync.WithRawResponse =
+            AiSecretServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<AISecret> =
             jsonHandler<AISecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

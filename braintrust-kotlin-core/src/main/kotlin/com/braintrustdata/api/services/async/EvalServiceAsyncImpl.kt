@@ -27,6 +27,9 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
     override fun withRawResponse(): EvalServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): EvalServiceAsync =
+        EvalServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun create(
         params: EvalCreateParams,
         requestOptions: RequestOptions,
@@ -38,6 +41,13 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
         EvalServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): EvalServiceAsync.WithRawResponse =
+            EvalServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<SummarizeExperimentResponse> =
             jsonHandler<SummarizeExperimentResponse>(clientOptions.jsonMapper)

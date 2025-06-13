@@ -118,6 +118,9 @@ class BraintrustClientImpl(private val clientOptions: ClientOptions) : Braintrus
 
     override fun withRawResponse(): BraintrustClient.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): BraintrustClient =
+        BraintrustClientImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun topLevel(): TopLevelService = topLevel
 
     override fun projects(): ProjectService = projects
@@ -236,6 +239,13 @@ class BraintrustClientImpl(private val clientOptions: ClientOptions) : Braintrus
         private val evals: EvalService.WithRawResponse by lazy {
             EvalServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): BraintrustClient.WithRawResponse =
+            BraintrustClientImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         override fun topLevel(): TopLevelService.WithRawResponse = topLevel
 

@@ -43,6 +43,9 @@ class DatasetServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
     override fun withRawResponse(): DatasetServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): DatasetServiceAsync =
+        DatasetServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun create(
         params: DatasetCreateParams,
         requestOptions: RequestOptions,
@@ -117,6 +120,13 @@ class DatasetServiceAsyncImpl internal constructor(private val clientOptions: Cl
         DatasetServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): DatasetServiceAsync.WithRawResponse =
+            DatasetServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<Dataset> =
             jsonHandler<Dataset>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

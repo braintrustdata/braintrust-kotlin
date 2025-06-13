@@ -35,6 +35,9 @@ class SpanIframeServiceImpl internal constructor(private val clientOptions: Clie
 
     override fun withRawResponse(): SpanIframeService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): SpanIframeService =
+        SpanIframeServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun create(
         params: SpanIframeCreateParams,
         requestOptions: RequestOptions,
@@ -81,6 +84,13 @@ class SpanIframeServiceImpl internal constructor(private val clientOptions: Clie
         SpanIframeService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): SpanIframeService.WithRawResponse =
+            SpanIframeServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<SpanIFrame> =
             jsonHandler<SpanIFrame>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

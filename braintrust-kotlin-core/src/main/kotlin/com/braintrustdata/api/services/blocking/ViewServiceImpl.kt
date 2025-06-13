@@ -34,6 +34,9 @@ class ViewServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun withRawResponse(): ViewService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ViewService =
+        ViewServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun create(params: ViewCreateParams, requestOptions: RequestOptions): View =
         // post /v1/view
         withRawResponse().create(params, requestOptions).parse()
@@ -62,6 +65,11 @@ class ViewServiceImpl internal constructor(private val clientOptions: ClientOpti
         ViewService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): ViewService.WithRawResponse =
+            ViewServiceImpl.WithRawResponseImpl(clientOptions.toBuilder().apply(modifier).build())
 
         private val createHandler: Handler<View> =
             jsonHandler<View>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

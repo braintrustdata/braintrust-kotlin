@@ -2,6 +2,7 @@
 
 package com.braintrustdata.api.services.async
 
+import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.Acl
@@ -21,6 +22,13 @@ interface AclServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: (ClientOptions.Builder) -> Unit): AclServiceAsync
 
     /**
      * Create a new acl. If there is an existing acl with the same contents as the one specified in
@@ -95,6 +103,13 @@ interface AclServiceAsync {
 
     /** A view of [AclServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: (ClientOptions.Builder) -> Unit): AclServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /v1/acl`, but is otherwise the same as

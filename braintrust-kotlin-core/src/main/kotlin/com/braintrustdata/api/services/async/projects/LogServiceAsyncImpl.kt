@@ -33,6 +33,9 @@ class LogServiceAsyncImpl internal constructor(private val clientOptions: Client
 
     override fun withRawResponse(): LogServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): LogServiceAsync =
+        LogServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun feedback(
         params: ProjectLogFeedbackParams,
         requestOptions: RequestOptions,
@@ -65,6 +68,13 @@ class LogServiceAsyncImpl internal constructor(private val clientOptions: Client
         LogServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): LogServiceAsync.WithRawResponse =
+            LogServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val feedbackHandler: Handler<FeedbackResponseSchema> =
             jsonHandler<FeedbackResponseSchema>(clientOptions.jsonMapper)

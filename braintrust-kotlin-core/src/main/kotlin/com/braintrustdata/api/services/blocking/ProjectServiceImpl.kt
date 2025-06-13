@@ -38,6 +38,9 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
 
     override fun withRawResponse(): ProjectService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ProjectService =
+        ProjectServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun logs(): LogService = logs
 
     override fun create(params: ProjectCreateParams, requestOptions: RequestOptions): Project =
@@ -68,6 +71,13 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
         private val logs: LogService.WithRawResponse by lazy {
             LogServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): ProjectService.WithRawResponse =
+            ProjectServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         override fun logs(): LogService.WithRawResponse = logs
 

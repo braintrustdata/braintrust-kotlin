@@ -35,6 +35,9 @@ class ProjectScoreServiceImpl internal constructor(private val clientOptions: Cl
 
     override fun withRawResponse(): ProjectScoreService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ProjectScoreService =
+        ProjectScoreServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun create(
         params: ProjectScoreCreateParams,
         requestOptions: RequestOptions,
@@ -81,6 +84,13 @@ class ProjectScoreServiceImpl internal constructor(private val clientOptions: Cl
         ProjectScoreService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): ProjectScoreService.WithRawResponse =
+            ProjectScoreServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<ProjectScore> =
             jsonHandler<ProjectScore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

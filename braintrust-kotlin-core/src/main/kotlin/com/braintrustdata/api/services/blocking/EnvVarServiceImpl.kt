@@ -34,6 +34,9 @@ class EnvVarServiceImpl internal constructor(private val clientOptions: ClientOp
 
     override fun withRawResponse(): EnvVarService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): EnvVarService =
+        EnvVarServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun create(params: EnvVarCreateParams, requestOptions: RequestOptions): EnvVar =
         // post /v1/env_var
         withRawResponse().create(params, requestOptions).parse()
@@ -65,6 +68,11 @@ class EnvVarServiceImpl internal constructor(private val clientOptions: ClientOp
         EnvVarService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): EnvVarService.WithRawResponse =
+            EnvVarServiceImpl.WithRawResponseImpl(clientOptions.toBuilder().apply(modifier).build())
 
         private val createHandler: Handler<EnvVar> =
             jsonHandler<EnvVar>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

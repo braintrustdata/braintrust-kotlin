@@ -35,6 +35,9 @@ class ProjectTagServiceImpl internal constructor(private val clientOptions: Clie
 
     override fun withRawResponse(): ProjectTagService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ProjectTagService =
+        ProjectTagServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun create(
         params: ProjectTagCreateParams,
         requestOptions: RequestOptions,
@@ -81,6 +84,13 @@ class ProjectTagServiceImpl internal constructor(private val clientOptions: Clie
         ProjectTagService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): ProjectTagService.WithRawResponse =
+            ProjectTagServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<ProjectTag> =
             jsonHandler<ProjectTag>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

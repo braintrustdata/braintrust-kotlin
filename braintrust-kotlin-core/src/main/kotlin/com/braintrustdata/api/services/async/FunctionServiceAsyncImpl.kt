@@ -37,6 +37,9 @@ class FunctionServiceAsyncImpl internal constructor(private val clientOptions: C
 
     override fun withRawResponse(): FunctionServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): FunctionServiceAsync =
+        FunctionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun create(
         params: FunctionCreateParams,
         requestOptions: RequestOptions,
@@ -90,6 +93,13 @@ class FunctionServiceAsyncImpl internal constructor(private val clientOptions: C
         FunctionServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): FunctionServiceAsync.WithRawResponse =
+            FunctionServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<Function> =
             jsonHandler<Function>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
