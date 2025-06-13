@@ -37,6 +37,9 @@ class FunctionServiceImpl internal constructor(private val clientOptions: Client
 
     override fun withRawResponse(): FunctionService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): FunctionService =
+        FunctionServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun create(params: FunctionCreateParams, requestOptions: RequestOptions): Function =
         // post /v1/function
         withRawResponse().create(params, requestOptions).parse()
@@ -78,6 +81,13 @@ class FunctionServiceImpl internal constructor(private val clientOptions: Client
         FunctionService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): FunctionService.WithRawResponse =
+            FunctionServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<Function> =
             jsonHandler<Function>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

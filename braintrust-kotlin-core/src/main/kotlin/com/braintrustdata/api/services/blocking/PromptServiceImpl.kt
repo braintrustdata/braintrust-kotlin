@@ -35,6 +35,9 @@ class PromptServiceImpl internal constructor(private val clientOptions: ClientOp
 
     override fun withRawResponse(): PromptService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): PromptService =
+        PromptServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun create(params: PromptCreateParams, requestOptions: RequestOptions): Prompt =
         // post /v1/prompt
         withRawResponse().create(params, requestOptions).parse()
@@ -63,6 +66,11 @@ class PromptServiceImpl internal constructor(private val clientOptions: ClientOp
         PromptService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): PromptService.WithRawResponse =
+            PromptServiceImpl.WithRawResponseImpl(clientOptions.toBuilder().apply(modifier).build())
 
         private val createHandler: Handler<Prompt> =
             jsonHandler<Prompt>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

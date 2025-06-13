@@ -36,6 +36,9 @@ class AiSecretServiceImpl internal constructor(private val clientOptions: Client
 
     override fun withRawResponse(): AiSecretService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): AiSecretService =
+        AiSecretServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun create(params: AiSecretCreateParams, requestOptions: RequestOptions): AISecret =
         // post /v1/ai_secret
         withRawResponse().create(params, requestOptions).parse()
@@ -77,6 +80,13 @@ class AiSecretServiceImpl internal constructor(private val clientOptions: Client
         AiSecretService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): AiSecretService.WithRawResponse =
+            AiSecretServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<AISecret> =
             jsonHandler<AISecret>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

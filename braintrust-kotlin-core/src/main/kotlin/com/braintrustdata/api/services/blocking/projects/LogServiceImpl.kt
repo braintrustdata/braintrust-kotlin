@@ -32,6 +32,9 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
 
     override fun withRawResponse(): LogService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): LogService =
+        LogServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun feedback(
         params: ProjectLogFeedbackParams,
         requestOptions: RequestOptions,
@@ -64,6 +67,11 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
         LogService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): LogService.WithRawResponse =
+            LogServiceImpl.WithRawResponseImpl(clientOptions.toBuilder().apply(modifier).build())
 
         private val feedbackHandler: Handler<FeedbackResponseSchema> =
             jsonHandler<FeedbackResponseSchema>(clientOptions.jsonMapper)

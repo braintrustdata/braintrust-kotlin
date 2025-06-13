@@ -38,6 +38,9 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
     override fun withRawResponse(): ProjectServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ProjectServiceAsync =
+        ProjectServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun logs(): LogServiceAsync = logs
 
     override suspend fun create(
@@ -83,6 +86,13 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
         private val logs: LogServiceAsync.WithRawResponse by lazy {
             LogServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): ProjectServiceAsync.WithRawResponse =
+            ProjectServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         override fun logs(): LogServiceAsync.WithRawResponse = logs
 

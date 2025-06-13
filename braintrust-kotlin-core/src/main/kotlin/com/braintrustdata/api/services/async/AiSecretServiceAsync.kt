@@ -2,6 +2,7 @@
 
 package com.braintrustdata.api.services.async
 
+import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.AISecret
@@ -21,6 +22,13 @@ interface AiSecretServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: (ClientOptions.Builder) -> Unit): AiSecretServiceAsync
 
     /**
      * Create a new ai_secret. If there is an existing ai_secret with the same name as the one
@@ -118,6 +126,15 @@ interface AiSecretServiceAsync {
      * A view of [AiSecretServiceAsync] that provides access to raw HTTP responses for each method.
      */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): AiSecretServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /v1/ai_secret`, but is otherwise the same as

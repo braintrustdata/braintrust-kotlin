@@ -35,6 +35,9 @@ class ViewServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
     override fun withRawResponse(): ViewServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ViewServiceAsync =
+        ViewServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun create(params: ViewCreateParams, requestOptions: RequestOptions): View =
         // post /v1/view
         withRawResponse().create(params, requestOptions).parse()
@@ -69,6 +72,13 @@ class ViewServiceAsyncImpl internal constructor(private val clientOptions: Clien
         ViewServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): ViewServiceAsync.WithRawResponse =
+            ViewServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<View> =
             jsonHandler<View>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

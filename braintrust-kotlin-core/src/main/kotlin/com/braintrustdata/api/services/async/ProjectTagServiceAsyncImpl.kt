@@ -35,6 +35,9 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
 
     override fun withRawResponse(): ProjectTagServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ProjectTagServiceAsync =
+        ProjectTagServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun create(
         params: ProjectTagCreateParams,
         requestOptions: RequestOptions,
@@ -81,6 +84,13 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
         ProjectTagServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): ProjectTagServiceAsync.WithRawResponse =
+            ProjectTagServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<ProjectTag> =
             jsonHandler<ProjectTag>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

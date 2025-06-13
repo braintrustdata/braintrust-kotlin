@@ -30,6 +30,9 @@ class UserServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
     override fun withRawResponse(): UserServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): UserServiceAsync =
+        UserServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun retrieve(
         params: UserRetrieveParams,
         requestOptions: RequestOptions,
@@ -48,6 +51,13 @@ class UserServiceAsyncImpl internal constructor(private val clientOptions: Clien
         UserServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): UserServiceAsync.WithRawResponse =
+            UserServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val retrieveHandler: Handler<User> =
             jsonHandler<User>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

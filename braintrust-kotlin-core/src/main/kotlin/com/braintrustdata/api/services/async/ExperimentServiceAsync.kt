@@ -2,6 +2,7 @@
 
 package com.braintrustdata.api.services.async
 
+import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.Experiment
@@ -28,6 +29,13 @@ interface ExperimentServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ExperimentServiceAsync
 
     /**
      * Create a new experiment. If there is an existing experiment in the project with the same name
@@ -210,6 +218,15 @@ interface ExperimentServiceAsync {
      * method.
      */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): ExperimentServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /v1/experiment`, but is otherwise the same as

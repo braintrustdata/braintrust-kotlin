@@ -43,6 +43,9 @@ class ExperimentServiceImpl internal constructor(private val clientOptions: Clie
 
     override fun withRawResponse(): ExperimentService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ExperimentService =
+        ExperimentServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun create(
         params: ExperimentCreateParams,
         requestOptions: RequestOptions,
@@ -117,6 +120,13 @@ class ExperimentServiceImpl internal constructor(private val clientOptions: Clie
         ExperimentService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): ExperimentService.WithRawResponse =
+            ExperimentServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<Experiment> =
             jsonHandler<Experiment>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

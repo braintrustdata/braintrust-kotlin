@@ -34,6 +34,9 @@ class RoleServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun withRawResponse(): RoleService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): RoleService =
+        RoleServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun create(params: RoleCreateParams, requestOptions: RequestOptions): Role =
         // post /v1/role
         withRawResponse().create(params, requestOptions).parse()
@@ -62,6 +65,11 @@ class RoleServiceImpl internal constructor(private val clientOptions: ClientOpti
         RoleService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): RoleService.WithRawResponse =
+            RoleServiceImpl.WithRawResponseImpl(clientOptions.toBuilder().apply(modifier).build())
 
         private val createHandler: Handler<Role> =
             jsonHandler<Role>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

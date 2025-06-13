@@ -27,6 +27,9 @@ class MemberServiceImpl internal constructor(private val clientOptions: ClientOp
 
     override fun withRawResponse(): MemberService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): MemberService =
+        MemberServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun update(
         params: OrganizationMemberUpdateParams,
         requestOptions: RequestOptions,
@@ -38,6 +41,11 @@ class MemberServiceImpl internal constructor(private val clientOptions: ClientOp
         MemberService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): MemberService.WithRawResponse =
+            MemberServiceImpl.WithRawResponseImpl(clientOptions.toBuilder().apply(modifier).build())
 
         private val updateHandler: Handler<PatchOrganizationMembersOutput> =
             jsonHandler<PatchOrganizationMembersOutput>(clientOptions.jsonMapper)

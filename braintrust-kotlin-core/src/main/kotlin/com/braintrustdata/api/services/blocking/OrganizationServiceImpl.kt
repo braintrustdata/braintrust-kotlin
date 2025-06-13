@@ -37,6 +37,9 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
 
     override fun withRawResponse(): OrganizationService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): OrganizationService =
+        OrganizationServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun members(): MemberService = members
 
     override fun retrieve(
@@ -75,6 +78,13 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
         private val members: MemberService.WithRawResponse by lazy {
             MemberServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): OrganizationService.WithRawResponse =
+            OrganizationServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         override fun members(): MemberService.WithRawResponse = members
 

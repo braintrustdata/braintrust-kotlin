@@ -25,6 +25,9 @@ class TopLevelServiceImpl internal constructor(private val clientOptions: Client
 
     override fun withRawResponse(): TopLevelService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): TopLevelService =
+        TopLevelServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun helloWorld(
         params: TopLevelHelloWorldParams,
         requestOptions: RequestOptions,
@@ -36,6 +39,13 @@ class TopLevelServiceImpl internal constructor(private val clientOptions: Client
         TopLevelService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): TopLevelService.WithRawResponse =
+            TopLevelServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val helloWorldHandler: Handler<String> =
             stringHandler().withErrorHandler(errorHandler)

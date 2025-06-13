@@ -35,6 +35,9 @@ class SpanIframeServiceAsyncImpl internal constructor(private val clientOptions:
 
     override fun withRawResponse(): SpanIframeServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): SpanIframeServiceAsync =
+        SpanIframeServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun create(
         params: SpanIframeCreateParams,
         requestOptions: RequestOptions,
@@ -81,6 +84,13 @@ class SpanIframeServiceAsyncImpl internal constructor(private val clientOptions:
         SpanIframeServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): SpanIframeServiceAsync.WithRawResponse =
+            SpanIframeServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<SpanIFrame> =
             jsonHandler<SpanIFrame>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

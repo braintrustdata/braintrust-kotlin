@@ -34,6 +34,9 @@ class ApiKeyServiceImpl internal constructor(private val clientOptions: ClientOp
 
     override fun withRawResponse(): ApiKeyService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ApiKeyService =
+        ApiKeyServiceImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override fun create(
         params: ApiKeyCreateParams,
         requestOptions: RequestOptions,
@@ -57,6 +60,11 @@ class ApiKeyServiceImpl internal constructor(private val clientOptions: ClientOp
         ApiKeyService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): ApiKeyService.WithRawResponse =
+            ApiKeyServiceImpl.WithRawResponseImpl(clientOptions.toBuilder().apply(modifier).build())
 
         private val createHandler: Handler<CreateApiKeyOutput> =
             jsonHandler<CreateApiKeyOutput>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

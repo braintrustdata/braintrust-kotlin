@@ -36,6 +36,9 @@ class AclServiceAsyncImpl internal constructor(private val clientOptions: Client
 
     override fun withRawResponse(): AclServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): AclServiceAsync =
+        AclServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun create(params: AclCreateParams, requestOptions: RequestOptions): Acl =
         // post /v1/acl
         withRawResponse().create(params, requestOptions).parse()
@@ -73,6 +76,13 @@ class AclServiceAsyncImpl internal constructor(private val clientOptions: Client
         AclServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): AclServiceAsync.WithRawResponse =
+            AclServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
 
         private val createHandler: Handler<Acl> =
             jsonHandler<Acl>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

@@ -2,6 +2,7 @@
 
 package com.braintrustdata.api.client
 
+import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.services.async.AclServiceAsync
 import com.braintrustdata.api.services.async.AiSecretServiceAsync
 import com.braintrustdata.api.services.async.ApiKeyServiceAsync
@@ -50,6 +51,13 @@ interface BraintrustClientAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: (ClientOptions.Builder) -> Unit): BraintrustClientAsync
 
     fun topLevel(): TopLevelServiceAsync
 
@@ -106,6 +114,15 @@ interface BraintrustClientAsync {
      * A view of [BraintrustClientAsync] that provides access to raw HTTP responses for each method.
      */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): BraintrustClientAsync.WithRawResponse
 
         fun topLevel(): TopLevelServiceAsync.WithRawResponse
 
