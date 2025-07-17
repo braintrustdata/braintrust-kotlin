@@ -8,5 +8,12 @@ dependencies {
 }
 
 application {
-    mainClass = "com.braintrustdata.api.example.MainKt"
+    // Use `./gradlew :braintrust-kotlin-example:run` to run `Main`
+    // Use `./gradlew :braintrust-kotlin-example:run -Dexample=Something` to run `SomethingExample`
+    mainClass = "com.braintrustdata.api.example.${
+        if (project.hasProperty("example"))
+            "${project.property("example")}ExampleKt"
+        else
+            "MainKt"
+    }"
 }
