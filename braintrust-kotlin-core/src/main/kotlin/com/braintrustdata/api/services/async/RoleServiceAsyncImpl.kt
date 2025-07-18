@@ -3,14 +3,14 @@
 package com.braintrustdata.api.services.async
 
 import com.braintrustdata.api.core.ClientOptions
-import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.handlers.errorBodyHandler
 import com.braintrustdata.api.core.handlers.errorHandler
 import com.braintrustdata.api.core.handlers.jsonHandler
-import com.braintrustdata.api.core.handlers.withErrorHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
+import com.braintrustdata.api.core.http.HttpResponse
 import com.braintrustdata.api.core.http.HttpResponse.Handler
 import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.core.http.json
@@ -71,7 +71,8 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         RoleServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: (ClientOptions.Builder) -> Unit
@@ -80,8 +81,7 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 clientOptions.toBuilder().apply(modifier).build()
             )
 
-        private val createHandler: Handler<Role> =
-            jsonHandler<Role>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val createHandler: Handler<Role> = jsonHandler<Role>(clientOptions.jsonMapper)
 
         override suspend fun create(
             params: RoleCreateParams,
@@ -97,7 +97,7 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -108,8 +108,7 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
             }
         }
 
-        private val retrieveHandler: Handler<Role> =
-            jsonHandler<Role>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val retrieveHandler: Handler<Role> = jsonHandler<Role>(clientOptions.jsonMapper)
 
         override suspend fun retrieve(
             params: RoleRetrieveParams,
@@ -127,7 +126,7 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -138,8 +137,7 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
             }
         }
 
-        private val updateHandler: Handler<Role> =
-            jsonHandler<Role>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val updateHandler: Handler<Role> = jsonHandler<Role>(clientOptions.jsonMapper)
 
         override suspend fun update(
             params: RoleUpdateParams,
@@ -158,7 +156,7 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { updateHandler.handle(it) }
                     .also {
@@ -171,7 +169,6 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
         private val listHandler: Handler<RoleListPageResponse> =
             jsonHandler<RoleListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override suspend fun list(
             params: RoleListParams,
@@ -186,7 +183,7 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -204,8 +201,7 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
             }
         }
 
-        private val deleteHandler: Handler<Role> =
-            jsonHandler<Role>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val deleteHandler: Handler<Role> = jsonHandler<Role>(clientOptions.jsonMapper)
 
         override suspend fun delete(
             params: RoleDeleteParams,
@@ -224,7 +220,7 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { deleteHandler.handle(it) }
                     .also {
@@ -235,8 +231,7 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
             }
         }
 
-        private val replaceHandler: Handler<Role> =
-            jsonHandler<Role>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val replaceHandler: Handler<Role> = jsonHandler<Role>(clientOptions.jsonMapper)
 
         override suspend fun replace(
             params: RoleReplaceParams,
@@ -252,7 +247,7 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { replaceHandler.handle(it) }
                     .also {

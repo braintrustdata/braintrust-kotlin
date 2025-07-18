@@ -3,14 +3,14 @@
 package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.core.ClientOptions
-import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.handlers.errorBodyHandler
 import com.braintrustdata.api.core.handlers.errorHandler
 import com.braintrustdata.api.core.handlers.jsonHandler
-import com.braintrustdata.api.core.handlers.withErrorHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
+import com.braintrustdata.api.core.http.HttpResponse
 import com.braintrustdata.api.core.http.HttpResponse.Handler
 import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.core.http.json
@@ -104,7 +104,8 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         DatasetService.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: (ClientOptions.Builder) -> Unit
@@ -113,8 +114,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
                 clientOptions.toBuilder().apply(modifier).build()
             )
 
-        private val createHandler: Handler<Dataset> =
-            jsonHandler<Dataset>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val createHandler: Handler<Dataset> = jsonHandler<Dataset>(clientOptions.jsonMapper)
 
         override fun create(
             params: DatasetCreateParams,
@@ -130,7 +130,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -142,7 +142,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
         }
 
         private val retrieveHandler: Handler<Dataset> =
-            jsonHandler<Dataset>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<Dataset>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: DatasetRetrieveParams,
@@ -160,7 +160,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -171,8 +171,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
             }
         }
 
-        private val updateHandler: Handler<Dataset> =
-            jsonHandler<Dataset>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val updateHandler: Handler<Dataset> = jsonHandler<Dataset>(clientOptions.jsonMapper)
 
         override fun update(
             params: DatasetUpdateParams,
@@ -191,7 +190,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { updateHandler.handle(it) }
                     .also {
@@ -204,7 +203,6 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
 
         private val listHandler: Handler<DatasetListPageResponse> =
             jsonHandler<DatasetListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: DatasetListParams,
@@ -219,7 +217,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -237,8 +235,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
             }
         }
 
-        private val deleteHandler: Handler<Dataset> =
-            jsonHandler<Dataset>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val deleteHandler: Handler<Dataset> = jsonHandler<Dataset>(clientOptions.jsonMapper)
 
         override fun delete(
             params: DatasetDeleteParams,
@@ -257,7 +254,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { deleteHandler.handle(it) }
                     .also {
@@ -270,7 +267,6 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
 
         private val feedbackHandler: Handler<FeedbackResponseSchema> =
             jsonHandler<FeedbackResponseSchema>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun feedback(
             params: DatasetFeedbackParams,
@@ -289,7 +285,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { feedbackHandler.handle(it) }
                     .also {
@@ -302,7 +298,6 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
 
         private val fetchHandler: Handler<FetchDatasetEventsResponse> =
             jsonHandler<FetchDatasetEventsResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun fetch(
             params: DatasetFetchParams,
@@ -320,7 +315,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { fetchHandler.handle(it) }
                     .also {
@@ -333,7 +328,6 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
 
         private val fetchPostHandler: Handler<FetchDatasetEventsResponse> =
             jsonHandler<FetchDatasetEventsResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun fetchPost(
             params: DatasetFetchPostParams,
@@ -352,7 +346,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { fetchPostHandler.handle(it) }
                     .also {
@@ -365,7 +359,6 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
 
         private val insertHandler: Handler<InsertEventsResponse> =
             jsonHandler<InsertEventsResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun insert(
             params: DatasetInsertParams,
@@ -384,7 +377,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { insertHandler.handle(it) }
                     .also {
@@ -397,7 +390,6 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
 
         private val summarizeHandler: Handler<SummarizeDatasetResponse> =
             jsonHandler<SummarizeDatasetResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun summarize(
             params: DatasetSummarizeParams,
@@ -415,7 +407,7 @@ class DatasetServiceImpl internal constructor(private val clientOptions: ClientO
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { summarizeHandler.handle(it) }
                     .also {

@@ -3,14 +3,14 @@
 package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.core.ClientOptions
-import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.handlers.errorBodyHandler
 import com.braintrustdata.api.core.handlers.errorHandler
 import com.braintrustdata.api.core.handlers.jsonHandler
-import com.braintrustdata.api.core.handlers.withErrorHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
+import com.braintrustdata.api.core.http.HttpResponse
 import com.braintrustdata.api.core.http.HttpResponse.Handler
 import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.core.http.json
@@ -71,15 +71,15 @@ class AclServiceImpl internal constructor(private val clientOptions: ClientOptio
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         AclService.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: (ClientOptions.Builder) -> Unit
         ): AclService.WithRawResponse =
             AclServiceImpl.WithRawResponseImpl(clientOptions.toBuilder().apply(modifier).build())
 
-        private val createHandler: Handler<Acl> =
-            jsonHandler<Acl>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val createHandler: Handler<Acl> = jsonHandler<Acl>(clientOptions.jsonMapper)
 
         override fun create(
             params: AclCreateParams,
@@ -95,7 +95,7 @@ class AclServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -106,8 +106,7 @@ class AclServiceImpl internal constructor(private val clientOptions: ClientOptio
             }
         }
 
-        private val retrieveHandler: Handler<Acl> =
-            jsonHandler<Acl>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val retrieveHandler: Handler<Acl> = jsonHandler<Acl>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: AclRetrieveParams,
@@ -125,7 +124,7 @@ class AclServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -138,7 +137,6 @@ class AclServiceImpl internal constructor(private val clientOptions: ClientOptio
 
         private val listHandler: Handler<AclListPageResponse> =
             jsonHandler<AclListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: AclListParams,
@@ -153,7 +151,7 @@ class AclServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -171,8 +169,7 @@ class AclServiceImpl internal constructor(private val clientOptions: ClientOptio
             }
         }
 
-        private val deleteHandler: Handler<Acl> =
-            jsonHandler<Acl>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val deleteHandler: Handler<Acl> = jsonHandler<Acl>(clientOptions.jsonMapper)
 
         override fun delete(
             params: AclDeleteParams,
@@ -191,7 +188,7 @@ class AclServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { deleteHandler.handle(it) }
                     .also {
@@ -204,7 +201,6 @@ class AclServiceImpl internal constructor(private val clientOptions: ClientOptio
 
         private val batchUpdateHandler: Handler<AclBatchUpdateResponse> =
             jsonHandler<AclBatchUpdateResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun batchUpdate(
             params: AclBatchUpdateParams,
@@ -220,7 +216,7 @@ class AclServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { batchUpdateHandler.handle(it) }
                     .also {
@@ -231,8 +227,7 @@ class AclServiceImpl internal constructor(private val clientOptions: ClientOptio
             }
         }
 
-        private val findAndDeleteHandler: Handler<Acl> =
-            jsonHandler<Acl>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val findAndDeleteHandler: Handler<Acl> = jsonHandler<Acl>(clientOptions.jsonMapper)
 
         override fun findAndDelete(
             params: AclFindAndDeleteParams,
@@ -248,7 +243,7 @@ class AclServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { findAndDeleteHandler.handle(it) }
                     .also {

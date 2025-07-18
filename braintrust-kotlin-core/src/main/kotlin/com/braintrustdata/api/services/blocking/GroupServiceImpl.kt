@@ -3,14 +3,14 @@
 package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.core.ClientOptions
-import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.handlers.errorBodyHandler
 import com.braintrustdata.api.core.handlers.errorHandler
 import com.braintrustdata.api.core.handlers.jsonHandler
-import com.braintrustdata.api.core.handlers.withErrorHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
+import com.braintrustdata.api.core.http.HttpResponse
 import com.braintrustdata.api.core.http.HttpResponse.Handler
 import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.core.http.json
@@ -65,15 +65,15 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         GroupService.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: (ClientOptions.Builder) -> Unit
         ): GroupService.WithRawResponse =
             GroupServiceImpl.WithRawResponseImpl(clientOptions.toBuilder().apply(modifier).build())
 
-        private val createHandler: Handler<Group> =
-            jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val createHandler: Handler<Group> = jsonHandler<Group>(clientOptions.jsonMapper)
 
         override fun create(
             params: GroupCreateParams,
@@ -89,7 +89,7 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -100,8 +100,7 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
             }
         }
 
-        private val retrieveHandler: Handler<Group> =
-            jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val retrieveHandler: Handler<Group> = jsonHandler<Group>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: GroupRetrieveParams,
@@ -119,7 +118,7 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -130,8 +129,7 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
             }
         }
 
-        private val updateHandler: Handler<Group> =
-            jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val updateHandler: Handler<Group> = jsonHandler<Group>(clientOptions.jsonMapper)
 
         override fun update(
             params: GroupUpdateParams,
@@ -150,7 +148,7 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { updateHandler.handle(it) }
                     .also {
@@ -163,7 +161,6 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         private val listHandler: Handler<GroupListPageResponse> =
             jsonHandler<GroupListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: GroupListParams,
@@ -178,7 +175,7 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -196,8 +193,7 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
             }
         }
 
-        private val deleteHandler: Handler<Group> =
-            jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val deleteHandler: Handler<Group> = jsonHandler<Group>(clientOptions.jsonMapper)
 
         override fun delete(
             params: GroupDeleteParams,
@@ -216,7 +212,7 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { deleteHandler.handle(it) }
                     .also {
@@ -227,8 +223,7 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
             }
         }
 
-        private val replaceHandler: Handler<Group> =
-            jsonHandler<Group>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val replaceHandler: Handler<Group> = jsonHandler<Group>(clientOptions.jsonMapper)
 
         override fun replace(
             params: GroupReplaceParams,
@@ -244,7 +239,7 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { replaceHandler.handle(it) }
                     .also {

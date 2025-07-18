@@ -3,13 +3,13 @@
 package com.braintrustdata.api.services.blocking.organizations
 
 import com.braintrustdata.api.core.ClientOptions
-import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.handlers.errorBodyHandler
 import com.braintrustdata.api.core.handlers.errorHandler
 import com.braintrustdata.api.core.handlers.jsonHandler
-import com.braintrustdata.api.core.handlers.withErrorHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
+import com.braintrustdata.api.core.http.HttpResponse
 import com.braintrustdata.api.core.http.HttpResponse.Handler
 import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.core.http.json
@@ -40,7 +40,8 @@ class MemberServiceImpl internal constructor(private val clientOptions: ClientOp
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         MemberService.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: (ClientOptions.Builder) -> Unit
@@ -49,7 +50,6 @@ class MemberServiceImpl internal constructor(private val clientOptions: ClientOp
 
         private val updateHandler: Handler<PatchOrganizationMembersOutput> =
             jsonHandler<PatchOrganizationMembersOutput>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun update(
             params: OrganizationMemberUpdateParams,
@@ -65,7 +65,7 @@ class MemberServiceImpl internal constructor(private val clientOptions: ClientOp
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { updateHandler.handle(it) }
                     .also {
