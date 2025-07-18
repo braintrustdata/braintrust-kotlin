@@ -3,14 +3,14 @@
 package com.braintrustdata.api.services.async
 
 import com.braintrustdata.api.core.ClientOptions
-import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.handlers.errorBodyHandler
 import com.braintrustdata.api.core.handlers.errorHandler
 import com.braintrustdata.api.core.handlers.jsonHandler
-import com.braintrustdata.api.core.handlers.withErrorHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
+import com.braintrustdata.api.core.http.HttpResponse
 import com.braintrustdata.api.core.http.HttpResponse.Handler
 import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.core.http.json
@@ -83,7 +83,8 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ProjectTagServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: (ClientOptions.Builder) -> Unit
@@ -93,7 +94,7 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
             )
 
         private val createHandler: Handler<ProjectTag> =
-            jsonHandler<ProjectTag>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ProjectTag>(clientOptions.jsonMapper)
 
         override suspend fun create(
             params: ProjectTagCreateParams,
@@ -109,7 +110,7 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -121,7 +122,7 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
         }
 
         private val retrieveHandler: Handler<ProjectTag> =
-            jsonHandler<ProjectTag>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ProjectTag>(clientOptions.jsonMapper)
 
         override suspend fun retrieve(
             params: ProjectTagRetrieveParams,
@@ -139,7 +140,7 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -151,7 +152,7 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
         }
 
         private val updateHandler: Handler<ProjectTag> =
-            jsonHandler<ProjectTag>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ProjectTag>(clientOptions.jsonMapper)
 
         override suspend fun update(
             params: ProjectTagUpdateParams,
@@ -170,7 +171,7 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { updateHandler.handle(it) }
                     .also {
@@ -183,7 +184,6 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
 
         private val listHandler: Handler<ProjectTagListPageResponse> =
             jsonHandler<ProjectTagListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override suspend fun list(
             params: ProjectTagListParams,
@@ -198,7 +198,7 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -217,7 +217,7 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
         }
 
         private val deleteHandler: Handler<ProjectTag> =
-            jsonHandler<ProjectTag>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ProjectTag>(clientOptions.jsonMapper)
 
         override suspend fun delete(
             params: ProjectTagDeleteParams,
@@ -236,7 +236,7 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { deleteHandler.handle(it) }
                     .also {
@@ -248,7 +248,7 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
         }
 
         private val replaceHandler: Handler<ProjectTag> =
-            jsonHandler<ProjectTag>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ProjectTag>(clientOptions.jsonMapper)
 
         override suspend fun replace(
             params: ProjectTagReplaceParams,
@@ -264,7 +264,7 @@ class ProjectTagServiceAsyncImpl internal constructor(private val clientOptions:
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { replaceHandler.handle(it) }
                     .also {

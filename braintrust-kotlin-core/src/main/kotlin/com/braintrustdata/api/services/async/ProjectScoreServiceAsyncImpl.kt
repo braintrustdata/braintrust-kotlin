@@ -3,14 +3,14 @@
 package com.braintrustdata.api.services.async
 
 import com.braintrustdata.api.core.ClientOptions
-import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.handlers.errorBodyHandler
 import com.braintrustdata.api.core.handlers.errorHandler
 import com.braintrustdata.api.core.handlers.jsonHandler
-import com.braintrustdata.api.core.handlers.withErrorHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
+import com.braintrustdata.api.core.http.HttpResponse
 import com.braintrustdata.api.core.http.HttpResponse.Handler
 import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.core.http.json
@@ -83,7 +83,8 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ProjectScoreServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: (ClientOptions.Builder) -> Unit
@@ -93,7 +94,7 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
             )
 
         private val createHandler: Handler<ProjectScore> =
-            jsonHandler<ProjectScore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ProjectScore>(clientOptions.jsonMapper)
 
         override suspend fun create(
             params: ProjectScoreCreateParams,
@@ -109,7 +110,7 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -121,7 +122,7 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
         }
 
         private val retrieveHandler: Handler<ProjectScore> =
-            jsonHandler<ProjectScore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ProjectScore>(clientOptions.jsonMapper)
 
         override suspend fun retrieve(
             params: ProjectScoreRetrieveParams,
@@ -139,7 +140,7 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -151,7 +152,7 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
         }
 
         private val updateHandler: Handler<ProjectScore> =
-            jsonHandler<ProjectScore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ProjectScore>(clientOptions.jsonMapper)
 
         override suspend fun update(
             params: ProjectScoreUpdateParams,
@@ -170,7 +171,7 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { updateHandler.handle(it) }
                     .also {
@@ -183,7 +184,6 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
 
         private val listHandler: Handler<ProjectScoreListPageResponse> =
             jsonHandler<ProjectScoreListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override suspend fun list(
             params: ProjectScoreListParams,
@@ -198,7 +198,7 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -217,7 +217,7 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
         }
 
         private val deleteHandler: Handler<ProjectScore> =
-            jsonHandler<ProjectScore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ProjectScore>(clientOptions.jsonMapper)
 
         override suspend fun delete(
             params: ProjectScoreDeleteParams,
@@ -236,7 +236,7 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { deleteHandler.handle(it) }
                     .also {
@@ -248,7 +248,7 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
         }
 
         private val replaceHandler: Handler<ProjectScore> =
-            jsonHandler<ProjectScore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ProjectScore>(clientOptions.jsonMapper)
 
         override suspend fun replace(
             params: ProjectScoreReplaceParams,
@@ -264,7 +264,7 @@ class ProjectScoreServiceAsyncImpl internal constructor(private val clientOption
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.executeAsync(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { replaceHandler.handle(it) }
                     .also {

@@ -3,14 +3,14 @@
 package com.braintrustdata.api.services.blocking.projects
 
 import com.braintrustdata.api.core.ClientOptions
-import com.braintrustdata.api.core.JsonValue
 import com.braintrustdata.api.core.RequestOptions
 import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.handlers.errorBodyHandler
 import com.braintrustdata.api.core.handlers.errorHandler
 import com.braintrustdata.api.core.handlers.jsonHandler
-import com.braintrustdata.api.core.handlers.withErrorHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
+import com.braintrustdata.api.core.http.HttpResponse
 import com.braintrustdata.api.core.http.HttpResponse.Handler
 import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.core.http.json
@@ -66,7 +66,8 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         LogService.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: (ClientOptions.Builder) -> Unit
@@ -75,7 +76,6 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
 
         private val feedbackHandler: Handler<FeedbackResponseSchema> =
             jsonHandler<FeedbackResponseSchema>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun feedback(
             params: ProjectLogFeedbackParams,
@@ -94,7 +94,7 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { feedbackHandler.handle(it) }
                     .also {
@@ -107,7 +107,6 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
 
         private val fetchHandler: Handler<FetchProjectLogsEventsResponse> =
             jsonHandler<FetchProjectLogsEventsResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun fetch(
             params: ProjectLogFetchParams,
@@ -125,7 +124,7 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { fetchHandler.handle(it) }
                     .also {
@@ -138,7 +137,6 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
 
         private val fetchPostHandler: Handler<FetchProjectLogsEventsResponse> =
             jsonHandler<FetchProjectLogsEventsResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun fetchPost(
             params: ProjectLogFetchPostParams,
@@ -157,7 +155,7 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { fetchPostHandler.handle(it) }
                     .also {
@@ -170,7 +168,6 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
 
         private val insertHandler: Handler<InsertEventsResponse> =
             jsonHandler<InsertEventsResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun insert(
             params: ProjectLogInsertParams,
@@ -189,7 +186,7 @@ class LogServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { insertHandler.handle(it) }
                     .also {
