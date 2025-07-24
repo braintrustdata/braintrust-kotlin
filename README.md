@@ -95,7 +95,7 @@ import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
 
 val client: BraintrustClient = BraintrustOkHttpClient.builder()
     // Configures using the `braintrust.apiKey` and `braintrust.baseUrl` system properties
-    Or configures using the `BRAINTRUST_API_KEY` and `BRAINTRUST_BASE_URL` environment variables
+    // Or configures using the `BRAINTRUST_API_KEY` and `BRAINTRUST_BASE_URL` environment variables
     .fromEnv()
     .apiKey("My API Key")
     .build()
