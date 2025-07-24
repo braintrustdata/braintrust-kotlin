@@ -1884,7 +1884,8 @@ private constructor(
 
                     fun ofText(text: String) = Content(text = text)
 
-                    fun ofArray(array: List<ChatCompletionContentPart>) = Content(array = array)
+                    fun ofArray(array: List<ChatCompletionContentPart>) =
+                        Content(array = array.toImmutable())
                 }
 
                 /**
