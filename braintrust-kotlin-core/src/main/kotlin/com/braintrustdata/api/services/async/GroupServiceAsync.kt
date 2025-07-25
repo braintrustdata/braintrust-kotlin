@@ -45,13 +45,13 @@ interface GroupServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group = retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: GroupRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(groupId: String, requestOptions: RequestOptions): Group =
         retrieve(groupId, GroupRetrieveParams.none(), requestOptions)
 
@@ -66,13 +66,13 @@ interface GroupServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group = update(params.toBuilder().groupId(groupId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(
         params: GroupUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(groupId: String, requestOptions: RequestOptions): Group =
         update(groupId, GroupUpdateParams.none(), requestOptions)
 
@@ -85,7 +85,7 @@ interface GroupServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): GroupListPageAsync
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): GroupListPageAsync =
         list(GroupListParams.none(), requestOptions)
 
@@ -96,13 +96,13 @@ interface GroupServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group = delete(params.toBuilder().groupId(groupId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: GroupDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(groupId: String, requestOptions: RequestOptions): Group =
         delete(groupId, GroupDeleteParams.none(), requestOptions)
 
@@ -149,14 +149,14 @@ interface GroupServiceAsync {
         ): HttpResponseFor<Group> =
             retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: GroupRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Group>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             groupId: String,
@@ -175,14 +175,14 @@ interface GroupServiceAsync {
         ): HttpResponseFor<Group> =
             update(params.toBuilder().groupId(groupId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             params: GroupUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Group>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             groupId: String,
@@ -199,7 +199,7 @@ interface GroupServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<GroupListPageAsync>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<GroupListPageAsync> =
             list(GroupListParams.none(), requestOptions)
@@ -216,14 +216,14 @@ interface GroupServiceAsync {
         ): HttpResponseFor<Group> =
             delete(params.toBuilder().groupId(groupId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: GroupDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Group>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             groupId: String,

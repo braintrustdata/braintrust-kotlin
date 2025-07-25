@@ -53,13 +53,13 @@ interface ExperimentServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment = retrieve(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: ExperimentRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(experimentId: String, requestOptions: RequestOptions): Experiment =
         retrieve(experimentId, ExperimentRetrieveParams.none(), requestOptions)
 
@@ -74,13 +74,13 @@ interface ExperimentServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment = update(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(
         params: ExperimentUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(experimentId: String, requestOptions: RequestOptions): Experiment =
         update(experimentId, ExperimentUpdateParams.none(), requestOptions)
 
@@ -93,7 +93,7 @@ interface ExperimentServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ExperimentListPageAsync
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): ExperimentListPageAsync =
         list(ExperimentListParams.none(), requestOptions)
 
@@ -104,13 +104,13 @@ interface ExperimentServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment = delete(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: ExperimentDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Experiment
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(experimentId: String, requestOptions: RequestOptions): Experiment =
         delete(experimentId, ExperimentDeleteParams.none(), requestOptions)
 
@@ -122,7 +122,7 @@ interface ExperimentServiceAsync {
     ): FeedbackResponseSchema =
         feedback(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-    /** @see [feedback] */
+    /** @see feedback */
     suspend fun feedback(
         params: ExperimentFeedbackParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -140,13 +140,13 @@ interface ExperimentServiceAsync {
     ): FetchExperimentEventsResponse =
         fetch(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-    /** @see [fetch] */
+    /** @see fetch */
     suspend fun fetch(
         params: ExperimentFetchParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchExperimentEventsResponse
 
-    /** @see [fetch] */
+    /** @see fetch */
     suspend fun fetch(
         experimentId: String,
         requestOptions: RequestOptions,
@@ -165,13 +165,13 @@ interface ExperimentServiceAsync {
     ): FetchExperimentEventsResponse =
         fetchPost(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-    /** @see [fetchPost] */
+    /** @see fetchPost */
     suspend fun fetchPost(
         params: ExperimentFetchPostParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchExperimentEventsResponse
 
-    /** @see [fetchPost] */
+    /** @see fetchPost */
     suspend fun fetchPost(
         experimentId: String,
         requestOptions: RequestOptions,
@@ -186,7 +186,7 @@ interface ExperimentServiceAsync {
     ): InsertEventsResponse =
         insert(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-    /** @see [insert] */
+    /** @see insert */
     suspend fun insert(
         params: ExperimentInsertParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -200,13 +200,13 @@ interface ExperimentServiceAsync {
     ): SummarizeExperimentResponse =
         summarize(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-    /** @see [summarize] */
+    /** @see summarize */
     suspend fun summarize(
         params: ExperimentSummarizeParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SummarizeExperimentResponse
 
-    /** @see [summarize] */
+    /** @see summarize */
     suspend fun summarize(
         experimentId: String,
         requestOptions: RequestOptions,
@@ -250,14 +250,14 @@ interface ExperimentServiceAsync {
         ): HttpResponseFor<Experiment> =
             retrieve(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: ExperimentRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Experiment>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             experimentId: String,
@@ -277,14 +277,14 @@ interface ExperimentServiceAsync {
         ): HttpResponseFor<Experiment> =
             update(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             params: ExperimentUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Experiment>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             experimentId: String,
@@ -302,7 +302,7 @@ interface ExperimentServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ExperimentListPageAsync>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<ExperimentListPageAsync> =
             list(ExperimentListParams.none(), requestOptions)
@@ -319,14 +319,14 @@ interface ExperimentServiceAsync {
         ): HttpResponseFor<Experiment> =
             delete(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: ExperimentDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Experiment>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             experimentId: String,
@@ -346,7 +346,7 @@ interface ExperimentServiceAsync {
         ): HttpResponseFor<FeedbackResponseSchema> =
             feedback(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-        /** @see [feedback] */
+        /** @see feedback */
         @MustBeClosed
         suspend fun feedback(
             params: ExperimentFeedbackParams,
@@ -365,14 +365,14 @@ interface ExperimentServiceAsync {
         ): HttpResponseFor<FetchExperimentEventsResponse> =
             fetch(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-        /** @see [fetch] */
+        /** @see fetch */
         @MustBeClosed
         suspend fun fetch(
             params: ExperimentFetchParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FetchExperimentEventsResponse>
 
-        /** @see [fetch] */
+        /** @see fetch */
         @MustBeClosed
         suspend fun fetch(
             experimentId: String,
@@ -392,14 +392,14 @@ interface ExperimentServiceAsync {
         ): HttpResponseFor<FetchExperimentEventsResponse> =
             fetchPost(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-        /** @see [fetchPost] */
+        /** @see fetchPost */
         @MustBeClosed
         suspend fun fetchPost(
             params: ExperimentFetchPostParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FetchExperimentEventsResponse>
 
-        /** @see [fetchPost] */
+        /** @see fetchPost */
         @MustBeClosed
         suspend fun fetchPost(
             experimentId: String,
@@ -419,7 +419,7 @@ interface ExperimentServiceAsync {
         ): HttpResponseFor<InsertEventsResponse> =
             insert(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-        /** @see [insert] */
+        /** @see insert */
         @MustBeClosed
         suspend fun insert(
             params: ExperimentInsertParams,
@@ -438,14 +438,14 @@ interface ExperimentServiceAsync {
         ): HttpResponseFor<SummarizeExperimentResponse> =
             summarize(params.toBuilder().experimentId(experimentId).build(), requestOptions)
 
-        /** @see [summarize] */
+        /** @see summarize */
         @MustBeClosed
         suspend fun summarize(
             params: ExperimentSummarizeParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<SummarizeExperimentResponse>
 
-        /** @see [summarize] */
+        /** @see summarize */
         @MustBeClosed
         suspend fun summarize(
             experimentId: String,

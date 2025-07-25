@@ -47,13 +47,13 @@ interface ProjectServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project = retrieve(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: ProjectRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(projectId: String, requestOptions: RequestOptions): Project =
         retrieve(projectId, ProjectRetrieveParams.none(), requestOptions)
 
@@ -68,13 +68,13 @@ interface ProjectServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project = update(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(
         params: ProjectUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(projectId: String, requestOptions: RequestOptions): Project =
         update(projectId, ProjectUpdateParams.none(), requestOptions)
 
@@ -87,7 +87,7 @@ interface ProjectServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectListPageAsync
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): ProjectListPageAsync =
         list(ProjectListParams.none(), requestOptions)
 
@@ -98,13 +98,13 @@ interface ProjectServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project = delete(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: ProjectDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(projectId: String, requestOptions: RequestOptions): Project =
         delete(projectId, ProjectDeleteParams.none(), requestOptions)
 
@@ -146,14 +146,14 @@ interface ProjectServiceAsync {
         ): HttpResponseFor<Project> =
             retrieve(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: ProjectRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             projectId: String,
@@ -173,14 +173,14 @@ interface ProjectServiceAsync {
         ): HttpResponseFor<Project> =
             update(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             params: ProjectUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             projectId: String,
@@ -197,7 +197,7 @@ interface ProjectServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectListPageAsync>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<ProjectListPageAsync> =
             list(ProjectListParams.none(), requestOptions)
@@ -214,14 +214,14 @@ interface ProjectServiceAsync {
         ): HttpResponseFor<Project> =
             delete(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: ProjectDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             projectId: String,

@@ -38,13 +38,13 @@ interface OrganizationServiceAsync {
     ): Organization =
         retrieve(params.toBuilder().organizationId(organizationId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: OrganizationRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(organizationId: String, requestOptions: RequestOptions): Organization =
         retrieve(organizationId, OrganizationRetrieveParams.none(), requestOptions)
 
@@ -60,13 +60,13 @@ interface OrganizationServiceAsync {
     ): Organization =
         update(params.toBuilder().organizationId(organizationId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(
         params: OrganizationUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(organizationId: String, requestOptions: RequestOptions): Organization =
         update(organizationId, OrganizationUpdateParams.none(), requestOptions)
 
@@ -79,7 +79,7 @@ interface OrganizationServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): OrganizationListPageAsync
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): OrganizationListPageAsync =
         list(OrganizationListParams.none(), requestOptions)
 
@@ -91,13 +91,13 @@ interface OrganizationServiceAsync {
     ): Organization =
         delete(params.toBuilder().organizationId(organizationId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: OrganizationDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(organizationId: String, requestOptions: RequestOptions): Organization =
         delete(organizationId, OrganizationDeleteParams.none(), requestOptions)
 
@@ -130,14 +130,14 @@ interface OrganizationServiceAsync {
         ): HttpResponseFor<Organization> =
             retrieve(params.toBuilder().organizationId(organizationId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: OrganizationRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Organization>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             organizationId: String,
@@ -157,14 +157,14 @@ interface OrganizationServiceAsync {
         ): HttpResponseFor<Organization> =
             update(params.toBuilder().organizationId(organizationId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             params: OrganizationUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Organization>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             organizationId: String,
@@ -182,7 +182,7 @@ interface OrganizationServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<OrganizationListPageAsync>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(
             requestOptions: RequestOptions
@@ -201,14 +201,14 @@ interface OrganizationServiceAsync {
         ): HttpResponseFor<Organization> =
             delete(params.toBuilder().organizationId(organizationId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: OrganizationDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Organization>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             organizationId: String,

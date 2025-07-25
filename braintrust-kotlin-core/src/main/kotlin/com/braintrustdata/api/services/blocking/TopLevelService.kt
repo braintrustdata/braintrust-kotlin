@@ -28,7 +28,7 @@ interface TopLevelService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): String
 
-    /** @see [helloWorld] */
+    /** @see helloWorld */
     fun helloWorld(requestOptions: RequestOptions): String =
         helloWorld(TopLevelHelloWorldParams.none(), requestOptions)
 
@@ -52,7 +52,7 @@ interface TopLevelService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<String>
 
-        /** @see [helloWorld] */
+        /** @see helloWorld */
         @MustBeClosed
         fun helloWorld(requestOptions: RequestOptions): HttpResponseFor<String> =
             helloWorld(TopLevelHelloWorldParams.none(), requestOptions)

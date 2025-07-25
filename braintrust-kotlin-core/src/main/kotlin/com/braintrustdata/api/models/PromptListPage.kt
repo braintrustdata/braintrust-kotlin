@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.PromptService
 import java.util.Objects
 
-/** @see [PromptService.list] */
+/** @see PromptService.list */
 class PromptListPage
 private constructor(
     private val service: PromptService,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [PromptListPageResponse], but gracefully handles missing data.
      *
-     * @see [PromptListPageResponse.objects]
+     * @see PromptListPageResponse.objects
      */
     fun objects(): List<Prompt> = response._objects().getNullable("objects") ?: emptyList()
 

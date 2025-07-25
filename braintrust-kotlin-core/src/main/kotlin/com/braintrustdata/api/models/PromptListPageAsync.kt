@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.PromptServiceAsync
 import java.util.Objects
 
-/** @see [PromptServiceAsync.list] */
+/** @see PromptServiceAsync.list */
 class PromptListPageAsync
 private constructor(
     private val service: PromptServiceAsync,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [PromptListPageResponse], but gracefully handles missing data.
      *
-     * @see [PromptListPageResponse.objects]
+     * @see PromptListPageResponse.objects
      */
     fun objects(): List<Prompt> = response._objects().getNullable("objects") ?: emptyList()
 

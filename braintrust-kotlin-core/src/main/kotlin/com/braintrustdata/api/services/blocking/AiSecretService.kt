@@ -46,13 +46,13 @@ interface AiSecretService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret = retrieve(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: AiSecretRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(aiSecretId: String, requestOptions: RequestOptions): AISecret =
         retrieve(aiSecretId, AiSecretRetrieveParams.none(), requestOptions)
 
@@ -67,13 +67,13 @@ interface AiSecretService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret = update(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: AiSecretUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
 
-    /** @see [update] */
+    /** @see update */
     fun update(aiSecretId: String, requestOptions: RequestOptions): AISecret =
         update(aiSecretId, AiSecretUpdateParams.none(), requestOptions)
 
@@ -86,7 +86,7 @@ interface AiSecretService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AiSecretListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): AiSecretListPage =
         list(AiSecretListParams.none(), requestOptions)
 
@@ -97,13 +97,13 @@ interface AiSecretService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret = delete(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: AiSecretDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(aiSecretId: String, requestOptions: RequestOptions): AISecret =
         delete(aiSecretId, AiSecretDeleteParams.none(), requestOptions)
 
@@ -154,14 +154,14 @@ interface AiSecretService {
         ): HttpResponseFor<AISecret> =
             retrieve(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: AiSecretRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AISecret>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             aiSecretId: String,
@@ -181,14 +181,14 @@ interface AiSecretService {
         ): HttpResponseFor<AISecret> =
             update(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             params: AiSecretUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AISecret>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(aiSecretId: String, requestOptions: RequestOptions): HttpResponseFor<AISecret> =
             update(aiSecretId, AiSecretUpdateParams.none(), requestOptions)
@@ -203,7 +203,7 @@ interface AiSecretService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AiSecretListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<AiSecretListPage> =
             list(AiSecretListParams.none(), requestOptions)
@@ -220,14 +220,14 @@ interface AiSecretService {
         ): HttpResponseFor<AISecret> =
             delete(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: AiSecretDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AISecret>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(aiSecretId: String, requestOptions: RequestOptions): HttpResponseFor<AISecret> =
             delete(aiSecretId, AiSecretDeleteParams.none(), requestOptions)

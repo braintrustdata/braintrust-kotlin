@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.SpanIframeService
 import java.util.Objects
 
-/** @see [SpanIframeService.list] */
+/** @see SpanIframeService.list */
 class SpanIframeListPage
 private constructor(
     private val service: SpanIframeService,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [SpanIframeListPageResponse], but gracefully handles missing data.
      *
-     * @see [SpanIframeListPageResponse.objects]
+     * @see SpanIframeListPageResponse.objects
      */
     fun objects(): List<SpanIFrame> = response._objects().getNullable("objects") ?: emptyList()
 

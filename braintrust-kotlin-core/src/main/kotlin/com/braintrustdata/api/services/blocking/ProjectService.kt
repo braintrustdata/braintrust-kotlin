@@ -47,13 +47,13 @@ interface ProjectService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project = retrieve(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: ProjectRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(projectId: String, requestOptions: RequestOptions): Project =
         retrieve(projectId, ProjectRetrieveParams.none(), requestOptions)
 
@@ -68,13 +68,13 @@ interface ProjectService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project = update(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: ProjectUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
 
-    /** @see [update] */
+    /** @see update */
     fun update(projectId: String, requestOptions: RequestOptions): Project =
         update(projectId, ProjectUpdateParams.none(), requestOptions)
 
@@ -87,7 +87,7 @@ interface ProjectService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): ProjectListPage =
         list(ProjectListParams.none(), requestOptions)
 
@@ -98,13 +98,13 @@ interface ProjectService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project = delete(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: ProjectDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(projectId: String, requestOptions: RequestOptions): Project =
         delete(projectId, ProjectDeleteParams.none(), requestOptions)
 
@@ -142,14 +142,14 @@ interface ProjectService {
         ): HttpResponseFor<Project> =
             retrieve(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: ProjectRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(projectId: String, requestOptions: RequestOptions): HttpResponseFor<Project> =
             retrieve(projectId, ProjectRetrieveParams.none(), requestOptions)
@@ -166,14 +166,14 @@ interface ProjectService {
         ): HttpResponseFor<Project> =
             update(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             params: ProjectUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(projectId: String, requestOptions: RequestOptions): HttpResponseFor<Project> =
             update(projectId, ProjectUpdateParams.none(), requestOptions)
@@ -188,7 +188,7 @@ interface ProjectService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ProjectListPage> =
             list(ProjectListParams.none(), requestOptions)
@@ -205,14 +205,14 @@ interface ProjectService {
         ): HttpResponseFor<Project> =
             delete(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: ProjectDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(projectId: String, requestOptions: RequestOptions): HttpResponseFor<Project> =
             delete(projectId, ProjectDeleteParams.none(), requestOptions)

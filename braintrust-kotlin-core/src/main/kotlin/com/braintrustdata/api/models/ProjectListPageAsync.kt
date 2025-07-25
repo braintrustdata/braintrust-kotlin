@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.ProjectServiceAsync
 import java.util.Objects
 
-/** @see [ProjectServiceAsync.list] */
+/** @see ProjectServiceAsync.list */
 class ProjectListPageAsync
 private constructor(
     private val service: ProjectServiceAsync,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [ProjectListPageResponse], but gracefully handles missing data.
      *
-     * @see [ProjectListPageResponse.objects]
+     * @see ProjectListPageResponse.objects
      */
     fun objects(): List<Project> = response._objects().getNullable("objects") ?: emptyList()
 

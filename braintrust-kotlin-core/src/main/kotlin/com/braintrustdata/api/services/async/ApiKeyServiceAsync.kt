@@ -44,13 +44,13 @@ interface ApiKeyServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKey = retrieve(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: ApiKeyRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKey
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(apiKeyId: String, requestOptions: RequestOptions): ApiKey =
         retrieve(apiKeyId, ApiKeyRetrieveParams.none(), requestOptions)
 
@@ -63,7 +63,7 @@ interface ApiKeyServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKeyListPageAsync
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): ApiKeyListPageAsync =
         list(ApiKeyListParams.none(), requestOptions)
 
@@ -74,13 +74,13 @@ interface ApiKeyServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKey = delete(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: ApiKeyDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKey
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(apiKeyId: String, requestOptions: RequestOptions): ApiKey =
         delete(apiKeyId, ApiKeyDeleteParams.none(), requestOptions)
 
@@ -120,14 +120,14 @@ interface ApiKeyServiceAsync {
         ): HttpResponseFor<ApiKey> =
             retrieve(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: ApiKeyRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ApiKey>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             apiKeyId: String,
@@ -144,7 +144,7 @@ interface ApiKeyServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ApiKeyListPageAsync>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<ApiKeyListPageAsync> =
             list(ApiKeyListParams.none(), requestOptions)
@@ -161,14 +161,14 @@ interface ApiKeyServiceAsync {
         ): HttpResponseFor<ApiKey> =
             delete(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: ApiKeyDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ApiKey>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             apiKeyId: String,

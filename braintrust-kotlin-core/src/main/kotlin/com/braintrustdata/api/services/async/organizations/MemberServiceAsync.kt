@@ -29,7 +29,7 @@ interface MemberServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): PatchOrganizationMembersOutput
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(requestOptions: RequestOptions): PatchOrganizationMembersOutput =
         update(OrganizationMemberUpdateParams.none(), requestOptions)
 
@@ -57,7 +57,7 @@ interface MemberServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<PatchOrganizationMembersOutput>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             requestOptions: RequestOptions

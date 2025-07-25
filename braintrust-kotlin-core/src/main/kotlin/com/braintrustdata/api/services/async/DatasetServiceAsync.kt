@@ -53,13 +53,13 @@ interface DatasetServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Dataset = retrieve(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: DatasetRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Dataset
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(datasetId: String, requestOptions: RequestOptions): Dataset =
         retrieve(datasetId, DatasetRetrieveParams.none(), requestOptions)
 
@@ -74,13 +74,13 @@ interface DatasetServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Dataset = update(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(
         params: DatasetUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Dataset
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(datasetId: String, requestOptions: RequestOptions): Dataset =
         update(datasetId, DatasetUpdateParams.none(), requestOptions)
 
@@ -93,7 +93,7 @@ interface DatasetServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): DatasetListPageAsync
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): DatasetListPageAsync =
         list(DatasetListParams.none(), requestOptions)
 
@@ -104,13 +104,13 @@ interface DatasetServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Dataset = delete(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: DatasetDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Dataset
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(datasetId: String, requestOptions: RequestOptions): Dataset =
         delete(datasetId, DatasetDeleteParams.none(), requestOptions)
 
@@ -122,7 +122,7 @@ interface DatasetServiceAsync {
     ): FeedbackResponseSchema =
         feedback(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-    /** @see [feedback] */
+    /** @see feedback */
     suspend fun feedback(
         params: DatasetFeedbackParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -140,13 +140,13 @@ interface DatasetServiceAsync {
     ): FetchDatasetEventsResponse =
         fetch(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-    /** @see [fetch] */
+    /** @see fetch */
     suspend fun fetch(
         params: DatasetFetchParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchDatasetEventsResponse
 
-    /** @see [fetch] */
+    /** @see fetch */
     suspend fun fetch(
         datasetId: String,
         requestOptions: RequestOptions,
@@ -164,13 +164,13 @@ interface DatasetServiceAsync {
     ): FetchDatasetEventsResponse =
         fetchPost(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-    /** @see [fetchPost] */
+    /** @see fetchPost */
     suspend fun fetchPost(
         params: DatasetFetchPostParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchDatasetEventsResponse
 
-    /** @see [fetchPost] */
+    /** @see fetchPost */
     suspend fun fetchPost(
         datasetId: String,
         requestOptions: RequestOptions,
@@ -185,7 +185,7 @@ interface DatasetServiceAsync {
     ): InsertEventsResponse =
         insert(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-    /** @see [insert] */
+    /** @see insert */
     suspend fun insert(
         params: DatasetInsertParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -199,13 +199,13 @@ interface DatasetServiceAsync {
     ): SummarizeDatasetResponse =
         summarize(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-    /** @see [summarize] */
+    /** @see summarize */
     suspend fun summarize(
         params: DatasetSummarizeParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SummarizeDatasetResponse
 
-    /** @see [summarize] */
+    /** @see summarize */
     suspend fun summarize(
         datasetId: String,
         requestOptions: RequestOptions,
@@ -248,14 +248,14 @@ interface DatasetServiceAsync {
         ): HttpResponseFor<Dataset> =
             retrieve(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: DatasetRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Dataset>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             datasetId: String,
@@ -275,14 +275,14 @@ interface DatasetServiceAsync {
         ): HttpResponseFor<Dataset> =
             update(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             params: DatasetUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Dataset>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             datasetId: String,
@@ -299,7 +299,7 @@ interface DatasetServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<DatasetListPageAsync>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<DatasetListPageAsync> =
             list(DatasetListParams.none(), requestOptions)
@@ -316,14 +316,14 @@ interface DatasetServiceAsync {
         ): HttpResponseFor<Dataset> =
             delete(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: DatasetDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Dataset>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             datasetId: String,
@@ -342,7 +342,7 @@ interface DatasetServiceAsync {
         ): HttpResponseFor<FeedbackResponseSchema> =
             feedback(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-        /** @see [feedback] */
+        /** @see feedback */
         @MustBeClosed
         suspend fun feedback(
             params: DatasetFeedbackParams,
@@ -361,14 +361,14 @@ interface DatasetServiceAsync {
         ): HttpResponseFor<FetchDatasetEventsResponse> =
             fetch(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-        /** @see [fetch] */
+        /** @see fetch */
         @MustBeClosed
         suspend fun fetch(
             params: DatasetFetchParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FetchDatasetEventsResponse>
 
-        /** @see [fetch] */
+        /** @see fetch */
         @MustBeClosed
         suspend fun fetch(
             datasetId: String,
@@ -388,14 +388,14 @@ interface DatasetServiceAsync {
         ): HttpResponseFor<FetchDatasetEventsResponse> =
             fetchPost(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-        /** @see [fetchPost] */
+        /** @see fetchPost */
         @MustBeClosed
         suspend fun fetchPost(
             params: DatasetFetchPostParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FetchDatasetEventsResponse>
 
-        /** @see [fetchPost] */
+        /** @see fetchPost */
         @MustBeClosed
         suspend fun fetchPost(
             datasetId: String,
@@ -415,7 +415,7 @@ interface DatasetServiceAsync {
         ): HttpResponseFor<InsertEventsResponse> =
             insert(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-        /** @see [insert] */
+        /** @see insert */
         @MustBeClosed
         suspend fun insert(
             params: DatasetInsertParams,
@@ -434,14 +434,14 @@ interface DatasetServiceAsync {
         ): HttpResponseFor<SummarizeDatasetResponse> =
             summarize(params.toBuilder().datasetId(datasetId).build(), requestOptions)
 
-        /** @see [summarize] */
+        /** @see summarize */
         @MustBeClosed
         suspend fun summarize(
             params: DatasetSummarizeParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<SummarizeDatasetResponse>
 
-        /** @see [summarize] */
+        /** @see summarize */
         @MustBeClosed
         suspend fun summarize(
             datasetId: String,

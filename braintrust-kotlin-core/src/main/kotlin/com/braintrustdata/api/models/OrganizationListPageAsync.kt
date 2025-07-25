@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.OrganizationServiceAsync
 import java.util.Objects
 
-/** @see [OrganizationServiceAsync.list] */
+/** @see OrganizationServiceAsync.list */
 class OrganizationListPageAsync
 private constructor(
     private val service: OrganizationServiceAsync,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [OrganizationListPageResponse], but gracefully handles missing data.
      *
-     * @see [OrganizationListPageResponse.objects]
+     * @see OrganizationListPageResponse.objects
      */
     fun objects(): List<Organization> = response._objects().getNullable("objects") ?: emptyList()
 

@@ -47,13 +47,13 @@ interface FunctionService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Function = retrieve(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: FunctionRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(functionId: String, requestOptions: RequestOptions): Function =
         retrieve(functionId, FunctionRetrieveParams.none(), requestOptions)
 
@@ -68,13 +68,13 @@ interface FunctionService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Function = update(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: FunctionUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
-    /** @see [update] */
+    /** @see update */
     fun update(functionId: String, requestOptions: RequestOptions): Function =
         update(functionId, FunctionUpdateParams.none(), requestOptions)
 
@@ -87,7 +87,7 @@ interface FunctionService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FunctionListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): FunctionListPage =
         list(FunctionListParams.none(), requestOptions)
 
@@ -98,13 +98,13 @@ interface FunctionService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Function = delete(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: FunctionDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(functionId: String, requestOptions: RequestOptions): Function =
         delete(functionId, FunctionDeleteParams.none(), requestOptions)
 
@@ -116,13 +116,13 @@ interface FunctionService {
     ): FunctionInvokeResponse? =
         invoke(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-    /** @see [invoke] */
+    /** @see invoke */
     fun invoke(
         params: FunctionInvokeParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FunctionInvokeResponse?
 
-    /** @see [invoke] */
+    /** @see invoke */
     fun invoke(functionId: String, requestOptions: RequestOptions): FunctionInvokeResponse? =
         invoke(functionId, FunctionInvokeParams.none(), requestOptions)
 
@@ -168,14 +168,14 @@ interface FunctionService {
         ): HttpResponseFor<Function> =
             retrieve(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: FunctionRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Function>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             functionId: String,
@@ -195,14 +195,14 @@ interface FunctionService {
         ): HttpResponseFor<Function> =
             update(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             params: FunctionUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Function>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(functionId: String, requestOptions: RequestOptions): HttpResponseFor<Function> =
             update(functionId, FunctionUpdateParams.none(), requestOptions)
@@ -217,7 +217,7 @@ interface FunctionService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FunctionListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<FunctionListPage> =
             list(FunctionListParams.none(), requestOptions)
@@ -234,14 +234,14 @@ interface FunctionService {
         ): HttpResponseFor<Function> =
             delete(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: FunctionDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Function>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(functionId: String, requestOptions: RequestOptions): HttpResponseFor<Function> =
             delete(functionId, FunctionDeleteParams.none(), requestOptions)
@@ -258,14 +258,14 @@ interface FunctionService {
         ): HttpResponseFor<FunctionInvokeResponse?> =
             invoke(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-        /** @see [invoke] */
+        /** @see invoke */
         @MustBeClosed
         fun invoke(
             params: FunctionInvokeParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FunctionInvokeResponse?>
 
-        /** @see [invoke] */
+        /** @see invoke */
         @MustBeClosed
         fun invoke(
             functionId: String,

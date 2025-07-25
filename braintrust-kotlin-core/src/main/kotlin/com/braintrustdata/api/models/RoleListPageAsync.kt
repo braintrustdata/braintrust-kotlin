@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.RoleServiceAsync
 import java.util.Objects
 
-/** @see [RoleServiceAsync.list] */
+/** @see RoleServiceAsync.list */
 class RoleListPageAsync
 private constructor(
     private val service: RoleServiceAsync,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [RoleListPageResponse], but gracefully handles missing data.
      *
-     * @see [RoleListPageResponse.objects]
+     * @see RoleListPageResponse.objects
      */
     fun objects(): List<Role> = response._objects().getNullable("objects") ?: emptyList()
 

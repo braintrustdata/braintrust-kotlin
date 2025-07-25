@@ -36,7 +36,7 @@ interface LogServiceAsync {
     ): FeedbackResponseSchema =
         feedback(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-    /** @see [feedback] */
+    /** @see feedback */
     suspend fun feedback(
         params: ProjectLogFeedbackParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -54,13 +54,13 @@ interface LogServiceAsync {
     ): FetchProjectLogsEventsResponse =
         fetch(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-    /** @see [fetch] */
+    /** @see fetch */
     suspend fun fetch(
         params: ProjectLogFetchParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchProjectLogsEventsResponse
 
-    /** @see [fetch] */
+    /** @see fetch */
     suspend fun fetch(
         projectId: String,
         requestOptions: RequestOptions,
@@ -79,13 +79,13 @@ interface LogServiceAsync {
     ): FetchProjectLogsEventsResponse =
         fetchPost(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-    /** @see [fetchPost] */
+    /** @see fetchPost */
     suspend fun fetchPost(
         params: ProjectLogFetchPostParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FetchProjectLogsEventsResponse
 
-    /** @see [fetchPost] */
+    /** @see fetchPost */
     suspend fun fetchPost(
         projectId: String,
         requestOptions: RequestOptions,
@@ -100,7 +100,7 @@ interface LogServiceAsync {
     ): InsertEventsResponse =
         insert(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-    /** @see [insert] */
+    /** @see insert */
     suspend fun insert(
         params: ProjectLogInsertParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -128,7 +128,7 @@ interface LogServiceAsync {
         ): HttpResponseFor<FeedbackResponseSchema> =
             feedback(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-        /** @see [feedback] */
+        /** @see feedback */
         @MustBeClosed
         suspend fun feedback(
             params: ProjectLogFeedbackParams,
@@ -147,14 +147,14 @@ interface LogServiceAsync {
         ): HttpResponseFor<FetchProjectLogsEventsResponse> =
             fetch(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-        /** @see [fetch] */
+        /** @see fetch */
         @MustBeClosed
         suspend fun fetch(
             params: ProjectLogFetchParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FetchProjectLogsEventsResponse>
 
-        /** @see [fetch] */
+        /** @see fetch */
         @MustBeClosed
         suspend fun fetch(
             projectId: String,
@@ -174,14 +174,14 @@ interface LogServiceAsync {
         ): HttpResponseFor<FetchProjectLogsEventsResponse> =
             fetchPost(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-        /** @see [fetchPost] */
+        /** @see fetchPost */
         @MustBeClosed
         suspend fun fetchPost(
             params: ProjectLogFetchPostParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FetchProjectLogsEventsResponse>
 
-        /** @see [fetchPost] */
+        /** @see fetchPost */
         @MustBeClosed
         suspend fun fetchPost(
             projectId: String,
@@ -201,7 +201,7 @@ interface LogServiceAsync {
         ): HttpResponseFor<InsertEventsResponse> =
             insert(params.toBuilder().projectId(projectId).build(), requestOptions)
 
-        /** @see [insert] */
+        /** @see insert */
         @MustBeClosed
         suspend fun insert(
             params: ProjectLogInsertParams,

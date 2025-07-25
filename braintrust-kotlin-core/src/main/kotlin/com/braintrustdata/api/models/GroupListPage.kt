@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.GroupService
 import java.util.Objects
 
-/** @see [GroupService.list] */
+/** @see GroupService.list */
 class GroupListPage
 private constructor(
     private val service: GroupService,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [GroupListPageResponse], but gracefully handles missing data.
      *
-     * @see [GroupListPageResponse.objects]
+     * @see GroupListPageResponse.objects
      */
     fun objects(): List<Group> = response._objects().getNullable("objects") ?: emptyList()
 
