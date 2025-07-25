@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.DatasetService
 import java.util.Objects
 
-/** @see [DatasetService.list] */
+/** @see DatasetService.list */
 class DatasetListPage
 private constructor(
     private val service: DatasetService,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [DatasetListPageResponse], but gracefully handles missing data.
      *
-     * @see [DatasetListPageResponse.objects]
+     * @see DatasetListPageResponse.objects
      */
     fun objects(): List<Dataset> = response._objects().getNullable("objects") ?: emptyList()
 

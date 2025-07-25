@@ -32,13 +32,13 @@ interface UserServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): User = retrieve(params.toBuilder().userId(userId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: UserRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): User
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(userId: String, requestOptions: RequestOptions): User =
         retrieve(userId, UserRetrieveParams.none(), requestOptions)
 
@@ -51,7 +51,7 @@ interface UserServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): UserListPageAsync
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): UserListPageAsync =
         list(UserListParams.none(), requestOptions)
 
@@ -77,14 +77,14 @@ interface UserServiceAsync {
         ): HttpResponseFor<User> =
             retrieve(params.toBuilder().userId(userId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: UserRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<User>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             userId: String,
@@ -101,7 +101,7 @@ interface UserServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<UserListPageAsync>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<UserListPageAsync> =
             list(UserListParams.none(), requestOptions)

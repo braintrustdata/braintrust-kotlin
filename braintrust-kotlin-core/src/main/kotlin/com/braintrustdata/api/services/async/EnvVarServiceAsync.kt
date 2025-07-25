@@ -45,13 +45,13 @@ interface EnvVarServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar = retrieve(params.toBuilder().envVarId(envVarId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: EnvVarRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(envVarId: String, requestOptions: RequestOptions): EnvVar =
         retrieve(envVarId, EnvVarRetrieveParams.none(), requestOptions)
 
@@ -66,7 +66,7 @@ interface EnvVarServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar = update(params.toBuilder().envVarId(envVarId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(
         params: EnvVarUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -81,7 +81,7 @@ interface EnvVarServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVarListResponse
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): EnvVarListResponse =
         list(EnvVarListParams.none(), requestOptions)
 
@@ -92,13 +92,13 @@ interface EnvVarServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar = delete(params.toBuilder().envVarId(envVarId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: EnvVarDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EnvVar
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(envVarId: String, requestOptions: RequestOptions): EnvVar =
         delete(envVarId, EnvVarDeleteParams.none(), requestOptions)
 
@@ -147,14 +147,14 @@ interface EnvVarServiceAsync {
         ): HttpResponseFor<EnvVar> =
             retrieve(params.toBuilder().envVarId(envVarId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: EnvVarRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<EnvVar>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             envVarId: String,
@@ -173,7 +173,7 @@ interface EnvVarServiceAsync {
         ): HttpResponseFor<EnvVar> =
             update(params.toBuilder().envVarId(envVarId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             params: EnvVarUpdateParams,
@@ -190,7 +190,7 @@ interface EnvVarServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<EnvVarListResponse>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<EnvVarListResponse> =
             list(EnvVarListParams.none(), requestOptions)
@@ -207,14 +207,14 @@ interface EnvVarServiceAsync {
         ): HttpResponseFor<EnvVar> =
             delete(params.toBuilder().envVarId(envVarId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: EnvVarDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<EnvVar>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             envVarId: String,

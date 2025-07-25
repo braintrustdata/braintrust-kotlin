@@ -47,13 +47,13 @@ interface ProjectScoreService {
     ): ProjectScore =
         retrieve(params.toBuilder().projectScoreId(projectScoreId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: ProjectScoreRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScore
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(projectScoreId: String, requestOptions: RequestOptions): ProjectScore =
         retrieve(projectScoreId, ProjectScoreRetrieveParams.none(), requestOptions)
 
@@ -69,13 +69,13 @@ interface ProjectScoreService {
     ): ProjectScore =
         update(params.toBuilder().projectScoreId(projectScoreId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: ProjectScoreUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScore
 
-    /** @see [update] */
+    /** @see update */
     fun update(projectScoreId: String, requestOptions: RequestOptions): ProjectScore =
         update(projectScoreId, ProjectScoreUpdateParams.none(), requestOptions)
 
@@ -88,7 +88,7 @@ interface ProjectScoreService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScoreListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): ProjectScoreListPage =
         list(ProjectScoreListParams.none(), requestOptions)
 
@@ -100,13 +100,13 @@ interface ProjectScoreService {
     ): ProjectScore =
         delete(params.toBuilder().projectScoreId(projectScoreId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: ProjectScoreDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectScore
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(projectScoreId: String, requestOptions: RequestOptions): ProjectScore =
         delete(projectScoreId, ProjectScoreDeleteParams.none(), requestOptions)
 
@@ -156,14 +156,14 @@ interface ProjectScoreService {
         ): HttpResponseFor<ProjectScore> =
             retrieve(params.toBuilder().projectScoreId(projectScoreId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: ProjectScoreRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectScore>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             projectScoreId: String,
@@ -183,14 +183,14 @@ interface ProjectScoreService {
         ): HttpResponseFor<ProjectScore> =
             update(params.toBuilder().projectScoreId(projectScoreId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             params: ProjectScoreUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectScore>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             projectScoreId: String,
@@ -208,7 +208,7 @@ interface ProjectScoreService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectScoreListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ProjectScoreListPage> =
             list(ProjectScoreListParams.none(), requestOptions)
@@ -225,14 +225,14 @@ interface ProjectScoreService {
         ): HttpResponseFor<ProjectScore> =
             delete(params.toBuilder().projectScoreId(projectScoreId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: ProjectScoreDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectScore>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             projectScoreId: String,

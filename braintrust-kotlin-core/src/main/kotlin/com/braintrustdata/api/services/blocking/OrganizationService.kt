@@ -38,13 +38,13 @@ interface OrganizationService {
     ): Organization =
         retrieve(params.toBuilder().organizationId(organizationId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: OrganizationRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(organizationId: String, requestOptions: RequestOptions): Organization =
         retrieve(organizationId, OrganizationRetrieveParams.none(), requestOptions)
 
@@ -60,13 +60,13 @@ interface OrganizationService {
     ): Organization =
         update(params.toBuilder().organizationId(organizationId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: OrganizationUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
 
-    /** @see [update] */
+    /** @see update */
     fun update(organizationId: String, requestOptions: RequestOptions): Organization =
         update(organizationId, OrganizationUpdateParams.none(), requestOptions)
 
@@ -79,7 +79,7 @@ interface OrganizationService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): OrganizationListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): OrganizationListPage =
         list(OrganizationListParams.none(), requestOptions)
 
@@ -91,13 +91,13 @@ interface OrganizationService {
     ): Organization =
         delete(params.toBuilder().organizationId(organizationId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: OrganizationDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Organization
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(organizationId: String, requestOptions: RequestOptions): Organization =
         delete(organizationId, OrganizationDeleteParams.none(), requestOptions)
 
@@ -129,14 +129,14 @@ interface OrganizationService {
         ): HttpResponseFor<Organization> =
             retrieve(params.toBuilder().organizationId(organizationId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: OrganizationRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Organization>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             organizationId: String,
@@ -156,14 +156,14 @@ interface OrganizationService {
         ): HttpResponseFor<Organization> =
             update(params.toBuilder().organizationId(organizationId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             params: OrganizationUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Organization>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             organizationId: String,
@@ -181,7 +181,7 @@ interface OrganizationService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<OrganizationListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<OrganizationListPage> =
             list(OrganizationListParams.none(), requestOptions)
@@ -198,14 +198,14 @@ interface OrganizationService {
         ): HttpResponseFor<Organization> =
             delete(params.toBuilder().organizationId(organizationId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: OrganizationDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Organization>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             organizationId: String,

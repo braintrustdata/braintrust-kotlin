@@ -47,13 +47,13 @@ interface FunctionServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Function = retrieve(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: FunctionRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(functionId: String, requestOptions: RequestOptions): Function =
         retrieve(functionId, FunctionRetrieveParams.none(), requestOptions)
 
@@ -68,13 +68,13 @@ interface FunctionServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Function = update(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(
         params: FunctionUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(functionId: String, requestOptions: RequestOptions): Function =
         update(functionId, FunctionUpdateParams.none(), requestOptions)
 
@@ -87,7 +87,7 @@ interface FunctionServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FunctionListPageAsync
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): FunctionListPageAsync =
         list(FunctionListParams.none(), requestOptions)
 
@@ -98,13 +98,13 @@ interface FunctionServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Function = delete(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: FunctionDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Function
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(functionId: String, requestOptions: RequestOptions): Function =
         delete(functionId, FunctionDeleteParams.none(), requestOptions)
 
@@ -116,13 +116,13 @@ interface FunctionServiceAsync {
     ): FunctionInvokeResponse? =
         invoke(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-    /** @see [invoke] */
+    /** @see invoke */
     suspend fun invoke(
         params: FunctionInvokeParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FunctionInvokeResponse?
 
-    /** @see [invoke] */
+    /** @see invoke */
     suspend fun invoke(
         functionId: String,
         requestOptions: RequestOptions,
@@ -174,14 +174,14 @@ interface FunctionServiceAsync {
         ): HttpResponseFor<Function> =
             retrieve(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: FunctionRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Function>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             functionId: String,
@@ -201,14 +201,14 @@ interface FunctionServiceAsync {
         ): HttpResponseFor<Function> =
             update(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             params: FunctionUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Function>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             functionId: String,
@@ -226,7 +226,7 @@ interface FunctionServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FunctionListPageAsync>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<FunctionListPageAsync> =
             list(FunctionListParams.none(), requestOptions)
@@ -243,14 +243,14 @@ interface FunctionServiceAsync {
         ): HttpResponseFor<Function> =
             delete(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: FunctionDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Function>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             functionId: String,
@@ -270,14 +270,14 @@ interface FunctionServiceAsync {
         ): HttpResponseFor<FunctionInvokeResponse?> =
             invoke(params.toBuilder().functionId(functionId).build(), requestOptions)
 
-        /** @see [invoke] */
+        /** @see invoke */
         @MustBeClosed
         suspend fun invoke(
             params: FunctionInvokeParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FunctionInvokeResponse?>
 
-        /** @see [invoke] */
+        /** @see invoke */
         @MustBeClosed
         suspend fun invoke(
             functionId: String,

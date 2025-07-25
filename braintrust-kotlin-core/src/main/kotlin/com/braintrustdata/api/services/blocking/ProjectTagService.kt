@@ -45,13 +45,13 @@ interface ProjectTagService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag = retrieve(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: ProjectTagRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(projectTagId: String, requestOptions: RequestOptions): ProjectTag =
         retrieve(projectTagId, ProjectTagRetrieveParams.none(), requestOptions)
 
@@ -66,13 +66,13 @@ interface ProjectTagService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag = update(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: ProjectTagUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
 
-    /** @see [update] */
+    /** @see update */
     fun update(projectTagId: String, requestOptions: RequestOptions): ProjectTag =
         update(projectTagId, ProjectTagUpdateParams.none(), requestOptions)
 
@@ -85,7 +85,7 @@ interface ProjectTagService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTagListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): ProjectTagListPage =
         list(ProjectTagListParams.none(), requestOptions)
 
@@ -96,13 +96,13 @@ interface ProjectTagService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag = delete(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: ProjectTagDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(projectTagId: String, requestOptions: RequestOptions): ProjectTag =
         delete(projectTagId, ProjectTagDeleteParams.none(), requestOptions)
 
@@ -150,14 +150,14 @@ interface ProjectTagService {
         ): HttpResponseFor<ProjectTag> =
             retrieve(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: ProjectTagRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTag>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             projectTagId: String,
@@ -177,14 +177,14 @@ interface ProjectTagService {
         ): HttpResponseFor<ProjectTag> =
             update(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             params: ProjectTagUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTag>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             projectTagId: String,
@@ -202,7 +202,7 @@ interface ProjectTagService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTagListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ProjectTagListPage> =
             list(ProjectTagListParams.none(), requestOptions)
@@ -219,14 +219,14 @@ interface ProjectTagService {
         ): HttpResponseFor<ProjectTag> =
             delete(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: ProjectTagDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTag>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             projectTagId: String,

@@ -45,13 +45,13 @@ interface RoleService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Role = retrieve(params.toBuilder().roleId(roleId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: RoleRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Role
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(roleId: String, requestOptions: RequestOptions): Role =
         retrieve(roleId, RoleRetrieveParams.none(), requestOptions)
 
@@ -66,13 +66,13 @@ interface RoleService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Role = update(params.toBuilder().roleId(roleId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: RoleUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Role
 
-    /** @see [update] */
+    /** @see update */
     fun update(roleId: String, requestOptions: RequestOptions): Role =
         update(roleId, RoleUpdateParams.none(), requestOptions)
 
@@ -85,7 +85,7 @@ interface RoleService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RoleListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): RoleListPage =
         list(RoleListParams.none(), requestOptions)
 
@@ -96,13 +96,13 @@ interface RoleService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Role = delete(params.toBuilder().roleId(roleId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: RoleDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Role
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(roleId: String, requestOptions: RequestOptions): Role =
         delete(roleId, RoleDeleteParams.none(), requestOptions)
 
@@ -147,14 +147,14 @@ interface RoleService {
         ): HttpResponseFor<Role> =
             retrieve(params.toBuilder().roleId(roleId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: RoleRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Role>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(roleId: String, requestOptions: RequestOptions): HttpResponseFor<Role> =
             retrieve(roleId, RoleRetrieveParams.none(), requestOptions)
@@ -170,14 +170,14 @@ interface RoleService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Role> = update(params.toBuilder().roleId(roleId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             params: RoleUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Role>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(roleId: String, requestOptions: RequestOptions): HttpResponseFor<Role> =
             update(roleId, RoleUpdateParams.none(), requestOptions)
@@ -192,7 +192,7 @@ interface RoleService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<RoleListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<RoleListPage> =
             list(RoleListParams.none(), requestOptions)
@@ -208,14 +208,14 @@ interface RoleService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Role> = delete(params.toBuilder().roleId(roleId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: RoleDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Role>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(roleId: String, requestOptions: RequestOptions): HttpResponseFor<Role> =
             delete(roleId, RoleDeleteParams.none(), requestOptions)

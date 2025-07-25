@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.FunctionService
 import java.util.Objects
 
-/** @see [FunctionService.list] */
+/** @see FunctionService.list */
 class FunctionListPage
 private constructor(
     private val service: FunctionService,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [FunctionListPageResponse], but gracefully handles missing data.
      *
-     * @see [FunctionListPageResponse.objects]
+     * @see FunctionListPageResponse.objects
      */
     fun objects(): List<Function> = response._objects().getNullable("objects") ?: emptyList()
 

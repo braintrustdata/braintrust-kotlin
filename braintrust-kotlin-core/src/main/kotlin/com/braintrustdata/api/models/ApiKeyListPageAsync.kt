@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.ApiKeyServiceAsync
 import java.util.Objects
 
-/** @see [ApiKeyServiceAsync.list] */
+/** @see ApiKeyServiceAsync.list */
 class ApiKeyListPageAsync
 private constructor(
     private val service: ApiKeyServiceAsync,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [ApiKeyListPageResponse], but gracefully handles missing data.
      *
-     * @see [ApiKeyListPageResponse.objects]
+     * @see ApiKeyListPageResponse.objects
      */
     fun objects(): List<ApiKey> = response._objects().getNullable("objects") ?: emptyList()
 

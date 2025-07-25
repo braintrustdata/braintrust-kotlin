@@ -46,13 +46,13 @@ interface AiSecretServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret = retrieve(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: AiSecretRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(aiSecretId: String, requestOptions: RequestOptions): AISecret =
         retrieve(aiSecretId, AiSecretRetrieveParams.none(), requestOptions)
 
@@ -67,13 +67,13 @@ interface AiSecretServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret = update(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(
         params: AiSecretUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(aiSecretId: String, requestOptions: RequestOptions): AISecret =
         update(aiSecretId, AiSecretUpdateParams.none(), requestOptions)
 
@@ -86,7 +86,7 @@ interface AiSecretServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AiSecretListPageAsync
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): AiSecretListPageAsync =
         list(AiSecretListParams.none(), requestOptions)
 
@@ -97,13 +97,13 @@ interface AiSecretServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret = delete(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: AiSecretDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AISecret
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(aiSecretId: String, requestOptions: RequestOptions): AISecret =
         delete(aiSecretId, AiSecretDeleteParams.none(), requestOptions)
 
@@ -158,14 +158,14 @@ interface AiSecretServiceAsync {
         ): HttpResponseFor<AISecret> =
             retrieve(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: AiSecretRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AISecret>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             aiSecretId: String,
@@ -185,14 +185,14 @@ interface AiSecretServiceAsync {
         ): HttpResponseFor<AISecret> =
             update(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             params: AiSecretUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AISecret>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             aiSecretId: String,
@@ -210,7 +210,7 @@ interface AiSecretServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AiSecretListPageAsync>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<AiSecretListPageAsync> =
             list(AiSecretListParams.none(), requestOptions)
@@ -227,14 +227,14 @@ interface AiSecretServiceAsync {
         ): HttpResponseFor<AISecret> =
             delete(params.toBuilder().aiSecretId(aiSecretId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: AiSecretDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AISecret>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             aiSecretId: String,

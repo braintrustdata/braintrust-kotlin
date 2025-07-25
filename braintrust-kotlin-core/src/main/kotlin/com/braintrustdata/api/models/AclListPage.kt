@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.AclService
 import java.util.Objects
 
-/** @see [AclService.list] */
+/** @see AclService.list */
 class AclListPage
 private constructor(
     private val service: AclService,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [AclListPageResponse], but gracefully handles missing data.
      *
-     * @see [AclListPageResponse.objects]
+     * @see AclListPageResponse.objects
      */
     fun objects(): List<Acl> = response._objects().getNullable("objects") ?: emptyList()
 

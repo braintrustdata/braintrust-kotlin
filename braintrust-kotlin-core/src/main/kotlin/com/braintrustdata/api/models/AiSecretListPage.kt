@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.AiSecretService
 import java.util.Objects
 
-/** @see [AiSecretService.list] */
+/** @see AiSecretService.list */
 class AiSecretListPage
 private constructor(
     private val service: AiSecretService,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [AiSecretListPageResponse], but gracefully handles missing data.
      *
-     * @see [AiSecretListPageResponse.objects]
+     * @see AiSecretListPageResponse.objects
      */
     fun objects(): List<AISecret> = response._objects().getNullable("objects") ?: emptyList()
 

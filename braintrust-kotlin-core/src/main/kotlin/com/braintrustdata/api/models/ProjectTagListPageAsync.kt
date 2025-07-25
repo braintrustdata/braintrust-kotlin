@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.ProjectTagServiceAsync
 import java.util.Objects
 
-/** @see [ProjectTagServiceAsync.list] */
+/** @see ProjectTagServiceAsync.list */
 class ProjectTagListPageAsync
 private constructor(
     private val service: ProjectTagServiceAsync,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [ProjectTagListPageResponse], but gracefully handles missing data.
      *
-     * @see [ProjectTagListPageResponse.objects]
+     * @see ProjectTagListPageResponse.objects
      */
     fun objects(): List<ProjectTag> = response._objects().getNullable("objects") ?: emptyList()
 

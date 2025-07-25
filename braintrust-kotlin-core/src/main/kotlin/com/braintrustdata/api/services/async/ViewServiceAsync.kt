@@ -45,7 +45,7 @@ interface ViewServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): View = retrieve(params.toBuilder().viewId(viewId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: ViewRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -62,7 +62,7 @@ interface ViewServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): View = update(params.toBuilder().viewId(viewId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(
         params: ViewUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -84,7 +84,7 @@ interface ViewServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): View = delete(params.toBuilder().viewId(viewId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: ViewDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -131,7 +131,7 @@ interface ViewServiceAsync {
         ): HttpResponseFor<View> =
             retrieve(params.toBuilder().viewId(viewId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: ViewRetrieveParams,
@@ -149,7 +149,7 @@ interface ViewServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<View> = update(params.toBuilder().viewId(viewId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             params: ViewUpdateParams,
@@ -177,7 +177,7 @@ interface ViewServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<View> = delete(params.toBuilder().viewId(viewId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: ViewDeleteParams,

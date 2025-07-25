@@ -45,13 +45,13 @@ interface ProjectTagServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag = retrieve(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: ProjectTagRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(projectTagId: String, requestOptions: RequestOptions): ProjectTag =
         retrieve(projectTagId, ProjectTagRetrieveParams.none(), requestOptions)
 
@@ -66,13 +66,13 @@ interface ProjectTagServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag = update(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(
         params: ProjectTagUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(projectTagId: String, requestOptions: RequestOptions): ProjectTag =
         update(projectTagId, ProjectTagUpdateParams.none(), requestOptions)
 
@@ -85,7 +85,7 @@ interface ProjectTagServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTagListPageAsync
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): ProjectTagListPageAsync =
         list(ProjectTagListParams.none(), requestOptions)
 
@@ -96,13 +96,13 @@ interface ProjectTagServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag = delete(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: ProjectTagDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectTag
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(projectTagId: String, requestOptions: RequestOptions): ProjectTag =
         delete(projectTagId, ProjectTagDeleteParams.none(), requestOptions)
 
@@ -153,14 +153,14 @@ interface ProjectTagServiceAsync {
         ): HttpResponseFor<ProjectTag> =
             retrieve(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: ProjectTagRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTag>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             projectTagId: String,
@@ -180,14 +180,14 @@ interface ProjectTagServiceAsync {
         ): HttpResponseFor<ProjectTag> =
             update(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             params: ProjectTagUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTag>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             projectTagId: String,
@@ -205,7 +205,7 @@ interface ProjectTagServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTagListPageAsync>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<ProjectTagListPageAsync> =
             list(ProjectTagListParams.none(), requestOptions)
@@ -222,14 +222,14 @@ interface ProjectTagServiceAsync {
         ): HttpResponseFor<ProjectTag> =
             delete(params.toBuilder().projectTagId(projectTagId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: ProjectTagDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectTag>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             projectTagId: String,

@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.AclServiceAsync
 import java.util.Objects
 
-/** @see [AclServiceAsync.list] */
+/** @see AclServiceAsync.list */
 class AclListPageAsync
 private constructor(
     private val service: AclServiceAsync,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [AclListPageResponse], but gracefully handles missing data.
      *
-     * @see [AclListPageResponse.objects]
+     * @see AclListPageResponse.objects
      */
     fun objects(): List<Acl> = response._objects().getNullable("objects") ?: emptyList()
 

@@ -32,13 +32,13 @@ interface UserService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): User = retrieve(params.toBuilder().userId(userId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: UserRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): User
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(userId: String, requestOptions: RequestOptions): User =
         retrieve(userId, UserRetrieveParams.none(), requestOptions)
 
@@ -51,7 +51,7 @@ interface UserService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): UserListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): UserListPage =
         list(UserListParams.none(), requestOptions)
 
@@ -77,14 +77,14 @@ interface UserService {
         ): HttpResponseFor<User> =
             retrieve(params.toBuilder().userId(userId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: UserRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<User>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(userId: String, requestOptions: RequestOptions): HttpResponseFor<User> =
             retrieve(userId, UserRetrieveParams.none(), requestOptions)
@@ -99,7 +99,7 @@ interface UserService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<UserListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<UserListPage> =
             list(UserListParams.none(), requestOptions)

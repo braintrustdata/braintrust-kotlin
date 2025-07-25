@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.ProjectScoreServiceAsync
 import java.util.Objects
 
-/** @see [ProjectScoreServiceAsync.list] */
+/** @see ProjectScoreServiceAsync.list */
 class ProjectScoreListPageAsync
 private constructor(
     private val service: ProjectScoreServiceAsync,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [ProjectScoreListPageResponse], but gracefully handles missing data.
      *
-     * @see [ProjectScoreListPageResponse.objects]
+     * @see ProjectScoreListPageResponse.objects
      */
     fun objects(): List<ProjectScore> = response._objects().getNullable("objects") ?: emptyList()
 

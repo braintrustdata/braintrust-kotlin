@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.RoleService
 import java.util.Objects
 
-/** @see [RoleService.list] */
+/** @see RoleService.list */
 class RoleListPage
 private constructor(
     private val service: RoleService,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [RoleListPageResponse], but gracefully handles missing data.
      *
-     * @see [RoleListPageResponse.objects]
+     * @see RoleListPageResponse.objects
      */
     fun objects(): List<Role> = response._objects().getNullable("objects") ?: emptyList()
 

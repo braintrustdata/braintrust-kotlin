@@ -8,7 +8,7 @@ import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.UserServiceAsync
 import java.util.Objects
 
-/** @see [UserServiceAsync.list] */
+/** @see UserServiceAsync.list */
 class UserListPageAsync
 private constructor(
     private val service: UserServiceAsync,
@@ -19,7 +19,7 @@ private constructor(
     /**
      * Delegates to [UserListPageResponse], but gracefully handles missing data.
      *
-     * @see [UserListPageResponse.objects]
+     * @see UserListPageResponse.objects
      */
     fun objects(): List<User> = response._objects().getNullable("objects") ?: emptyList()
 

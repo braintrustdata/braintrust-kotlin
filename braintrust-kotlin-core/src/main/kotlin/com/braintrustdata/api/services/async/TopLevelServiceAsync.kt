@@ -28,7 +28,7 @@ interface TopLevelServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): String
 
-    /** @see [helloWorld] */
+    /** @see helloWorld */
     suspend fun helloWorld(requestOptions: RequestOptions): String =
         helloWorld(TopLevelHelloWorldParams.none(), requestOptions)
 
@@ -56,7 +56,7 @@ interface TopLevelServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<String>
 
-        /** @see [helloWorld] */
+        /** @see helloWorld */
         @MustBeClosed
         suspend fun helloWorld(requestOptions: RequestOptions): HttpResponseFor<String> =
             helloWorld(TopLevelHelloWorldParams.none(), requestOptions)

@@ -44,13 +44,13 @@ interface ApiKeyService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKey = retrieve(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: ApiKeyRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKey
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(apiKeyId: String, requestOptions: RequestOptions): ApiKey =
         retrieve(apiKeyId, ApiKeyRetrieveParams.none(), requestOptions)
 
@@ -63,7 +63,7 @@ interface ApiKeyService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKeyListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): ApiKeyListPage =
         list(ApiKeyListParams.none(), requestOptions)
 
@@ -74,13 +74,13 @@ interface ApiKeyService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKey = delete(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: ApiKeyDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ApiKey
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(apiKeyId: String, requestOptions: RequestOptions): ApiKey =
         delete(apiKeyId, ApiKeyDeleteParams.none(), requestOptions)
 
@@ -116,14 +116,14 @@ interface ApiKeyService {
         ): HttpResponseFor<ApiKey> =
             retrieve(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: ApiKeyRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ApiKey>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(apiKeyId: String, requestOptions: RequestOptions): HttpResponseFor<ApiKey> =
             retrieve(apiKeyId, ApiKeyRetrieveParams.none(), requestOptions)
@@ -138,7 +138,7 @@ interface ApiKeyService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ApiKeyListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ApiKeyListPage> =
             list(ApiKeyListParams.none(), requestOptions)
@@ -155,14 +155,14 @@ interface ApiKeyService {
         ): HttpResponseFor<ApiKey> =
             delete(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: ApiKeyDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ApiKey>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(apiKeyId: String, requestOptions: RequestOptions): HttpResponseFor<ApiKey> =
             delete(apiKeyId, ApiKeyDeleteParams.none(), requestOptions)

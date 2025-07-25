@@ -45,13 +45,13 @@ interface PromptServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt = retrieve(params.toBuilder().promptId(promptId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: PromptRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(promptId: String, requestOptions: RequestOptions): Prompt =
         retrieve(promptId, PromptRetrieveParams.none(), requestOptions)
 
@@ -66,13 +66,13 @@ interface PromptServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt = update(params.toBuilder().promptId(promptId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(
         params: PromptUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(promptId: String, requestOptions: RequestOptions): Prompt =
         update(promptId, PromptUpdateParams.none(), requestOptions)
 
@@ -85,7 +85,7 @@ interface PromptServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): PromptListPageAsync
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): PromptListPageAsync =
         list(PromptListParams.none(), requestOptions)
 
@@ -96,13 +96,13 @@ interface PromptServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt = delete(params.toBuilder().promptId(promptId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: PromptDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Prompt
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(promptId: String, requestOptions: RequestOptions): Prompt =
         delete(promptId, PromptDeleteParams.none(), requestOptions)
 
@@ -151,14 +151,14 @@ interface PromptServiceAsync {
         ): HttpResponseFor<Prompt> =
             retrieve(params.toBuilder().promptId(promptId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: PromptRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Prompt>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             promptId: String,
@@ -177,14 +177,14 @@ interface PromptServiceAsync {
         ): HttpResponseFor<Prompt> =
             update(params.toBuilder().promptId(promptId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             params: PromptUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Prompt>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             promptId: String,
@@ -201,7 +201,7 @@ interface PromptServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<PromptListPageAsync>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<PromptListPageAsync> =
             list(PromptListParams.none(), requestOptions)
@@ -218,14 +218,14 @@ interface PromptServiceAsync {
         ): HttpResponseFor<Prompt> =
             delete(params.toBuilder().promptId(promptId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: PromptDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Prompt>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             promptId: String,

@@ -45,13 +45,13 @@ interface SpanIframeServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIFrame = retrieve(params.toBuilder().spanIframeId(spanIframeId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(
         params: SpanIframeRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIFrame
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     suspend fun retrieve(spanIframeId: String, requestOptions: RequestOptions): SpanIFrame =
         retrieve(spanIframeId, SpanIframeRetrieveParams.none(), requestOptions)
 
@@ -66,13 +66,13 @@ interface SpanIframeServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIFrame = update(params.toBuilder().spanIframeId(spanIframeId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(
         params: SpanIframeUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIFrame
 
-    /** @see [update] */
+    /** @see update */
     suspend fun update(spanIframeId: String, requestOptions: RequestOptions): SpanIFrame =
         update(spanIframeId, SpanIframeUpdateParams.none(), requestOptions)
 
@@ -85,7 +85,7 @@ interface SpanIframeServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIframeListPageAsync
 
-    /** @see [list] */
+    /** @see list */
     suspend fun list(requestOptions: RequestOptions): SpanIframeListPageAsync =
         list(SpanIframeListParams.none(), requestOptions)
 
@@ -96,13 +96,13 @@ interface SpanIframeServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIFrame = delete(params.toBuilder().spanIframeId(spanIframeId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(
         params: SpanIframeDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SpanIFrame
 
-    /** @see [delete] */
+    /** @see delete */
     suspend fun delete(spanIframeId: String, requestOptions: RequestOptions): SpanIFrame =
         delete(spanIframeId, SpanIframeDeleteParams.none(), requestOptions)
 
@@ -152,14 +152,14 @@ interface SpanIframeServiceAsync {
         ): HttpResponseFor<SpanIFrame> =
             retrieve(params.toBuilder().spanIframeId(spanIframeId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             params: SpanIframeRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<SpanIFrame>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         suspend fun retrieve(
             spanIframeId: String,
@@ -179,14 +179,14 @@ interface SpanIframeServiceAsync {
         ): HttpResponseFor<SpanIFrame> =
             update(params.toBuilder().spanIframeId(spanIframeId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             params: SpanIframeUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<SpanIFrame>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         suspend fun update(
             spanIframeId: String,
@@ -204,7 +204,7 @@ interface SpanIframeServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<SpanIframeListPageAsync>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         suspend fun list(requestOptions: RequestOptions): HttpResponseFor<SpanIframeListPageAsync> =
             list(SpanIframeListParams.none(), requestOptions)
@@ -221,14 +221,14 @@ interface SpanIframeServiceAsync {
         ): HttpResponseFor<SpanIFrame> =
             delete(params.toBuilder().spanIframeId(spanIframeId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             params: SpanIframeDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<SpanIFrame>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         suspend fun delete(
             spanIframeId: String,

@@ -45,7 +45,7 @@ interface ViewService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): View = retrieve(params.toBuilder().viewId(viewId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: ViewRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -62,7 +62,7 @@ interface ViewService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): View = update(params.toBuilder().viewId(viewId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: ViewUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -84,7 +84,7 @@ interface ViewService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): View = delete(params.toBuilder().viewId(viewId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: ViewDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -131,7 +131,7 @@ interface ViewService {
         ): HttpResponseFor<View> =
             retrieve(params.toBuilder().viewId(viewId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: ViewRetrieveParams,
@@ -149,7 +149,7 @@ interface ViewService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<View> = update(params.toBuilder().viewId(viewId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             params: ViewUpdateParams,
@@ -177,7 +177,7 @@ interface ViewService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<View> = delete(params.toBuilder().viewId(viewId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: ViewDeleteParams,

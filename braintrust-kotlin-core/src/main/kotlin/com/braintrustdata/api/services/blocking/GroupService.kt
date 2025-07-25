@@ -45,13 +45,13 @@ interface GroupService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group = retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: GroupRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(groupId: String, requestOptions: RequestOptions): Group =
         retrieve(groupId, GroupRetrieveParams.none(), requestOptions)
 
@@ -66,13 +66,13 @@ interface GroupService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group = update(params.toBuilder().groupId(groupId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: GroupUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
 
-    /** @see [update] */
+    /** @see update */
     fun update(groupId: String, requestOptions: RequestOptions): Group =
         update(groupId, GroupUpdateParams.none(), requestOptions)
 
@@ -85,7 +85,7 @@ interface GroupService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): GroupListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): GroupListPage =
         list(GroupListParams.none(), requestOptions)
 
@@ -96,13 +96,13 @@ interface GroupService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group = delete(params.toBuilder().groupId(groupId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: GroupDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(groupId: String, requestOptions: RequestOptions): Group =
         delete(groupId, GroupDeleteParams.none(), requestOptions)
 
@@ -147,14 +147,14 @@ interface GroupService {
         ): HttpResponseFor<Group> =
             retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: GroupRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Group>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(groupId: String, requestOptions: RequestOptions): HttpResponseFor<Group> =
             retrieve(groupId, GroupRetrieveParams.none(), requestOptions)
@@ -171,14 +171,14 @@ interface GroupService {
         ): HttpResponseFor<Group> =
             update(params.toBuilder().groupId(groupId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             params: GroupUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Group>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(groupId: String, requestOptions: RequestOptions): HttpResponseFor<Group> =
             update(groupId, GroupUpdateParams.none(), requestOptions)
@@ -193,7 +193,7 @@ interface GroupService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<GroupListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<GroupListPage> =
             list(GroupListParams.none(), requestOptions)
@@ -210,14 +210,14 @@ interface GroupService {
         ): HttpResponseFor<Group> =
             delete(params.toBuilder().groupId(groupId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: GroupDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Group>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(groupId: String, requestOptions: RequestOptions): HttpResponseFor<Group> =
             delete(groupId, GroupDeleteParams.none(), requestOptions)
