@@ -67,8 +67,10 @@ private constructor(
     /** Type of table that the view corresponds to. */
     fun viewType(): ViewType? = viewType
 
+    /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
 
+    /** Additional query param to send with the request. */
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
