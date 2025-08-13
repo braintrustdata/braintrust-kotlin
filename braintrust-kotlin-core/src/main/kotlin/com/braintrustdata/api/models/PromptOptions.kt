@@ -353,10 +353,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Params && openaiModel == other.openaiModel && anthropicModel == other.anthropicModel && googleModel == other.googleModel && windowAiModel == other.windowAiModel && jsCompletion == other.jsCompletion /* spotless:on */
+            return other is Params &&
+                openaiModel == other.openaiModel &&
+                anthropicModel == other.anthropicModel &&
+                googleModel == other.googleModel &&
+                windowAiModel == other.windowAiModel &&
+                jsCompletion == other.jsCompletion
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(openaiModel, anthropicModel, googleModel, windowAiModel, jsCompletion) /* spotless:on */
+        override fun hashCode(): Int =
+            Objects.hash(openaiModel, anthropicModel, googleModel, windowAiModel, jsCompletion)
 
         override fun toString(): String =
             when {
@@ -1200,10 +1206,12 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is FunctionCall && unionMember0 == other.unionMember0 && function == other.function /* spotless:on */
+                    return other is FunctionCall &&
+                        unionMember0 == other.unionMember0 &&
+                        function == other.function
                 }
 
-                override fun hashCode(): Int = /* spotless:off */ Objects.hash(unionMember0, function) /* spotless:on */
+                override fun hashCode(): Int = Objects.hash(unionMember0, function)
 
                 override fun toString(): String =
                     when {
@@ -1420,7 +1428,7 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is UnionMember0 && value == other.value /* spotless:on */
+                        return other is UnionMember0 && value == other.value
                     }
 
                     override fun hashCode() = value.hashCode()
@@ -1577,12 +1585,12 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Function && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+                        return other is Function &&
+                            name == other.name &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    /* spotless:off */
                     private val hashCode: Int by lazy { Objects.hash(name, additionalProperties) }
-                    /* spotless:on */
 
                     override fun hashCode(): Int = hashCode
 
@@ -1723,7 +1731,7 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is ReasoningEffort && value == other.value /* spotless:on */
+                    return other is ReasoningEffort && value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -1828,10 +1836,13 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is ResponseFormat && jsonObject == other.jsonObject && jsonSchema == other.jsonSchema && text == other.text /* spotless:on */
+                    return other is ResponseFormat &&
+                        jsonObject == other.jsonObject &&
+                        jsonSchema == other.jsonSchema &&
+                        text == other.text
                 }
 
-                override fun hashCode(): Int = /* spotless:off */ Objects.hash(jsonObject, jsonSchema, text) /* spotless:on */
+                override fun hashCode(): Int = Objects.hash(jsonObject, jsonSchema, text)
 
                 override fun toString(): String =
                     when {
@@ -2195,7 +2206,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+                            return other is Type && value == other.value
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -2208,12 +2219,12 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is JsonObject && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                        return other is JsonObject &&
+                            type == other.type &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    /* spotless:off */
                     private val hashCode: Int by lazy { Objects.hash(type, additionalProperties) }
-                    /* spotless:on */
 
                     override fun hashCode(): Int = hashCode
 
@@ -2762,10 +2773,12 @@ private constructor(
                                     return true
                                 }
 
-                                return /* spotless:off */ other is Schema && object_ == other.object_ && string == other.string /* spotless:on */
+                                return other is Schema &&
+                                    object_ == other.object_ &&
+                                    string == other.string
                             }
 
-                            override fun hashCode(): Int = /* spotless:off */ Objects.hash(object_, string) /* spotless:on */
+                            override fun hashCode(): Int = Objects.hash(object_, string)
 
                             override fun toString(): String =
                                 when {
@@ -2960,12 +2973,13 @@ private constructor(
                                         return true
                                     }
 
-                                    return /* spotless:off */ other is Object && additionalProperties == other.additionalProperties /* spotless:on */
+                                    return other is Object &&
+                                        additionalProperties == other.additionalProperties
                                 }
 
-                                /* spotless:off */
-                                private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-                                /* spotless:on */
+                                private val hashCode: Int by lazy {
+                                    Objects.hash(additionalProperties)
+                                }
 
                                 override fun hashCode(): Int = hashCode
 
@@ -2979,12 +2993,17 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is InnerJsonSchema && name == other.name && description == other.description && schema == other.schema && strict == other.strict && additionalProperties == other.additionalProperties /* spotless:on */
+                            return other is InnerJsonSchema &&
+                                name == other.name &&
+                                description == other.description &&
+                                schema == other.schema &&
+                                strict == other.strict &&
+                                additionalProperties == other.additionalProperties
                         }
 
-                        /* spotless:off */
-                        private val hashCode: Int by lazy { Objects.hash(name, description, schema, strict, additionalProperties) }
-                        /* spotless:on */
+                        private val hashCode: Int by lazy {
+                            Objects.hash(name, description, schema, strict, additionalProperties)
+                        }
 
                         override fun hashCode(): Int = hashCode
 
@@ -3111,7 +3130,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+                            return other is Type && value == other.value
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -3124,12 +3143,15 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is JsonSchema && jsonSchema == other.jsonSchema && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                        return other is JsonSchema &&
+                            jsonSchema == other.jsonSchema &&
+                            type == other.type &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    /* spotless:off */
-                    private val hashCode: Int by lazy { Objects.hash(jsonSchema, type, additionalProperties) }
-                    /* spotless:on */
+                    private val hashCode: Int by lazy {
+                        Objects.hash(jsonSchema, type, additionalProperties)
+                    }
 
                     override fun hashCode(): Int = hashCode
 
@@ -3397,7 +3419,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+                            return other is Type && value == other.value
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -3410,12 +3432,12 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                        return other is Text &&
+                            type == other.type &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    /* spotless:off */
                     private val hashCode: Int by lazy { Objects.hash(type, additionalProperties) }
-                    /* spotless:on */
 
                     override fun hashCode(): Int = hashCode
 
@@ -3506,10 +3528,12 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is ToolChoice && unionMember0 == other.unionMember0 && function == other.function /* spotless:on */
+                    return other is ToolChoice &&
+                        unionMember0 == other.unionMember0 &&
+                        function == other.function
                 }
 
-                override fun hashCode(): Int = /* spotless:off */ Objects.hash(unionMember0, function) /* spotless:on */
+                override fun hashCode(): Int = Objects.hash(unionMember0, function)
 
                 override fun toString(): String =
                     when {
@@ -3732,7 +3756,7 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is UnionMember0 && value == other.value /* spotless:on */
+                        return other is UnionMember0 && value == other.value
                     }
 
                     override fun hashCode() = value.hashCode()
@@ -4077,12 +4101,14 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is InnerFunction && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+                            return other is InnerFunction &&
+                                name == other.name &&
+                                additionalProperties == other.additionalProperties
                         }
 
-                        /* spotless:off */
-                        private val hashCode: Int by lazy { Objects.hash(name, additionalProperties) }
-                        /* spotless:on */
+                        private val hashCode: Int by lazy {
+                            Objects.hash(name, additionalProperties)
+                        }
 
                         override fun hashCode(): Int = hashCode
 
@@ -4209,7 +4235,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+                            return other is Type && value == other.value
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -4222,12 +4248,15 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Function && function == other.function && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                        return other is Function &&
+                            function == other.function &&
+                            type == other.type &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    /* spotless:off */
-                    private val hashCode: Int by lazy { Objects.hash(function, type, additionalProperties) }
-                    /* spotless:on */
+                    private val hashCode: Int by lazy {
+                        Objects.hash(function, type, additionalProperties)
+                    }
 
                     override fun hashCode(): Int = hashCode
 
@@ -4241,12 +4270,41 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is OpenAIModelParams && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && n == other.n && presencePenalty == other.presencePenalty && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && stop == other.stop && temperature == other.temperature && toolChoice == other.toolChoice && topP == other.topP && useCache == other.useCache && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is OpenAIModelParams &&
+                    frequencyPenalty == other.frequencyPenalty &&
+                    functionCall == other.functionCall &&
+                    maxCompletionTokens == other.maxCompletionTokens &&
+                    maxTokens == other.maxTokens &&
+                    n == other.n &&
+                    presencePenalty == other.presencePenalty &&
+                    reasoningEffort == other.reasoningEffort &&
+                    responseFormat == other.responseFormat &&
+                    stop == other.stop &&
+                    temperature == other.temperature &&
+                    toolChoice == other.toolChoice &&
+                    topP == other.topP &&
+                    useCache == other.useCache &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(frequencyPenalty, functionCall, maxCompletionTokens, maxTokens, n, presencePenalty, reasoningEffort, responseFormat, stop, temperature, toolChoice, topP, useCache, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    frequencyPenalty,
+                    functionCall,
+                    maxCompletionTokens,
+                    maxTokens,
+                    n,
+                    presencePenalty,
+                    reasoningEffort,
+                    responseFormat,
+                    stop,
+                    temperature,
+                    toolChoice,
+                    topP,
+                    useCache,
+                    additionalProperties,
+                )
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -4646,12 +4704,29 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is AnthropicModelParams && maxTokens == other.maxTokens && temperature == other.temperature && maxTokensToSample == other.maxTokensToSample && stopSequences == other.stopSequences && topK == other.topK && topP == other.topP && useCache == other.useCache && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is AnthropicModelParams &&
+                    maxTokens == other.maxTokens &&
+                    temperature == other.temperature &&
+                    maxTokensToSample == other.maxTokensToSample &&
+                    stopSequences == other.stopSequences &&
+                    topK == other.topK &&
+                    topP == other.topP &&
+                    useCache == other.useCache &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(maxTokens, temperature, maxTokensToSample, stopSequences, topK, topP, useCache, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    maxTokens,
+                    temperature,
+                    maxTokensToSample,
+                    stopSequences,
+                    topK,
+                    topP,
+                    useCache,
+                    additionalProperties,
+                )
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -4936,12 +5011,25 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is GoogleModelParams && maxOutputTokens == other.maxOutputTokens && temperature == other.temperature && topK == other.topK && topP == other.topP && useCache == other.useCache && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is GoogleModelParams &&
+                    maxOutputTokens == other.maxOutputTokens &&
+                    temperature == other.temperature &&
+                    topK == other.topK &&
+                    topP == other.topP &&
+                    useCache == other.useCache &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(maxOutputTokens, temperature, topK, topP, useCache, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    maxOutputTokens,
+                    temperature,
+                    topK,
+                    topP,
+                    useCache,
+                    additionalProperties,
+                )
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -5156,12 +5244,16 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is WindowAiModelParams && temperature == other.temperature && topK == other.topK && useCache == other.useCache && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is WindowAiModelParams &&
+                    temperature == other.temperature &&
+                    topK == other.topK &&
+                    useCache == other.useCache &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(temperature, topK, useCache, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(temperature, topK, useCache, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -5303,12 +5395,12 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is JsCompletionParams && useCache == other.useCache && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is JsCompletionParams &&
+                    useCache == other.useCache &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(useCache, additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -5322,12 +5414,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is PromptOptions && model == other.model && params == other.params && position == other.position && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is PromptOptions &&
+            model == other.model &&
+            params == other.params &&
+            position == other.position &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(model, params, position, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(model, params, position, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 
