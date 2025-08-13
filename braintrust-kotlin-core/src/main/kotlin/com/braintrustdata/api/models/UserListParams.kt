@@ -406,10 +406,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Email && string == other.string && strings == other.strings /* spotless:on */
+            return other is Email && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
         override fun toString(): String =
             when {
@@ -468,10 +468,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FamilyName && string == other.string && strings == other.strings /* spotless:on */
+            return other is FamilyName && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
         override fun toString(): String =
             when {
@@ -532,10 +532,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is GivenName && string == other.string && strings == other.strings /* spotless:on */
+            return other is GivenName && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
         override fun toString(): String =
             when {
@@ -596,10 +596,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Ids && string == other.string && strings == other.strings /* spotless:on */
+            return other is Ids && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
         override fun toString(): String =
             when {
@@ -629,10 +629,32 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is UserListParams && email == other.email && endingBefore == other.endingBefore && familyName == other.familyName && givenName == other.givenName && ids == other.ids && limit == other.limit && orgName == other.orgName && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is UserListParams &&
+            email == other.email &&
+            endingBefore == other.endingBefore &&
+            familyName == other.familyName &&
+            givenName == other.givenName &&
+            ids == other.ids &&
+            limit == other.limit &&
+            orgName == other.orgName &&
+            startingAfter == other.startingAfter &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(email, endingBefore, familyName, givenName, ids, limit, orgName, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            email,
+            endingBefore,
+            familyName,
+            givenName,
+            ids,
+            limit,
+            orgName,
+            startingAfter,
+            additionalHeaders,
+            additionalQueryParams,
+        )
 
     override fun toString() =
         "UserListParams{email=$email, endingBefore=$endingBefore, familyName=$familyName, givenName=$givenName, ids=$ids, limit=$limit, orgName=$orgName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
