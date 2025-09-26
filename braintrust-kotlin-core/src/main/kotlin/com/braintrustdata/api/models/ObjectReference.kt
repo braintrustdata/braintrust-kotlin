@@ -18,6 +18,7 @@ import java.util.Objects
 
 /** Indicates the event was copied from another object. */
 class ObjectReference
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val _xactId: JsonField<String>,

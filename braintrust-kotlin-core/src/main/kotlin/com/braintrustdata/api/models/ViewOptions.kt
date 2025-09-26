@@ -18,6 +18,7 @@ import java.util.Objects
 
 /** Options for the view in the app */
 class ViewOptions
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val columnOrder: JsonField<List<String>>,
     private val columnSizing: JsonField<ColumnSizing>,

@@ -17,6 +17,7 @@ import java.util.Collections
 import java.util.Objects
 
 class ChatCompletionContentPartImage
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val imageUrl: JsonField<ImageUrl>,
     private val type: JsonField<Type>,
@@ -186,6 +187,7 @@ private constructor(
         (imageUrl.asKnown()?.validity() ?: 0) + (type.asKnown()?.validity() ?: 0)
 
     class ImageUrl
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val url: JsonField<String>,
         private val detail: JsonField<Detail>,

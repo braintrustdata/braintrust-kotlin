@@ -30,6 +30,7 @@ import java.util.Collections
 import java.util.Objects
 
 class PromptOptions
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val model: JsonField<String>,
     private val params: JsonField<Params>,
@@ -478,6 +479,7 @@ private constructor(
         }
 
         class OpenAIModelParams
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val frequencyPenalty: JsonField<Double>,
             private val functionCall: JsonField<FunctionCall>,
@@ -1437,6 +1439,7 @@ private constructor(
                 }
 
                 class Function
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val name: JsonField<String>,
                     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1944,6 +1947,7 @@ private constructor(
                 }
 
                 class JsonObject
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val type: JsonField<Type>,
                     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -2233,6 +2237,7 @@ private constructor(
                 }
 
                 class JsonSchema
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val jsonSchema: JsonField<InnerJsonSchema>,
                     private val type: JsonField<Type>,
@@ -2419,6 +2424,7 @@ private constructor(
                         (jsonSchema.asKnown()?.validity() ?: 0) + (type.asKnown()?.validity() ?: 0)
 
                     class InnerJsonSchema
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val name: JsonField<String>,
                         private val description: JsonField<String>,
@@ -3160,6 +3166,7 @@ private constructor(
                 }
 
                 class Text
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val type: JsonField<Type>,
                     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -3765,6 +3772,7 @@ private constructor(
                 }
 
                 class Function
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val function: JsonField<InnerFunction>,
                     private val type: JsonField<Type>,
@@ -3950,6 +3958,7 @@ private constructor(
                         (function.asKnown()?.validity() ?: 0) + (type.asKnown()?.validity() ?: 0)
 
                     class InnerFunction
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val name: JsonField<String>,
                         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -4313,6 +4322,7 @@ private constructor(
         }
 
         class AnthropicModelParams
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val maxTokens: JsonField<Double>,
             private val temperature: JsonField<Double>,
@@ -4735,6 +4745,7 @@ private constructor(
         }
 
         class GoogleModelParams
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val maxOutputTokens: JsonField<Double>,
             private val temperature: JsonField<Double>,
@@ -5038,6 +5049,7 @@ private constructor(
         }
 
         class WindowAiModelParams
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val temperature: JsonField<Double>,
             private val topK: JsonField<Double>,
@@ -5262,6 +5274,7 @@ private constructor(
         }
 
         class JsCompletionParams
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val useCache: JsonField<Boolean>,
             private val additionalProperties: MutableMap<String, JsonValue>,

@@ -820,6 +820,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Data>,
         private val projectId: JsonField<String>,
@@ -1955,6 +1956,7 @@ private constructor(
 
         /** Dataset id */
         class DatasetId
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val datasetId: JsonField<String>,
             private val _internalBtql: JsonField<_InternalBtql>,
@@ -2268,6 +2270,7 @@ private constructor(
 
         /** Project and dataset name */
         class ProjectDatasetName
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val datasetName: JsonField<String>,
             private val projectName: JsonField<String>,
@@ -2625,6 +2628,7 @@ private constructor(
 
         /** Dataset rows */
         class DatasetRows
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val data: JsonField<List<JsonValue?>>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -3107,6 +3111,7 @@ private constructor(
 
         /** Function id */
         class FunctionId
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val functionId: JsonField<String>,
             private val version: JsonField<String>,
@@ -3316,6 +3321,7 @@ private constructor(
 
         /** Project name and slug */
         class ProjectSlug
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val projectName: JsonField<String>,
             private val slug: JsonField<String>,
@@ -3563,6 +3569,7 @@ private constructor(
 
         /** Global function name */
         class GlobalFunction
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val globalFunction: JsonField<String>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -3737,6 +3744,7 @@ private constructor(
 
         /** Prompt session id */
         class PromptSessionId
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val promptSessionFunctionId: JsonField<String>,
             private val promptSessionId: JsonField<String>,
@@ -3999,6 +4007,7 @@ private constructor(
 
         /** Inline code function */
         class InlineCode
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val code: JsonField<String>,
             private val inlineContext: JsonField<InlineContext>,
@@ -4219,6 +4228,7 @@ private constructor(
                     (if (name.asKnown() == null) 0 else 1)
 
             class InlineContext
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val runtime: JsonField<Runtime>,
                 private val version: JsonField<String>,
@@ -4577,6 +4587,7 @@ private constructor(
 
         /** Inline prompt definition */
         class InlinePrompt
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val inlinePrompt: JsonField<PromptData>,
             private val name: JsonField<String>,
@@ -5088,6 +5099,7 @@ private constructor(
 
         /** Function id */
         class FunctionId
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val functionId: JsonField<String>,
             private val version: JsonField<String>,
@@ -5297,6 +5309,7 @@ private constructor(
 
         /** Project name and slug */
         class ProjectSlug
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val projectName: JsonField<String>,
             private val slug: JsonField<String>,
@@ -5544,6 +5557,7 @@ private constructor(
 
         /** Global function name */
         class GlobalFunction
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val globalFunction: JsonField<String>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -5718,6 +5732,7 @@ private constructor(
 
         /** Prompt session id */
         class PromptSessionId
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val promptSessionFunctionId: JsonField<String>,
             private val promptSessionId: JsonField<String>,
@@ -5980,6 +5995,7 @@ private constructor(
 
         /** Inline code function */
         class InlineCode
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val code: JsonField<String>,
             private val inlineContext: JsonField<InlineContext>,
@@ -6200,6 +6216,7 @@ private constructor(
                     (if (name.asKnown() == null) 0 else 1)
 
             class InlineContext
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val runtime: JsonField<Runtime>,
                 private val version: JsonField<String>,
@@ -6558,6 +6575,7 @@ private constructor(
 
         /** Inline prompt definition */
         class InlinePrompt
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val inlinePrompt: JsonField<PromptData>,
             private val name: JsonField<String>,
@@ -6768,6 +6786,7 @@ private constructor(
      * fields allowed in org-level settings.
      */
     class GitMetadataSettings
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val collect: JsonField<Collect>,
         private val fields: JsonField<List<Field>>,
@@ -7556,6 +7575,7 @@ private constructor(
 
         /** Span parent properties */
         class SpanParentStruct
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val objectId: JsonField<String>,
             private val objectType: JsonField<ObjectType>,
@@ -8069,6 +8089,7 @@ private constructor(
 
             /** Identifiers for the row to to log a subspan under */
             class RowIds
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val id: JsonField<String>,
                 private val rootSpanId: JsonField<String>,

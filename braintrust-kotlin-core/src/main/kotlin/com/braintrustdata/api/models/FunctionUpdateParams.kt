@@ -391,6 +391,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val description: JsonField<String>,
         private val functionData: JsonField<FunctionData>,
@@ -915,6 +916,7 @@ private constructor(
         }
 
         class Prompt
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val type: JsonField<Type>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1193,6 +1195,7 @@ private constructor(
         }
 
         class Code
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val data: JsonField<Data>,
             private val type: JsonField<Type>,
@@ -1546,6 +1549,7 @@ private constructor(
                 }
 
                 class Bundle
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val bundleId: JsonField<String>,
                     private val location: JsonField<CodeBundle.Location>,
@@ -2037,6 +2041,7 @@ private constructor(
                 }
 
                 class Inline
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val code: JsonField<String>,
                     private val runtimeContext: JsonField<RuntimeContext>,
@@ -2262,6 +2267,7 @@ private constructor(
                             (type.asKnown()?.validity() ?: 0)
 
                     class RuntimeContext
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val runtime: JsonField<Runtime>,
                         private val version: JsonField<String>,
@@ -2906,6 +2912,7 @@ private constructor(
         }
 
         class Global
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val name: JsonField<String>,
             private val type: JsonField<Type>,

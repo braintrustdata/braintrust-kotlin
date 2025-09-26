@@ -17,6 +17,7 @@ import java.util.Collections
 import java.util.Objects
 
 class FeedbackResponseSchema
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val status: JsonField<Status>,
     private val additionalProperties: MutableMap<String, JsonValue>,

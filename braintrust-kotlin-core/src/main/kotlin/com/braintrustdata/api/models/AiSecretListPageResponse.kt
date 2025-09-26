@@ -18,6 +18,7 @@ import java.util.Collections
 import java.util.Objects
 
 class AiSecretListPageResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val objects: JsonField<List<AISecret>>,
     private val additionalProperties: MutableMap<String, JsonValue>,

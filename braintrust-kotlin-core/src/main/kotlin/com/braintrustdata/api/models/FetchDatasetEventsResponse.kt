@@ -18,6 +18,7 @@ import java.util.Collections
 import java.util.Objects
 
 class FetchDatasetEventsResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val events: JsonField<List<DatasetEvent>>,
     private val cursor: JsonField<String>,
