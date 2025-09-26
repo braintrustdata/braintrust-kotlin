@@ -2,51 +2,216 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
-import com.fasterxml.jackson.annotation.JsonCreator
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
 
+/** Get a view object by its id */
 class ViewRetrieveParams
-constructor(
-    private val viewId: String,
+private constructor(
+    private val viewId: String?,
     private val objectId: String,
-    private val objectType: ObjectType,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-) {
+    private val objectType: AclObjectType,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun viewId(): String = viewId
+    /** View id */
+    fun viewId(): String? = viewId
 
+    /** The id of the object the ACL applies to */
     fun objectId(): String = objectId
 
-    fun objectType(): ObjectType = objectType
+    /** The object type that the ACL applies to */
+    fun objectType(): AclObjectType = objectType
 
-    internal fun getQueryParams(): Map<String, List<String>> {
-        val params = mutableMapOf<String, List<String>>()
-        this.objectId.let { params.put("object_id", listOf(it.toString())) }
-        this.objectType.let { params.put("object_type", listOf(it.toString())) }
-        params.putAll(additionalQueryParams)
-        return params.toUnmodifiable()
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [ViewRetrieveParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .objectId()
+         * .objectType()
+         * ```
+         */
+        fun builder() = Builder()
     }
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+    /** A builder for [ViewRetrieveParams]. */
+    class Builder internal constructor() {
 
-    fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> viewId
+        private var viewId: String? = null
+        private var objectId: String? = null
+        private var objectType: AclObjectType? = null
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
+
+        internal fun from(viewRetrieveParams: ViewRetrieveParams) = apply {
+            viewId = viewRetrieveParams.viewId
+            objectId = viewRetrieveParams.objectId
+            objectType = viewRetrieveParams.objectType
+            additionalHeaders = viewRetrieveParams.additionalHeaders.toBuilder()
+            additionalQueryParams = viewRetrieveParams.additionalQueryParams.toBuilder()
+        }
+
+        /** View id */
+        fun viewId(viewId: String?) = apply { this.viewId = viewId }
+
+        /** The id of the object the ACL applies to */
+        fun objectId(objectId: String) = apply { this.objectId = objectId }
+
+        /** The object type that the ACL applies to */
+        fun objectType(objectType: AclObjectType) = apply { this.objectType = objectType }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [ViewRetrieveParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .objectId()
+         * .objectType()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): ViewRetrieveParams =
+            ViewRetrieveParams(
+                viewId,
+                checkRequired("objectId", objectId),
+                checkRequired("objectType", objectType),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> viewId ?: ""
             else -> ""
         }
-    }
 
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
+    override fun _headers(): Headers = additionalHeaders
 
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                put("object_id", objectId)
+                put("object_type", objectType.toString())
+                putAll(additionalQueryParams)
+            }
+            .build()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -54,217 +219,16 @@ constructor(
         }
 
         return other is ViewRetrieveParams &&
-            this.viewId == other.viewId &&
-            this.objectId == other.objectId &&
-            this.objectType == other.objectType &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders
+            viewId == other.viewId &&
+            objectId == other.objectId &&
+            objectType == other.objectType &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            viewId,
-            objectId,
-            objectType,
-            additionalQueryParams,
-            additionalHeaders,
-        )
-    }
+    override fun hashCode(): Int =
+        Objects.hash(viewId, objectId, objectType, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "ViewRetrieveParams{viewId=$viewId, objectId=$objectId, objectType=$objectType, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
-
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    @NoAutoDetect
-    class Builder {
-
-        private var viewId: String? = null
-        private var objectId: String? = null
-        private var objectType: ObjectType? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
-
-        internal fun from(viewRetrieveParams: ViewRetrieveParams) = apply {
-            this.viewId = viewRetrieveParams.viewId
-            this.objectId = viewRetrieveParams.objectId
-            this.objectType = viewRetrieveParams.objectType
-            additionalQueryParams(viewRetrieveParams.additionalQueryParams)
-            additionalHeaders(viewRetrieveParams.additionalHeaders)
-        }
-
-        /** View id */
-        fun viewId(viewId: String) = apply { this.viewId = viewId }
-
-        /** The id of the object the ACL applies to */
-        fun objectId(objectId: String) = apply { this.objectId = objectId }
-
-        /** The object type that the ACL applies to */
-        fun objectType(objectType: ObjectType) = apply { this.objectType = objectType }
-
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
-        }
-
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
-        }
-
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
-
-        fun build(): ViewRetrieveParams =
-            ViewRetrieveParams(
-                checkNotNull(viewId) { "`viewId` is required but was not set" },
-                checkNotNull(objectId) { "`objectId` is required but was not set" },
-                checkNotNull(objectType) { "`objectType` is required but was not set" },
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-            )
-    }
-
-    class ObjectType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is ObjectType && this.value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            val ORGANIZATION = ObjectType(JsonField.of("organization"))
-
-            val PROJECT = ObjectType(JsonField.of("project"))
-
-            val EXPERIMENT = ObjectType(JsonField.of("experiment"))
-
-            val DATASET = ObjectType(JsonField.of("dataset"))
-
-            val PROMPT = ObjectType(JsonField.of("prompt"))
-
-            val PROMPT_SESSION = ObjectType(JsonField.of("prompt_session"))
-
-            val GROUP = ObjectType(JsonField.of("group"))
-
-            val ROLE = ObjectType(JsonField.of("role"))
-
-            val ORG_MEMBER = ObjectType(JsonField.of("org_member"))
-
-            val PROJECT_LOG = ObjectType(JsonField.of("project_log"))
-
-            val ORG_PROJECT = ObjectType(JsonField.of("org_project"))
-
-            fun of(value: String) = ObjectType(JsonField.of(value))
-        }
-
-        enum class Known {
-            ORGANIZATION,
-            PROJECT,
-            EXPERIMENT,
-            DATASET,
-            PROMPT,
-            PROMPT_SESSION,
-            GROUP,
-            ROLE,
-            ORG_MEMBER,
-            PROJECT_LOG,
-            ORG_PROJECT,
-        }
-
-        enum class Value {
-            ORGANIZATION,
-            PROJECT,
-            EXPERIMENT,
-            DATASET,
-            PROMPT,
-            PROMPT_SESSION,
-            GROUP,
-            ROLE,
-            ORG_MEMBER,
-            PROJECT_LOG,
-            ORG_PROJECT,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                ORGANIZATION -> Value.ORGANIZATION
-                PROJECT -> Value.PROJECT
-                EXPERIMENT -> Value.EXPERIMENT
-                DATASET -> Value.DATASET
-                PROMPT -> Value.PROMPT
-                PROMPT_SESSION -> Value.PROMPT_SESSION
-                GROUP -> Value.GROUP
-                ROLE -> Value.ROLE
-                ORG_MEMBER -> Value.ORG_MEMBER
-                PROJECT_LOG -> Value.PROJECT_LOG
-                ORG_PROJECT -> Value.ORG_PROJECT
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                ORGANIZATION -> Known.ORGANIZATION
-                PROJECT -> Known.PROJECT
-                EXPERIMENT -> Known.EXPERIMENT
-                DATASET -> Known.DATASET
-                PROMPT -> Known.PROMPT
-                PROMPT_SESSION -> Known.PROMPT_SESSION
-                GROUP -> Known.GROUP
-                ROLE -> Known.ROLE
-                ORG_MEMBER -> Known.ORG_MEMBER
-                PROJECT_LOG -> Known.PROJECT_LOG
-                ORG_PROJECT -> Known.ORG_PROJECT
-                else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-    }
+        "ViewRetrieveParams{viewId=$viewId, objectId=$objectId, objectType=$objectType, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

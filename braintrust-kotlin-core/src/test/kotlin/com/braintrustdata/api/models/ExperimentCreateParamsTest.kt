@@ -2,14 +2,14 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ExperimentCreateParamsTest {
+internal class ExperimentCreateParamsTest {
 
     @Test
-    fun createExperimentCreateParams() {
+    fun create() {
         ExperimentCreateParams.builder()
             .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .baseExpId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -17,8 +17,12 @@ class ExperimentCreateParamsTest {
             .datasetVersion("dataset_version")
             .description("description")
             .ensureNew(true)
-            .metadata(ExperimentCreateParams.Metadata.builder().build())
-            .name("name")
+            .metadata(
+                ExperimentCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
+            .name("x")
             .public_(true)
             .repoInfo(
                 RepoInfo.builder()
@@ -37,7 +41,7 @@ class ExperimentCreateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             ExperimentCreateParams.builder()
                 .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -46,8 +50,12 @@ class ExperimentCreateParamsTest {
                 .datasetVersion("dataset_version")
                 .description("description")
                 .ensureNew(true)
-                .metadata(ExperimentCreateParams.Metadata.builder().build())
-                .name("name")
+                .metadata(
+                    ExperimentCreateParams.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
+                .name("x")
                 .public_(true)
                 .repoInfo(
                     RepoInfo.builder()
@@ -63,16 +71,22 @@ class ExperimentCreateParamsTest {
                         .build()
                 )
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
+
+        val body = params._body()
+
         assertThat(body.projectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(body.baseExpId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(body.datasetId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(body.datasetVersion()).isEqualTo("dataset_version")
         assertThat(body.description()).isEqualTo("description")
         assertThat(body.ensureNew()).isEqualTo(true)
-        assertThat(body.metadata()).isEqualTo(ExperimentCreateParams.Metadata.builder().build())
-        assertThat(body.name()).isEqualTo("name")
+        assertThat(body.metadata())
+            .isEqualTo(
+                ExperimentCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
+        assertThat(body.name()).isEqualTo("x")
         assertThat(body.public_()).isEqualTo(true)
         assertThat(body.repoInfo())
             .isEqualTo(
@@ -91,13 +105,14 @@ class ExperimentCreateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             ExperimentCreateParams.builder()
                 .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
+
+        val body = params._body()
+
         assertThat(body.projectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
     }
 }

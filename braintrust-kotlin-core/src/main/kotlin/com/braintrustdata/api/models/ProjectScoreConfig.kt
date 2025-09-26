@@ -2,61 +2,217 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
-@JsonDeserialize(builder = ProjectScoreConfig.Builder::class)
-@NoAutoDetect
 class ProjectScoreConfig
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
+    private val destination: JsonField<String>,
     private val multiSelect: JsonField<Boolean>,
-    private val destination: JsonField<Destination>,
     private val online: JsonField<OnlineScoreConfig>,
-    private val additionalProperties: Map<String, JsonValue>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
+    @JsonCreator
+    private constructor(
+        @JsonProperty("destination")
+        @ExcludeMissing
+        destination: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("multi_select")
+        @ExcludeMissing
+        multiSelect: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("online")
+        @ExcludeMissing
+        online: JsonField<OnlineScoreConfig> = JsonMissing.of(),
+    ) : this(destination, multiSelect, online, mutableMapOf())
 
-    private var hashCode: Int = 0
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun destination(): String? = destination.getNullable("destination")
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun multiSelect(): Boolean? = multiSelect.getNullable("multi_select")
 
-    fun destination(): Destination? = destination.getNullable("destination")
-
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun online(): OnlineScoreConfig? = online.getNullable("online")
 
-    @JsonProperty("multi_select") @ExcludeMissing fun _multiSelect() = multiSelect
+    /**
+     * Returns the raw JSON value of [destination].
+     *
+     * Unlike [destination], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("destination") @ExcludeMissing fun _destination(): JsonField<String> = destination
 
-    @JsonProperty("destination") @ExcludeMissing fun _destination() = destination
+    /**
+     * Returns the raw JSON value of [multiSelect].
+     *
+     * Unlike [multiSelect], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("multi_select")
+    @ExcludeMissing
+    fun _multiSelect(): JsonField<Boolean> = multiSelect
 
-    @JsonProperty("online") @ExcludeMissing fun _online() = online
+    /**
+     * Returns the raw JSON value of [online].
+     *
+     * Unlike [online], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("online") @ExcludeMissing fun _online(): JsonField<OnlineScoreConfig> = online
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun validate(): ProjectScoreConfig = apply {
-        if (!validated) {
-            multiSelect()
-            destination()
-            online()?.validate()
-            validated = true
-        }
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /** Returns a mutable builder for constructing an instance of [ProjectScoreConfig]. */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [ProjectScoreConfig]. */
+    class Builder internal constructor() {
+
+        private var destination: JsonField<String> = JsonMissing.of()
+        private var multiSelect: JsonField<Boolean> = JsonMissing.of()
+        private var online: JsonField<OnlineScoreConfig> = JsonMissing.of()
+        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+        internal fun from(projectScoreConfig: ProjectScoreConfig) = apply {
+            destination = projectScoreConfig.destination
+            multiSelect = projectScoreConfig.multiSelect
+            online = projectScoreConfig.online
+            additionalProperties = projectScoreConfig.additionalProperties.toMutableMap()
+        }
+
+        fun destination(destination: String?) = destination(JsonField.ofNullable(destination))
+
+        /**
+         * Sets [Builder.destination] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.destination] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun destination(destination: JsonField<String>) = apply { this.destination = destination }
+
+        fun multiSelect(multiSelect: Boolean?) = multiSelect(JsonField.ofNullable(multiSelect))
+
+        /**
+         * Alias for [Builder.multiSelect].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun multiSelect(multiSelect: Boolean) = multiSelect(multiSelect as Boolean?)
+
+        /**
+         * Sets [Builder.multiSelect] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.multiSelect] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun multiSelect(multiSelect: JsonField<Boolean>) = apply { this.multiSelect = multiSelect }
+
+        fun online(online: OnlineScoreConfig?) = online(JsonField.ofNullable(online))
+
+        /**
+         * Sets [Builder.online] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.online] with a well-typed [OnlineScoreConfig] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun online(online: JsonField<OnlineScoreConfig>) = apply { this.online = online }
+
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
+
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
+
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [ProjectScoreConfig].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
+        fun build(): ProjectScoreConfig =
+            ProjectScoreConfig(
+                destination,
+                multiSelect,
+                online,
+                additionalProperties.toMutableMap(),
+            )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ProjectScoreConfig = apply {
+        if (validated) {
+            return@apply
+        }
+
+        destination()
+        multiSelect()
+        online()?.validate()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (if (destination.asKnown() == null) 0 else 1) +
+            (if (multiSelect.asKnown() == null) 0 else 1) +
+            (online.asKnown()?.validity() ?: 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -64,138 +220,18 @@ private constructor(
         }
 
         return other is ProjectScoreConfig &&
-            this.multiSelect == other.multiSelect &&
-            this.destination == other.destination &&
-            this.online == other.online &&
-            this.additionalProperties == other.additionalProperties
+            destination == other.destination &&
+            multiSelect == other.multiSelect &&
+            online == other.online &&
+            additionalProperties == other.additionalProperties
     }
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    multiSelect,
-                    destination,
-                    online,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+    private val hashCode: Int by lazy {
+        Objects.hash(destination, multiSelect, online, additionalProperties)
     }
+
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ProjectScoreConfig{multiSelect=$multiSelect, destination=$destination, online=$online, additionalProperties=$additionalProperties}"
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    class Builder {
-
-        private var multiSelect: JsonField<Boolean> = JsonMissing.of()
-        private var destination: JsonField<Destination> = JsonMissing.of()
-        private var online: JsonField<OnlineScoreConfig> = JsonMissing.of()
-        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(projectScoreConfig: ProjectScoreConfig) = apply {
-            this.multiSelect = projectScoreConfig.multiSelect
-            this.destination = projectScoreConfig.destination
-            this.online = projectScoreConfig.online
-            additionalProperties(projectScoreConfig.additionalProperties)
-        }
-
-        fun multiSelect(multiSelect: Boolean) = multiSelect(JsonField.of(multiSelect))
-
-        @JsonProperty("multi_select")
-        @ExcludeMissing
-        fun multiSelect(multiSelect: JsonField<Boolean>) = apply { this.multiSelect = multiSelect }
-
-        fun destination(destination: Destination) = destination(JsonField.of(destination))
-
-        @JsonProperty("destination")
-        @ExcludeMissing
-        fun destination(destination: JsonField<Destination>) = apply {
-            this.destination = destination
-        }
-
-        fun online(online: OnlineScoreConfig) = online(JsonField.of(online))
-
-        @JsonProperty("online")
-        @ExcludeMissing
-        fun online(online: JsonField<OnlineScoreConfig>) = apply { this.online = online }
-
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        @JsonAnySetter
-        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
-        }
-
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        fun build(): ProjectScoreConfig =
-            ProjectScoreConfig(
-                multiSelect,
-                destination,
-                online,
-                additionalProperties.toUnmodifiable(),
-            )
-    }
-
-    class Destination
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Destination && this.value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            val EXPECTED = Destination(JsonField.of("expected"))
-
-            fun of(value: String) = Destination(JsonField.of(value))
-        }
-
-        enum class Known {
-            EXPECTED,
-        }
-
-        enum class Value {
-            EXPECTED,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                EXPECTED -> Value.EXPECTED
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                EXPECTED -> Known.EXPECTED
-                else -> throw BraintrustInvalidDataException("Unknown Destination: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-    }
+        "ProjectScoreConfig{destination=$destination, multiSelect=$multiSelect, online=$online, additionalProperties=$additionalProperties}"
 }

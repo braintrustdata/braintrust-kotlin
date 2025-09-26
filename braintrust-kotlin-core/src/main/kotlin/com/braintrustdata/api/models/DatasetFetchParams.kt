@@ -2,115 +2,121 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
 
+/**
+ * Fetch the events in a dataset. Equivalent to the POST form of the same path, but with the
+ * parameters in the URL query rather than in the request body. For more complex queries, use the
+ * `POST /btql` endpoint.
+ */
 class DatasetFetchParams
-constructor(
-    private val datasetId: String,
+private constructor(
+    private val datasetId: String?,
     private val limit: Long?,
     private val maxRootSpanId: String?,
     private val maxXactId: String?,
     private val version: String?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-) {
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun datasetId(): String = datasetId
+    /** Dataset id */
+    fun datasetId(): String? = datasetId
 
+    /**
+     * limit the number of traces fetched
+     *
+     * Fetch queries may be paginated if the total result size is expected to be large (e.g.
+     * project_logs which accumulate over a long time). Note that fetch queries only support
+     * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore, later
+     * pages may return rows which showed up in earlier pages, except with an earlier `_xact_id`.
+     * This happens because pagination occurs over the whole version history of the event log. You
+     * will most likely want to exclude any such duplicate, outdated rows (by `id`) from your
+     * combined result set.
+     *
+     * The `limit` parameter controls the number of full traces to return. So you may end up with
+     * more individual rows than the specified limit if you are fetching events containing traces.
+     */
     fun limit(): Long? = limit
 
+    /**
+     * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of the
+     * explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor' argument
+     * going forwards.
+     *
+     * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+     *
+     * Since a paginated fetch query returns results in order from latest to earliest, the cursor
+     * for the next page can be found as the row with the minimum (earliest) value of the tuple
+     * `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of paginating
+     * fetch queries.
+     */
     fun maxRootSpanId(): String? = maxRootSpanId
 
+    /**
+     * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of the
+     * explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor' argument
+     * going forwards.
+     *
+     * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+     *
+     * Since a paginated fetch query returns results in order from latest to earliest, the cursor
+     * for the next page can be found as the row with the minimum (earliest) value of the tuple
+     * `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of paginating
+     * fetch queries.
+     */
     fun maxXactId(): String? = maxXactId
 
+    /**
+     * Retrieve a snapshot of events from a past time
+     *
+     * The version id is essentially a filter on the latest event transaction id. You can use the
+     * `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
+     */
     fun version(): String? = version
 
-    internal fun getQueryParams(): Map<String, List<String>> {
-        val params = mutableMapOf<String, List<String>>()
-        this.limit?.let { params.put("limit", listOf(it.toString())) }
-        this.maxRootSpanId?.let { params.put("max_root_span_id", listOf(it.toString())) }
-        this.maxXactId?.let { params.put("max_xact_id", listOf(it.toString())) }
-        this.version?.let { params.put("version", listOf(it.toString())) }
-        params.putAll(additionalQueryParams)
-        return params.toUnmodifiable()
-    }
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> datasetId
-            else -> ""
-        }
-    }
-
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is DatasetFetchParams &&
-            this.datasetId == other.datasetId &&
-            this.limit == other.limit &&
-            this.maxRootSpanId == other.maxRootSpanId &&
-            this.maxXactId == other.maxXactId &&
-            this.version == other.version &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            datasetId,
-            limit,
-            maxRootSpanId,
-            maxXactId,
-            version,
-            additionalQueryParams,
-            additionalHeaders,
-        )
-    }
-
-    override fun toString() =
-        "DatasetFetchParams{datasetId=$datasetId, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
 
     companion object {
 
+        fun none(): DatasetFetchParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [DatasetFetchParams]. */
         fun builder() = Builder()
     }
 
-    @NoAutoDetect
-    class Builder {
+    /** A builder for [DatasetFetchParams]. */
+    class Builder internal constructor() {
 
         private var datasetId: String? = null
         private var limit: Long? = null
         private var maxRootSpanId: String? = null
         private var maxXactId: String? = null
         private var version: String? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(datasetFetchParams: DatasetFetchParams) = apply {
-            this.datasetId = datasetFetchParams.datasetId
-            this.limit = datasetFetchParams.limit
-            this.maxRootSpanId = datasetFetchParams.maxRootSpanId
-            this.maxXactId = datasetFetchParams.maxXactId
-            this.version = datasetFetchParams.version
-            additionalQueryParams(datasetFetchParams.additionalQueryParams)
-            additionalHeaders(datasetFetchParams.additionalHeaders)
+            datasetId = datasetFetchParams.datasetId
+            limit = datasetFetchParams.limit
+            maxRootSpanId = datasetFetchParams.maxRootSpanId
+            maxXactId = datasetFetchParams.maxXactId
+            version = datasetFetchParams.version
+            additionalHeaders = datasetFetchParams.additionalHeaders.toBuilder()
+            additionalQueryParams = datasetFetchParams.additionalQueryParams.toBuilder()
         }
 
         /** Dataset id */
-        fun datasetId(datasetId: String) = apply { this.datasetId = datasetId }
+        fun datasetId(datasetId: String?) = apply { this.datasetId = datasetId }
 
         /**
          * limit the number of traces fetched
@@ -127,7 +133,14 @@ constructor(
          * with more individual rows than the specified limit if you are fetching events containing
          * traces.
          */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long?) = apply { this.limit = limit }
+
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun limit(limit: Long) = limit(limit as Long?)
 
         /**
          * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
@@ -141,7 +154,7 @@ constructor(
          * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
          * paginating fetch queries.
          */
-        fun maxRootSpanId(maxRootSpanId: String) = apply { this.maxRootSpanId = maxRootSpanId }
+        fun maxRootSpanId(maxRootSpanId: String?) = apply { this.maxRootSpanId = maxRootSpanId }
 
         /**
          * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
@@ -155,7 +168,7 @@ constructor(
          * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
          * paginating fetch queries.
          */
-        fun maxXactId(maxXactId: String) = apply { this.maxXactId = maxXactId }
+        fun maxXactId(maxXactId: String?) = apply { this.maxXactId = maxXactId }
 
         /**
          * Retrieve a snapshot of events from a past time
@@ -163,57 +176,168 @@ constructor(
          * The version id is essentially a filter on the latest event transaction id. You can use
          * the `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
          */
-        fun version(version: String) = apply { this.version = version }
+        fun version(version: String?) = apply { this.version = version }
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
         }
 
         fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
             this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
+            putAllAdditionalHeaders(additionalHeaders)
         }
 
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
         }
 
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
         }
 
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
 
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [DatasetFetchParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): DatasetFetchParams =
             DatasetFetchParams(
-                checkNotNull(datasetId) { "`datasetId` is required but was not set" },
+                datasetId,
                 limit,
                 maxRootSpanId,
                 maxXactId,
                 version,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
             )
     }
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> datasetId ?: ""
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                limit?.let { put("limit", it.toString()) }
+                maxRootSpanId?.let { put("max_root_span_id", it) }
+                maxXactId?.let { put("max_xact_id", it) }
+                version?.let { put("version", it) }
+                putAll(additionalQueryParams)
+            }
+            .build()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is DatasetFetchParams &&
+            datasetId == other.datasetId &&
+            limit == other.limit &&
+            maxRootSpanId == other.maxRootSpanId &&
+            maxXactId == other.maxXactId &&
+            version == other.version &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
+    }
+
+    override fun hashCode(): Int =
+        Objects.hash(
+            datasetId,
+            limit,
+            maxRootSpanId,
+            maxXactId,
+            version,
+            additionalHeaders,
+            additionalQueryParams,
+        )
+
+    override fun toString() =
+        "DatasetFetchParams{datasetId=$datasetId, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

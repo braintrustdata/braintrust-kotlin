@@ -1,15 +1,63 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.braintrustdata.api.client
 
-import com.braintrustdata.api.models.*
-import com.braintrustdata.api.services.blocking.*
+import com.braintrustdata.api.core.ClientOptions
+import com.braintrustdata.api.services.blocking.AclService
+import com.braintrustdata.api.services.blocking.AiSecretService
+import com.braintrustdata.api.services.blocking.ApiKeyService
+import com.braintrustdata.api.services.blocking.DatasetService
+import com.braintrustdata.api.services.blocking.EnvVarService
+import com.braintrustdata.api.services.blocking.EvalService
+import com.braintrustdata.api.services.blocking.ExperimentService
+import com.braintrustdata.api.services.blocking.FunctionService
+import com.braintrustdata.api.services.blocking.GroupService
+import com.braintrustdata.api.services.blocking.OrganizationService
+import com.braintrustdata.api.services.blocking.ProjectScoreService
+import com.braintrustdata.api.services.blocking.ProjectService
+import com.braintrustdata.api.services.blocking.ProjectTagService
+import com.braintrustdata.api.services.blocking.PromptService
+import com.braintrustdata.api.services.blocking.RoleService
+import com.braintrustdata.api.services.blocking.SpanIframeService
+import com.braintrustdata.api.services.blocking.TopLevelService
+import com.braintrustdata.api.services.blocking.UserService
+import com.braintrustdata.api.services.blocking.ViewService
 
+/**
+ * A client for interacting with the Braintrust REST API synchronously. You can also switch to
+ * asynchronous execution via the [async] method.
+ *
+ * This client performs best when you create a single instance and reuse it for all interactions
+ * with the REST API. This is because each client holds its own connection pool and thread pools.
+ * Reusing connections and threads reduces latency and saves memory. The client also handles rate
+ * limiting per client. This means that creating and using multiple instances at the same time will
+ * not respect rate limits.
+ *
+ * The threads and connections that are held will be released automatically if they remain idle. But
+ * if you are writing an application that needs to aggressively release unused resources, then you
+ * may call [close].
+ */
 interface BraintrustClient {
 
+    /**
+     * Returns a version of this client that uses asynchronous execution.
+     *
+     * The returned client shares its resources, like its connection pool and thread pools, with
+     * this client.
+     */
     fun async(): BraintrustClientAsync
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: (ClientOptions.Builder) -> Unit): BraintrustClient
 
     fun topLevel(): TopLevelService
 
@@ -33,6 +81,8 @@ interface BraintrustClient {
 
     fun projectTags(): ProjectTagService
 
+    fun spanIframes(): SpanIframeService
+
     fun functions(): FunctionService
 
     fun views(): ViewService
@@ -46,4 +96,66 @@ interface BraintrustClient {
     fun envVars(): EnvVarService
 
     fun evals(): EvalService
+
+    /**
+     * Closes this client, relinquishing any underlying resources.
+     *
+     * This is purposefully not inherited from [AutoCloseable] because the client is long-lived and
+     * usually should not be synchronously closed via try-with-resources.
+     *
+     * It's also usually not necessary to call this method at all. the default HTTP client
+     * automatically releases threads and connections if they remain idle, but if you are writing an
+     * application that needs to aggressively release unused resources, then you may call this
+     * method.
+     */
+    fun close()
+
+    /** A view of [BraintrustClient] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: (ClientOptions.Builder) -> Unit): BraintrustClient.WithRawResponse
+
+        fun topLevel(): TopLevelService.WithRawResponse
+
+        fun projects(): ProjectService.WithRawResponse
+
+        fun experiments(): ExperimentService.WithRawResponse
+
+        fun datasets(): DatasetService.WithRawResponse
+
+        fun prompts(): PromptService.WithRawResponse
+
+        fun roles(): RoleService.WithRawResponse
+
+        fun groups(): GroupService.WithRawResponse
+
+        fun acls(): AclService.WithRawResponse
+
+        fun users(): UserService.WithRawResponse
+
+        fun projectScores(): ProjectScoreService.WithRawResponse
+
+        fun projectTags(): ProjectTagService.WithRawResponse
+
+        fun spanIframes(): SpanIframeService.WithRawResponse
+
+        fun functions(): FunctionService.WithRawResponse
+
+        fun views(): ViewService.WithRawResponse
+
+        fun organizations(): OrganizationService.WithRawResponse
+
+        fun apiKeys(): ApiKeyService.WithRawResponse
+
+        fun aiSecrets(): AiSecretService.WithRawResponse
+
+        fun envVars(): EnvVarService.WithRawResponse
+
+        fun evals(): EvalService.WithRawResponse
+    }
 }

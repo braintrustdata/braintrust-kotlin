@@ -2,106 +2,80 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
 import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.toImmutable
 import java.util.Objects
 
+/**
+ * List out all roles. The roles are sorted by creation date, with the most recently-created roles
+ * coming first
+ */
 class RoleListParams
-constructor(
+private constructor(
     private val endingBefore: String?,
     private val ids: Ids?,
     private val limit: Long?,
     private val orgName: String?,
     private val roleName: String?,
     private val startingAfter: String?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-) {
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
+    /**
+     * Pagination cursor id.
+     *
+     * For example, if the initial item in the last page you fetched had an id of `foo`, pass
+     * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
+     * `starting_after` and `ending_before`
+     */
     fun endingBefore(): String? = endingBefore
 
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     fun ids(): Ids? = ids
 
+    /** Limit the number of objects to return */
     fun limit(): Long? = limit
 
+    /** Filter search results to within a particular organization */
     fun orgName(): String? = orgName
 
+    /** Name of the role to search for */
     fun roleName(): String? = roleName
 
+    /**
+     * Pagination cursor id.
+     *
+     * For example, if the final item in the last page you fetched had an id of `foo`, pass
+     * `starting_after=foo` to fetch the next page. Note: you may only pass one of `starting_after`
+     * and `ending_before`
+     */
     fun startingAfter(): String? = startingAfter
 
-    internal fun getQueryParams(): Map<String, List<String>> {
-        val params = mutableMapOf<String, List<String>>()
-        this.endingBefore?.let { params.put("ending_before", listOf(it.toString())) }
-        this.ids?.let { params.put("ids", listOf(it.toString())) }
-        this.limit?.let { params.put("limit", listOf(it.toString())) }
-        this.orgName?.let { params.put("org_name", listOf(it.toString())) }
-        this.roleName?.let { params.put("role_name", listOf(it.toString())) }
-        this.startingAfter?.let { params.put("starting_after", listOf(it.toString())) }
-        params.putAll(additionalQueryParams)
-        return params.toUnmodifiable()
-    }
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is RoleListParams &&
-            this.endingBefore == other.endingBefore &&
-            this.ids == other.ids &&
-            this.limit == other.limit &&
-            this.orgName == other.orgName &&
-            this.roleName == other.roleName &&
-            this.startingAfter == other.startingAfter &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            endingBefore,
-            ids,
-            limit,
-            orgName,
-            roleName,
-            startingAfter,
-            additionalQueryParams,
-            additionalHeaders,
-        )
-    }
-
-    override fun toString() =
-        "RoleListParams{endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, roleName=$roleName, startingAfter=$startingAfter, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
 
     companion object {
 
+        fun none(): RoleListParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [RoleListParams]. */
         fun builder() = Builder()
     }
 
-    @NoAutoDetect
-    class Builder {
+    /** A builder for [RoleListParams]. */
+    class Builder internal constructor() {
 
         private var endingBefore: String? = null
         private var ids: Ids? = null
@@ -109,18 +83,18 @@ constructor(
         private var orgName: String? = null
         private var roleName: String? = null
         private var startingAfter: String? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(roleListParams: RoleListParams) = apply {
-            this.endingBefore = roleListParams.endingBefore
-            this.ids = roleListParams.ids
-            this.limit = roleListParams.limit
-            this.orgName = roleListParams.orgName
-            this.roleName = roleListParams.roleName
-            this.startingAfter = roleListParams.startingAfter
-            additionalQueryParams(roleListParams.additionalQueryParams)
-            additionalHeaders(roleListParams.additionalHeaders)
+            endingBefore = roleListParams.endingBefore
+            ids = roleListParams.ids
+            limit = roleListParams.limit
+            orgName = roleListParams.orgName
+            roleName = roleListParams.roleName
+            startingAfter = roleListParams.startingAfter
+            additionalHeaders = roleListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = roleListParams.additionalQueryParams.toBuilder()
         }
 
         /**
@@ -130,34 +104,35 @@ constructor(
          * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun endingBefore(endingBefore: String) = apply { this.endingBefore = endingBefore }
+        fun endingBefore(endingBefore: String?) = apply { this.endingBefore = endingBefore }
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun ids(ids: Ids) = apply { this.ids = ids }
+        fun ids(ids: Ids?) = apply { this.ids = ids }
 
-        /**
-         * Filter search results to a particular set of object IDs. To specify a list of IDs,
-         * include the query param multiple times
-         */
-        fun ids(string: String) = apply { this.ids = Ids.ofString(string) }
+        /** Alias for calling [ids] with `Ids.ofString(string)`. */
+        fun ids(string: String) = ids(Ids.ofString(string))
 
-        /**
-         * Filter search results to a particular set of object IDs. To specify a list of IDs,
-         * include the query param multiple times
-         */
-        fun ids(strings: List<String>) = apply { this.ids = Ids.ofStrings(strings) }
+        /** Alias for calling [ids] with `Ids.ofStrings(strings)`. */
+        fun idsOfStrings(strings: List<String>) = ids(Ids.ofStrings(strings))
 
         /** Limit the number of objects to return */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long?) = apply { this.limit = limit }
+
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun limit(limit: Long) = limit(limit as Long?)
 
         /** Filter search results to within a particular organization */
-        fun orgName(orgName: String) = apply { this.orgName = orgName }
+        fun orgName(orgName: String?) = apply { this.orgName = orgName }
 
         /** Name of the role to search for */
-        fun roleName(roleName: String) = apply { this.roleName = roleName }
+        fun roleName(roleName: String?) = apply { this.roleName = roleName }
 
         /**
          * Pagination cursor id.
@@ -166,48 +141,111 @@ constructor(
          * `starting_after=foo` to fetch the next page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun startingAfter(startingAfter: String) = apply { this.startingAfter = startingAfter }
+        fun startingAfter(startingAfter: String?) = apply { this.startingAfter = startingAfter }
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
         }
 
         fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
             this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
+            putAllAdditionalHeaders(additionalHeaders)
         }
 
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
         }
 
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
         }
 
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
 
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [RoleListParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): RoleListParams =
             RoleListParams(
                 endingBefore,
@@ -216,21 +254,45 @@ constructor(
                 orgName,
                 roleName,
                 startingAfter,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
             )
     }
 
-    @JsonDeserialize(using = Ids.Deserializer::class)
-    @JsonSerialize(using = Ids.Serializer::class)
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                endingBefore?.let { put("ending_before", it) }
+                ids?.accept(
+                    object : Ids.Visitor<Unit> {
+                        override fun visitString(string: String) {
+                            put("ids", string)
+                        }
+
+                        override fun visitStrings(strings: List<String>) {
+                            put("ids", strings.joinToString(","))
+                        }
+                    }
+                )
+                limit?.let { put("limit", it.toString()) }
+                orgName?.let { put("org_name", it) }
+                roleName?.let { put("role_name", it) }
+                startingAfter?.let { put("starting_after", it) }
+                putAll(additionalQueryParams)
+            }
+            .build()
+
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     class Ids
     private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -244,93 +306,74 @@ constructor(
 
         fun asStrings(): List<String> = strings.getOrThrow("strings")
 
-        fun _json(): JsonValue? = _json
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
+                else -> throw IllegalStateException("Invalid Ids")
             }
-        }
-
-        fun validate(): Ids = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown Ids: $_json")
-                }
-                validated = true
-            }
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is Ids && this.string == other.string && this.strings == other.strings
+            return other is Ids && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int {
-            return Objects.hash(string, strings)
-        }
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 string != null -> "Ids{string=$string}"
                 strings != null -> "Ids{strings=$strings}"
-                _json != null -> "Ids{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Ids")
             }
-        }
 
         companion object {
 
             fun ofString(string: String) = Ids(string = string)
 
-            fun ofStrings(strings: List<String>) = Ids(strings = strings)
+            fun ofStrings(strings: List<String>) = Ids(strings = strings.toImmutable())
         }
 
+        /** An interface that defines how to map each variant of [Ids] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
-
-            fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown Ids: $json")
-            }
-        }
-
-        class Deserializer : BaseDeserializer<Ids>(Ids::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): Ids {
-                val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return Ids(string = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                    return Ids(strings = it, _json = json)
-                }
-
-                return Ids(_json = json)
-            }
-        }
-
-        class Serializer : BaseSerializer<Ids>(Ids::class) {
-
-            override fun serialize(
-                value: Ids,
-                generator: JsonGenerator,
-                provider: SerializerProvider
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Ids")
-                }
-            }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RoleListParams &&
+            endingBefore == other.endingBefore &&
+            ids == other.ids &&
+            limit == other.limit &&
+            orgName == other.orgName &&
+            roleName == other.roleName &&
+            startingAfter == other.startingAfter &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
+    }
+
+    override fun hashCode(): Int =
+        Objects.hash(
+            endingBefore,
+            ids,
+            limit,
+            orgName,
+            roleName,
+            startingAfter,
+            additionalHeaders,
+            additionalQueryParams,
+        )
+
+    override fun toString() =
+        "RoleListParams{endingBefore=$endingBefore, ids=$ids, limit=$limit, orgName=$orgName, roleName=$roleName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

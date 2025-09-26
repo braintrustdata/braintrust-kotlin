@@ -3,132 +3,446 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkKnown
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
+/** Log feedback for a set of experiment events */
 class ExperimentFeedbackParams
-constructor(
-    private val experimentId: String,
-    private val feedback: List<FeedbackExperimentItem>,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+private constructor(
+    private val experimentId: String?,
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun experimentId(): String = experimentId
+    /** Experiment id */
+    fun experimentId(): String? = experimentId
 
-    fun feedback(): List<FeedbackExperimentItem> = feedback
+    /**
+     * A list of experiment feedback items
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun feedback(): List<FeedbackExperimentItem> = body.feedback()
 
-    internal fun getBody(): ExperimentFeedbackBody {
-        return ExperimentFeedbackBody(feedback, additionalBodyProperties)
+    /**
+     * Returns the raw JSON value of [feedback].
+     *
+     * Unlike [feedback], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _feedback(): JsonField<List<FeedbackExperimentItem>> = body._feedback()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [ExperimentFeedbackParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .feedback()
+         * ```
+         */
+        fun builder() = Builder()
     }
 
-    internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
+    /** A builder for [ExperimentFeedbackParams]. */
+    class Builder internal constructor() {
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+        private var experimentId: String? = null
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-    fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> experimentId
-            else -> ""
+        internal fun from(experimentFeedbackParams: ExperimentFeedbackParams) = apply {
+            experimentId = experimentFeedbackParams.experimentId
+            body = experimentFeedbackParams.body.toBuilder()
+            additionalHeaders = experimentFeedbackParams.additionalHeaders.toBuilder()
+            additionalQueryParams = experimentFeedbackParams.additionalQueryParams.toBuilder()
         }
-    }
 
-    @JsonDeserialize(builder = ExperimentFeedbackBody.Builder::class)
-    @NoAutoDetect
-    class ExperimentFeedbackBody
-    internal constructor(
-        private val feedback: List<FeedbackExperimentItem>?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+        /** Experiment id */
+        fun experimentId(experimentId: String?) = apply { this.experimentId = experimentId }
 
-        private var hashCode: Int = 0
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [feedback]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** A list of experiment feedback items */
-        @JsonProperty("feedback") fun feedback(): List<FeedbackExperimentItem>? = feedback
+        fun feedback(feedback: List<FeedbackExperimentItem>) = apply { body.feedback(feedback) }
+
+        /**
+         * Sets [Builder.feedback] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.feedback] with a well-typed
+         * `List<FeedbackExperimentItem>` value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun feedback(feedback: JsonField<List<FeedbackExperimentItem>>) = apply {
+            body.feedback(feedback)
+        }
+
+        /**
+         * Adds a single [FeedbackExperimentItem] to [Builder.feedback].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addFeedback(feedback: FeedbackExperimentItem) = apply { body.addFeedback(feedback) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [ExperimentFeedbackParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .feedback()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): ExperimentFeedbackParams =
+            ExperimentFeedbackParams(
+                experimentId,
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
+    fun _body(): Body = body
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> experimentId ?: ""
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val feedback: JsonField<List<FeedbackExperimentItem>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("feedback")
+            @ExcludeMissing
+            feedback: JsonField<List<FeedbackExperimentItem>> = JsonMissing.of()
+        ) : this(feedback, mutableMapOf())
+
+        /**
+         * A list of experiment feedback items
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun feedback(): List<FeedbackExperimentItem> = feedback.getRequired("feedback")
+
+        /**
+         * Returns the raw JSON value of [feedback].
+         *
+         * Unlike [feedback], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("feedback")
+        @ExcludeMissing
+        fun _feedback(): JsonField<List<FeedbackExperimentItem>> = feedback
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is ExperimentFeedbackBody &&
-                this.feedback == other.feedback &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(feedback, additionalProperties)
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "ExperimentFeedbackBody{feedback=$feedback, additionalProperties=$additionalProperties}"
-
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .feedback()
+             * ```
+             */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
 
-            private var feedback: List<FeedbackExperimentItem>? = null
+            private var feedback: JsonField<MutableList<FeedbackExperimentItem>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(experimentFeedbackBody: ExperimentFeedbackBody) = apply {
-                this.feedback = experimentFeedbackBody.feedback
-                additionalProperties(experimentFeedbackBody.additionalProperties)
+            internal fun from(body: Body) = apply {
+                feedback = body.feedback.map { it.toMutableList() }
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** A list of experiment feedback items */
-            @JsonProperty("feedback")
-            fun feedback(feedback: List<FeedbackExperimentItem>) = apply {
-                this.feedback = feedback
+            fun feedback(feedback: List<FeedbackExperimentItem>) = feedback(JsonField.of(feedback))
+
+            /**
+             * Sets [Builder.feedback] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.feedback] with a well-typed
+             * `List<FeedbackExperimentItem>` value instead. This method is primarily for setting
+             * the field to an undocumented or not yet supported value.
+             */
+            fun feedback(feedback: JsonField<List<FeedbackExperimentItem>>) = apply {
+                this.feedback = feedback.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [FeedbackExperimentItem] to [Builder.feedback].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addFeedback(feedback: FeedbackExperimentItem) = apply {
+                this.feedback =
+                    (this.feedback ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("feedback", it).add(feedback)
+                    }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): ExperimentFeedbackBody =
-                ExperimentFeedbackBody(
-                    checkNotNull(feedback) { "`feedback` is required but was not set" }
-                        .toUnmodifiable(),
-                    additionalProperties.toUnmodifiable()
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .feedback()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("feedback", feedback).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
                 )
         }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            feedback().forEach { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int = (feedback.asKnown()?.sumOf { it.validity().toInt() } ?: 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Body &&
+                feedback == other.feedback &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(feedback, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{feedback=$feedback, additionalProperties=$additionalProperties}"
     }
-
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -136,124 +450,15 @@ constructor(
         }
 
         return other is ExperimentFeedbackParams &&
-            this.experimentId == other.experimentId &&
-            this.feedback == other.feedback &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+            experimentId == other.experimentId &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            experimentId,
-            feedback,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
-    }
+    override fun hashCode(): Int =
+        Objects.hash(experimentId, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "ExperimentFeedbackParams{experimentId=$experimentId, feedback=$feedback, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
-
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    @NoAutoDetect
-    class Builder {
-
-        private var experimentId: String? = null
-        private var feedback: MutableList<FeedbackExperimentItem> = mutableListOf()
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(experimentFeedbackParams: ExperimentFeedbackParams) = apply {
-            this.experimentId = experimentFeedbackParams.experimentId
-            this.feedback(experimentFeedbackParams.feedback)
-            additionalQueryParams(experimentFeedbackParams.additionalQueryParams)
-            additionalHeaders(experimentFeedbackParams.additionalHeaders)
-            additionalBodyProperties(experimentFeedbackParams.additionalBodyProperties)
-        }
-
-        /** Experiment id */
-        fun experimentId(experimentId: String) = apply { this.experimentId = experimentId }
-
-        /** A list of experiment feedback items */
-        fun feedback(feedback: List<FeedbackExperimentItem>) = apply {
-            this.feedback.clear()
-            this.feedback.addAll(feedback)
-        }
-
-        /** A list of experiment feedback items */
-        fun addFeedback(feedback: FeedbackExperimentItem) = apply { this.feedback.add(feedback) }
-
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
-        }
-
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
-        }
-
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            this.additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
-
-        fun build(): ExperimentFeedbackParams =
-            ExperimentFeedbackParams(
-                checkNotNull(experimentId) { "`experimentId` is required but was not set" },
-                checkNotNull(feedback) { "`feedback` is required but was not set" }
-                    .toUnmodifiable(),
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
-    }
+        "ExperimentFeedbackParams{experimentId=$experimentId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

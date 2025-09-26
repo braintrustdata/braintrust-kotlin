@@ -9,9 +9,11 @@ import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.allMaxBy
+import com.braintrustdata.api.core.checkKnown
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
@@ -24,1936 +26,480 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.util.Collections
 import java.util.Objects
 
 /** The prompt, model, and its parameters */
-@JsonDeserialize(builder = PromptData.Builder::class)
-@NoAutoDetect
 class PromptData
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
-    private val prompt: JsonField<Prompt>,
-    private val options: JsonField<Options>,
-    private val parser: JsonField<Parser>,
-    private val toolFunctions: JsonField<List<ToolFunction>>,
+    private val options: JsonField<PromptOptions>,
     private val origin: JsonField<Origin>,
-    private val additionalProperties: Map<String, JsonValue>,
+    private val parser: JsonField<Parser>,
+    private val prompt: JsonField<Prompt>,
+    private val toolFunctions: JsonField<List<ToolFunction>>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
+    @JsonCreator
+    private constructor(
+        @JsonProperty("options")
+        @ExcludeMissing
+        options: JsonField<PromptOptions> = JsonMissing.of(),
+        @JsonProperty("origin") @ExcludeMissing origin: JsonField<Origin> = JsonMissing.of(),
+        @JsonProperty("parser") @ExcludeMissing parser: JsonField<Parser> = JsonMissing.of(),
+        @JsonProperty("prompt") @ExcludeMissing prompt: JsonField<Prompt> = JsonMissing.of(),
+        @JsonProperty("tool_functions")
+        @ExcludeMissing
+        toolFunctions: JsonField<List<ToolFunction>> = JsonMissing.of(),
+    ) : this(options, origin, parser, prompt, toolFunctions, mutableMapOf())
 
-    private var hashCode: Int = 0
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun options(): PromptOptions? = options.getNullable("options")
 
-    fun prompt(): Prompt? = prompt.getNullable("prompt")
-
-    fun options(): Options? = options.getNullable("options")
-
-    fun parser(): Parser? = parser.getNullable("parser")
-
-    fun toolFunctions(): List<ToolFunction>? = toolFunctions.getNullable("tool_functions")
-
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun origin(): Origin? = origin.getNullable("origin")
 
-    @JsonProperty("prompt") @ExcludeMissing fun _prompt() = prompt
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun parser(): Parser? = parser.getNullable("parser")
 
-    @JsonProperty("options") @ExcludeMissing fun _options() = options
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun prompt(): Prompt? = prompt.getNullable("prompt")
 
-    @JsonProperty("parser") @ExcludeMissing fun _parser() = parser
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun toolFunctions(): List<ToolFunction>? = toolFunctions.getNullable("tool_functions")
 
-    @JsonProperty("tool_functions") @ExcludeMissing fun _toolFunctions() = toolFunctions
+    /**
+     * Returns the raw JSON value of [options].
+     *
+     * Unlike [options], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("options") @ExcludeMissing fun _options(): JsonField<PromptOptions> = options
 
-    @JsonProperty("origin") @ExcludeMissing fun _origin() = origin
+    /**
+     * Returns the raw JSON value of [origin].
+     *
+     * Unlike [origin], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("origin") @ExcludeMissing fun _origin(): JsonField<Origin> = origin
+
+    /**
+     * Returns the raw JSON value of [parser].
+     *
+     * Unlike [parser], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("parser") @ExcludeMissing fun _parser(): JsonField<Parser> = parser
+
+    /**
+     * Returns the raw JSON value of [prompt].
+     *
+     * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<Prompt> = prompt
+
+    /**
+     * Returns the raw JSON value of [toolFunctions].
+     *
+     * Unlike [toolFunctions], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("tool_functions")
+    @ExcludeMissing
+    fun _toolFunctions(): JsonField<List<ToolFunction>> = toolFunctions
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun validate(): PromptData = apply {
-        if (!validated) {
-            prompt()
-            options()?.validate()
-            parser()?.validate()
-            toolFunctions()
-            origin()?.validate()
-            validated = true
-        }
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is PromptData &&
-            this.prompt == other.prompt &&
-            this.options == other.options &&
-            this.parser == other.parser &&
-            this.toolFunctions == other.toolFunctions &&
-            this.origin == other.origin &&
-            this.additionalProperties == other.additionalProperties
-    }
-
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    prompt,
-                    options,
-                    parser,
-                    toolFunctions,
-                    origin,
-                    additionalProperties,
-                )
-        }
-        return hashCode
-    }
-
-    override fun toString() =
-        "PromptData{prompt=$prompt, options=$options, parser=$parser, toolFunctions=$toolFunctions, origin=$origin, additionalProperties=$additionalProperties}"
-
     companion object {
 
+        /** Returns a mutable builder for constructing an instance of [PromptData]. */
         fun builder() = Builder()
     }
 
-    class Builder {
+    /** A builder for [PromptData]. */
+    class Builder internal constructor() {
 
-        private var prompt: JsonField<Prompt> = JsonMissing.of()
-        private var options: JsonField<Options> = JsonMissing.of()
-        private var parser: JsonField<Parser> = JsonMissing.of()
-        private var toolFunctions: JsonField<List<ToolFunction>> = JsonMissing.of()
+        private var options: JsonField<PromptOptions> = JsonMissing.of()
         private var origin: JsonField<Origin> = JsonMissing.of()
+        private var parser: JsonField<Parser> = JsonMissing.of()
+        private var prompt: JsonField<Prompt> = JsonMissing.of()
+        private var toolFunctions: JsonField<MutableList<ToolFunction>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(promptData: PromptData) = apply {
-            this.prompt = promptData.prompt
-            this.options = promptData.options
-            this.parser = promptData.parser
-            this.toolFunctions = promptData.toolFunctions
-            this.origin = promptData.origin
-            additionalProperties(promptData.additionalProperties)
+            options = promptData.options
+            origin = promptData.origin
+            parser = promptData.parser
+            prompt = promptData.prompt
+            toolFunctions = promptData.toolFunctions.map { it.toMutableList() }
+            additionalProperties = promptData.additionalProperties.toMutableMap()
         }
 
-        fun prompt(prompt: Prompt) = prompt(JsonField.of(prompt))
+        fun options(options: PromptOptions?) = options(JsonField.ofNullable(options))
 
-        @JsonProperty("prompt")
-        @ExcludeMissing
-        fun prompt(prompt: JsonField<Prompt>) = apply { this.prompt = prompt }
+        /**
+         * Sets [Builder.options] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.options] with a well-typed [PromptOptions] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun options(options: JsonField<PromptOptions>) = apply { this.options = options }
 
-        fun options(options: Options) = options(JsonField.of(options))
+        fun origin(origin: Origin?) = origin(JsonField.ofNullable(origin))
 
-        @JsonProperty("options")
-        @ExcludeMissing
-        fun options(options: JsonField<Options>) = apply { this.options = options }
+        /**
+         * Sets [Builder.origin] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.origin] with a well-typed [Origin] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun origin(origin: JsonField<Origin>) = apply { this.origin = origin }
 
-        fun parser(parser: Parser) = parser(JsonField.of(parser))
+        fun parser(parser: Parser?) = parser(JsonField.ofNullable(parser))
 
-        @JsonProperty("parser")
-        @ExcludeMissing
+        /**
+         * Sets [Builder.parser] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.parser] with a well-typed [Parser] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun parser(parser: JsonField<Parser>) = apply { this.parser = parser }
 
-        fun toolFunctions(toolFunctions: List<ToolFunction>) =
-            toolFunctions(JsonField.of(toolFunctions))
+        fun prompt(prompt: Prompt?) = prompt(JsonField.ofNullable(prompt))
 
-        @JsonProperty("tool_functions")
-        @ExcludeMissing
+        /**
+         * Sets [Builder.prompt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.prompt] with a well-typed [Prompt] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun prompt(prompt: JsonField<Prompt>) = apply { this.prompt = prompt }
+
+        /** Alias for calling [prompt] with `Prompt.ofCompletion(completion)`. */
+        fun prompt(completion: Prompt.Completion) = prompt(Prompt.ofCompletion(completion))
+
+        /** Alias for calling [prompt] with `Prompt.ofChat(chat)`. */
+        fun prompt(chat: Prompt.Chat) = prompt(Prompt.ofChat(chat))
+
+        fun toolFunctions(toolFunctions: List<ToolFunction>?) =
+            toolFunctions(JsonField.ofNullable(toolFunctions))
+
+        /**
+         * Sets [Builder.toolFunctions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.toolFunctions] with a well-typed `List<ToolFunction>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun toolFunctions(toolFunctions: JsonField<List<ToolFunction>>) = apply {
-            this.toolFunctions = toolFunctions
+            this.toolFunctions = toolFunctions.map { it.toMutableList() }
         }
 
-        fun origin(origin: Origin) = origin(JsonField.of(origin))
+        /**
+         * Adds a single [ToolFunction] to [toolFunctions].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addToolFunction(toolFunction: ToolFunction) = apply {
+            toolFunctions =
+                (toolFunctions ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("toolFunctions", it).add(toolFunction)
+                }
+        }
 
-        @JsonProperty("origin")
-        @ExcludeMissing
-        fun origin(origin: JsonField<Origin>) = apply { this.origin = origin }
+        /** Alias for calling [addToolFunction] with `ToolFunction.ofFunction(function)`. */
+        fun addToolFunction(function: ToolFunction.Function) =
+            addToolFunction(ToolFunction.ofFunction(function))
+
+        /** Alias for calling [addToolFunction] with `ToolFunction.ofGlobal(global)`. */
+        fun addToolFunction(global: ToolFunction.Global) =
+            addToolFunction(ToolFunction.ofGlobal(global))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
         }
 
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [PromptData].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): PromptData =
             PromptData(
-                prompt,
                 options,
-                parser,
-                toolFunctions.map { it.toUnmodifiable() },
                 origin,
-                additionalProperties.toUnmodifiable(),
+                parser,
+                prompt,
+                (toolFunctions ?: JsonMissing.of()).map { it.toImmutable() },
+                additionalProperties.toMutableMap(),
             )
     }
 
-    @JsonDeserialize(builder = Options.Builder::class)
-    @NoAutoDetect
-    class Options
+    private var validated: Boolean = false
+
+    fun validate(): PromptData = apply {
+        if (validated) {
+            return@apply
+        }
+
+        options()?.validate()
+        origin()?.validate()
+        parser()?.validate()
+        prompt()?.validate()
+        toolFunctions()?.forEach { it.validate() }
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (options.asKnown()?.validity() ?: 0) +
+            (origin.asKnown()?.validity() ?: 0) +
+            (parser.asKnown()?.validity() ?: 0) +
+            (prompt.asKnown()?.validity() ?: 0) +
+            (toolFunctions.asKnown()?.sumOf { it.validity().toInt() } ?: 0)
+
+    class Origin
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val model: JsonField<String>,
-        private val params: JsonField<Params>,
-        private val position: JsonField<String>,
-        private val additionalProperties: Map<String, JsonValue>,
+        private val projectId: JsonField<String>,
+        private val promptId: JsonField<String>,
+        private val promptVersion: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
-        private var validated: Boolean = false
+        @JsonCreator
+        private constructor(
+            @JsonProperty("project_id")
+            @ExcludeMissing
+            projectId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("prompt_id")
+            @ExcludeMissing
+            promptId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("prompt_version")
+            @ExcludeMissing
+            promptVersion: JsonField<String> = JsonMissing.of(),
+        ) : this(projectId, promptId, promptVersion, mutableMapOf())
 
-        private var hashCode: Int = 0
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun projectId(): String? = projectId.getNullable("project_id")
 
-        fun model(): String? = model.getNullable("model")
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun promptId(): String? = promptId.getNullable("prompt_id")
 
-        fun params(): Params? = params.getNullable("params")
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun promptVersion(): String? = promptVersion.getNullable("prompt_version")
 
-        fun position(): String? = position.getNullable("position")
+        /**
+         * Returns the raw JSON value of [projectId].
+         *
+         * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("project_id") @ExcludeMissing fun _projectId(): JsonField<String> = projectId
 
-        @JsonProperty("model") @ExcludeMissing fun _model() = model
+        /**
+         * Returns the raw JSON value of [promptId].
+         *
+         * Unlike [promptId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("prompt_id") @ExcludeMissing fun _promptId(): JsonField<String> = promptId
 
-        @JsonProperty("params") @ExcludeMissing fun _params() = params
+        /**
+         * Returns the raw JSON value of [promptVersion].
+         *
+         * Unlike [promptVersion], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("prompt_version")
+        @ExcludeMissing
+        fun _promptVersion(): JsonField<String> = promptVersion
 
-        @JsonProperty("position") @ExcludeMissing fun _position() = position
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun validate(): Options = apply {
-            if (!validated) {
-                model()
-                params()
-                position()
-                validated = true
-            }
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Options &&
-                this.model == other.model &&
-                this.params == other.params &&
-                this.position == other.position &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        model,
-                        params,
-                        position,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "Options{model=$model, params=$params, position=$position, additionalProperties=$additionalProperties}"
-
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Origin]. */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [Origin]. */
+        class Builder internal constructor() {
 
-            private var model: JsonField<String> = JsonMissing.of()
-            private var params: JsonField<Params> = JsonMissing.of()
-            private var position: JsonField<String> = JsonMissing.of()
+            private var projectId: JsonField<String> = JsonMissing.of()
+            private var promptId: JsonField<String> = JsonMissing.of()
+            private var promptVersion: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(options: Options) = apply {
-                this.model = options.model
-                this.params = options.params
-                this.position = options.position
-                additionalProperties(options.additionalProperties)
+            internal fun from(origin: Origin) = apply {
+                projectId = origin.projectId
+                promptId = origin.promptId
+                promptVersion = origin.promptVersion
+                additionalProperties = origin.additionalProperties.toMutableMap()
             }
 
-            fun model(model: String) = model(JsonField.of(model))
+            fun projectId(projectId: String) = projectId(JsonField.of(projectId))
 
-            @JsonProperty("model")
-            @ExcludeMissing
-            fun model(model: JsonField<String>) = apply { this.model = model }
+            /**
+             * Sets [Builder.projectId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.projectId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
 
-            fun params(params: Params) = params(JsonField.of(params))
+            fun promptId(promptId: String) = promptId(JsonField.of(promptId))
 
-            @JsonProperty("params")
-            @ExcludeMissing
-            fun params(params: JsonField<Params>) = apply { this.params = params }
+            /**
+             * Sets [Builder.promptId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun promptId(promptId: JsonField<String>) = apply { this.promptId = promptId }
 
-            fun position(position: String) = position(JsonField.of(position))
+            fun promptVersion(promptVersion: String) = promptVersion(JsonField.of(promptVersion))
 
-            @JsonProperty("position")
-            @ExcludeMissing
-            fun position(position: JsonField<String>) = apply { this.position = position }
+            /**
+             * Sets [Builder.promptVersion] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptVersion] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun promptVersion(promptVersion: JsonField<String>) = apply {
+                this.promptVersion = promptVersion
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): Options =
-                Options(
-                    model,
-                    params,
-                    position,
-                    additionalProperties.toUnmodifiable(),
-                )
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Origin].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Origin =
+                Origin(projectId, promptId, promptVersion, additionalProperties.toMutableMap())
         }
-
-        @JsonDeserialize(using = Params.Deserializer::class)
-        @JsonSerialize(using = Params.Serializer::class)
-        class Params
-        private constructor(
-            private val openaiModelParams: OpenAIModelParams? = null,
-            private val anthropicModelParams: AnthropicModelParams? = null,
-            private val googleModelParams: GoogleModelParams? = null,
-            private val windowAiModelParams: WindowAiModelParams? = null,
-            private val jsCompletionParams: JsCompletionParams? = null,
-            private val _json: JsonValue? = null,
-        ) {
-
-            private var validated: Boolean = false
-
-            fun openaiModelParams(): OpenAIModelParams? = openaiModelParams
-
-            fun anthropicModelParams(): AnthropicModelParams? = anthropicModelParams
-
-            fun googleModelParams(): GoogleModelParams? = googleModelParams
-
-            fun windowAiModelParams(): WindowAiModelParams? = windowAiModelParams
-
-            fun jsCompletionParams(): JsCompletionParams? = jsCompletionParams
-
-            fun isOpenAIModelParams(): Boolean = openaiModelParams != null
-
-            fun isAnthropicModelParams(): Boolean = anthropicModelParams != null
-
-            fun isGoogleModelParams(): Boolean = googleModelParams != null
-
-            fun isWindowAiModelParams(): Boolean = windowAiModelParams != null
-
-            fun isJsCompletionParams(): Boolean = jsCompletionParams != null
-
-            fun asOpenAIModelParams(): OpenAIModelParams =
-                openaiModelParams.getOrThrow("openaiModelParams")
-
-            fun asAnthropicModelParams(): AnthropicModelParams =
-                anthropicModelParams.getOrThrow("anthropicModelParams")
-
-            fun asGoogleModelParams(): GoogleModelParams =
-                googleModelParams.getOrThrow("googleModelParams")
-
-            fun asWindowAiModelParams(): WindowAiModelParams =
-                windowAiModelParams.getOrThrow("windowAiModelParams")
-
-            fun asJsCompletionParams(): JsCompletionParams =
-                jsCompletionParams.getOrThrow("jsCompletionParams")
-
-            fun _json(): JsonValue? = _json
-
-            fun <T> accept(visitor: Visitor<T>): T {
-                return when {
-                    openaiModelParams != null -> visitor.visitOpenAIModelParams(openaiModelParams)
-                    anthropicModelParams != null ->
-                        visitor.visitAnthropicModelParams(anthropicModelParams)
-                    googleModelParams != null -> visitor.visitGoogleModelParams(googleModelParams)
-                    windowAiModelParams != null ->
-                        visitor.visitWindowAiModelParams(windowAiModelParams)
-                    jsCompletionParams != null ->
-                        visitor.visitJsCompletionParams(jsCompletionParams)
-                    else -> visitor.unknown(_json)
-                }
-            }
-
-            fun validate(): Params = apply {
-                if (!validated) {
-                    if (
-                        openaiModelParams == null &&
-                            anthropicModelParams == null &&
-                            googleModelParams == null &&
-                            windowAiModelParams == null &&
-                            jsCompletionParams == null
-                    ) {
-                        throw BraintrustInvalidDataException("Unknown Params: $_json")
-                    }
-                    openaiModelParams?.validate()
-                    anthropicModelParams?.validate()
-                    googleModelParams?.validate()
-                    windowAiModelParams?.validate()
-                    jsCompletionParams?.validate()
-                    validated = true
-                }
-            }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Params &&
-                    this.openaiModelParams == other.openaiModelParams &&
-                    this.anthropicModelParams == other.anthropicModelParams &&
-                    this.googleModelParams == other.googleModelParams &&
-                    this.windowAiModelParams == other.windowAiModelParams &&
-                    this.jsCompletionParams == other.jsCompletionParams
-            }
-
-            override fun hashCode(): Int {
-                return Objects.hash(
-                    openaiModelParams,
-                    anthropicModelParams,
-                    googleModelParams,
-                    windowAiModelParams,
-                    jsCompletionParams,
-                )
-            }
-
-            override fun toString(): String {
-                return when {
-                    openaiModelParams != null -> "Params{openaiModelParams=$openaiModelParams}"
-                    anthropicModelParams != null ->
-                        "Params{anthropicModelParams=$anthropicModelParams}"
-                    googleModelParams != null -> "Params{googleModelParams=$googleModelParams}"
-                    windowAiModelParams != null ->
-                        "Params{windowAiModelParams=$windowAiModelParams}"
-                    jsCompletionParams != null -> "Params{jsCompletionParams=$jsCompletionParams}"
-                    _json != null -> "Params{_unknown=$_json}"
-                    else -> throw IllegalStateException("Invalid Params")
-                }
-            }
-
-            companion object {
-
-                fun ofOpenAIModelParams(openaiModelParams: OpenAIModelParams) =
-                    Params(openaiModelParams = openaiModelParams)
-
-                fun ofAnthropicModelParams(anthropicModelParams: AnthropicModelParams) =
-                    Params(anthropicModelParams = anthropicModelParams)
-
-                fun ofGoogleModelParams(googleModelParams: GoogleModelParams) =
-                    Params(googleModelParams = googleModelParams)
-
-                fun ofWindowAiModelParams(windowAiModelParams: WindowAiModelParams) =
-                    Params(windowAiModelParams = windowAiModelParams)
-
-                fun ofJsCompletionParams(jsCompletionParams: JsCompletionParams) =
-                    Params(jsCompletionParams = jsCompletionParams)
-            }
-
-            interface Visitor<out T> {
-
-                fun visitOpenAIModelParams(openaiModelParams: OpenAIModelParams): T
-
-                fun visitAnthropicModelParams(anthropicModelParams: AnthropicModelParams): T
-
-                fun visitGoogleModelParams(googleModelParams: GoogleModelParams): T
-
-                fun visitWindowAiModelParams(windowAiModelParams: WindowAiModelParams): T
-
-                fun visitJsCompletionParams(jsCompletionParams: JsCompletionParams): T
-
-                fun unknown(json: JsonValue?): T {
-                    throw BraintrustInvalidDataException("Unknown Params: $json")
-                }
-            }
-
-            class Deserializer : BaseDeserializer<Params>(Params::class) {
-
-                override fun ObjectCodec.deserialize(node: JsonNode): Params {
-                    val json = JsonValue.fromJsonNode(node)
-                    tryDeserialize(node, jacksonTypeRef<OpenAIModelParams>()) { it.validate() }
-                        ?.let {
-                            return Params(openaiModelParams = it, _json = json)
-                        }
-                    tryDeserialize(node, jacksonTypeRef<AnthropicModelParams>()) { it.validate() }
-                        ?.let {
-                            return Params(anthropicModelParams = it, _json = json)
-                        }
-                    tryDeserialize(node, jacksonTypeRef<GoogleModelParams>()) { it.validate() }
-                        ?.let {
-                            return Params(googleModelParams = it, _json = json)
-                        }
-                    tryDeserialize(node, jacksonTypeRef<WindowAiModelParams>()) { it.validate() }
-                        ?.let {
-                            return Params(windowAiModelParams = it, _json = json)
-                        }
-                    tryDeserialize(node, jacksonTypeRef<JsCompletionParams>()) { it.validate() }
-                        ?.let {
-                            return Params(jsCompletionParams = it, _json = json)
-                        }
-
-                    return Params(_json = json)
-                }
-            }
-
-            class Serializer : BaseSerializer<Params>(Params::class) {
-
-                override fun serialize(
-                    value: Params,
-                    generator: JsonGenerator,
-                    provider: SerializerProvider
-                ) {
-                    when {
-                        value.openaiModelParams != null ->
-                            generator.writeObject(value.openaiModelParams)
-                        value.anthropicModelParams != null ->
-                            generator.writeObject(value.anthropicModelParams)
-                        value.googleModelParams != null ->
-                            generator.writeObject(value.googleModelParams)
-                        value.windowAiModelParams != null ->
-                            generator.writeObject(value.windowAiModelParams)
-                        value.jsCompletionParams != null ->
-                            generator.writeObject(value.jsCompletionParams)
-                        value._json != null -> generator.writeObject(value._json)
-                        else -> throw IllegalStateException("Invalid Params")
-                    }
-                }
-            }
-
-            @JsonDeserialize(builder = OpenAIModelParams.Builder::class)
-            @NoAutoDetect
-            class OpenAIModelParams
-            private constructor(
-                private val useCache: JsonField<Boolean>,
-                private val temperature: JsonField<Double>,
-                private val topP: JsonField<Double>,
-                private val maxTokens: JsonField<Double>,
-                private val frequencyPenalty: JsonField<Double>,
-                private val presencePenalty: JsonField<Double>,
-                private val responseFormat: JsonField<ResponseFormat>,
-                private val toolChoice: JsonField<ToolChoice>,
-                private val functionCall: JsonField<FunctionCall>,
-                private val n: JsonField<Double>,
-                private val stop: JsonField<List<String>>,
-                private val additionalProperties: Map<String, JsonValue>,
-            ) {
-
-                private var validated: Boolean = false
-
-                private var hashCode: Int = 0
-
-                fun useCache(): Boolean? = useCache.getNullable("use_cache")
-
-                fun temperature(): Double? = temperature.getNullable("temperature")
-
-                fun topP(): Double? = topP.getNullable("top_p")
-
-                fun maxTokens(): Double? = maxTokens.getNullable("max_tokens")
-
-                fun frequencyPenalty(): Double? = frequencyPenalty.getNullable("frequency_penalty")
-
-                fun presencePenalty(): Double? = presencePenalty.getNullable("presence_penalty")
-
-                fun responseFormat(): ResponseFormat? =
-                    responseFormat.getNullable("response_format")
-
-                fun toolChoice(): ToolChoice? = toolChoice.getNullable("tool_choice")
-
-                fun functionCall(): FunctionCall? = functionCall.getNullable("function_call")
-
-                fun n(): Double? = n.getNullable("n")
-
-                fun stop(): List<String>? = stop.getNullable("stop")
-
-                @JsonProperty("use_cache") @ExcludeMissing fun _useCache() = useCache
-
-                @JsonProperty("temperature") @ExcludeMissing fun _temperature() = temperature
-
-                @JsonProperty("top_p") @ExcludeMissing fun _topP() = topP
-
-                @JsonProperty("max_tokens") @ExcludeMissing fun _maxTokens() = maxTokens
-
-                @JsonProperty("frequency_penalty")
-                @ExcludeMissing
-                fun _frequencyPenalty() = frequencyPenalty
-
-                @JsonProperty("presence_penalty")
-                @ExcludeMissing
-                fun _presencePenalty() = presencePenalty
-
-                @JsonProperty("response_format")
-                @ExcludeMissing
-                fun _responseFormat() = responseFormat
-
-                @JsonProperty("tool_choice") @ExcludeMissing fun _toolChoice() = toolChoice
-
-                @JsonProperty("function_call") @ExcludeMissing fun _functionCall() = functionCall
-
-                @JsonProperty("n") @ExcludeMissing fun _n() = n
-
-                @JsonProperty("stop") @ExcludeMissing fun _stop() = stop
-
-                @JsonAnyGetter
-                @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                fun validate(): OpenAIModelParams = apply {
-                    if (!validated) {
-                        useCache()
-                        temperature()
-                        topP()
-                        maxTokens()
-                        frequencyPenalty()
-                        presencePenalty()
-                        responseFormat()?.validate()
-                        toolChoice()
-                        functionCall()
-                        n()
-                        stop()
-                        validated = true
-                    }
-                }
-
-                fun toBuilder() = Builder().from(this)
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return other is OpenAIModelParams &&
-                        this.useCache == other.useCache &&
-                        this.temperature == other.temperature &&
-                        this.topP == other.topP &&
-                        this.maxTokens == other.maxTokens &&
-                        this.frequencyPenalty == other.frequencyPenalty &&
-                        this.presencePenalty == other.presencePenalty &&
-                        this.responseFormat == other.responseFormat &&
-                        this.toolChoice == other.toolChoice &&
-                        this.functionCall == other.functionCall &&
-                        this.n == other.n &&
-                        this.stop == other.stop &&
-                        this.additionalProperties == other.additionalProperties
-                }
-
-                override fun hashCode(): Int {
-                    if (hashCode == 0) {
-                        hashCode =
-                            Objects.hash(
-                                useCache,
-                                temperature,
-                                topP,
-                                maxTokens,
-                                frequencyPenalty,
-                                presencePenalty,
-                                responseFormat,
-                                toolChoice,
-                                functionCall,
-                                n,
-                                stop,
-                                additionalProperties,
-                            )
-                    }
-                    return hashCode
-                }
-
-                override fun toString() =
-                    "OpenAIModelParams{useCache=$useCache, temperature=$temperature, topP=$topP, maxTokens=$maxTokens, frequencyPenalty=$frequencyPenalty, presencePenalty=$presencePenalty, responseFormat=$responseFormat, toolChoice=$toolChoice, functionCall=$functionCall, n=$n, stop=$stop, additionalProperties=$additionalProperties}"
-
-                companion object {
-
-                    fun builder() = Builder()
-                }
-
-                class Builder {
-
-                    private var useCache: JsonField<Boolean> = JsonMissing.of()
-                    private var temperature: JsonField<Double> = JsonMissing.of()
-                    private var topP: JsonField<Double> = JsonMissing.of()
-                    private var maxTokens: JsonField<Double> = JsonMissing.of()
-                    private var frequencyPenalty: JsonField<Double> = JsonMissing.of()
-                    private var presencePenalty: JsonField<Double> = JsonMissing.of()
-                    private var responseFormat: JsonField<ResponseFormat> = JsonMissing.of()
-                    private var toolChoice: JsonField<ToolChoice> = JsonMissing.of()
-                    private var functionCall: JsonField<FunctionCall> = JsonMissing.of()
-                    private var n: JsonField<Double> = JsonMissing.of()
-                    private var stop: JsonField<List<String>> = JsonMissing.of()
-                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                    internal fun from(openaiModelParams: OpenAIModelParams) = apply {
-                        this.useCache = openaiModelParams.useCache
-                        this.temperature = openaiModelParams.temperature
-                        this.topP = openaiModelParams.topP
-                        this.maxTokens = openaiModelParams.maxTokens
-                        this.frequencyPenalty = openaiModelParams.frequencyPenalty
-                        this.presencePenalty = openaiModelParams.presencePenalty
-                        this.responseFormat = openaiModelParams.responseFormat
-                        this.toolChoice = openaiModelParams.toolChoice
-                        this.functionCall = openaiModelParams.functionCall
-                        this.n = openaiModelParams.n
-                        this.stop = openaiModelParams.stop
-                        additionalProperties(openaiModelParams.additionalProperties)
-                    }
-
-                    fun useCache(useCache: Boolean) = useCache(JsonField.of(useCache))
-
-                    @JsonProperty("use_cache")
-                    @ExcludeMissing
-                    fun useCache(useCache: JsonField<Boolean>) = apply { this.useCache = useCache }
-
-                    fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
-
-                    @JsonProperty("temperature")
-                    @ExcludeMissing
-                    fun temperature(temperature: JsonField<Double>) = apply {
-                        this.temperature = temperature
-                    }
-
-                    fun topP(topP: Double) = topP(JsonField.of(topP))
-
-                    @JsonProperty("top_p")
-                    @ExcludeMissing
-                    fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
-
-                    fun maxTokens(maxTokens: Double) = maxTokens(JsonField.of(maxTokens))
-
-                    @JsonProperty("max_tokens")
-                    @ExcludeMissing
-                    fun maxTokens(maxTokens: JsonField<Double>) = apply {
-                        this.maxTokens = maxTokens
-                    }
-
-                    fun frequencyPenalty(frequencyPenalty: Double) =
-                        frequencyPenalty(JsonField.of(frequencyPenalty))
-
-                    @JsonProperty("frequency_penalty")
-                    @ExcludeMissing
-                    fun frequencyPenalty(frequencyPenalty: JsonField<Double>) = apply {
-                        this.frequencyPenalty = frequencyPenalty
-                    }
-
-                    fun presencePenalty(presencePenalty: Double) =
-                        presencePenalty(JsonField.of(presencePenalty))
-
-                    @JsonProperty("presence_penalty")
-                    @ExcludeMissing
-                    fun presencePenalty(presencePenalty: JsonField<Double>) = apply {
-                        this.presencePenalty = presencePenalty
-                    }
-
-                    fun responseFormat(responseFormat: ResponseFormat) =
-                        responseFormat(JsonField.of(responseFormat))
-
-                    @JsonProperty("response_format")
-                    @ExcludeMissing
-                    fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
-                        this.responseFormat = responseFormat
-                    }
-
-                    fun toolChoice(toolChoice: ToolChoice) = toolChoice(JsonField.of(toolChoice))
-
-                    @JsonProperty("tool_choice")
-                    @ExcludeMissing
-                    fun toolChoice(toolChoice: JsonField<ToolChoice>) = apply {
-                        this.toolChoice = toolChoice
-                    }
-
-                    fun functionCall(functionCall: FunctionCall) =
-                        functionCall(JsonField.of(functionCall))
-
-                    @JsonProperty("function_call")
-                    @ExcludeMissing
-                    fun functionCall(functionCall: JsonField<FunctionCall>) = apply {
-                        this.functionCall = functionCall
-                    }
-
-                    fun n(n: Double) = n(JsonField.of(n))
-
-                    @JsonProperty("n")
-                    @ExcludeMissing
-                    fun n(n: JsonField<Double>) = apply { this.n = n }
-
-                    fun stop(stop: List<String>) = stop(JsonField.of(stop))
-
-                    @JsonProperty("stop")
-                    @ExcludeMissing
-                    fun stop(stop: JsonField<List<String>>) = apply { this.stop = stop }
-
-                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                        this.additionalProperties.clear()
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                    @JsonAnySetter
-                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        this.additionalProperties.put(key, value)
-                    }
-
-                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                        apply {
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
-
-                    fun build(): OpenAIModelParams =
-                        OpenAIModelParams(
-                            useCache,
-                            temperature,
-                            topP,
-                            maxTokens,
-                            frequencyPenalty,
-                            presencePenalty,
-                            responseFormat,
-                            toolChoice,
-                            functionCall,
-                            n,
-                            stop.map { it.toUnmodifiable() },
-                            additionalProperties.toUnmodifiable(),
-                        )
-                }
-
-                @JsonDeserialize(using = FunctionCall.Deserializer::class)
-                @JsonSerialize(using = FunctionCall.Serializer::class)
-                class FunctionCall
-                private constructor(
-                    private val auto: Auto? = null,
-                    private val none: None? = null,
-                    private val function: Function? = null,
-                    private val _json: JsonValue? = null,
-                ) {
-
-                    private var validated: Boolean = false
-
-                    fun auto(): Auto? = auto
-
-                    fun none(): None? = none
-
-                    fun function(): Function? = function
-
-                    fun isAuto(): Boolean = auto != null
-
-                    fun isNone(): Boolean = none != null
-
-                    fun isFunction(): Boolean = function != null
-
-                    fun asAuto(): Auto = auto.getOrThrow("auto")
-
-                    fun asNone(): None = none.getOrThrow("none")
-
-                    fun asFunction(): Function = function.getOrThrow("function")
-
-                    fun _json(): JsonValue? = _json
-
-                    fun <T> accept(visitor: Visitor<T>): T {
-                        return when {
-                            auto != null -> visitor.visitAuto(auto)
-                            none != null -> visitor.visitNone(none)
-                            function != null -> visitor.visitFunction(function)
-                            else -> visitor.unknown(_json)
-                        }
-                    }
-
-                    fun validate(): FunctionCall = apply {
-                        if (!validated) {
-                            if (auto == null && none == null && function == null) {
-                                throw BraintrustInvalidDataException("Unknown FunctionCall: $_json")
-                            }
-                            function?.validate()
-                            validated = true
-                        }
-                    }
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return other is FunctionCall &&
-                            this.auto == other.auto &&
-                            this.none == other.none &&
-                            this.function == other.function
-                    }
-
-                    override fun hashCode(): Int {
-                        return Objects.hash(
-                            auto,
-                            none,
-                            function,
-                        )
-                    }
-
-                    override fun toString(): String {
-                        return when {
-                            auto != null -> "FunctionCall{auto=$auto}"
-                            none != null -> "FunctionCall{none=$none}"
-                            function != null -> "FunctionCall{function=$function}"
-                            _json != null -> "FunctionCall{_unknown=$_json}"
-                            else -> throw IllegalStateException("Invalid FunctionCall")
-                        }
-                    }
-
-                    companion object {
-
-                        fun ofAuto(auto: Auto) = FunctionCall(auto = auto)
-
-                        fun ofNone(none: None) = FunctionCall(none = none)
-
-                        fun ofFunction(function: Function) = FunctionCall(function = function)
-                    }
-
-                    interface Visitor<out T> {
-
-                        fun visitAuto(auto: Auto): T
-
-                        fun visitNone(none: None): T
-
-                        fun visitFunction(function: Function): T
-
-                        fun unknown(json: JsonValue?): T {
-                            throw BraintrustInvalidDataException("Unknown FunctionCall: $json")
-                        }
-                    }
-
-                    class Deserializer : BaseDeserializer<FunctionCall>(FunctionCall::class) {
-
-                        override fun ObjectCodec.deserialize(node: JsonNode): FunctionCall {
-                            val json = JsonValue.fromJsonNode(node)
-                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
-                                return FunctionCall(auto = it, _json = json)
-                            }
-                            tryDeserialize(node, jacksonTypeRef<FunctionCall.None>())?.let {
-                                return FunctionCall(none = it, _json = json)
-                            }
-                            tryDeserialize(node, jacksonTypeRef<Function>()) { it.validate() }
-                                ?.let {
-                                    return FunctionCall(function = it, _json = json)
-                                }
-
-                            return FunctionCall(_json = json)
-                        }
-                    }
-
-                    class Serializer : BaseSerializer<FunctionCall>(FunctionCall::class) {
-
-                        override fun serialize(
-                            value: FunctionCall,
-                            generator: JsonGenerator,
-                            provider: SerializerProvider
-                        ) {
-                            when {
-                                value.auto != null -> generator.writeObject(value.auto)
-                                value.none != null -> generator.writeObject(value.none)
-                                value.function != null -> generator.writeObject(value.function)
-                                value._json != null -> generator.writeObject(value._json)
-                                else -> throw IllegalStateException("Invalid FunctionCall")
-                            }
-                        }
-                    }
-
-                    class Auto
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return other is Auto && this.value == other.value
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-
-                        companion object {
-
-                            val AUTO = Auto(JsonField.of("auto"))
-
-                            fun of(value: String) = Auto(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            AUTO,
-                        }
-
-                        enum class Value {
-                            AUTO,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                AUTO -> Value.AUTO
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                AUTO -> Known.AUTO
-                                else -> throw BraintrustInvalidDataException("Unknown Auto: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-                    }
-
-                    class None
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return other is None && this.value == other.value
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-
-                        companion object {
-
-                            val NONE = None(JsonField.of("none"))
-
-                            fun of(value: String) = None(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            NONE,
-                        }
-
-                        enum class Value {
-                            NONE,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                NONE -> Value.NONE
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                NONE -> Known.NONE
-                                else -> throw BraintrustInvalidDataException("Unknown None: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-                    }
-
-                    @JsonDeserialize(builder = Function.Builder::class)
-                    @NoAutoDetect
-                    class Function
-                    private constructor(
-                        private val name: JsonField<String>,
-                        private val additionalProperties: Map<String, JsonValue>,
-                    ) {
-
-                        private var validated: Boolean = false
-
-                        private var hashCode: Int = 0
-
-                        fun name(): String = name.getRequired("name")
-
-                        @JsonProperty("name") @ExcludeMissing fun _name() = name
-
-                        @JsonAnyGetter
-                        @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        fun validate(): Function = apply {
-                            if (!validated) {
-                                name()
-                                validated = true
-                            }
-                        }
-
-                        fun toBuilder() = Builder().from(this)
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return other is Function &&
-                                this.name == other.name &&
-                                this.additionalProperties == other.additionalProperties
-                        }
-
-                        override fun hashCode(): Int {
-                            if (hashCode == 0) {
-                                hashCode = Objects.hash(name, additionalProperties)
-                            }
-                            return hashCode
-                        }
-
-                        override fun toString() =
-                            "Function{name=$name, additionalProperties=$additionalProperties}"
-
-                        companion object {
-
-                            fun builder() = Builder()
-                        }
-
-                        class Builder {
-
-                            private var name: JsonField<String> = JsonMissing.of()
-                            private var additionalProperties: MutableMap<String, JsonValue> =
-                                mutableMapOf()
-
-                            internal fun from(function: Function) = apply {
-                                this.name = function.name
-                                additionalProperties(function.additionalProperties)
-                            }
-
-                            fun name(name: String) = name(JsonField.of(name))
-
-                            @JsonProperty("name")
-                            @ExcludeMissing
-                            fun name(name: JsonField<String>) = apply { this.name = name }
-
-                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                                apply {
-                                    this.additionalProperties.clear()
-                                    this.additionalProperties.putAll(additionalProperties)
-                                }
-
-                            @JsonAnySetter
-                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                                this.additionalProperties.put(key, value)
-                            }
-
-                            fun putAllAdditionalProperties(
-                                additionalProperties: Map<String, JsonValue>
-                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
-
-                            fun build(): Function =
-                                Function(name, additionalProperties.toUnmodifiable())
-                        }
-                    }
-                }
-
-                @JsonDeserialize(builder = ResponseFormat.Builder::class)
-                @NoAutoDetect
-                class ResponseFormat
-                private constructor(
-                    private val type: JsonField<Type>,
-                    private val additionalProperties: Map<String, JsonValue>,
-                ) {
-
-                    private var validated: Boolean = false
-
-                    private var hashCode: Int = 0
-
-                    fun type(): Type = type.getRequired("type")
-
-                    @JsonProperty("type") @ExcludeMissing fun _type() = type
-
-                    @JsonAnyGetter
-                    @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    fun validate(): ResponseFormat = apply {
-                        if (!validated) {
-                            type()
-                            validated = true
-                        }
-                    }
-
-                    fun toBuilder() = Builder().from(this)
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return other is ResponseFormat &&
-                            this.type == other.type &&
-                            this.additionalProperties == other.additionalProperties
-                    }
-
-                    override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode = Objects.hash(type, additionalProperties)
-                        }
-                        return hashCode
-                    }
-
-                    override fun toString() =
-                        "ResponseFormat{type=$type, additionalProperties=$additionalProperties}"
-
-                    companion object {
-
-                        fun builder() = Builder()
-                    }
-
-                    class Builder {
-
-                        private var type: JsonField<Type> = JsonMissing.of()
-                        private var additionalProperties: MutableMap<String, JsonValue> =
-                            mutableMapOf()
-
-                        internal fun from(responseFormat: ResponseFormat) = apply {
-                            this.type = responseFormat.type
-                            additionalProperties(responseFormat.additionalProperties)
-                        }
-
-                        fun type(type: Type) = type(JsonField.of(type))
-
-                        @JsonProperty("type")
-                        @ExcludeMissing
-                        fun type(type: JsonField<Type>) = apply { this.type = type }
-
-                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                            apply {
-                                this.additionalProperties.clear()
-                                this.additionalProperties.putAll(additionalProperties)
-                            }
-
-                        @JsonAnySetter
-                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                            this.additionalProperties.put(key, value)
-                        }
-
-                        fun putAllAdditionalProperties(
-                            additionalProperties: Map<String, JsonValue>
-                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
-
-                        fun build(): ResponseFormat =
-                            ResponseFormat(type, additionalProperties.toUnmodifiable())
-                    }
-
-                    class Type
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return other is Type && this.value == other.value
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-
-                        companion object {
-
-                            val JSON_OBJECT = Type(JsonField.of("json_object"))
-
-                            fun of(value: String) = Type(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            JSON_OBJECT,
-                        }
-
-                        enum class Value {
-                            JSON_OBJECT,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                JSON_OBJECT -> Value.JSON_OBJECT
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                JSON_OBJECT -> Known.JSON_OBJECT
-                                else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-                    }
-                }
-            }
-
-            @JsonDeserialize(builder = AnthropicModelParams.Builder::class)
-            @NoAutoDetect
-            class AnthropicModelParams
-            private constructor(
-                private val useCache: JsonField<Boolean>,
-                private val maxTokens: JsonField<Double>,
-                private val temperature: JsonField<Double>,
-                private val topP: JsonField<Double>,
-                private val topK: JsonField<Double>,
-                private val stopSequences: JsonField<List<String>>,
-                private val maxTokensToSample: JsonField<Double>,
-                private val additionalProperties: Map<String, JsonValue>,
-            ) {
-
-                private var validated: Boolean = false
-
-                private var hashCode: Int = 0
-
-                fun useCache(): Boolean? = useCache.getNullable("use_cache")
-
-                fun maxTokens(): Double = maxTokens.getRequired("max_tokens")
-
-                fun temperature(): Double = temperature.getRequired("temperature")
-
-                fun topP(): Double? = topP.getNullable("top_p")
-
-                fun topK(): Double? = topK.getNullable("top_k")
-
-                fun stopSequences(): List<String>? = stopSequences.getNullable("stop_sequences")
-
-                /** This is a legacy parameter that should not be used. */
-                fun maxTokensToSample(): Double? =
-                    maxTokensToSample.getNullable("max_tokens_to_sample")
-
-                @JsonProperty("use_cache") @ExcludeMissing fun _useCache() = useCache
-
-                @JsonProperty("max_tokens") @ExcludeMissing fun _maxTokens() = maxTokens
-
-                @JsonProperty("temperature") @ExcludeMissing fun _temperature() = temperature
-
-                @JsonProperty("top_p") @ExcludeMissing fun _topP() = topP
-
-                @JsonProperty("top_k") @ExcludeMissing fun _topK() = topK
-
-                @JsonProperty("stop_sequences") @ExcludeMissing fun _stopSequences() = stopSequences
-
-                /** This is a legacy parameter that should not be used. */
-                @JsonProperty("max_tokens_to_sample")
-                @ExcludeMissing
-                fun _maxTokensToSample() = maxTokensToSample
-
-                @JsonAnyGetter
-                @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                fun validate(): AnthropicModelParams = apply {
-                    if (!validated) {
-                        useCache()
-                        maxTokens()
-                        temperature()
-                        topP()
-                        topK()
-                        stopSequences()
-                        maxTokensToSample()
-                        validated = true
-                    }
-                }
-
-                fun toBuilder() = Builder().from(this)
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return other is AnthropicModelParams &&
-                        this.useCache == other.useCache &&
-                        this.maxTokens == other.maxTokens &&
-                        this.temperature == other.temperature &&
-                        this.topP == other.topP &&
-                        this.topK == other.topK &&
-                        this.stopSequences == other.stopSequences &&
-                        this.maxTokensToSample == other.maxTokensToSample &&
-                        this.additionalProperties == other.additionalProperties
-                }
-
-                override fun hashCode(): Int {
-                    if (hashCode == 0) {
-                        hashCode =
-                            Objects.hash(
-                                useCache,
-                                maxTokens,
-                                temperature,
-                                topP,
-                                topK,
-                                stopSequences,
-                                maxTokensToSample,
-                                additionalProperties,
-                            )
-                    }
-                    return hashCode
-                }
-
-                override fun toString() =
-                    "AnthropicModelParams{useCache=$useCache, maxTokens=$maxTokens, temperature=$temperature, topP=$topP, topK=$topK, stopSequences=$stopSequences, maxTokensToSample=$maxTokensToSample, additionalProperties=$additionalProperties}"
-
-                companion object {
-
-                    fun builder() = Builder()
-                }
-
-                class Builder {
-
-                    private var useCache: JsonField<Boolean> = JsonMissing.of()
-                    private var maxTokens: JsonField<Double> = JsonMissing.of()
-                    private var temperature: JsonField<Double> = JsonMissing.of()
-                    private var topP: JsonField<Double> = JsonMissing.of()
-                    private var topK: JsonField<Double> = JsonMissing.of()
-                    private var stopSequences: JsonField<List<String>> = JsonMissing.of()
-                    private var maxTokensToSample: JsonField<Double> = JsonMissing.of()
-                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                    internal fun from(anthropicModelParams: AnthropicModelParams) = apply {
-                        this.useCache = anthropicModelParams.useCache
-                        this.maxTokens = anthropicModelParams.maxTokens
-                        this.temperature = anthropicModelParams.temperature
-                        this.topP = anthropicModelParams.topP
-                        this.topK = anthropicModelParams.topK
-                        this.stopSequences = anthropicModelParams.stopSequences
-                        this.maxTokensToSample = anthropicModelParams.maxTokensToSample
-                        additionalProperties(anthropicModelParams.additionalProperties)
-                    }
-
-                    fun useCache(useCache: Boolean) = useCache(JsonField.of(useCache))
-
-                    @JsonProperty("use_cache")
-                    @ExcludeMissing
-                    fun useCache(useCache: JsonField<Boolean>) = apply { this.useCache = useCache }
-
-                    fun maxTokens(maxTokens: Double) = maxTokens(JsonField.of(maxTokens))
-
-                    @JsonProperty("max_tokens")
-                    @ExcludeMissing
-                    fun maxTokens(maxTokens: JsonField<Double>) = apply {
-                        this.maxTokens = maxTokens
-                    }
-
-                    fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
-
-                    @JsonProperty("temperature")
-                    @ExcludeMissing
-                    fun temperature(temperature: JsonField<Double>) = apply {
-                        this.temperature = temperature
-                    }
-
-                    fun topP(topP: Double) = topP(JsonField.of(topP))
-
-                    @JsonProperty("top_p")
-                    @ExcludeMissing
-                    fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
-
-                    fun topK(topK: Double) = topK(JsonField.of(topK))
-
-                    @JsonProperty("top_k")
-                    @ExcludeMissing
-                    fun topK(topK: JsonField<Double>) = apply { this.topK = topK }
-
-                    fun stopSequences(stopSequences: List<String>) =
-                        stopSequences(JsonField.of(stopSequences))
-
-                    @JsonProperty("stop_sequences")
-                    @ExcludeMissing
-                    fun stopSequences(stopSequences: JsonField<List<String>>) = apply {
-                        this.stopSequences = stopSequences
-                    }
-
-                    /** This is a legacy parameter that should not be used. */
-                    fun maxTokensToSample(maxTokensToSample: Double) =
-                        maxTokensToSample(JsonField.of(maxTokensToSample))
-
-                    /** This is a legacy parameter that should not be used. */
-                    @JsonProperty("max_tokens_to_sample")
-                    @ExcludeMissing
-                    fun maxTokensToSample(maxTokensToSample: JsonField<Double>) = apply {
-                        this.maxTokensToSample = maxTokensToSample
-                    }
-
-                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                        this.additionalProperties.clear()
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                    @JsonAnySetter
-                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        this.additionalProperties.put(key, value)
-                    }
-
-                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                        apply {
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
-
-                    fun build(): AnthropicModelParams =
-                        AnthropicModelParams(
-                            useCache,
-                            maxTokens,
-                            temperature,
-                            topP,
-                            topK,
-                            stopSequences.map { it.toUnmodifiable() },
-                            maxTokensToSample,
-                            additionalProperties.toUnmodifiable(),
-                        )
-                }
-            }
-
-            @JsonDeserialize(builder = GoogleModelParams.Builder::class)
-            @NoAutoDetect
-            class GoogleModelParams
-            private constructor(
-                private val useCache: JsonField<Boolean>,
-                private val temperature: JsonField<Double>,
-                private val maxOutputTokens: JsonField<Double>,
-                private val topP: JsonField<Double>,
-                private val topK: JsonField<Double>,
-                private val additionalProperties: Map<String, JsonValue>,
-            ) {
-
-                private var validated: Boolean = false
-
-                private var hashCode: Int = 0
-
-                fun useCache(): Boolean? = useCache.getNullable("use_cache")
-
-                fun temperature(): Double? = temperature.getNullable("temperature")
-
-                fun maxOutputTokens(): Double? = maxOutputTokens.getNullable("maxOutputTokens")
-
-                fun topP(): Double? = topP.getNullable("topP")
-
-                fun topK(): Double? = topK.getNullable("topK")
-
-                @JsonProperty("use_cache") @ExcludeMissing fun _useCache() = useCache
-
-                @JsonProperty("temperature") @ExcludeMissing fun _temperature() = temperature
-
-                @JsonProperty("maxOutputTokens")
-                @ExcludeMissing
-                fun _maxOutputTokens() = maxOutputTokens
-
-                @JsonProperty("topP") @ExcludeMissing fun _topP() = topP
-
-                @JsonProperty("topK") @ExcludeMissing fun _topK() = topK
-
-                @JsonAnyGetter
-                @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                fun validate(): GoogleModelParams = apply {
-                    if (!validated) {
-                        useCache()
-                        temperature()
-                        maxOutputTokens()
-                        topP()
-                        topK()
-                        validated = true
-                    }
-                }
-
-                fun toBuilder() = Builder().from(this)
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return other is GoogleModelParams &&
-                        this.useCache == other.useCache &&
-                        this.temperature == other.temperature &&
-                        this.maxOutputTokens == other.maxOutputTokens &&
-                        this.topP == other.topP &&
-                        this.topK == other.topK &&
-                        this.additionalProperties == other.additionalProperties
-                }
-
-                override fun hashCode(): Int {
-                    if (hashCode == 0) {
-                        hashCode =
-                            Objects.hash(
-                                useCache,
-                                temperature,
-                                maxOutputTokens,
-                                topP,
-                                topK,
-                                additionalProperties,
-                            )
-                    }
-                    return hashCode
-                }
-
-                override fun toString() =
-                    "GoogleModelParams{useCache=$useCache, temperature=$temperature, maxOutputTokens=$maxOutputTokens, topP=$topP, topK=$topK, additionalProperties=$additionalProperties}"
-
-                companion object {
-
-                    fun builder() = Builder()
-                }
-
-                class Builder {
-
-                    private var useCache: JsonField<Boolean> = JsonMissing.of()
-                    private var temperature: JsonField<Double> = JsonMissing.of()
-                    private var maxOutputTokens: JsonField<Double> = JsonMissing.of()
-                    private var topP: JsonField<Double> = JsonMissing.of()
-                    private var topK: JsonField<Double> = JsonMissing.of()
-                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                    internal fun from(googleModelParams: GoogleModelParams) = apply {
-                        this.useCache = googleModelParams.useCache
-                        this.temperature = googleModelParams.temperature
-                        this.maxOutputTokens = googleModelParams.maxOutputTokens
-                        this.topP = googleModelParams.topP
-                        this.topK = googleModelParams.topK
-                        additionalProperties(googleModelParams.additionalProperties)
-                    }
-
-                    fun useCache(useCache: Boolean) = useCache(JsonField.of(useCache))
-
-                    @JsonProperty("use_cache")
-                    @ExcludeMissing
-                    fun useCache(useCache: JsonField<Boolean>) = apply { this.useCache = useCache }
-
-                    fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
-
-                    @JsonProperty("temperature")
-                    @ExcludeMissing
-                    fun temperature(temperature: JsonField<Double>) = apply {
-                        this.temperature = temperature
-                    }
-
-                    fun maxOutputTokens(maxOutputTokens: Double) =
-                        maxOutputTokens(JsonField.of(maxOutputTokens))
-
-                    @JsonProperty("maxOutputTokens")
-                    @ExcludeMissing
-                    fun maxOutputTokens(maxOutputTokens: JsonField<Double>) = apply {
-                        this.maxOutputTokens = maxOutputTokens
-                    }
-
-                    fun topP(topP: Double) = topP(JsonField.of(topP))
-
-                    @JsonProperty("topP")
-                    @ExcludeMissing
-                    fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
-
-                    fun topK(topK: Double) = topK(JsonField.of(topK))
-
-                    @JsonProperty("topK")
-                    @ExcludeMissing
-                    fun topK(topK: JsonField<Double>) = apply { this.topK = topK }
-
-                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                        this.additionalProperties.clear()
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                    @JsonAnySetter
-                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        this.additionalProperties.put(key, value)
-                    }
-
-                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                        apply {
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
-
-                    fun build(): GoogleModelParams =
-                        GoogleModelParams(
-                            useCache,
-                            temperature,
-                            maxOutputTokens,
-                            topP,
-                            topK,
-                            additionalProperties.toUnmodifiable(),
-                        )
-                }
-            }
-
-            @JsonDeserialize(builder = WindowAiModelParams.Builder::class)
-            @NoAutoDetect
-            class WindowAiModelParams
-            private constructor(
-                private val useCache: JsonField<Boolean>,
-                private val temperature: JsonField<Double>,
-                private val topK: JsonField<Double>,
-                private val additionalProperties: Map<String, JsonValue>,
-            ) {
-
-                private var validated: Boolean = false
-
-                private var hashCode: Int = 0
-
-                fun useCache(): Boolean? = useCache.getNullable("use_cache")
-
-                fun temperature(): Double? = temperature.getNullable("temperature")
-
-                fun topK(): Double? = topK.getNullable("topK")
-
-                @JsonProperty("use_cache") @ExcludeMissing fun _useCache() = useCache
-
-                @JsonProperty("temperature") @ExcludeMissing fun _temperature() = temperature
-
-                @JsonProperty("topK") @ExcludeMissing fun _topK() = topK
-
-                @JsonAnyGetter
-                @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                fun validate(): WindowAiModelParams = apply {
-                    if (!validated) {
-                        useCache()
-                        temperature()
-                        topK()
-                        validated = true
-                    }
-                }
-
-                fun toBuilder() = Builder().from(this)
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return other is WindowAiModelParams &&
-                        this.useCache == other.useCache &&
-                        this.temperature == other.temperature &&
-                        this.topK == other.topK &&
-                        this.additionalProperties == other.additionalProperties
-                }
-
-                override fun hashCode(): Int {
-                    if (hashCode == 0) {
-                        hashCode =
-                            Objects.hash(
-                                useCache,
-                                temperature,
-                                topK,
-                                additionalProperties,
-                            )
-                    }
-                    return hashCode
-                }
-
-                override fun toString() =
-                    "WindowAiModelParams{useCache=$useCache, temperature=$temperature, topK=$topK, additionalProperties=$additionalProperties}"
-
-                companion object {
-
-                    fun builder() = Builder()
-                }
-
-                class Builder {
-
-                    private var useCache: JsonField<Boolean> = JsonMissing.of()
-                    private var temperature: JsonField<Double> = JsonMissing.of()
-                    private var topK: JsonField<Double> = JsonMissing.of()
-                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                    internal fun from(windowAiModelParams: WindowAiModelParams) = apply {
-                        this.useCache = windowAiModelParams.useCache
-                        this.temperature = windowAiModelParams.temperature
-                        this.topK = windowAiModelParams.topK
-                        additionalProperties(windowAiModelParams.additionalProperties)
-                    }
-
-                    fun useCache(useCache: Boolean) = useCache(JsonField.of(useCache))
-
-                    @JsonProperty("use_cache")
-                    @ExcludeMissing
-                    fun useCache(useCache: JsonField<Boolean>) = apply { this.useCache = useCache }
-
-                    fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
-
-                    @JsonProperty("temperature")
-                    @ExcludeMissing
-                    fun temperature(temperature: JsonField<Double>) = apply {
-                        this.temperature = temperature
-                    }
-
-                    fun topK(topK: Double) = topK(JsonField.of(topK))
-
-                    @JsonProperty("topK")
-                    @ExcludeMissing
-                    fun topK(topK: JsonField<Double>) = apply { this.topK = topK }
-
-                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                        this.additionalProperties.clear()
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                    @JsonAnySetter
-                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        this.additionalProperties.put(key, value)
-                    }
-
-                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                        apply {
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
-
-                    fun build(): WindowAiModelParams =
-                        WindowAiModelParams(
-                            useCache,
-                            temperature,
-                            topK,
-                            additionalProperties.toUnmodifiable(),
-                        )
-                }
-            }
-
-            @JsonDeserialize(builder = JsCompletionParams.Builder::class)
-            @NoAutoDetect
-            class JsCompletionParams
-            private constructor(
-                private val useCache: JsonField<Boolean>,
-                private val additionalProperties: Map<String, JsonValue>,
-            ) {
-
-                private var validated: Boolean = false
-
-                private var hashCode: Int = 0
-
-                fun useCache(): Boolean? = useCache.getNullable("use_cache")
-
-                @JsonProperty("use_cache") @ExcludeMissing fun _useCache() = useCache
-
-                @JsonAnyGetter
-                @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                fun validate(): JsCompletionParams = apply {
-                    if (!validated) {
-                        useCache()
-                        validated = true
-                    }
-                }
-
-                fun toBuilder() = Builder().from(this)
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return other is JsCompletionParams &&
-                        this.useCache == other.useCache &&
-                        this.additionalProperties == other.additionalProperties
-                }
-
-                override fun hashCode(): Int {
-                    if (hashCode == 0) {
-                        hashCode = Objects.hash(useCache, additionalProperties)
-                    }
-                    return hashCode
-                }
-
-                override fun toString() =
-                    "JsCompletionParams{useCache=$useCache, additionalProperties=$additionalProperties}"
-
-                companion object {
-
-                    fun builder() = Builder()
-                }
-
-                class Builder {
-
-                    private var useCache: JsonField<Boolean> = JsonMissing.of()
-                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                    internal fun from(jsCompletionParams: JsCompletionParams) = apply {
-                        this.useCache = jsCompletionParams.useCache
-                        additionalProperties(jsCompletionParams.additionalProperties)
-                    }
-
-                    fun useCache(useCache: Boolean) = useCache(JsonField.of(useCache))
-
-                    @JsonProperty("use_cache")
-                    @ExcludeMissing
-                    fun useCache(useCache: JsonField<Boolean>) = apply { this.useCache = useCache }
-
-                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                        this.additionalProperties.clear()
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                    @JsonAnySetter
-                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        this.additionalProperties.put(key, value)
-                    }
-
-                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                        apply {
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
-
-                    fun build(): JsCompletionParams =
-                        JsCompletionParams(useCache, additionalProperties.toUnmodifiable())
-                }
-            }
-        }
-    }
-
-    @JsonDeserialize(builder = Origin.Builder::class)
-    @NoAutoDetect
-    class Origin
-    private constructor(
-        private val promptId: JsonField<String>,
-        private val projectId: JsonField<String>,
-        private val promptVersion: JsonField<String>,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
 
         private var validated: Boolean = false
 
-        private var hashCode: Int = 0
-
-        fun promptId(): String? = promptId.getNullable("prompt_id")
-
-        fun projectId(): String? = projectId.getNullable("project_id")
-
-        fun promptVersion(): String? = promptVersion.getNullable("prompt_version")
-
-        @JsonProperty("prompt_id") @ExcludeMissing fun _promptId() = promptId
-
-        @JsonProperty("project_id") @ExcludeMissing fun _projectId() = projectId
-
-        @JsonProperty("prompt_version") @ExcludeMissing fun _promptVersion() = promptVersion
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
         fun validate(): Origin = apply {
-            if (!validated) {
-                promptId()
-                projectId()
-                promptVersion()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            projectId()
+            promptId()
+            promptVersion()
+            validated = true
         }
 
-        fun toBuilder() = Builder().from(this)
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (if (projectId.asKnown() == null) 0 else 1) +
+                (if (promptId.asKnown() == null) 0 else 1) +
+                (if (promptVersion.asKnown() == null) 0 else 1)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1961,284 +507,268 @@ private constructor(
             }
 
             return other is Origin &&
-                this.promptId == other.promptId &&
-                this.projectId == other.projectId &&
-                this.promptVersion == other.promptVersion &&
-                this.additionalProperties == other.additionalProperties
+                projectId == other.projectId &&
+                promptId == other.promptId &&
+                promptVersion == other.promptVersion &&
+                additionalProperties == other.additionalProperties
         }
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        promptId,
-                        projectId,
-                        promptVersion,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
+        private val hashCode: Int by lazy {
+            Objects.hash(projectId, promptId, promptVersion, additionalProperties)
         }
+
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Origin{promptId=$promptId, projectId=$projectId, promptVersion=$promptVersion, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var promptId: JsonField<String> = JsonMissing.of()
-            private var projectId: JsonField<String> = JsonMissing.of()
-            private var promptVersion: JsonField<String> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(origin: Origin) = apply {
-                this.promptId = origin.promptId
-                this.projectId = origin.projectId
-                this.promptVersion = origin.promptVersion
-                additionalProperties(origin.additionalProperties)
-            }
-
-            fun promptId(promptId: String) = promptId(JsonField.of(promptId))
-
-            @JsonProperty("prompt_id")
-            @ExcludeMissing
-            fun promptId(promptId: JsonField<String>) = apply { this.promptId = promptId }
-
-            fun projectId(projectId: String) = projectId(JsonField.of(projectId))
-
-            @JsonProperty("project_id")
-            @ExcludeMissing
-            fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
-
-            fun promptVersion(promptVersion: String) = promptVersion(JsonField.of(promptVersion))
-
-            @JsonProperty("prompt_version")
-            @ExcludeMissing
-            fun promptVersion(promptVersion: JsonField<String>) = apply {
-                this.promptVersion = promptVersion
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            @JsonAnySetter
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun build(): Origin =
-                Origin(
-                    promptId,
-                    projectId,
-                    promptVersion,
-                    additionalProperties.toUnmodifiable(),
-                )
-        }
+            "Origin{projectId=$projectId, promptId=$promptId, promptVersion=$promptVersion, additionalProperties=$additionalProperties}"
     }
 
-    @JsonDeserialize(builder = Parser.Builder::class)
-    @NoAutoDetect
     class Parser
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val choiceScores: JsonField<ChoiceScores>,
         private val type: JsonField<Type>,
         private val useCot: JsonField<Boolean>,
-        private val choiceScores: JsonField<ChoiceScores>,
-        private val additionalProperties: Map<String, JsonValue>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
-        private var validated: Boolean = false
+        @JsonCreator
+        private constructor(
+            @JsonProperty("choice_scores")
+            @ExcludeMissing
+            choiceScores: JsonField<ChoiceScores> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+            @JsonProperty("use_cot") @ExcludeMissing useCot: JsonField<Boolean> = JsonMissing.of(),
+        ) : this(choiceScores, type, useCot, mutableMapOf())
 
-        private var hashCode: Int = 0
-
-        fun type(): Type = type.getRequired("type")
-
-        fun useCot(): Boolean = useCot.getRequired("use_cot")
-
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun choiceScores(): ChoiceScores = choiceScores.getRequired("choice_scores")
 
-        @JsonProperty("type") @ExcludeMissing fun _type() = type
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun type(): Type = type.getRequired("type")
 
-        @JsonProperty("use_cot") @ExcludeMissing fun _useCot() = useCot
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun useCot(): Boolean = useCot.getRequired("use_cot")
 
-        @JsonProperty("choice_scores") @ExcludeMissing fun _choiceScores() = choiceScores
+        /**
+         * Returns the raw JSON value of [choiceScores].
+         *
+         * Unlike [choiceScores], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("choice_scores")
+        @ExcludeMissing
+        fun _choiceScores(): JsonField<ChoiceScores> = choiceScores
+
+        /**
+         * Returns the raw JSON value of [type].
+         *
+         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+        /**
+         * Returns the raw JSON value of [useCot].
+         *
+         * Unlike [useCot], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("use_cot") @ExcludeMissing fun _useCot(): JsonField<Boolean> = useCot
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun validate(): Parser = apply {
-            if (!validated) {
-                type()
-                useCot()
-                choiceScores().validate()
-                validated = true
-            }
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Parser &&
-                this.type == other.type &&
-                this.useCot == other.useCot &&
-                this.choiceScores == other.choiceScores &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        type,
-                        useCot,
-                        choiceScores,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "Parser{type=$type, useCot=$useCot, choiceScores=$choiceScores, additionalProperties=$additionalProperties}"
-
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Parser].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .choiceScores()
+             * .type()
+             * .useCot()
+             * ```
+             */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [Parser]. */
+        class Builder internal constructor() {
 
-            private var type: JsonField<Type> = JsonMissing.of()
-            private var useCot: JsonField<Boolean> = JsonMissing.of()
-            private var choiceScores: JsonField<ChoiceScores> = JsonMissing.of()
+            private var choiceScores: JsonField<ChoiceScores>? = null
+            private var type: JsonField<Type>? = null
+            private var useCot: JsonField<Boolean>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(parser: Parser) = apply {
-                this.type = parser.type
-                this.useCot = parser.useCot
-                this.choiceScores = parser.choiceScores
-                additionalProperties(parser.additionalProperties)
+                choiceScores = parser.choiceScores
+                type = parser.type
+                useCot = parser.useCot
+                additionalProperties = parser.additionalProperties.toMutableMap()
             }
-
-            fun type(type: Type) = type(JsonField.of(type))
-
-            @JsonProperty("type")
-            @ExcludeMissing
-            fun type(type: JsonField<Type>) = apply { this.type = type }
-
-            fun useCot(useCot: Boolean) = useCot(JsonField.of(useCot))
-
-            @JsonProperty("use_cot")
-            @ExcludeMissing
-            fun useCot(useCot: JsonField<Boolean>) = apply { this.useCot = useCot }
 
             fun choiceScores(choiceScores: ChoiceScores) = choiceScores(JsonField.of(choiceScores))
 
-            @JsonProperty("choice_scores")
-            @ExcludeMissing
+            /**
+             * Sets [Builder.choiceScores] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.choiceScores] with a well-typed [ChoiceScores] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun choiceScores(choiceScores: JsonField<ChoiceScores>) = apply {
                 this.choiceScores = choiceScores
             }
 
+            fun type(type: Type) = type(JsonField.of(type))
+
+            /**
+             * Sets [Builder.type] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun type(type: JsonField<Type>) = apply { this.type = type }
+
+            fun useCot(useCot: Boolean) = useCot(JsonField.of(useCot))
+
+            /**
+             * Sets [Builder.useCot] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.useCot] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun useCot(useCot: JsonField<Boolean>) = apply { this.useCot = useCot }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Parser].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .choiceScores()
+             * .type()
+             * .useCot()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Parser =
                 Parser(
-                    type,
-                    useCot,
-                    choiceScores,
-                    additionalProperties.toUnmodifiable(),
+                    checkRequired("choiceScores", choiceScores),
+                    checkRequired("type", type),
+                    checkRequired("useCot", useCot),
+                    additionalProperties.toMutableMap(),
                 )
         }
 
-        @JsonDeserialize(builder = ChoiceScores.Builder::class)
-        @NoAutoDetect
+        private var validated: Boolean = false
+
+        fun validate(): Parser = apply {
+            if (validated) {
+                return@apply
+            }
+
+            choiceScores().validate()
+            type().validate()
+            useCot()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (choiceScores.asKnown()?.validity() ?: 0) +
+                (type.asKnown()?.validity() ?: 0) +
+                (if (useCot.asKnown() == null) 0 else 1)
+
         class ChoiceScores
+        @JsonCreator
         private constructor(
-            private val additionalProperties: Map<String, JsonValue>,
+            @com.fasterxml.jackson.annotation.JsonValue
+            private val additionalProperties: Map<String, JsonValue>
         ) {
-
-            private var validated: Boolean = false
-
-            private var hashCode: Int = 0
 
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
-            fun validate(): ChoiceScores = apply {
-                if (!validated) {
-                    validated = true
-                }
-            }
-
             fun toBuilder() = Builder().from(this)
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is ChoiceScores &&
-                    this.additionalProperties == other.additionalProperties
-            }
-
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode = Objects.hash(additionalProperties)
-                }
-                return hashCode
-            }
-
-            override fun toString() = "ChoiceScores{additionalProperties=$additionalProperties}"
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [ChoiceScores]. */
                 fun builder() = Builder()
             }
 
-            class Builder {
+            /** A builder for [ChoiceScores]. */
+            class Builder internal constructor() {
 
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 internal fun from(choiceScores: ChoiceScores) = apply {
-                    additionalProperties(choiceScores.additionalProperties)
+                    additionalProperties = choiceScores.additionalProperties.toMutableMap()
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
+                    putAllAdditionalProperties(additionalProperties)
                 }
 
-                @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
+                    additionalProperties.put(key, value)
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -2246,60 +776,203 @@ private constructor(
                         this.additionalProperties.putAll(additionalProperties)
                     }
 
-                fun build(): ChoiceScores = ChoiceScores(additionalProperties.toUnmodifiable())
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [ChoiceScores].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): ChoiceScores = ChoiceScores(additionalProperties.toImmutable())
             }
-        }
 
-        class Type
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+            private var validated: Boolean = false
 
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+            fun validate(): ChoiceScores = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return other is Type && this.value == other.value
+                return other is ChoiceScores && additionalProperties == other.additionalProperties
             }
 
-            override fun hashCode() = value.hashCode()
+            private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
 
-            override fun toString() = value.toString()
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() = "ChoiceScores{additionalProperties=$additionalProperties}"
+        }
+
+        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
 
-                val LLM_CLASSIFIER = Type(JsonField.of("llm_classifier"))
+                val LLM_CLASSIFIER = of("llm_classifier")
 
                 fun of(value: String) = Type(JsonField.of(value))
             }
 
+            /** An enum containing [Type]'s known values. */
             enum class Known {
-                LLM_CLASSIFIER,
+                LLM_CLASSIFIER
             }
 
+            /**
+             * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Type] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 LLM_CLASSIFIER,
+                /** An enum member indicating that [Type] was instantiated with an unknown value. */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     LLM_CLASSIFIER -> Value.LLM_CLASSIFIER
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
             fun known(): Known =
                 when (this) {
                     LLM_CLASSIFIER -> Known.LLM_CLASSIFIER
                     else -> throw BraintrustInvalidDataException("Unknown Type: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value does not have
+             *   the expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
+
+            private var validated: Boolean = false
+
+            fun validate(): Type = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Type && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Parser &&
+                choiceScores == other.choiceScores &&
+                type == other.type &&
+                useCot == other.useCot &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(choiceScores, type, useCot, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Parser{choiceScores=$choiceScores, type=$type, useCot=$useCot, additionalProperties=$additionalProperties}"
     }
 
     @JsonDeserialize(using = Prompt.Deserializer::class)
@@ -2308,177 +981,468 @@ private constructor(
     private constructor(
         private val completion: Completion? = null,
         private val chat: Chat? = null,
-        private val nullableVariant: NullableVariant? = null,
         private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun completion(): Completion? = completion
 
         fun chat(): Chat? = chat
 
-        fun nullableVariant(): NullableVariant? = nullableVariant
-
         fun isCompletion(): Boolean = completion != null
 
         fun isChat(): Boolean = chat != null
-
-        fun isNullableVariant(): Boolean = nullableVariant != null
 
         fun asCompletion(): Completion = completion.getOrThrow("completion")
 
         fun asChat(): Chat = chat.getOrThrow("chat")
 
-        fun asNullableVariant(): NullableVariant = nullableVariant.getOrThrow("nullableVariant")
-
         fun _json(): JsonValue? = _json
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 completion != null -> visitor.visitCompletion(completion)
                 chat != null -> visitor.visitChat(chat)
-                nullableVariant != null -> visitor.visitNullableVariant(nullableVariant)
                 else -> visitor.unknown(_json)
             }
-        }
+
+        private var validated: Boolean = false
 
         fun validate(): Prompt = apply {
-            if (!validated) {
-                if (completion == null && chat == null && nullableVariant == null) {
-                    throw BraintrustInvalidDataException("Unknown Prompt: $_json")
-                }
-                completion?.validate()
-                chat?.validate()
-                nullableVariant?.validate()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitCompletion(completion: Completion) {
+                        completion.validate()
+                    }
+
+                    override fun visitChat(chat: Chat) {
+                        chat.validate()
+                    }
+                }
+            )
+            validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitCompletion(completion: Completion) = completion.validity()
+
+                    override fun visitChat(chat: Chat) = chat.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is Prompt &&
-                this.completion == other.completion &&
-                this.chat == other.chat &&
-                this.nullableVariant == other.nullableVariant
+            return other is Prompt && completion == other.completion && chat == other.chat
         }
 
-        override fun hashCode(): Int {
-            return Objects.hash(
-                completion,
-                chat,
-                nullableVariant,
-            )
-        }
+        override fun hashCode(): Int = Objects.hash(completion, chat)
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 completion != null -> "Prompt{completion=$completion}"
                 chat != null -> "Prompt{chat=$chat}"
-                nullableVariant != null -> "Prompt{nullableVariant=$nullableVariant}"
                 _json != null -> "Prompt{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Prompt")
             }
-        }
 
         companion object {
 
             fun ofCompletion(completion: Completion) = Prompt(completion = completion)
 
             fun ofChat(chat: Chat) = Prompt(chat = chat)
-
-            fun ofNullableVariant(nullableVariant: NullableVariant) =
-                Prompt(nullableVariant = nullableVariant)
         }
 
+        /** An interface that defines how to map each variant of [Prompt] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitCompletion(completion: Completion): T
 
             fun visitChat(chat: Chat): T
 
-            fun visitNullableVariant(nullableVariant: NullableVariant): T
-
+            /**
+             * Maps an unknown variant of [Prompt] to a value of type [T].
+             *
+             * An instance of [Prompt] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws BraintrustInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown Prompt: $json")
             }
         }
 
-        class Deserializer : BaseDeserializer<Prompt>(Prompt::class) {
+        internal class Deserializer : BaseDeserializer<Prompt>(Prompt::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Prompt {
                 val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<Completion>()) { it.validate() }
-                    ?.let {
-                        return Prompt(completion = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<Chat>()) { it.validate() }
-                    ?.let {
-                        return Prompt(chat = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<NullableVariant>()) { it.validate() }
-                    ?.let {
-                        return Prompt(nullableVariant = it, _json = json)
-                    }
 
-                return Prompt(_json = json)
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<Completion>())?.let {
+                                Prompt(completion = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<Chat>())?.let {
+                                Prompt(chat = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Prompt(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
             }
         }
 
-        class Serializer : BaseSerializer<Prompt>(Prompt::class) {
+        internal class Serializer : BaseSerializer<Prompt>(Prompt::class) {
 
             override fun serialize(
                 value: Prompt,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.completion != null -> generator.writeObject(value.completion)
                     value.chat != null -> generator.writeObject(value.chat)
-                    value.nullableVariant != null -> generator.writeObject(value.nullableVariant)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Prompt")
                 }
             }
         }
 
-        @JsonDeserialize(builder = Completion.Builder::class)
-        @NoAutoDetect
         class Completion
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
-            private val type: JsonField<Type>,
             private val content: JsonField<String>,
-            private val additionalProperties: Map<String, JsonValue>,
+            private val type: JsonField<Type>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
-            private var validated: Boolean = false
+            @JsonCreator
+            private constructor(
+                @JsonProperty("content")
+                @ExcludeMissing
+                content: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+            ) : this(content, type, mutableMapOf())
 
-            private var hashCode: Int = 0
-
-            fun type(): Type = type.getRequired("type")
-
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun content(): String = content.getRequired("content")
 
-            @JsonProperty("type") @ExcludeMissing fun _type() = type
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun type(): Type = type.getRequired("type")
 
-            @JsonProperty("content") @ExcludeMissing fun _content() = content
+            /**
+             * Returns the raw JSON value of [content].
+             *
+             * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<String> = content
+
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
 
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            fun validate(): Completion = apply {
-                if (!validated) {
-                    type()
-                    content()
-                    validated = true
-                }
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Completion].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .content()
+                 * .type()
+                 * ```
+                 */
+                fun builder() = Builder()
+            }
+
+            /** A builder for [Completion]. */
+            class Builder internal constructor() {
+
+                private var content: JsonField<String>? = null
+                private var type: JsonField<Type>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                internal fun from(completion: Completion) = apply {
+                    content = completion.content
+                    type = completion.type
+                    additionalProperties = completion.additionalProperties.toMutableMap()
+                }
+
+                fun content(content: String) = content(JsonField.of(content))
+
+                /**
+                 * Sets [Builder.content] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.content] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun content(content: JsonField<String>) = apply { this.content = content }
+
+                fun type(type: Type) = type(JsonField.of(type))
+
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonField<Type>) = apply { this.type = type }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Completion].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .content()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Completion =
+                    Completion(
+                        checkRequired("content", content),
+                        checkRequired("type", type),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Completion = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                content()
+                type().validate()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (content.asKnown() == null) 0 else 1) + (type.asKnown()?.validity() ?: 0)
+
+            class Type @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    val COMPLETION = of("completion")
+
+                    fun of(value: String) = Type(JsonField.of(value))
+                }
+
+                /** An enum containing [Type]'s known values. */
+                enum class Known {
+                    COMPLETION
+                }
+
+                /**
+                 * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Type] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    COMPLETION,
+                    /**
+                     * An enum member indicating that [Type] was instantiated with an unknown value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        COMPLETION -> Value.COMPLETION
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        COMPLETION -> Known.COMPLETION
+                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
+
+                private var validated: Boolean = false
+
+                fun validate(): Type = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Type && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2486,246 +1450,197 @@ private constructor(
                 }
 
                 return other is Completion &&
-                    this.type == other.type &&
-                    this.content == other.content &&
-                    this.additionalProperties == other.additionalProperties
+                    content == other.content &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
             }
 
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode =
-                        Objects.hash(
-                            type,
-                            content,
-                            additionalProperties,
-                        )
-                }
-                return hashCode
-            }
+            private val hashCode: Int by lazy { Objects.hash(content, type, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Completion{type=$type, content=$content, additionalProperties=$additionalProperties}"
-
-            companion object {
-
-                fun builder() = Builder()
-            }
-
-            class Builder {
-
-                private var type: JsonField<Type> = JsonMissing.of()
-                private var content: JsonField<String> = JsonMissing.of()
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                internal fun from(completion: Completion) = apply {
-                    this.type = completion.type
-                    this.content = completion.content
-                    additionalProperties(completion.additionalProperties)
-                }
-
-                fun type(type: Type) = type(JsonField.of(type))
-
-                @JsonProperty("type")
-                @ExcludeMissing
-                fun type(type: JsonField<Type>) = apply { this.type = type }
-
-                fun content(content: String) = content(JsonField.of(content))
-
-                @JsonProperty("content")
-                @ExcludeMissing
-                fun content(content: JsonField<String>) = apply { this.content = content }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
-                }
-
-                @JsonAnySetter
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun build(): Completion =
-                    Completion(
-                        type,
-                        content,
-                        additionalProperties.toUnmodifiable(),
-                    )
-            }
-
-            class Type
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
-
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return other is Type && this.value == other.value
-                }
-
-                override fun hashCode() = value.hashCode()
-
-                override fun toString() = value.toString()
-
-                companion object {
-
-                    val COMPLETION = Type(JsonField.of("completion"))
-
-                    fun of(value: String) = Type(JsonField.of(value))
-                }
-
-                enum class Known {
-                    COMPLETION,
-                }
-
-                enum class Value {
-                    COMPLETION,
-                    _UNKNOWN,
-                }
-
-                fun value(): Value =
-                    when (this) {
-                        COMPLETION -> Value.COMPLETION
-                        else -> Value._UNKNOWN
-                    }
-
-                fun known(): Known =
-                    when (this) {
-                        COMPLETION -> Known.COMPLETION
-                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                    }
-
-                fun asString(): String = _value().asStringOrThrow()
-            }
+                "Completion{content=$content, type=$type, additionalProperties=$additionalProperties}"
         }
 
-        @JsonDeserialize(builder = Chat.Builder::class)
-        @NoAutoDetect
         class Chat
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
-            private val type: JsonField<Type>,
             private val messages: JsonField<List<Message>>,
+            private val type: JsonField<Type>,
             private val tools: JsonField<String>,
-            private val additionalProperties: Map<String, JsonValue>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
-            private var validated: Boolean = false
+            @JsonCreator
+            private constructor(
+                @JsonProperty("messages")
+                @ExcludeMissing
+                messages: JsonField<List<Message>> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+                @JsonProperty("tools") @ExcludeMissing tools: JsonField<String> = JsonMissing.of(),
+            ) : this(messages, type, tools, mutableMapOf())
 
-            private var hashCode: Int = 0
-
-            fun type(): Type = type.getRequired("type")
-
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun messages(): List<Message> = messages.getRequired("messages")
 
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun type(): Type = type.getRequired("type")
+
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g.
+             *   if the server responded with an unexpected value).
+             */
             fun tools(): String? = tools.getNullable("tools")
 
-            @JsonProperty("type") @ExcludeMissing fun _type() = type
+            /**
+             * Returns the raw JSON value of [messages].
+             *
+             * Unlike [messages], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("messages")
+            @ExcludeMissing
+            fun _messages(): JsonField<List<Message>> = messages
 
-            @JsonProperty("messages") @ExcludeMissing fun _messages() = messages
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
-            @JsonProperty("tools") @ExcludeMissing fun _tools() = tools
+            /**
+             * Returns the raw JSON value of [tools].
+             *
+             * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<String> = tools
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
 
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            fun validate(): Chat = apply {
-                if (!validated) {
-                    type()
-                    messages()
-                    tools()
-                    validated = true
-                }
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Chat &&
-                    this.type == other.type &&
-                    this.messages == other.messages &&
-                    this.tools == other.tools &&
-                    this.additionalProperties == other.additionalProperties
-            }
-
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode =
-                        Objects.hash(
-                            type,
-                            messages,
-                            tools,
-                            additionalProperties,
-                        )
-                }
-                return hashCode
-            }
-
-            override fun toString() =
-                "Chat{type=$type, messages=$messages, tools=$tools, additionalProperties=$additionalProperties}"
-
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Chat].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .messages()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
-            class Builder {
+            /** A builder for [Chat]. */
+            class Builder internal constructor() {
 
-                private var type: JsonField<Type> = JsonMissing.of()
-                private var messages: JsonField<List<Message>> = JsonMissing.of()
+                private var messages: JsonField<MutableList<Message>>? = null
+                private var type: JsonField<Type>? = null
                 private var tools: JsonField<String> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 internal fun from(chat: Chat) = apply {
-                    this.type = chat.type
-                    this.messages = chat.messages
-                    this.tools = chat.tools
-                    additionalProperties(chat.additionalProperties)
+                    messages = chat.messages.map { it.toMutableList() }
+                    type = chat.type
+                    tools = chat.tools
+                    additionalProperties = chat.additionalProperties.toMutableMap()
                 }
-
-                fun type(type: Type) = type(JsonField.of(type))
-
-                @JsonProperty("type")
-                @ExcludeMissing
-                fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 fun messages(messages: List<Message>) = messages(JsonField.of(messages))
 
-                @JsonProperty("messages")
-                @ExcludeMissing
+                /**
+                 * Sets [Builder.messages] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.messages] with a well-typed `List<Message>`
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
                 fun messages(messages: JsonField<List<Message>>) = apply {
-                    this.messages = messages
+                    this.messages = messages.map { it.toMutableList() }
                 }
+
+                /**
+                 * Adds a single [Message] to [messages].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addMessage(message: Message) = apply {
+                    messages =
+                        (messages ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("messages", it).add(message)
+                        }
+                }
+
+                /** Alias for calling [addMessage] with `Message.ofSystem(system)`. */
+                fun addMessage(system: Message.System) = addMessage(Message.ofSystem(system))
+
+                /** Alias for calling [addMessage] with `Message.ofUser(user)`. */
+                fun addMessage(user: Message.User) = addMessage(Message.ofUser(user))
+
+                /** Alias for calling [addMessage] with `Message.ofAssistant(assistant)`. */
+                fun addMessage(assistant: Message.Assistant) =
+                    addMessage(Message.ofAssistant(assistant))
+
+                /** Alias for calling [addMessage] with `Message.ofTool(tool)`. */
+                fun addMessage(tool: Message.Tool) = addMessage(Message.ofTool(tool))
+
+                /** Alias for calling [addMessage] with `Message.ofFunction(function)`. */
+                fun addMessage(function: Message.Function) =
+                    addMessage(Message.ofFunction(function))
+
+                /** Alias for calling [addMessage] with `Message.ofFallback(fallback)`. */
+                fun addMessage(fallback: Message.Fallback) =
+                    addMessage(Message.ofFallback(fallback))
+
+                fun type(type: Type) = type(JsonField.of(type))
+
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonField<Type>) = apply { this.type = type }
 
                 fun tools(tools: String) = tools(JsonField.of(tools))
 
-                @JsonProperty("tools")
-                @ExcludeMissing
+                /**
+                 * Sets [Builder.tools] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.tools] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun tools(tools: JsonField<String>) = apply { this.tools = tools }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
+                    putAllAdditionalProperties(additionalProperties)
                 }
 
-                @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
+                    additionalProperties.put(key, value)
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -2733,14 +1648,67 @@ private constructor(
                         this.additionalProperties.putAll(additionalProperties)
                     }
 
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Chat].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .messages()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Chat =
                     Chat(
-                        type,
-                        messages.map { it.toUnmodifiable() },
+                        checkRequired("messages", messages).map { it.toImmutable() },
+                        checkRequired("type", type),
                         tools,
-                        additionalProperties.toUnmodifiable(),
+                        additionalProperties.toMutableMap(),
                     )
             }
+
+            private var validated: Boolean = false
+
+            fun validate(): Chat = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                messages().forEach { it.validate() }
+                type().validate()
+                tools()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (messages.asKnown()?.sumOf { it.validity().toInt() } ?: 0) +
+                    (type.asKnown()?.validity() ?: 0) +
+                    (if (tools.asKnown() == null) 0 else 1)
 
             @JsonDeserialize(using = Message.Deserializer::class)
             @JsonSerialize(using = Message.Serializer::class)
@@ -2754,8 +1722,6 @@ private constructor(
                 private val fallback: Fallback? = null,
                 private val _json: JsonValue? = null,
             ) {
-
-                private var validated: Boolean = false
 
                 fun system(): System? = system
 
@@ -2795,8 +1761,8 @@ private constructor(
 
                 fun _json(): JsonValue? = _json
 
-                fun <T> accept(visitor: Visitor<T>): T {
-                    return when {
+                fun <T> accept(visitor: Visitor<T>): T =
+                    when {
                         system != null -> visitor.visitSystem(system)
                         user != null -> visitor.visitUser(user)
                         assistant != null -> visitor.visitAssistant(assistant)
@@ -2805,29 +1771,76 @@ private constructor(
                         fallback != null -> visitor.visitFallback(fallback)
                         else -> visitor.unknown(_json)
                     }
-                }
+
+                private var validated: Boolean = false
 
                 fun validate(): Message = apply {
-                    if (!validated) {
-                        if (
-                            system == null &&
-                                user == null &&
-                                assistant == null &&
-                                tool == null &&
-                                function == null &&
-                                fallback == null
-                        ) {
-                            throw BraintrustInvalidDataException("Unknown Message: $_json")
-                        }
-                        system?.validate()
-                        user?.validate()
-                        assistant?.validate()
-                        tool?.validate()
-                        function?.validate()
-                        fallback?.validate()
-                        validated = true
+                    if (validated) {
+                        return@apply
                     }
+
+                    accept(
+                        object : Visitor<Unit> {
+                            override fun visitSystem(system: System) {
+                                system.validate()
+                            }
+
+                            override fun visitUser(user: User) {
+                                user.validate()
+                            }
+
+                            override fun visitAssistant(assistant: Assistant) {
+                                assistant.validate()
+                            }
+
+                            override fun visitTool(tool: Tool) {
+                                tool.validate()
+                            }
+
+                            override fun visitFunction(function: Function) {
+                                function.validate()
+                            }
+
+                            override fun visitFallback(fallback: Fallback) {
+                                fallback.validate()
+                            }
+                        }
+                    )
+                    validated = true
                 }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int =
+                    accept(
+                        object : Visitor<Int> {
+                            override fun visitSystem(system: System) = system.validity()
+
+                            override fun visitUser(user: User) = user.validity()
+
+                            override fun visitAssistant(assistant: Assistant) = assistant.validity()
+
+                            override fun visitTool(tool: Tool) = tool.validity()
+
+                            override fun visitFunction(function: Function) = function.validity()
+
+                            override fun visitFallback(fallback: Fallback) = fallback.validity()
+
+                            override fun unknown(json: JsonValue?) = 0
+                        }
+                    )
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -2835,27 +1848,19 @@ private constructor(
                     }
 
                     return other is Message &&
-                        this.system == other.system &&
-                        this.user == other.user &&
-                        this.assistant == other.assistant &&
-                        this.tool == other.tool &&
-                        this.function == other.function &&
-                        this.fallback == other.fallback
+                        system == other.system &&
+                        user == other.user &&
+                        assistant == other.assistant &&
+                        tool == other.tool &&
+                        function == other.function &&
+                        fallback == other.fallback
                 }
 
-                override fun hashCode(): Int {
-                    return Objects.hash(
-                        system,
-                        user,
-                        assistant,
-                        tool,
-                        function,
-                        fallback,
-                    )
-                }
+                override fun hashCode(): Int =
+                    Objects.hash(system, user, assistant, tool, function, fallback)
 
-                override fun toString(): String {
-                    return when {
+                override fun toString(): String =
+                    when {
                         system != null -> "Message{system=$system}"
                         user != null -> "Message{user=$user}"
                         assistant != null -> "Message{assistant=$assistant}"
@@ -2865,7 +1870,6 @@ private constructor(
                         _json != null -> "Message{_unknown=$_json}"
                         else -> throw IllegalStateException("Invalid Message")
                     }
-                }
 
                 companion object {
 
@@ -2882,6 +1886,10 @@ private constructor(
                     fun ofFallback(fallback: Fallback) = Message(fallback = fallback)
                 }
 
+                /**
+                 * An interface that defines how to map each variant of [Message] to a value of type
+                 * [T].
+                 */
                 interface Visitor<out T> {
 
                     fun visitSystem(system: System): T
@@ -2896,50 +1904,70 @@ private constructor(
 
                     fun visitFallback(fallback: Fallback): T
 
+                    /**
+                     * Maps an unknown variant of [Message] to a value of type [T].
+                     *
+                     * An instance of [Message] can contain an unknown variant if it was
+                     * deserialized from data that doesn't match any known variant. For example, if
+                     * the SDK is on an older version than the API, then the API may respond with
+                     * new variants that the SDK is unaware of.
+                     *
+                     * @throws BraintrustInvalidDataException in the default implementation.
+                     */
                     fun unknown(json: JsonValue?): T {
                         throw BraintrustInvalidDataException("Unknown Message: $json")
                     }
                 }
 
-                class Deserializer : BaseDeserializer<Message>(Message::class) {
+                internal class Deserializer : BaseDeserializer<Message>(Message::class) {
 
                     override fun ObjectCodec.deserialize(node: JsonNode): Message {
                         val json = JsonValue.fromJsonNode(node)
-                        tryDeserialize(node, jacksonTypeRef<System>()) { it.validate() }
-                            ?.let {
-                                return Message(system = it, _json = json)
-                            }
-                        tryDeserialize(node, jacksonTypeRef<User>()) { it.validate() }
-                            ?.let {
-                                return Message(user = it, _json = json)
-                            }
-                        tryDeserialize(node, jacksonTypeRef<Assistant>()) { it.validate() }
-                            ?.let {
-                                return Message(assistant = it, _json = json)
-                            }
-                        tryDeserialize(node, jacksonTypeRef<Tool>()) { it.validate() }
-                            ?.let {
-                                return Message(tool = it, _json = json)
-                            }
-                        tryDeserialize(node, jacksonTypeRef<Function>()) { it.validate() }
-                            ?.let {
-                                return Message(function = it, _json = json)
-                            }
-                        tryDeserialize(node, jacksonTypeRef<Fallback>()) { it.validate() }
-                            ?.let {
-                                return Message(fallback = it, _json = json)
-                            }
 
-                        return Message(_json = json)
+                        val bestMatches =
+                            sequenceOf(
+                                    tryDeserialize(node, jacksonTypeRef<System>())?.let {
+                                        Message(system = it, _json = json)
+                                    },
+                                    tryDeserialize(node, jacksonTypeRef<User>())?.let {
+                                        Message(user = it, _json = json)
+                                    },
+                                    tryDeserialize(node, jacksonTypeRef<Assistant>())?.let {
+                                        Message(assistant = it, _json = json)
+                                    },
+                                    tryDeserialize(node, jacksonTypeRef<Tool>())?.let {
+                                        Message(tool = it, _json = json)
+                                    },
+                                    tryDeserialize(node, jacksonTypeRef<Function>())?.let {
+                                        Message(function = it, _json = json)
+                                    },
+                                    tryDeserialize(node, jacksonTypeRef<Fallback>())?.let {
+                                        Message(fallback = it, _json = json)
+                                    },
+                                )
+                                .filterNotNull()
+                                .allMaxBy { it.validity() }
+                                .toList()
+                        return when (bestMatches.size) {
+                            // This can happen if what we're deserializing is completely
+                            // incompatible with all the possible variants (e.g. deserializing from
+                            // boolean).
+                            0 -> Message(_json = json)
+                            1 -> bestMatches.single()
+                            // If there's more than one match with the highest validity, then use
+                            // the first completely valid match, or simply the first match if none
+                            // are completely valid.
+                            else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                        }
                     }
                 }
 
-                class Serializer : BaseSerializer<Message>(Message::class) {
+                internal class Serializer : BaseSerializer<Message>(Message::class) {
 
                     override fun serialize(
                         value: Message,
                         generator: JsonGenerator,
-                        provider: SerializerProvider
+                        provider: SerializerProvider,
                     ) {
                         when {
                             value.system != null -> generator.writeObject(value.system)
@@ -2954,46 +1982,348 @@ private constructor(
                     }
                 }
 
-                @JsonDeserialize(builder = System.Builder::class)
-                @NoAutoDetect
                 class System
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
-                    private val content: JsonField<String>,
                     private val role: JsonField<Role>,
+                    private val content: JsonField<String>,
                     private val name: JsonField<String>,
-                    private val additionalProperties: Map<String, JsonValue>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
 
-                    private var validated: Boolean = false
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("role")
+                        @ExcludeMissing
+                        role: JsonField<Role> = JsonMissing.of(),
+                        @JsonProperty("content")
+                        @ExcludeMissing
+                        content: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<String> = JsonMissing.of(),
+                    ) : this(role, content, name, mutableMapOf())
 
-                    private var hashCode: Int = 0
-
-                    fun content(): String? = content.getNullable("content")
-
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type or is unexpectedly missing or null (e.g. if the server responded with
+                     *   an unexpected value).
+                     */
                     fun role(): Role = role.getRequired("role")
 
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type (e.g. if the server responded with an unexpected value).
+                     */
+                    fun content(): String? = content.getNullable("content")
+
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type (e.g. if the server responded with an unexpected value).
+                     */
                     fun name(): String? = name.getNullable("name")
 
-                    @JsonProperty("content") @ExcludeMissing fun _content() = content
+                    /**
+                     * Returns the raw JSON value of [role].
+                     *
+                     * Unlike [role], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
-                    @JsonProperty("role") @ExcludeMissing fun _role() = role
+                    /**
+                     * Returns the raw JSON value of [content].
+                     *
+                     * Unlike [content], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("content")
+                    @ExcludeMissing
+                    fun _content(): JsonField<String> = content
 
-                    @JsonProperty("name") @ExcludeMissing fun _name() = name
+                    /**
+                     * Returns the raw JSON value of [name].
+                     *
+                     * Unlike [name], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
 
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    fun validate(): System = apply {
-                        if (!validated) {
-                            content()
-                            role()
-                            name()
-                            validated = true
-                        }
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /**
+                         * Returns a mutable builder for constructing an instance of [System].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         */
+                        fun builder() = Builder()
+                    }
+
+                    /** A builder for [System]. */
+                    class Builder internal constructor() {
+
+                        private var role: JsonField<Role>? = null
+                        private var content: JsonField<String> = JsonMissing.of()
+                        private var name: JsonField<String> = JsonMissing.of()
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        internal fun from(system: System) = apply {
+                            role = system.role
+                            content = system.content
+                            name = system.name
+                            additionalProperties = system.additionalProperties.toMutableMap()
+                        }
+
+                        fun role(role: Role) = role(JsonField.of(role))
+
+                        /**
+                         * Sets [Builder.role] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.role] with a well-typed [Role] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun role(role: JsonField<Role>) = apply { this.role = role }
+
+                        fun content(content: String) = content(JsonField.of(content))
+
+                        /**
+                         * Sets [Builder.content] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.content] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun content(content: JsonField<String>) = apply { this.content = content }
+
+                        fun name(name: String) = name(JsonField.of(name))
+
+                        /**
+                         * Sets [Builder.name] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.name] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun name(name: JsonField<String>) = apply { this.name = name }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [System].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
+                        fun build(): System =
+                            System(
+                                checkRequired("role", role),
+                                content,
+                                name,
+                                additionalProperties.toMutableMap(),
+                            )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): System = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        role().validate()
+                        content()
+                        name()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: BraintrustInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    internal fun validity(): Int =
+                        (role.asKnown()?.validity() ?: 0) +
+                            (if (content.asKnown() == null) 0 else 1) +
+                            (if (name.asKnown() == null) 0 else 1)
+
+                    class Role
+                    @JsonCreator
+                    private constructor(private val value: JsonField<String>) : Enum {
+
+                        /**
+                         * Returns this class instance's raw value.
+                         *
+                         * This is usually only useful if this instance was deserialized from data
+                         * that doesn't match any known member, and you want to know that value. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new members that the SDK is unaware of.
+                         */
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            val SYSTEM = of("system")
+
+                            fun of(value: String) = Role(JsonField.of(value))
+                        }
+
+                        /** An enum containing [Role]'s known values. */
+                        enum class Known {
+                            SYSTEM
+                        }
+
+                        /**
+                         * An enum containing [Role]'s known values, as well as an [_UNKNOWN]
+                         * member.
+                         *
+                         * An instance of [Role] can contain an unknown value in a couple of cases:
+                         * - It was deserialized from data that doesn't match any known member. For
+                         *   example, if the SDK is on an older version than the API, then the API
+                         *   may respond with new members that the SDK is unaware of.
+                         * - It was constructed with an arbitrary value using the [of] method.
+                         */
+                        enum class Value {
+                            SYSTEM,
+                            /**
+                             * An enum member indicating that [Role] was instantiated with an
+                             * unknown value.
+                             */
+                            _UNKNOWN,
+                        }
+
+                        /**
+                         * Returns an enum member corresponding to this class instance's value, or
+                         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                         *
+                         * Use the [known] method instead if you're certain the value is always
+                         * known or if you want to throw for the unknown case.
+                         */
+                        fun value(): Value =
+                            when (this) {
+                                SYSTEM -> Value.SYSTEM
+                                else -> Value._UNKNOWN
+                            }
+
+                        /**
+                         * Returns an enum member corresponding to this class instance's value.
+                         *
+                         * Use the [value] method instead if you're uncertain the value is always
+                         * known and don't want to throw for the unknown case.
+                         *
+                         * @throws BraintrustInvalidDataException if this class instance's value is
+                         *   a not a known member.
+                         */
+                        fun known(): Known =
+                            when (this) {
+                                SYSTEM -> Known.SYSTEM
+                                else -> throw BraintrustInvalidDataException("Unknown Role: $value")
+                            }
+
+                        /**
+                         * Returns this class instance's primitive wire representation.
+                         *
+                         * This differs from the [toString] method because that method is primarily
+                         * for debugging and generally doesn't throw.
+                         *
+                         * @throws BraintrustInvalidDataException if this class instance's value
+                         *   does not have the expected primitive type.
+                         */
+                        fun asString(): String =
+                            _value().asString()
+                                ?: throw BraintrustInvalidDataException("Value is not a String")
+
+                        private var validated: Boolean = false
+
+                        fun validate(): Role = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            known()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: BraintrustInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is Role && value == other.value
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -3001,454 +2331,548 @@ private constructor(
                         }
 
                         return other is System &&
-                            this.content == other.content &&
-                            this.role == other.role &&
-                            this.name == other.name &&
-                            this.additionalProperties == other.additionalProperties
+                            role == other.role &&
+                            content == other.content &&
+                            name == other.name &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode =
-                                Objects.hash(
-                                    content,
-                                    role,
-                                    name,
-                                    additionalProperties,
-                                )
-                        }
-                        return hashCode
+                    private val hashCode: Int by lazy {
+                        Objects.hash(role, content, name, additionalProperties)
                     }
+
+                    override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "System{content=$content, role=$role, name=$name, additionalProperties=$additionalProperties}"
-
-                    companion object {
-
-                        fun builder() = Builder()
-                    }
-
-                    class Builder {
-
-                        private var content: JsonField<String> = JsonMissing.of()
-                        private var role: JsonField<Role> = JsonMissing.of()
-                        private var name: JsonField<String> = JsonMissing.of()
-                        private var additionalProperties: MutableMap<String, JsonValue> =
-                            mutableMapOf()
-
-                        internal fun from(system: System) = apply {
-                            this.content = system.content
-                            this.role = system.role
-                            this.name = system.name
-                            additionalProperties(system.additionalProperties)
-                        }
-
-                        fun content(content: String) = content(JsonField.of(content))
-
-                        @JsonProperty("content")
-                        @ExcludeMissing
-                        fun content(content: JsonField<String>) = apply { this.content = content }
-
-                        fun role(role: Role) = role(JsonField.of(role))
-
-                        @JsonProperty("role")
-                        @ExcludeMissing
-                        fun role(role: JsonField<Role>) = apply { this.role = role }
-
-                        fun name(name: String) = name(JsonField.of(name))
-
-                        @JsonProperty("name")
-                        @ExcludeMissing
-                        fun name(name: JsonField<String>) = apply { this.name = name }
-
-                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                            apply {
-                                this.additionalProperties.clear()
-                                this.additionalProperties.putAll(additionalProperties)
-                            }
-
-                        @JsonAnySetter
-                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                            this.additionalProperties.put(key, value)
-                        }
-
-                        fun putAllAdditionalProperties(
-                            additionalProperties: Map<String, JsonValue>
-                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
-
-                        fun build(): System =
-                            System(
-                                content,
-                                role,
-                                name,
-                                additionalProperties.toUnmodifiable(),
-                            )
-                    }
-
-                    class Role
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return other is Role && this.value == other.value
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-
-                        companion object {
-
-                            val SYSTEM = Role(JsonField.of("system"))
-
-                            fun of(value: String) = Role(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            SYSTEM,
-                        }
-
-                        enum class Value {
-                            SYSTEM,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                SYSTEM -> Value.SYSTEM
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                SYSTEM -> Known.SYSTEM
-                                else -> throw BraintrustInvalidDataException("Unknown Role: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-                    }
+                        "System{role=$role, content=$content, name=$name, additionalProperties=$additionalProperties}"
                 }
 
-                @JsonDeserialize(builder = User.Builder::class)
-                @NoAutoDetect
                 class User
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
-                    private val content: JsonField<Content>,
                     private val role: JsonField<Role>,
+                    private val content: JsonField<Content>,
                     private val name: JsonField<String>,
-                    private val additionalProperties: Map<String, JsonValue>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
 
-                    private var validated: Boolean = false
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("role")
+                        @ExcludeMissing
+                        role: JsonField<Role> = JsonMissing.of(),
+                        @JsonProperty("content")
+                        @ExcludeMissing
+                        content: JsonField<Content> = JsonMissing.of(),
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<String> = JsonMissing.of(),
+                    ) : this(role, content, name, mutableMapOf())
 
-                    private var hashCode: Int = 0
-
-                    fun content(): Content? = content.getNullable("content")
-
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type or is unexpectedly missing or null (e.g. if the server responded with
+                     *   an unexpected value).
+                     */
                     fun role(): Role = role.getRequired("role")
 
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type (e.g. if the server responded with an unexpected value).
+                     */
+                    fun content(): Content? = content.getNullable("content")
+
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type (e.g. if the server responded with an unexpected value).
+                     */
                     fun name(): String? = name.getNullable("name")
 
-                    @JsonProperty("content") @ExcludeMissing fun _content() = content
+                    /**
+                     * Returns the raw JSON value of [role].
+                     *
+                     * Unlike [role], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
-                    @JsonProperty("role") @ExcludeMissing fun _role() = role
+                    /**
+                     * Returns the raw JSON value of [content].
+                     *
+                     * Unlike [content], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("content")
+                    @ExcludeMissing
+                    fun _content(): JsonField<Content> = content
 
-                    @JsonProperty("name") @ExcludeMissing fun _name() = name
+                    /**
+                     * Returns the raw JSON value of [name].
+                     *
+                     * Unlike [name], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
 
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    fun validate(): User = apply {
-                        if (!validated) {
-                            content()
-                            role()
-                            name()
-                            validated = true
-                        }
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return other is User &&
-                            this.content == other.content &&
-                            this.role == other.role &&
-                            this.name == other.name &&
-                            this.additionalProperties == other.additionalProperties
-                    }
-
-                    override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode =
-                                Objects.hash(
-                                    content,
-                                    role,
-                                    name,
-                                    additionalProperties,
-                                )
-                        }
-                        return hashCode
-                    }
-
-                    override fun toString() =
-                        "User{content=$content, role=$role, name=$name, additionalProperties=$additionalProperties}"
-
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [User].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
-                    class Builder {
+                    /** A builder for [User]. */
+                    class Builder internal constructor() {
 
+                        private var role: JsonField<Role>? = null
                         private var content: JsonField<Content> = JsonMissing.of()
-                        private var role: JsonField<Role> = JsonMissing.of()
                         private var name: JsonField<String> = JsonMissing.of()
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
                         internal fun from(user: User) = apply {
-                            this.content = user.content
-                            this.role = user.role
-                            this.name = user.name
-                            additionalProperties(user.additionalProperties)
+                            role = user.role
+                            content = user.content
+                            name = user.name
+                            additionalProperties = user.additionalProperties.toMutableMap()
                         }
-
-                        fun content(content: Content) = content(JsonField.of(content))
-
-                        @JsonProperty("content")
-                        @ExcludeMissing
-                        fun content(content: JsonField<Content>) = apply { this.content = content }
 
                         fun role(role: Role) = role(JsonField.of(role))
 
-                        @JsonProperty("role")
-                        @ExcludeMissing
+                        /**
+                         * Sets [Builder.role] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.role] with a well-typed [Role] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun role(role: JsonField<Role>) = apply { this.role = role }
+
+                        fun content(content: Content) = content(JsonField.of(content))
+
+                        /**
+                         * Sets [Builder.content] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.content] with a well-typed [Content]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun content(content: JsonField<Content>) = apply { this.content = content }
+
+                        /** Alias for calling [content] with `Content.ofText(text)`. */
+                        fun content(text: String) = content(Content.ofText(text))
+
+                        /** Alias for calling [content] with `Content.ofArray(array)`. */
+                        fun contentOfArray(array: List<Content.ChatCompletionContentPart>) =
+                            content(Content.ofArray(array))
 
                         fun name(name: String) = name(JsonField.of(name))
 
-                        @JsonProperty("name")
-                        @ExcludeMissing
+                        /**
+                         * Sets [Builder.name] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.name] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun name(name: JsonField<String>) = apply { this.name = name }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                             apply {
                                 this.additionalProperties.clear()
-                                this.additionalProperties.putAll(additionalProperties)
+                                putAllAdditionalProperties(additionalProperties)
                             }
 
-                        @JsonAnySetter
                         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                            this.additionalProperties.put(key, value)
+                            additionalProperties.put(key, value)
                         }
 
                         fun putAllAdditionalProperties(
                             additionalProperties: Map<String, JsonValue>
                         ) = apply { this.additionalProperties.putAll(additionalProperties) }
 
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [User].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): User =
                             User(
+                                checkRequired("role", role),
                                 content,
-                                role,
                                 name,
-                                additionalProperties.toUnmodifiable(),
+                                additionalProperties.toMutableMap(),
                             )
                     }
 
+                    private var validated: Boolean = false
+
+                    fun validate(): User = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        role().validate()
+                        content()?.validate()
+                        name()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: BraintrustInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    internal fun validity(): Int =
+                        (role.asKnown()?.validity() ?: 0) +
+                            (content.asKnown()?.validity() ?: 0) +
+                            (if (name.asKnown() == null) 0 else 1)
+
                     class Role
                     @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
+                    private constructor(private val value: JsonField<String>) : Enum {
 
+                        /**
+                         * Returns this class instance's raw value.
+                         *
+                         * This is usually only useful if this instance was deserialized from data
+                         * that doesn't match any known member, and you want to know that value. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new members that the SDK is unaware of.
+                         */
                         @com.fasterxml.jackson.annotation.JsonValue
                         fun _value(): JsonField<String> = value
 
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return other is Role && this.value == other.value
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-
                         companion object {
 
-                            val USER = Role(JsonField.of("user"))
+                            val USER = of("user")
 
                             fun of(value: String) = Role(JsonField.of(value))
                         }
 
+                        /** An enum containing [Role]'s known values. */
                         enum class Known {
-                            USER,
+                            USER
                         }
 
+                        /**
+                         * An enum containing [Role]'s known values, as well as an [_UNKNOWN]
+                         * member.
+                         *
+                         * An instance of [Role] can contain an unknown value in a couple of cases:
+                         * - It was deserialized from data that doesn't match any known member. For
+                         *   example, if the SDK is on an older version than the API, then the API
+                         *   may respond with new members that the SDK is unaware of.
+                         * - It was constructed with an arbitrary value using the [of] method.
+                         */
                         enum class Value {
                             USER,
+                            /**
+                             * An enum member indicating that [Role] was instantiated with an
+                             * unknown value.
+                             */
                             _UNKNOWN,
                         }
 
+                        /**
+                         * Returns an enum member corresponding to this class instance's value, or
+                         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                         *
+                         * Use the [known] method instead if you're certain the value is always
+                         * known or if you want to throw for the unknown case.
+                         */
                         fun value(): Value =
                             when (this) {
                                 USER -> Value.USER
                                 else -> Value._UNKNOWN
                             }
 
+                        /**
+                         * Returns an enum member corresponding to this class instance's value.
+                         *
+                         * Use the [value] method instead if you're uncertain the value is always
+                         * known and don't want to throw for the unknown case.
+                         *
+                         * @throws BraintrustInvalidDataException if this class instance's value is
+                         *   a not a known member.
+                         */
                         fun known(): Known =
                             when (this) {
                                 USER -> Known.USER
                                 else -> throw BraintrustInvalidDataException("Unknown Role: $value")
                             }
 
-                        fun asString(): String = _value().asStringOrThrow()
-                    }
-
-                    @JsonDeserialize(using = Content.Deserializer::class)
-                    @JsonSerialize(using = Content.Serializer::class)
-                    class Content
-                    private constructor(
-                        private val string: String? = null,
-                        private val chatCompletionContentParts: List<ChatCompletionContentPart>? =
-                            null,
-                        private val _json: JsonValue? = null,
-                    ) {
+                        /**
+                         * Returns this class instance's primitive wire representation.
+                         *
+                         * This differs from the [toString] method because that method is primarily
+                         * for debugging and generally doesn't throw.
+                         *
+                         * @throws BraintrustInvalidDataException if this class instance's value
+                         *   does not have the expected primitive type.
+                         */
+                        fun asString(): String =
+                            _value().asString()
+                                ?: throw BraintrustInvalidDataException("Value is not a String")
 
                         private var validated: Boolean = false
 
-                        fun string(): String? = string
-
-                        fun chatCompletionContentParts(): List<ChatCompletionContentPart>? =
-                            chatCompletionContentParts
-
-                        fun isString(): Boolean = string != null
-
-                        fun isChatCompletionContentParts(): Boolean =
-                            chatCompletionContentParts != null
-
-                        fun asString(): String = string.getOrThrow("string")
-
-                        fun asChatCompletionContentParts(): List<ChatCompletionContentPart> =
-                            chatCompletionContentParts.getOrThrow("chatCompletionContentParts")
-
-                        fun _json(): JsonValue? = _json
-
-                        fun <T> accept(visitor: Visitor<T>): T {
-                            return when {
-                                string != null -> visitor.visitString(string)
-                                chatCompletionContentParts != null ->
-                                    visitor.visitChatCompletionContentParts(
-                                        chatCompletionContentParts
-                                    )
-                                else -> visitor.unknown(_json)
+                        fun validate(): Role = apply {
+                            if (validated) {
+                                return@apply
                             }
+
+                            known()
+                            validated = true
                         }
 
-                        fun validate(): Content = apply {
-                            if (!validated) {
-                                if (string == null && chatCompletionContentParts == null) {
-                                    throw BraintrustInvalidDataException("Unknown Content: $_json")
-                                }
-                                validated = true
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: BraintrustInvalidDataException) {
+                                false
                             }
-                        }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
                                 return true
                             }
 
-                            return other is Content &&
-                                this.string == other.string &&
-                                this.chatCompletionContentParts == other.chatCompletionContentParts
+                            return other is Role && value == other.value
                         }
 
-                        override fun hashCode(): Int {
-                            return Objects.hash(string, chatCompletionContentParts)
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
+
+                    @JsonDeserialize(using = Content.Deserializer::class)
+                    @JsonSerialize(using = Content.Serializer::class)
+                    class Content
+                    private constructor(
+                        private val text: String? = null,
+                        private val array: List<ChatCompletionContentPart>? = null,
+                        private val _json: JsonValue? = null,
+                    ) {
+
+                        fun text(): String? = text
+
+                        fun array(): List<ChatCompletionContentPart>? = array
+
+                        fun isText(): Boolean = text != null
+
+                        fun isArray(): Boolean = array != null
+
+                        fun asText(): String = text.getOrThrow("text")
+
+                        fun asArray(): List<ChatCompletionContentPart> = array.getOrThrow("array")
+
+                        fun _json(): JsonValue? = _json
+
+                        fun <T> accept(visitor: Visitor<T>): T =
+                            when {
+                                text != null -> visitor.visitText(text)
+                                array != null -> visitor.visitArray(array)
+                                else -> visitor.unknown(_json)
+                            }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): Content = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            accept(
+                                object : Visitor<Unit> {
+                                    override fun visitText(text: String) {}
+
+                                    override fun visitArray(
+                                        array: List<ChatCompletionContentPart>
+                                    ) {
+                                        array.forEach { it.validate() }
+                                    }
+                                }
+                            )
+                            validated = true
                         }
 
-                        override fun toString(): String {
-                            return when {
-                                string != null -> "Content{string=$string}"
-                                chatCompletionContentParts != null ->
-                                    "Content{chatCompletionContentParts=$chatCompletionContentParts}"
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: BraintrustInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        internal fun validity(): Int =
+                            accept(
+                                object : Visitor<Int> {
+                                    override fun visitText(text: String) = 1
+
+                                    override fun visitArray(
+                                        array: List<ChatCompletionContentPart>
+                                    ) = array.sumOf { it.validity().toInt() }
+
+                                    override fun unknown(json: JsonValue?) = 0
+                                }
+                            )
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is Content && text == other.text && array == other.array
+                        }
+
+                        override fun hashCode(): Int = Objects.hash(text, array)
+
+                        override fun toString(): String =
+                            when {
+                                text != null -> "Content{text=$text}"
+                                array != null -> "Content{array=$array}"
                                 _json != null -> "Content{_unknown=$_json}"
                                 else -> throw IllegalStateException("Invalid Content")
                             }
-                        }
 
                         companion object {
 
-                            fun ofString(string: String) = Content(string = string)
+                            fun ofText(text: String) = Content(text = text)
 
-                            fun ofChatCompletionContentParts(
-                                chatCompletionContentParts: List<ChatCompletionContentPart>
-                            ) = Content(chatCompletionContentParts = chatCompletionContentParts)
+                            fun ofArray(array: List<ChatCompletionContentPart>) =
+                                Content(array = array.toImmutable())
                         }
 
+                        /**
+                         * An interface that defines how to map each variant of [Content] to a value
+                         * of type [T].
+                         */
                         interface Visitor<out T> {
 
-                            fun visitString(string: String): T
+                            fun visitText(text: String): T
 
-                            fun visitChatCompletionContentParts(
-                                chatCompletionContentParts: List<ChatCompletionContentPart>
-                            ): T
+                            fun visitArray(array: List<ChatCompletionContentPart>): T
 
+                            /**
+                             * Maps an unknown variant of [Content] to a value of type [T].
+                             *
+                             * An instance of [Content] can contain an unknown variant if it was
+                             * deserialized from data that doesn't match any known variant. For
+                             * example, if the SDK is on an older version than the API, then the API
+                             * may respond with new variants that the SDK is unaware of.
+                             *
+                             * @throws BraintrustInvalidDataException in the default implementation.
+                             */
                             fun unknown(json: JsonValue?): T {
                                 throw BraintrustInvalidDataException("Unknown Content: $json")
                             }
                         }
 
-                        class Deserializer : BaseDeserializer<Content>(Content::class) {
+                        internal class Deserializer : BaseDeserializer<Content>(Content::class) {
 
                             override fun ObjectCodec.deserialize(node: JsonNode): Content {
                                 val json = JsonValue.fromJsonNode(node)
-                                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                                    return Content(string = it, _json = json)
-                                }
-                                tryDeserialize(
-                                        node,
-                                        jacksonTypeRef<List<ChatCompletionContentPart>>()
-                                    )
-                                    ?.let {
-                                        return Content(
-                                            chatCompletionContentParts = it,
-                                            _json = json
-                                        )
-                                    }
 
-                                return Content(_json = json)
+                                val bestMatches =
+                                    sequenceOf(
+                                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                                Content(text = it, _json = json)
+                                            },
+                                            tryDeserialize(
+                                                    node,
+                                                    jacksonTypeRef<
+                                                        List<ChatCompletionContentPart>
+                                                    >(),
+                                                )
+                                                ?.let { Content(array = it, _json = json) },
+                                        )
+                                        .filterNotNull()
+                                        .allMaxBy { it.validity() }
+                                        .toList()
+                                return when (bestMatches.size) {
+                                    // This can happen if what we're deserializing is completely
+                                    // incompatible with all the possible variants (e.g.
+                                    // deserializing from object).
+                                    0 -> Content(_json = json)
+                                    1 -> bestMatches.single()
+                                    // If there's more than one match with the highest validity,
+                                    // then use the first completely valid match, or simply the
+                                    // first match if none are completely valid.
+                                    else ->
+                                        bestMatches.firstOrNull { it.isValid() }
+                                            ?: bestMatches.first()
+                                }
                             }
                         }
 
-                        class Serializer : BaseSerializer<Content>(Content::class) {
+                        internal class Serializer : BaseSerializer<Content>(Content::class) {
 
                             override fun serialize(
                                 value: Content,
                                 generator: JsonGenerator,
-                                provider: SerializerProvider
+                                provider: SerializerProvider,
                             ) {
                                 when {
-                                    value.string != null -> generator.writeObject(value.string)
-                                    value.chatCompletionContentParts != null ->
-                                        generator.writeObject(value.chatCompletionContentParts)
+                                    value.text != null -> generator.writeObject(value.text)
+                                    value.array != null -> generator.writeObject(value.array)
                                     value._json != null -> generator.writeObject(value._json)
                                     else -> throw IllegalStateException("Invalid Content")
                                 }
@@ -3459,70 +2883,86 @@ private constructor(
                         @JsonSerialize(using = ChatCompletionContentPart.Serializer::class)
                         class ChatCompletionContentPart
                         private constructor(
-                            private val chatCompletionContentPartText:
-                                ChatCompletionContentPartText? =
-                                null,
-                            private val chatCompletionContentPartImage:
-                                ChatCompletionContentPartImage? =
-                                null,
+                            private val text: ChatCompletionContentPartText? = null,
+                            private val image: ChatCompletionContentPartImage? = null,
                             private val _json: JsonValue? = null,
                         ) {
 
-                            private var validated: Boolean = false
+                            fun text(): ChatCompletionContentPartText? = text
 
-                            fun chatCompletionContentPartText(): ChatCompletionContentPartText? =
-                                chatCompletionContentPartText
+                            fun image(): ChatCompletionContentPartImage? = image
 
-                            fun chatCompletionContentPartImage(): ChatCompletionContentPartImage? =
-                                chatCompletionContentPartImage
+                            fun isText(): Boolean = text != null
 
-                            fun isChatCompletionContentPartText(): Boolean =
-                                chatCompletionContentPartText != null
+                            fun isImage(): Boolean = image != null
 
-                            fun isChatCompletionContentPartImage(): Boolean =
-                                chatCompletionContentPartImage != null
+                            fun asText(): ChatCompletionContentPartText = text.getOrThrow("text")
 
-                            fun asChatCompletionContentPartText(): ChatCompletionContentPartText =
-                                chatCompletionContentPartText.getOrThrow(
-                                    "chatCompletionContentPartText"
-                                )
-
-                            fun asChatCompletionContentPartImage(): ChatCompletionContentPartImage =
-                                chatCompletionContentPartImage.getOrThrow(
-                                    "chatCompletionContentPartImage"
-                                )
+                            fun asImage(): ChatCompletionContentPartImage =
+                                image.getOrThrow("image")
 
                             fun _json(): JsonValue? = _json
 
-                            fun <T> accept(visitor: Visitor<T>): T {
-                                return when {
-                                    chatCompletionContentPartText != null ->
-                                        visitor.visitChatCompletionContentPartText(
-                                            chatCompletionContentPartText
-                                        )
-                                    chatCompletionContentPartImage != null ->
-                                        visitor.visitChatCompletionContentPartImage(
-                                            chatCompletionContentPartImage
-                                        )
+                            fun <T> accept(visitor: Visitor<T>): T =
+                                when {
+                                    text != null -> visitor.visitText(text)
+                                    image != null -> visitor.visitImage(image)
                                     else -> visitor.unknown(_json)
                                 }
-                            }
+
+                            private var validated: Boolean = false
 
                             fun validate(): ChatCompletionContentPart = apply {
-                                if (!validated) {
-                                    if (
-                                        chatCompletionContentPartText == null &&
-                                            chatCompletionContentPartImage == null
-                                    ) {
-                                        throw BraintrustInvalidDataException(
-                                            "Unknown ChatCompletionContentPart: $_json"
-                                        )
-                                    }
-                                    chatCompletionContentPartText?.validate()
-                                    chatCompletionContentPartImage?.validate()
-                                    validated = true
+                                if (validated) {
+                                    return@apply
                                 }
+
+                                accept(
+                                    object : Visitor<Unit> {
+                                        override fun visitText(
+                                            text: ChatCompletionContentPartText
+                                        ) {
+                                            text.validate()
+                                        }
+
+                                        override fun visitImage(
+                                            image: ChatCompletionContentPartImage
+                                        ) {
+                                            image.validate()
+                                        }
+                                    }
+                                )
+                                validated = true
                             }
+
+                            fun isValid(): Boolean =
+                                try {
+                                    validate()
+                                    true
+                                } catch (e: BraintrustInvalidDataException) {
+                                    false
+                                }
+
+                            /**
+                             * Returns a score indicating how many valid values are contained in
+                             * this object recursively.
+                             *
+                             * Used for best match union deserialization.
+                             */
+                            internal fun validity(): Int =
+                                accept(
+                                    object : Visitor<Int> {
+                                        override fun visitText(
+                                            text: ChatCompletionContentPartText
+                                        ) = text.validity()
+
+                                        override fun visitImage(
+                                            image: ChatCompletionContentPartImage
+                                        ) = image.validity()
+
+                                        override fun unknown(json: JsonValue?) = 0
+                                    }
+                                )
 
                             override fun equals(other: Any?): Boolean {
                                 if (this === other) {
@@ -3530,62 +2970,55 @@ private constructor(
                                 }
 
                                 return other is ChatCompletionContentPart &&
-                                    this.chatCompletionContentPartText ==
-                                        other.chatCompletionContentPartText &&
-                                    this.chatCompletionContentPartImage ==
-                                        other.chatCompletionContentPartImage
+                                    text == other.text &&
+                                    image == other.image
                             }
 
-                            override fun hashCode(): Int {
-                                return Objects.hash(
-                                    chatCompletionContentPartText,
-                                    chatCompletionContentPartImage
-                                )
-                            }
+                            override fun hashCode(): Int = Objects.hash(text, image)
 
-                            override fun toString(): String {
-                                return when {
-                                    chatCompletionContentPartText != null ->
-                                        "ChatCompletionContentPart{chatCompletionContentPartText=$chatCompletionContentPartText}"
-                                    chatCompletionContentPartImage != null ->
-                                        "ChatCompletionContentPart{chatCompletionContentPartImage=$chatCompletionContentPartImage}"
+                            override fun toString(): String =
+                                when {
+                                    text != null -> "ChatCompletionContentPart{text=$text}"
+                                    image != null -> "ChatCompletionContentPart{image=$image}"
                                     _json != null -> "ChatCompletionContentPart{_unknown=$_json}"
                                     else ->
                                         throw IllegalStateException(
                                             "Invalid ChatCompletionContentPart"
                                         )
                                 }
-                            }
 
                             companion object {
 
-                                fun ofChatCompletionContentPartText(
-                                    chatCompletionContentPartText: ChatCompletionContentPartText
-                                ) =
-                                    ChatCompletionContentPart(
-                                        chatCompletionContentPartText =
-                                            chatCompletionContentPartText
-                                    )
+                                fun ofText(text: ChatCompletionContentPartText) =
+                                    ChatCompletionContentPart(text = text)
 
-                                fun ofChatCompletionContentPartImage(
-                                    chatCompletionContentPartImage: ChatCompletionContentPartImage
-                                ) =
-                                    ChatCompletionContentPart(
-                                        chatCompletionContentPartImage =
-                                            chatCompletionContentPartImage
-                                    )
+                                fun ofImage(image: ChatCompletionContentPartImage) =
+                                    ChatCompletionContentPart(image = image)
                             }
 
+                            /**
+                             * An interface that defines how to map each variant of
+                             * [ChatCompletionContentPart] to a value of type [T].
+                             */
                             interface Visitor<out T> {
 
-                                fun visitChatCompletionContentPartText(
-                                    chatCompletionContentPartText: ChatCompletionContentPartText
-                                ): T
+                                fun visitText(text: ChatCompletionContentPartText): T
 
-                                fun visitChatCompletionContentPartImage(
-                                    chatCompletionContentPartImage: ChatCompletionContentPartImage
-                                ): T
+                                fun visitImage(image: ChatCompletionContentPartImage): T
 
+                                /**
+                                 * Maps an unknown variant of [ChatCompletionContentPart] to a value
+                                 * of type [T].
+                                 *
+                                 * An instance of [ChatCompletionContentPart] can contain an unknown
+                                 * variant if it was deserialized from data that doesn't match any
+                                 * known variant. For example, if the SDK is on an older version
+                                 * than the API, then the API may respond with new variants that the
+                                 * SDK is unaware of.
+                                 *
+                                 * @throws BraintrustInvalidDataException in the default
+                                 *   implementation.
+                                 */
                                 fun unknown(json: JsonValue?): T {
                                     throw BraintrustInvalidDataException(
                                         "Unknown ChatCompletionContentPart: $json"
@@ -3593,7 +3026,7 @@ private constructor(
                                 }
                             }
 
-                            class Deserializer :
+                            internal class Deserializer :
                                 BaseDeserializer<ChatCompletionContentPart>(
                                     ChatCompletionContentPart::class
                                 ) {
@@ -3602,36 +3035,54 @@ private constructor(
                                     node: JsonNode
                                 ): ChatCompletionContentPart {
                                     val json = JsonValue.fromJsonNode(node)
-                                    tryDeserialize(
-                                            node,
-                                            jacksonTypeRef<ChatCompletionContentPartText>()
-                                        ) {
-                                            it.validate()
-                                        }
-                                        ?.let {
-                                            return ChatCompletionContentPart(
-                                                chatCompletionContentPartText = it,
-                                                _json = json
-                                            )
-                                        }
-                                    tryDeserialize(
-                                            node,
-                                            jacksonTypeRef<ChatCompletionContentPartImage>()
-                                        ) {
-                                            it.validate()
-                                        }
-                                        ?.let {
-                                            return ChatCompletionContentPart(
-                                                chatCompletionContentPartImage = it,
-                                                _json = json
-                                            )
-                                        }
 
-                                    return ChatCompletionContentPart(_json = json)
+                                    val bestMatches =
+                                        sequenceOf(
+                                                tryDeserialize(
+                                                        node,
+                                                        jacksonTypeRef<
+                                                            ChatCompletionContentPartText
+                                                        >(),
+                                                    )
+                                                    ?.let {
+                                                        ChatCompletionContentPart(
+                                                            text = it,
+                                                            _json = json,
+                                                        )
+                                                    },
+                                                tryDeserialize(
+                                                        node,
+                                                        jacksonTypeRef<
+                                                            ChatCompletionContentPartImage
+                                                        >(),
+                                                    )
+                                                    ?.let {
+                                                        ChatCompletionContentPart(
+                                                            image = it,
+                                                            _json = json,
+                                                        )
+                                                    },
+                                            )
+                                            .filterNotNull()
+                                            .allMaxBy { it.validity() }
+                                            .toList()
+                                    return when (bestMatches.size) {
+                                        // This can happen if what we're deserializing is completely
+                                        // incompatible with all the possible variants (e.g.
+                                        // deserializing from boolean).
+                                        0 -> ChatCompletionContentPart(_json = json)
+                                        1 -> bestMatches.single()
+                                        // If there's more than one match with the highest validity,
+                                        // then use the first completely valid match, or simply the
+                                        // first match if none are completely valid.
+                                        else ->
+                                            bestMatches.firstOrNull { it.isValid() }
+                                                ?: bestMatches.first()
+                                    }
                                 }
                             }
 
-                            class Serializer :
+                            internal class Serializer :
                                 BaseSerializer<ChatCompletionContentPart>(
                                     ChatCompletionContentPart::class
                                 ) {
@@ -3639,17 +3090,11 @@ private constructor(
                                 override fun serialize(
                                     value: ChatCompletionContentPart,
                                     generator: JsonGenerator,
-                                    provider: SerializerProvider
+                                    provider: SerializerProvider,
                                 ) {
                                     when {
-                                        value.chatCompletionContentPartText != null ->
-                                            generator.writeObject(
-                                                value.chatCompletionContentPartText
-                                            )
-                                        value.chatCompletionContentPartImage != null ->
-                                            generator.writeObject(
-                                                value.chatCompletionContentPartImage
-                                            )
+                                        value.text != null -> generator.writeObject(value.text)
+                                        value.image != null -> generator.writeObject(value.image)
                                         value._json != null -> generator.writeObject(value._json)
                                         else ->
                                             throw IllegalStateException(
@@ -3660,270 +3105,657 @@ private constructor(
                             }
                         }
                     }
-                }
-
-                @JsonDeserialize(builder = Assistant.Builder::class)
-                @NoAutoDetect
-                class Assistant
-                private constructor(
-                    private val role: JsonField<Role>,
-                    private val content: JsonField<String>,
-                    private val functionCall: JsonField<FunctionCall>,
-                    private val name: JsonField<String>,
-                    private val toolCalls: JsonField<List<ChatCompletionMessageToolCall>>,
-                    private val additionalProperties: Map<String, JsonValue>,
-                ) {
-
-                    private var validated: Boolean = false
-
-                    private var hashCode: Int = 0
-
-                    fun role(): Role = role.getRequired("role")
-
-                    fun content(): String? = content.getNullable("content")
-
-                    fun functionCall(): FunctionCall? = functionCall.getNullable("function_call")
-
-                    fun name(): String? = name.getNullable("name")
-
-                    fun toolCalls(): List<ChatCompletionMessageToolCall>? =
-                        toolCalls.getNullable("tool_calls")
-
-                    @JsonProperty("role") @ExcludeMissing fun _role() = role
-
-                    @JsonProperty("content") @ExcludeMissing fun _content() = content
-
-                    @JsonProperty("function_call")
-                    @ExcludeMissing
-                    fun _functionCall() = functionCall
-
-                    @JsonProperty("name") @ExcludeMissing fun _name() = name
-
-                    @JsonProperty("tool_calls") @ExcludeMissing fun _toolCalls() = toolCalls
-
-                    @JsonAnyGetter
-                    @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    fun validate(): Assistant = apply {
-                        if (!validated) {
-                            role()
-                            content()
-                            functionCall()?.validate()
-                            name()
-                            toolCalls()?.forEach { it.validate() }
-                            validated = true
-                        }
-                    }
-
-                    fun toBuilder() = Builder().from(this)
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
                             return true
                         }
 
-                        return other is Assistant &&
-                            this.role == other.role &&
-                            this.content == other.content &&
-                            this.functionCall == other.functionCall &&
-                            this.name == other.name &&
-                            this.toolCalls == other.toolCalls &&
-                            this.additionalProperties == other.additionalProperties
+                        return other is User &&
+                            role == other.role &&
+                            content == other.content &&
+                            name == other.name &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode =
-                                Objects.hash(
-                                    role,
-                                    content,
-                                    functionCall,
-                                    name,
-                                    toolCalls,
-                                    additionalProperties,
-                                )
-                        }
-                        return hashCode
+                    private val hashCode: Int by lazy {
+                        Objects.hash(role, content, name, additionalProperties)
                     }
+
+                    override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "Assistant{role=$role, content=$content, functionCall=$functionCall, name=$name, toolCalls=$toolCalls, additionalProperties=$additionalProperties}"
+                        "User{role=$role, content=$content, name=$name, additionalProperties=$additionalProperties}"
+                }
+
+                class Assistant
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                private constructor(
+                    private val role: JsonField<Role>,
+                    private val content: JsonField<String>,
+                    private val functionCall: JsonField<FunctionCall>,
+                    private val name: JsonField<String>,
+                    private val toolCalls: JsonField<List<ChatCompletionMessageToolCall>>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("role")
+                        @ExcludeMissing
+                        role: JsonField<Role> = JsonMissing.of(),
+                        @JsonProperty("content")
+                        @ExcludeMissing
+                        content: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("function_call")
+                        @ExcludeMissing
+                        functionCall: JsonField<FunctionCall> = JsonMissing.of(),
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("tool_calls")
+                        @ExcludeMissing
+                        toolCalls: JsonField<List<ChatCompletionMessageToolCall>> = JsonMissing.of(),
+                    ) : this(role, content, functionCall, name, toolCalls, mutableMapOf())
+
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type or is unexpectedly missing or null (e.g. if the server responded with
+                     *   an unexpected value).
+                     */
+                    fun role(): Role = role.getRequired("role")
+
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type (e.g. if the server responded with an unexpected value).
+                     */
+                    fun content(): String? = content.getNullable("content")
+
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type (e.g. if the server responded with an unexpected value).
+                     */
+                    fun functionCall(): FunctionCall? = functionCall.getNullable("function_call")
+
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type (e.g. if the server responded with an unexpected value).
+                     */
+                    fun name(): String? = name.getNullable("name")
+
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type (e.g. if the server responded with an unexpected value).
+                     */
+                    fun toolCalls(): List<ChatCompletionMessageToolCall>? =
+                        toolCalls.getNullable("tool_calls")
+
+                    /**
+                     * Returns the raw JSON value of [role].
+                     *
+                     * Unlike [role], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
+
+                    /**
+                     * Returns the raw JSON value of [content].
+                     *
+                     * Unlike [content], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("content")
+                    @ExcludeMissing
+                    fun _content(): JsonField<String> = content
+
+                    /**
+                     * Returns the raw JSON value of [functionCall].
+                     *
+                     * Unlike [functionCall], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("function_call")
+                    @ExcludeMissing
+                    fun _functionCall(): JsonField<FunctionCall> = functionCall
+
+                    /**
+                     * Returns the raw JSON value of [name].
+                     *
+                     * Unlike [name], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+                    /**
+                     * Returns the raw JSON value of [toolCalls].
+                     *
+                     * Unlike [toolCalls], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("tool_calls")
+                    @ExcludeMissing
+                    fun _toolCalls(): JsonField<List<ChatCompletionMessageToolCall>> = toolCalls
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Assistant].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
-                    class Builder {
+                    /** A builder for [Assistant]. */
+                    class Builder internal constructor() {
 
-                        private var role: JsonField<Role> = JsonMissing.of()
+                        private var role: JsonField<Role>? = null
                         private var content: JsonField<String> = JsonMissing.of()
                         private var functionCall: JsonField<FunctionCall> = JsonMissing.of()
                         private var name: JsonField<String> = JsonMissing.of()
-                        private var toolCalls: JsonField<List<ChatCompletionMessageToolCall>> =
-                            JsonMissing.of()
+                        private var toolCalls:
+                            JsonField<MutableList<ChatCompletionMessageToolCall>>? =
+                            null
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
                         internal fun from(assistant: Assistant) = apply {
-                            this.role = assistant.role
-                            this.content = assistant.content
-                            this.functionCall = assistant.functionCall
-                            this.name = assistant.name
-                            this.toolCalls = assistant.toolCalls
-                            additionalProperties(assistant.additionalProperties)
+                            role = assistant.role
+                            content = assistant.content
+                            functionCall = assistant.functionCall
+                            name = assistant.name
+                            toolCalls = assistant.toolCalls.map { it.toMutableList() }
+                            additionalProperties = assistant.additionalProperties.toMutableMap()
                         }
 
                         fun role(role: Role) = role(JsonField.of(role))
 
-                        @JsonProperty("role")
-                        @ExcludeMissing
+                        /**
+                         * Sets [Builder.role] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.role] with a well-typed [Role] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun role(role: JsonField<Role>) = apply { this.role = role }
 
-                        fun content(content: String) = content(JsonField.of(content))
+                        fun content(content: String?) = content(JsonField.ofNullable(content))
 
-                        @JsonProperty("content")
-                        @ExcludeMissing
+                        /**
+                         * Sets [Builder.content] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.content] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun content(content: JsonField<String>) = apply { this.content = content }
 
-                        fun functionCall(functionCall: FunctionCall) =
-                            functionCall(JsonField.of(functionCall))
+                        fun functionCall(functionCall: FunctionCall?) =
+                            functionCall(JsonField.ofNullable(functionCall))
 
-                        @JsonProperty("function_call")
-                        @ExcludeMissing
+                        /**
+                         * Sets [Builder.functionCall] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.functionCall] with a well-typed
+                         * [FunctionCall] value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
                         fun functionCall(functionCall: JsonField<FunctionCall>) = apply {
                             this.functionCall = functionCall
                         }
 
-                        fun name(name: String) = name(JsonField.of(name))
+                        fun name(name: String?) = name(JsonField.ofNullable(name))
 
-                        @JsonProperty("name")
-                        @ExcludeMissing
+                        /**
+                         * Sets [Builder.name] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.name] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun name(name: JsonField<String>) = apply { this.name = name }
 
-                        fun toolCalls(toolCalls: List<ChatCompletionMessageToolCall>) =
-                            toolCalls(JsonField.of(toolCalls))
+                        fun toolCalls(toolCalls: List<ChatCompletionMessageToolCall>?) =
+                            toolCalls(JsonField.ofNullable(toolCalls))
 
-                        @JsonProperty("tool_calls")
-                        @ExcludeMissing
+                        /**
+                         * Sets [Builder.toolCalls] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.toolCalls] with a well-typed
+                         * `List<ChatCompletionMessageToolCall>` value instead. This method is
+                         * primarily for setting the field to an undocumented or not yet supported
+                         * value.
+                         */
                         fun toolCalls(toolCalls: JsonField<List<ChatCompletionMessageToolCall>>) =
                             apply {
-                                this.toolCalls = toolCalls
+                                this.toolCalls = toolCalls.map { it.toMutableList() }
                             }
+
+                        /**
+                         * Adds a single [ChatCompletionMessageToolCall] to [toolCalls].
+                         *
+                         * @throws IllegalStateException if the field was previously set to a
+                         *   non-list.
+                         */
+                        fun addToolCall(toolCall: ChatCompletionMessageToolCall) = apply {
+                            toolCalls =
+                                (toolCalls ?: JsonField.of(mutableListOf())).also {
+                                    checkKnown("toolCalls", it).add(toolCall)
+                                }
+                        }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                             apply {
                                 this.additionalProperties.clear()
-                                this.additionalProperties.putAll(additionalProperties)
+                                putAllAdditionalProperties(additionalProperties)
                             }
 
-                        @JsonAnySetter
                         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                            this.additionalProperties.put(key, value)
+                            additionalProperties.put(key, value)
                         }
 
                         fun putAllAdditionalProperties(
                             additionalProperties: Map<String, JsonValue>
                         ) = apply { this.additionalProperties.putAll(additionalProperties) }
 
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [Assistant].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): Assistant =
                             Assistant(
-                                role,
+                                checkRequired("role", role),
                                 content,
                                 functionCall,
                                 name,
-                                toolCalls.map { it.toUnmodifiable() },
-                                additionalProperties.toUnmodifiable(),
+                                (toolCalls ?: JsonMissing.of()).map { it.toImmutable() },
+                                additionalProperties.toMutableMap(),
                             )
                     }
 
+                    private var validated: Boolean = false
+
+                    fun validate(): Assistant = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        role().validate()
+                        content()
+                        functionCall()?.validate()
+                        name()
+                        toolCalls()?.forEach { it.validate() }
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: BraintrustInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    internal fun validity(): Int =
+                        (role.asKnown()?.validity() ?: 0) +
+                            (if (content.asKnown() == null) 0 else 1) +
+                            (functionCall.asKnown()?.validity() ?: 0) +
+                            (if (name.asKnown() == null) 0 else 1) +
+                            (toolCalls.asKnown()?.sumOf { it.validity().toInt() } ?: 0)
+
                     class Role
                     @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
+                    private constructor(private val value: JsonField<String>) : Enum {
 
+                        /**
+                         * Returns this class instance's raw value.
+                         *
+                         * This is usually only useful if this instance was deserialized from data
+                         * that doesn't match any known member, and you want to know that value. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new members that the SDK is unaware of.
+                         */
                         @com.fasterxml.jackson.annotation.JsonValue
                         fun _value(): JsonField<String> = value
 
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return other is Role && this.value == other.value
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-
                         companion object {
 
-                            val ASSISTANT = Role(JsonField.of("assistant"))
+                            val ASSISTANT = of("assistant")
 
                             fun of(value: String) = Role(JsonField.of(value))
                         }
 
+                        /** An enum containing [Role]'s known values. */
                         enum class Known {
-                            ASSISTANT,
+                            ASSISTANT
                         }
 
+                        /**
+                         * An enum containing [Role]'s known values, as well as an [_UNKNOWN]
+                         * member.
+                         *
+                         * An instance of [Role] can contain an unknown value in a couple of cases:
+                         * - It was deserialized from data that doesn't match any known member. For
+                         *   example, if the SDK is on an older version than the API, then the API
+                         *   may respond with new members that the SDK is unaware of.
+                         * - It was constructed with an arbitrary value using the [of] method.
+                         */
                         enum class Value {
                             ASSISTANT,
+                            /**
+                             * An enum member indicating that [Role] was instantiated with an
+                             * unknown value.
+                             */
                             _UNKNOWN,
                         }
 
+                        /**
+                         * Returns an enum member corresponding to this class instance's value, or
+                         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                         *
+                         * Use the [known] method instead if you're certain the value is always
+                         * known or if you want to throw for the unknown case.
+                         */
                         fun value(): Value =
                             when (this) {
                                 ASSISTANT -> Value.ASSISTANT
                                 else -> Value._UNKNOWN
                             }
 
+                        /**
+                         * Returns an enum member corresponding to this class instance's value.
+                         *
+                         * Use the [value] method instead if you're uncertain the value is always
+                         * known and don't want to throw for the unknown case.
+                         *
+                         * @throws BraintrustInvalidDataException if this class instance's value is
+                         *   a not a known member.
+                         */
                         fun known(): Known =
                             when (this) {
                                 ASSISTANT -> Known.ASSISTANT
                                 else -> throw BraintrustInvalidDataException("Unknown Role: $value")
                             }
 
-                        fun asString(): String = _value().asStringOrThrow()
-                    }
-
-                    @JsonDeserialize(builder = FunctionCall.Builder::class)
-                    @NoAutoDetect
-                    class FunctionCall
-                    private constructor(
-                        private val arguments: JsonField<String>,
-                        private val name: JsonField<String>,
-                        private val additionalProperties: Map<String, JsonValue>,
-                    ) {
+                        /**
+                         * Returns this class instance's primitive wire representation.
+                         *
+                         * This differs from the [toString] method because that method is primarily
+                         * for debugging and generally doesn't throw.
+                         *
+                         * @throws BraintrustInvalidDataException if this class instance's value
+                         *   does not have the expected primitive type.
+                         */
+                        fun asString(): String =
+                            _value().asString()
+                                ?: throw BraintrustInvalidDataException("Value is not a String")
 
                         private var validated: Boolean = false
 
-                        private var hashCode: Int = 0
+                        fun validate(): Role = apply {
+                            if (validated) {
+                                return@apply
+                            }
 
+                            known()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: BraintrustInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is Role && value == other.value
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
+
+                    class FunctionCall
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                    private constructor(
+                        private val arguments: JsonField<String>,
+                        private val name: JsonField<String>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
+                    ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("arguments")
+                            @ExcludeMissing
+                            arguments: JsonField<String> = JsonMissing.of(),
+                            @JsonProperty("name")
+                            @ExcludeMissing
+                            name: JsonField<String> = JsonMissing.of(),
+                        ) : this(arguments, name, mutableMapOf())
+
+                        /**
+                         * @throws BraintrustInvalidDataException if the JSON field has an
+                         *   unexpected type or is unexpectedly missing or null (e.g. if the server
+                         *   responded with an unexpected value).
+                         */
                         fun arguments(): String = arguments.getRequired("arguments")
 
+                        /**
+                         * @throws BraintrustInvalidDataException if the JSON field has an
+                         *   unexpected type or is unexpectedly missing or null (e.g. if the server
+                         *   responded with an unexpected value).
+                         */
                         fun name(): String = name.getRequired("name")
 
-                        @JsonProperty("arguments") @ExcludeMissing fun _arguments() = arguments
+                        /**
+                         * Returns the raw JSON value of [arguments].
+                         *
+                         * Unlike [arguments], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("arguments")
+                        @ExcludeMissing
+                        fun _arguments(): JsonField<String> = arguments
 
-                        @JsonProperty("name") @ExcludeMissing fun _name() = name
+                        /**
+                         * Returns the raw JSON value of [name].
+                         *
+                         * Unlike [name], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
 
                         @JsonAnyGetter
                         @ExcludeMissing
-                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                        fun validate(): FunctionCall = apply {
-                            if (!validated) {
-                                arguments()
-                                name()
-                                validated = true
-                            }
-                        }
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
 
                         fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [FunctionCall].
+                             *
+                             * The following fields are required:
+                             * ```kotlin
+                             * .arguments()
+                             * .name()
+                             * ```
+                             */
+                            fun builder() = Builder()
+                        }
+
+                        /** A builder for [FunctionCall]. */
+                        class Builder internal constructor() {
+
+                            private var arguments: JsonField<String>? = null
+                            private var name: JsonField<String>? = null
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            internal fun from(functionCall: FunctionCall) = apply {
+                                arguments = functionCall.arguments
+                                name = functionCall.name
+                                additionalProperties =
+                                    functionCall.additionalProperties.toMutableMap()
+                            }
+
+                            fun arguments(arguments: String) = arguments(JsonField.of(arguments))
+
+                            /**
+                             * Sets [Builder.arguments] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.arguments] with a well-typed
+                             * [String] value instead. This method is primarily for setting the
+                             * field to an undocumented or not yet supported value.
+                             */
+                            fun arguments(arguments: JsonField<String>) = apply {
+                                this.arguments = arguments
+                            }
+
+                            fun name(name: String) = name(JsonField.of(name))
+
+                            /**
+                             * Sets [Builder.name] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.name] with a well-typed [String]
+                             * value instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
+                            fun name(name: JsonField<String>) = apply { this.name = name }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            /**
+                             * Returns an immutable instance of [FunctionCall].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```kotlin
+                             * .arguments()
+                             * .name()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
+                            fun build(): FunctionCall =
+                                FunctionCall(
+                                    checkRequired("arguments", arguments),
+                                    checkRequired("name", name),
+                                    additionalProperties.toMutableMap(),
+                                )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): FunctionCall = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            arguments()
+                            name()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: BraintrustInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        internal fun validity(): Int =
+                            (if (arguments.asKnown() == null) 0 else 1) +
+                                (if (name.asKnown() == null) 0 else 1)
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
@@ -3931,188 +3763,193 @@ private constructor(
                             }
 
                             return other is FunctionCall &&
-                                this.arguments == other.arguments &&
-                                this.name == other.name &&
-                                this.additionalProperties == other.additionalProperties
+                                arguments == other.arguments &&
+                                name == other.name &&
+                                additionalProperties == other.additionalProperties
                         }
 
-                        override fun hashCode(): Int {
-                            if (hashCode == 0) {
-                                hashCode =
-                                    Objects.hash(
-                                        arguments,
-                                        name,
-                                        additionalProperties,
-                                    )
-                            }
-                            return hashCode
+                        private val hashCode: Int by lazy {
+                            Objects.hash(arguments, name, additionalProperties)
                         }
+
+                        override fun hashCode(): Int = hashCode
 
                         override fun toString() =
                             "FunctionCall{arguments=$arguments, name=$name, additionalProperties=$additionalProperties}"
-
-                        companion object {
-
-                            fun builder() = Builder()
-                        }
-
-                        class Builder {
-
-                            private var arguments: JsonField<String> = JsonMissing.of()
-                            private var name: JsonField<String> = JsonMissing.of()
-                            private var additionalProperties: MutableMap<String, JsonValue> =
-                                mutableMapOf()
-
-                            internal fun from(functionCall: FunctionCall) = apply {
-                                this.arguments = functionCall.arguments
-                                this.name = functionCall.name
-                                additionalProperties(functionCall.additionalProperties)
-                            }
-
-                            fun arguments(arguments: String) = arguments(JsonField.of(arguments))
-
-                            @JsonProperty("arguments")
-                            @ExcludeMissing
-                            fun arguments(arguments: JsonField<String>) = apply {
-                                this.arguments = arguments
-                            }
-
-                            fun name(name: String) = name(JsonField.of(name))
-
-                            @JsonProperty("name")
-                            @ExcludeMissing
-                            fun name(name: JsonField<String>) = apply { this.name = name }
-
-                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                                apply {
-                                    this.additionalProperties.clear()
-                                    this.additionalProperties.putAll(additionalProperties)
-                                }
-
-                            @JsonAnySetter
-                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                                this.additionalProperties.put(key, value)
-                            }
-
-                            fun putAllAdditionalProperties(
-                                additionalProperties: Map<String, JsonValue>
-                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
-
-                            fun build(): FunctionCall =
-                                FunctionCall(
-                                    arguments,
-                                    name,
-                                    additionalProperties.toUnmodifiable(),
-                                )
-                        }
                     }
-                }
-
-                @JsonDeserialize(builder = Tool.Builder::class)
-                @NoAutoDetect
-                class Tool
-                private constructor(
-                    private val content: JsonField<String>,
-                    private val role: JsonField<Role>,
-                    private val toolCallId: JsonField<String>,
-                    private val additionalProperties: Map<String, JsonValue>,
-                ) {
-
-                    private var validated: Boolean = false
-
-                    private var hashCode: Int = 0
-
-                    fun content(): String? = content.getNullable("content")
-
-                    fun role(): Role = role.getRequired("role")
-
-                    fun toolCallId(): String? = toolCallId.getNullable("tool_call_id")
-
-                    @JsonProperty("content") @ExcludeMissing fun _content() = content
-
-                    @JsonProperty("role") @ExcludeMissing fun _role() = role
-
-                    @JsonProperty("tool_call_id") @ExcludeMissing fun _toolCallId() = toolCallId
-
-                    @JsonAnyGetter
-                    @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    fun validate(): Tool = apply {
-                        if (!validated) {
-                            content()
-                            role()
-                            toolCallId()
-                            validated = true
-                        }
-                    }
-
-                    fun toBuilder() = Builder().from(this)
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
                             return true
                         }
 
-                        return other is Tool &&
-                            this.content == other.content &&
-                            this.role == other.role &&
-                            this.toolCallId == other.toolCallId &&
-                            this.additionalProperties == other.additionalProperties
+                        return other is Assistant &&
+                            role == other.role &&
+                            content == other.content &&
+                            functionCall == other.functionCall &&
+                            name == other.name &&
+                            toolCalls == other.toolCalls &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode =
-                                Objects.hash(
-                                    content,
-                                    role,
-                                    toolCallId,
-                                    additionalProperties,
-                                )
-                        }
-                        return hashCode
+                    private val hashCode: Int by lazy {
+                        Objects.hash(
+                            role,
+                            content,
+                            functionCall,
+                            name,
+                            toolCalls,
+                            additionalProperties,
+                        )
                     }
+
+                    override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "Tool{content=$content, role=$role, toolCallId=$toolCallId, additionalProperties=$additionalProperties}"
+                        "Assistant{role=$role, content=$content, functionCall=$functionCall, name=$name, toolCalls=$toolCalls, additionalProperties=$additionalProperties}"
+                }
+
+                class Tool
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                private constructor(
+                    private val role: JsonField<Role>,
+                    private val content: JsonField<String>,
+                    private val toolCallId: JsonField<String>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("role")
+                        @ExcludeMissing
+                        role: JsonField<Role> = JsonMissing.of(),
+                        @JsonProperty("content")
+                        @ExcludeMissing
+                        content: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("tool_call_id")
+                        @ExcludeMissing
+                        toolCallId: JsonField<String> = JsonMissing.of(),
+                    ) : this(role, content, toolCallId, mutableMapOf())
+
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type or is unexpectedly missing or null (e.g. if the server responded with
+                     *   an unexpected value).
+                     */
+                    fun role(): Role = role.getRequired("role")
+
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type (e.g. if the server responded with an unexpected value).
+                     */
+                    fun content(): String? = content.getNullable("content")
+
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type (e.g. if the server responded with an unexpected value).
+                     */
+                    fun toolCallId(): String? = toolCallId.getNullable("tool_call_id")
+
+                    /**
+                     * Returns the raw JSON value of [role].
+                     *
+                     * Unlike [role], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
+
+                    /**
+                     * Returns the raw JSON value of [content].
+                     *
+                     * Unlike [content], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("content")
+                    @ExcludeMissing
+                    fun _content(): JsonField<String> = content
+
+                    /**
+                     * Returns the raw JSON value of [toolCallId].
+                     *
+                     * Unlike [toolCallId], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("tool_call_id")
+                    @ExcludeMissing
+                    fun _toolCallId(): JsonField<String> = toolCallId
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Tool].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
-                    class Builder {
+                    /** A builder for [Tool]. */
+                    class Builder internal constructor() {
 
+                        private var role: JsonField<Role>? = null
                         private var content: JsonField<String> = JsonMissing.of()
-                        private var role: JsonField<Role> = JsonMissing.of()
                         private var toolCallId: JsonField<String> = JsonMissing.of()
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
                         internal fun from(tool: Tool) = apply {
-                            this.content = tool.content
-                            this.role = tool.role
-                            this.toolCallId = tool.toolCallId
-                            additionalProperties(tool.additionalProperties)
+                            role = tool.role
+                            content = tool.content
+                            toolCallId = tool.toolCallId
+                            additionalProperties = tool.additionalProperties.toMutableMap()
                         }
-
-                        fun content(content: String) = content(JsonField.of(content))
-
-                        @JsonProperty("content")
-                        @ExcludeMissing
-                        fun content(content: JsonField<String>) = apply { this.content = content }
 
                         fun role(role: Role) = role(JsonField.of(role))
 
-                        @JsonProperty("role")
-                        @ExcludeMissing
+                        /**
+                         * Sets [Builder.role] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.role] with a well-typed [Role] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun role(role: JsonField<Role>) = apply { this.role = role }
+
+                        fun content(content: String) = content(JsonField.of(content))
+
+                        /**
+                         * Sets [Builder.content] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.content] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun content(content: JsonField<String>) = apply { this.content = content }
 
                         fun toolCallId(toolCallId: String) = toolCallId(JsonField.of(toolCallId))
 
-                        @JsonProperty("tool_call_id")
-                        @ExcludeMissing
+                        /**
+                         * Sets [Builder.toolCallId] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.toolCallId] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun toolCallId(toolCallId: JsonField<String>) = apply {
                             this.toolCallId = toolCallId
                         }
@@ -4120,120 +3957,572 @@ private constructor(
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                             apply {
                                 this.additionalProperties.clear()
-                                this.additionalProperties.putAll(additionalProperties)
+                                putAllAdditionalProperties(additionalProperties)
                             }
 
-                        @JsonAnySetter
                         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                            this.additionalProperties.put(key, value)
+                            additionalProperties.put(key, value)
                         }
 
                         fun putAllAdditionalProperties(
                             additionalProperties: Map<String, JsonValue>
                         ) = apply { this.additionalProperties.putAll(additionalProperties) }
 
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [Tool].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): Tool =
                             Tool(
+                                checkRequired("role", role),
                                 content,
-                                role,
                                 toolCallId,
-                                additionalProperties.toUnmodifiable(),
+                                additionalProperties.toMutableMap(),
                             )
                     }
 
+                    private var validated: Boolean = false
+
+                    fun validate(): Tool = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        role().validate()
+                        content()
+                        toolCallId()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: BraintrustInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    internal fun validity(): Int =
+                        (role.asKnown()?.validity() ?: 0) +
+                            (if (content.asKnown() == null) 0 else 1) +
+                            (if (toolCallId.asKnown() == null) 0 else 1)
+
                     class Role
                     @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
+                    private constructor(private val value: JsonField<String>) : Enum {
 
+                        /**
+                         * Returns this class instance's raw value.
+                         *
+                         * This is usually only useful if this instance was deserialized from data
+                         * that doesn't match any known member, and you want to know that value. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new members that the SDK is unaware of.
+                         */
                         @com.fasterxml.jackson.annotation.JsonValue
                         fun _value(): JsonField<String> = value
 
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return other is Role && this.value == other.value
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-
                         companion object {
 
-                            val TOOL = Role(JsonField.of("tool"))
+                            val TOOL = of("tool")
 
                             fun of(value: String) = Role(JsonField.of(value))
                         }
 
+                        /** An enum containing [Role]'s known values. */
                         enum class Known {
-                            TOOL,
+                            TOOL
                         }
 
+                        /**
+                         * An enum containing [Role]'s known values, as well as an [_UNKNOWN]
+                         * member.
+                         *
+                         * An instance of [Role] can contain an unknown value in a couple of cases:
+                         * - It was deserialized from data that doesn't match any known member. For
+                         *   example, if the SDK is on an older version than the API, then the API
+                         *   may respond with new members that the SDK is unaware of.
+                         * - It was constructed with an arbitrary value using the [of] method.
+                         */
                         enum class Value {
                             TOOL,
+                            /**
+                             * An enum member indicating that [Role] was instantiated with an
+                             * unknown value.
+                             */
                             _UNKNOWN,
                         }
 
+                        /**
+                         * Returns an enum member corresponding to this class instance's value, or
+                         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                         *
+                         * Use the [known] method instead if you're certain the value is always
+                         * known or if you want to throw for the unknown case.
+                         */
                         fun value(): Value =
                             when (this) {
                                 TOOL -> Value.TOOL
                                 else -> Value._UNKNOWN
                             }
 
+                        /**
+                         * Returns an enum member corresponding to this class instance's value.
+                         *
+                         * Use the [value] method instead if you're uncertain the value is always
+                         * known and don't want to throw for the unknown case.
+                         *
+                         * @throws BraintrustInvalidDataException if this class instance's value is
+                         *   a not a known member.
+                         */
                         fun known(): Known =
                             when (this) {
                                 TOOL -> Known.TOOL
                                 else -> throw BraintrustInvalidDataException("Unknown Role: $value")
                             }
 
-                        fun asString(): String = _value().asStringOrThrow()
+                        /**
+                         * Returns this class instance's primitive wire representation.
+                         *
+                         * This differs from the [toString] method because that method is primarily
+                         * for debugging and generally doesn't throw.
+                         *
+                         * @throws BraintrustInvalidDataException if this class instance's value
+                         *   does not have the expected primitive type.
+                         */
+                        fun asString(): String =
+                            _value().asString()
+                                ?: throw BraintrustInvalidDataException("Value is not a String")
+
+                        private var validated: Boolean = false
+
+                        fun validate(): Role = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            known()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: BraintrustInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is Role && value == other.value
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
                     }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is Tool &&
+                            role == other.role &&
+                            content == other.content &&
+                            toolCallId == other.toolCallId &&
+                            additionalProperties == other.additionalProperties
+                    }
+
+                    private val hashCode: Int by lazy {
+                        Objects.hash(role, content, toolCallId, additionalProperties)
+                    }
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() =
+                        "Tool{role=$role, content=$content, toolCallId=$toolCallId, additionalProperties=$additionalProperties}"
                 }
 
-                @JsonDeserialize(builder = Function.Builder::class)
-                @NoAutoDetect
                 class Function
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
-                    private val content: JsonField<String>,
                     private val name: JsonField<String>,
                     private val role: JsonField<Role>,
-                    private val additionalProperties: Map<String, JsonValue>,
+                    private val content: JsonField<String>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
 
-                    private var validated: Boolean = false
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("role")
+                        @ExcludeMissing
+                        role: JsonField<Role> = JsonMissing.of(),
+                        @JsonProperty("content")
+                        @ExcludeMissing
+                        content: JsonField<String> = JsonMissing.of(),
+                    ) : this(name, role, content, mutableMapOf())
 
-                    private var hashCode: Int = 0
-
-                    fun content(): String? = content.getNullable("content")
-
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type or is unexpectedly missing or null (e.g. if the server responded with
+                     *   an unexpected value).
+                     */
                     fun name(): String = name.getRequired("name")
 
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type or is unexpectedly missing or null (e.g. if the server responded with
+                     *   an unexpected value).
+                     */
                     fun role(): Role = role.getRequired("role")
 
-                    @JsonProperty("content") @ExcludeMissing fun _content() = content
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type (e.g. if the server responded with an unexpected value).
+                     */
+                    fun content(): String? = content.getNullable("content")
 
-                    @JsonProperty("name") @ExcludeMissing fun _name() = name
+                    /**
+                     * Returns the raw JSON value of [name].
+                     *
+                     * Unlike [name], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
-                    @JsonProperty("role") @ExcludeMissing fun _role() = role
+                    /**
+                     * Returns the raw JSON value of [role].
+                     *
+                     * Unlike [role], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
+
+                    /**
+                     * Returns the raw JSON value of [content].
+                     *
+                     * Unlike [content], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("content")
+                    @ExcludeMissing
+                    fun _content(): JsonField<String> = content
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
 
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    fun validate(): Function = apply {
-                        if (!validated) {
-                            content()
-                            name()
-                            role()
-                            validated = true
-                        }
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Function].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .name()
+                         * .role()
+                         * ```
+                         */
+                        fun builder() = Builder()
+                    }
+
+                    /** A builder for [Function]. */
+                    class Builder internal constructor() {
+
+                        private var name: JsonField<String>? = null
+                        private var role: JsonField<Role>? = null
+                        private var content: JsonField<String> = JsonMissing.of()
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        internal fun from(function: Function) = apply {
+                            name = function.name
+                            role = function.role
+                            content = function.content
+                            additionalProperties = function.additionalProperties.toMutableMap()
+                        }
+
+                        fun name(name: String) = name(JsonField.of(name))
+
+                        /**
+                         * Sets [Builder.name] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.name] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun name(name: JsonField<String>) = apply { this.name = name }
+
+                        fun role(role: Role) = role(JsonField.of(role))
+
+                        /**
+                         * Sets [Builder.role] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.role] with a well-typed [Role] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun role(role: JsonField<Role>) = apply { this.role = role }
+
+                        fun content(content: String) = content(JsonField.of(content))
+
+                        /**
+                         * Sets [Builder.content] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.content] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun content(content: JsonField<String>) = apply { this.content = content }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [Function].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .name()
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
+                        fun build(): Function =
+                            Function(
+                                checkRequired("name", name),
+                                checkRequired("role", role),
+                                content,
+                                additionalProperties.toMutableMap(),
+                            )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Function = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        name()
+                        role().validate()
+                        content()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: BraintrustInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    internal fun validity(): Int =
+                        (if (name.asKnown() == null) 0 else 1) +
+                            (role.asKnown()?.validity() ?: 0) +
+                            (if (content.asKnown() == null) 0 else 1)
+
+                    class Role
+                    @JsonCreator
+                    private constructor(private val value: JsonField<String>) : Enum {
+
+                        /**
+                         * Returns this class instance's raw value.
+                         *
+                         * This is usually only useful if this instance was deserialized from data
+                         * that doesn't match any known member, and you want to know that value. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new members that the SDK is unaware of.
+                         */
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            val FUNCTION = of("function")
+
+                            fun of(value: String) = Role(JsonField.of(value))
+                        }
+
+                        /** An enum containing [Role]'s known values. */
+                        enum class Known {
+                            FUNCTION
+                        }
+
+                        /**
+                         * An enum containing [Role]'s known values, as well as an [_UNKNOWN]
+                         * member.
+                         *
+                         * An instance of [Role] can contain an unknown value in a couple of cases:
+                         * - It was deserialized from data that doesn't match any known member. For
+                         *   example, if the SDK is on an older version than the API, then the API
+                         *   may respond with new members that the SDK is unaware of.
+                         * - It was constructed with an arbitrary value using the [of] method.
+                         */
+                        enum class Value {
+                            FUNCTION,
+                            /**
+                             * An enum member indicating that [Role] was instantiated with an
+                             * unknown value.
+                             */
+                            _UNKNOWN,
+                        }
+
+                        /**
+                         * Returns an enum member corresponding to this class instance's value, or
+                         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                         *
+                         * Use the [known] method instead if you're certain the value is always
+                         * known or if you want to throw for the unknown case.
+                         */
+                        fun value(): Value =
+                            when (this) {
+                                FUNCTION -> Value.FUNCTION
+                                else -> Value._UNKNOWN
+                            }
+
+                        /**
+                         * Returns an enum member corresponding to this class instance's value.
+                         *
+                         * Use the [value] method instead if you're uncertain the value is always
+                         * known and don't want to throw for the unknown case.
+                         *
+                         * @throws BraintrustInvalidDataException if this class instance's value is
+                         *   a not a known member.
+                         */
+                        fun known(): Known =
+                            when (this) {
+                                FUNCTION -> Known.FUNCTION
+                                else -> throw BraintrustInvalidDataException("Unknown Role: $value")
+                            }
+
+                        /**
+                         * Returns this class instance's primitive wire representation.
+                         *
+                         * This differs from the [toString] method because that method is primarily
+                         * for debugging and generally doesn't throw.
+                         *
+                         * @throws BraintrustInvalidDataException if this class instance's value
+                         *   does not have the expected primitive type.
+                         */
+                        fun asString(): String =
+                            _value().asString()
+                                ?: throw BraintrustInvalidDataException("Value is not a String")
+
+                        private var validated: Boolean = false
+
+                        fun validate(): Role = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            known()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: BraintrustInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is Role && value == other.value
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -4241,177 +4530,330 @@ private constructor(
                         }
 
                         return other is Function &&
-                            this.content == other.content &&
-                            this.name == other.name &&
-                            this.role == other.role &&
-                            this.additionalProperties == other.additionalProperties
+                            name == other.name &&
+                            role == other.role &&
+                            content == other.content &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode =
-                                Objects.hash(
-                                    content,
-                                    name,
-                                    role,
-                                    additionalProperties,
-                                )
-                        }
-                        return hashCode
+                    private val hashCode: Int by lazy {
+                        Objects.hash(name, role, content, additionalProperties)
                     }
+
+                    override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "Function{content=$content, name=$name, role=$role, additionalProperties=$additionalProperties}"
+                        "Function{name=$name, role=$role, content=$content, additionalProperties=$additionalProperties}"
+                }
+
+                class Fallback
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                private constructor(
+                    private val role: JsonField<Role>,
+                    private val content: JsonField<String>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("role")
+                        @ExcludeMissing
+                        role: JsonField<Role> = JsonMissing.of(),
+                        @JsonProperty("content")
+                        @ExcludeMissing
+                        content: JsonField<String> = JsonMissing.of(),
+                    ) : this(role, content, mutableMapOf())
+
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type or is unexpectedly missing or null (e.g. if the server responded with
+                     *   an unexpected value).
+                     */
+                    fun role(): Role = role.getRequired("role")
+
+                    /**
+                     * @throws BraintrustInvalidDataException if the JSON field has an unexpected
+                     *   type (e.g. if the server responded with an unexpected value).
+                     */
+                    fun content(): String? = content.getNullable("content")
+
+                    /**
+                     * Returns the raw JSON value of [role].
+                     *
+                     * Unlike [role], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
+
+                    /**
+                     * Returns the raw JSON value of [content].
+                     *
+                     * Unlike [content], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("content")
+                    @ExcludeMissing
+                    fun _content(): JsonField<String> = content
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Fallback].
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         */
                         fun builder() = Builder()
                     }
 
-                    class Builder {
+                    /** A builder for [Fallback]. */
+                    class Builder internal constructor() {
 
+                        private var role: JsonField<Role>? = null
                         private var content: JsonField<String> = JsonMissing.of()
-                        private var name: JsonField<String> = JsonMissing.of()
-                        private var role: JsonField<Role> = JsonMissing.of()
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
-                        internal fun from(function: Function) = apply {
-                            this.content = function.content
-                            this.name = function.name
-                            this.role = function.role
-                            additionalProperties(function.additionalProperties)
+                        internal fun from(fallback: Fallback) = apply {
+                            role = fallback.role
+                            content = fallback.content
+                            additionalProperties = fallback.additionalProperties.toMutableMap()
                         }
-
-                        fun content(content: String) = content(JsonField.of(content))
-
-                        @JsonProperty("content")
-                        @ExcludeMissing
-                        fun content(content: JsonField<String>) = apply { this.content = content }
-
-                        fun name(name: String) = name(JsonField.of(name))
-
-                        @JsonProperty("name")
-                        @ExcludeMissing
-                        fun name(name: JsonField<String>) = apply { this.name = name }
 
                         fun role(role: Role) = role(JsonField.of(role))
 
-                        @JsonProperty("role")
-                        @ExcludeMissing
+                        /**
+                         * Sets [Builder.role] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.role] with a well-typed [Role] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun role(role: JsonField<Role>) = apply { this.role = role }
+
+                        fun content(content: String?) = content(JsonField.ofNullable(content))
+
+                        /**
+                         * Sets [Builder.content] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.content] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun content(content: JsonField<String>) = apply { this.content = content }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                             apply {
                                 this.additionalProperties.clear()
-                                this.additionalProperties.putAll(additionalProperties)
+                                putAllAdditionalProperties(additionalProperties)
                             }
 
-                        @JsonAnySetter
                         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                            this.additionalProperties.put(key, value)
+                            additionalProperties.put(key, value)
                         }
 
                         fun putAllAdditionalProperties(
                             additionalProperties: Map<String, JsonValue>
                         ) = apply { this.additionalProperties.putAll(additionalProperties) }
 
-                        fun build(): Function =
-                            Function(
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [Fallback].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```kotlin
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
+                        fun build(): Fallback =
+                            Fallback(
+                                checkRequired("role", role),
                                 content,
-                                name,
-                                role,
-                                additionalProperties.toUnmodifiable(),
+                                additionalProperties.toMutableMap(),
                             )
                     }
 
+                    private var validated: Boolean = false
+
+                    fun validate(): Fallback = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        role().validate()
+                        content()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: BraintrustInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    internal fun validity(): Int =
+                        (role.asKnown()?.validity() ?: 0) +
+                            (if (content.asKnown() == null) 0 else 1)
+
                     class Role
                     @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
+                    private constructor(private val value: JsonField<String>) : Enum {
 
+                        /**
+                         * Returns this class instance's raw value.
+                         *
+                         * This is usually only useful if this instance was deserialized from data
+                         * that doesn't match any known member, and you want to know that value. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new members that the SDK is unaware of.
+                         */
                         @com.fasterxml.jackson.annotation.JsonValue
                         fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            val MODEL = of("model")
+
+                            fun of(value: String) = Role(JsonField.of(value))
+                        }
+
+                        /** An enum containing [Role]'s known values. */
+                        enum class Known {
+                            MODEL
+                        }
+
+                        /**
+                         * An enum containing [Role]'s known values, as well as an [_UNKNOWN]
+                         * member.
+                         *
+                         * An instance of [Role] can contain an unknown value in a couple of cases:
+                         * - It was deserialized from data that doesn't match any known member. For
+                         *   example, if the SDK is on an older version than the API, then the API
+                         *   may respond with new members that the SDK is unaware of.
+                         * - It was constructed with an arbitrary value using the [of] method.
+                         */
+                        enum class Value {
+                            MODEL,
+                            /**
+                             * An enum member indicating that [Role] was instantiated with an
+                             * unknown value.
+                             */
+                            _UNKNOWN,
+                        }
+
+                        /**
+                         * Returns an enum member corresponding to this class instance's value, or
+                         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                         *
+                         * Use the [known] method instead if you're certain the value is always
+                         * known or if you want to throw for the unknown case.
+                         */
+                        fun value(): Value =
+                            when (this) {
+                                MODEL -> Value.MODEL
+                                else -> Value._UNKNOWN
+                            }
+
+                        /**
+                         * Returns an enum member corresponding to this class instance's value.
+                         *
+                         * Use the [value] method instead if you're uncertain the value is always
+                         * known and don't want to throw for the unknown case.
+                         *
+                         * @throws BraintrustInvalidDataException if this class instance's value is
+                         *   a not a known member.
+                         */
+                        fun known(): Known =
+                            when (this) {
+                                MODEL -> Known.MODEL
+                                else -> throw BraintrustInvalidDataException("Unknown Role: $value")
+                            }
+
+                        /**
+                         * Returns this class instance's primitive wire representation.
+                         *
+                         * This differs from the [toString] method because that method is primarily
+                         * for debugging and generally doesn't throw.
+                         *
+                         * @throws BraintrustInvalidDataException if this class instance's value
+                         *   does not have the expected primitive type.
+                         */
+                        fun asString(): String =
+                            _value().asString()
+                                ?: throw BraintrustInvalidDataException("Value is not a String")
+
+                        private var validated: Boolean = false
+
+                        fun validate(): Role = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            known()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: BraintrustInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
                         override fun equals(other: Any?): Boolean {
                             if (this === other) {
                                 return true
                             }
 
-                            return other is Role && this.value == other.value
+                            return other is Role && value == other.value
                         }
 
                         override fun hashCode() = value.hashCode()
 
                         override fun toString() = value.toString()
-
-                        companion object {
-
-                            val FUNCTION = Role(JsonField.of("function"))
-
-                            fun of(value: String) = Role(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            FUNCTION,
-                        }
-
-                        enum class Value {
-                            FUNCTION,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                FUNCTION -> Value.FUNCTION
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                FUNCTION -> Known.FUNCTION
-                                else -> throw BraintrustInvalidDataException("Unknown Role: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
                     }
-                }
-
-                @JsonDeserialize(builder = Fallback.Builder::class)
-                @NoAutoDetect
-                class Fallback
-                private constructor(
-                    private val role: JsonField<Role>,
-                    private val content: JsonField<String>,
-                    private val additionalProperties: Map<String, JsonValue>,
-                ) {
-
-                    private var validated: Boolean = false
-
-                    private var hashCode: Int = 0
-
-                    fun role(): Role = role.getRequired("role")
-
-                    fun content(): String? = content.getNullable("content")
-
-                    @JsonProperty("role") @ExcludeMissing fun _role() = role
-
-                    @JsonProperty("content") @ExcludeMissing fun _content() = content
-
-                    @JsonAnyGetter
-                    @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    fun validate(): Fallback = apply {
-                        if (!validated) {
-                            role()
-                            content()
-                            validated = true
-                        }
-                    }
-
-                    fun toBuilder() = Builder().from(this)
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -4419,257 +4861,165 @@ private constructor(
                         }
 
                         return other is Fallback &&
-                            this.role == other.role &&
-                            this.content == other.content &&
-                            this.additionalProperties == other.additionalProperties
+                            role == other.role &&
+                            content == other.content &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    override fun hashCode(): Int {
-                        if (hashCode == 0) {
-                            hashCode =
-                                Objects.hash(
-                                    role,
-                                    content,
-                                    additionalProperties,
-                                )
-                        }
-                        return hashCode
+                    private val hashCode: Int by lazy {
+                        Objects.hash(role, content, additionalProperties)
                     }
+
+                    override fun hashCode(): Int = hashCode
 
                     override fun toString() =
                         "Fallback{role=$role, content=$content, additionalProperties=$additionalProperties}"
-
-                    companion object {
-
-                        fun builder() = Builder()
-                    }
-
-                    class Builder {
-
-                        private var role: JsonField<Role> = JsonMissing.of()
-                        private var content: JsonField<String> = JsonMissing.of()
-                        private var additionalProperties: MutableMap<String, JsonValue> =
-                            mutableMapOf()
-
-                        internal fun from(fallback: Fallback) = apply {
-                            this.role = fallback.role
-                            this.content = fallback.content
-                            additionalProperties(fallback.additionalProperties)
-                        }
-
-                        fun role(role: Role) = role(JsonField.of(role))
-
-                        @JsonProperty("role")
-                        @ExcludeMissing
-                        fun role(role: JsonField<Role>) = apply { this.role = role }
-
-                        fun content(content: String) = content(JsonField.of(content))
-
-                        @JsonProperty("content")
-                        @ExcludeMissing
-                        fun content(content: JsonField<String>) = apply { this.content = content }
-
-                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                            apply {
-                                this.additionalProperties.clear()
-                                this.additionalProperties.putAll(additionalProperties)
-                            }
-
-                        @JsonAnySetter
-                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                            this.additionalProperties.put(key, value)
-                        }
-
-                        fun putAllAdditionalProperties(
-                            additionalProperties: Map<String, JsonValue>
-                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
-
-                        fun build(): Fallback =
-                            Fallback(
-                                role,
-                                content,
-                                additionalProperties.toUnmodifiable(),
-                            )
-                    }
-
-                    class Role
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return other is Role && this.value == other.value
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-
-                        companion object {
-
-                            val MODEL = Role(JsonField.of("model"))
-
-                            fun of(value: String) = Role(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            MODEL,
-                        }
-
-                        enum class Value {
-                            MODEL,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                MODEL -> Value.MODEL
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                MODEL -> Known.MODEL
-                                else -> throw BraintrustInvalidDataException("Unknown Role: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-                    }
                 }
             }
 
-            class Type
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Type @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
 
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
                 @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return other is Type && this.value == other.value
-                }
-
-                override fun hashCode() = value.hashCode()
-
-                override fun toString() = value.toString()
 
                 companion object {
 
-                    val CHAT = Type(JsonField.of("chat"))
+                    val CHAT = of("chat")
 
                     fun of(value: String) = Type(JsonField.of(value))
                 }
 
+                /** An enum containing [Type]'s known values. */
                 enum class Known {
-                    CHAT,
+                    CHAT
                 }
 
+                /**
+                 * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Type] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
                 enum class Value {
                     CHAT,
+                    /**
+                     * An enum member indicating that [Type] was instantiated with an unknown value.
+                     */
                     _UNKNOWN,
                 }
 
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
                 fun value(): Value =
                     when (this) {
                         CHAT -> Value.CHAT
                         else -> Value._UNKNOWN
                     }
 
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
                 fun known(): Known =
                     when (this) {
                         CHAT -> Known.CHAT
                         else -> throw BraintrustInvalidDataException("Unknown Type: $value")
                     }
 
-                fun asString(): String = _value().asStringOrThrow()
-            }
-        }
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
 
-        @JsonDeserialize(builder = NullableVariant.Builder::class)
-        @NoAutoDetect
-        class NullableVariant
-        private constructor(
-            private val additionalProperties: Map<String, JsonValue>,
-        ) {
+                private var validated: Boolean = false
 
-            private var validated: Boolean = false
+                fun validate(): Type = apply {
+                    if (validated) {
+                        return@apply
+                    }
 
-            private var hashCode: Int = 0
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            fun validate(): NullableVariant = apply {
-                if (!validated) {
+                    known()
                     validated = true
                 }
-            }
 
-            fun toBuilder() = Builder().from(this)
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Type && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return other is NullableVariant &&
-                    this.additionalProperties == other.additionalProperties
+                return other is Chat &&
+                    messages == other.messages &&
+                    type == other.type &&
+                    tools == other.tools &&
+                    additionalProperties == other.additionalProperties
             }
 
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode = Objects.hash(additionalProperties)
-                }
-                return hashCode
+            private val hashCode: Int by lazy {
+                Objects.hash(messages, type, tools, additionalProperties)
             }
 
-            override fun toString() = "NullableVariant{additionalProperties=$additionalProperties}"
+            override fun hashCode(): Int = hashCode
 
-            companion object {
-
-                fun builder() = Builder()
-            }
-
-            class Builder {
-
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                internal fun from(nullableVariant: NullableVariant) = apply {
-                    additionalProperties(nullableVariant.additionalProperties)
-                }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
-                }
-
-                @JsonAnySetter
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun build(): NullableVariant =
-                    NullableVariant(additionalProperties.toUnmodifiable())
-            }
+            override fun toString() =
+                "Chat{messages=$messages, type=$type, tools=$tools, additionalProperties=$additionalProperties}"
         }
     }
 
@@ -4681,8 +5031,6 @@ private constructor(
         private val global: Global? = null,
         private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun function(): Function? = function
 
@@ -4698,47 +5046,76 @@ private constructor(
 
         fun _json(): JsonValue? = _json
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 function != null -> visitor.visitFunction(function)
                 global != null -> visitor.visitGlobal(global)
                 else -> visitor.unknown(_json)
             }
-        }
+
+        private var validated: Boolean = false
 
         fun validate(): ToolFunction = apply {
-            if (!validated) {
-                if (function == null && global == null) {
-                    throw BraintrustInvalidDataException("Unknown ToolFunction: $_json")
-                }
-                function?.validate()
-                global?.validate()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitFunction(function: Function) {
+                        function.validate()
+                    }
+
+                    override fun visitGlobal(global: Global) {
+                        global.validate()
+                    }
+                }
+            )
+            validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitFunction(function: Function) = function.validity()
+
+                    override fun visitGlobal(global: Global) = global.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is ToolFunction &&
-                this.function == other.function &&
-                this.global == other.global
+            return other is ToolFunction && function == other.function && global == other.global
         }
 
-        override fun hashCode(): Int {
-            return Objects.hash(function, global)
-        }
+        override fun hashCode(): Int = Objects.hash(function, global)
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 function != null -> "ToolFunction{function=$function}"
                 global != null -> "ToolFunction{global=$global}"
                 _json != null -> "ToolFunction{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid ToolFunction")
             }
-        }
 
         companion object {
 
@@ -4747,40 +5124,67 @@ private constructor(
             fun ofGlobal(global: Global) = ToolFunction(global = global)
         }
 
+        /**
+         * An interface that defines how to map each variant of [ToolFunction] to a value of type
+         * [T].
+         */
         interface Visitor<out T> {
 
             fun visitFunction(function: Function): T
 
             fun visitGlobal(global: Global): T
 
+            /**
+             * Maps an unknown variant of [ToolFunction] to a value of type [T].
+             *
+             * An instance of [ToolFunction] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws BraintrustInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown ToolFunction: $json")
             }
         }
 
-        class Deserializer : BaseDeserializer<ToolFunction>(ToolFunction::class) {
+        internal class Deserializer : BaseDeserializer<ToolFunction>(ToolFunction::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): ToolFunction {
                 val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<Function>()) { it.validate() }
-                    ?.let {
-                        return ToolFunction(function = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<Global>()) { it.validate() }
-                    ?.let {
-                        return ToolFunction(global = it, _json = json)
-                    }
 
-                return ToolFunction(_json = json)
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<Function>())?.let {
+                                ToolFunction(function = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<Global>())?.let {
+                                ToolFunction(global = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> ToolFunction(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
             }
         }
 
-        class Serializer : BaseSerializer<ToolFunction>(ToolFunction::class) {
+        internal class Serializer : BaseSerializer<ToolFunction>(ToolFunction::class) {
 
             override fun serialize(
                 value: ToolFunction,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.function != null -> generator.writeObject(value.function)
@@ -4791,40 +5195,303 @@ private constructor(
             }
         }
 
-        @JsonDeserialize(builder = Function.Builder::class)
-        @NoAutoDetect
         class Function
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
-            private val type: JsonField<Type>,
             private val id: JsonField<String>,
-            private val additionalProperties: Map<String, JsonValue>,
+            private val type: JsonField<Type>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
-            private var validated: Boolean = false
+            @JsonCreator
+            private constructor(
+                @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+            ) : this(id, type, mutableMapOf())
 
-            private var hashCode: Int = 0
-
-            fun type(): Type = type.getRequired("type")
-
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun id(): String = id.getRequired("id")
 
-            @JsonProperty("type") @ExcludeMissing fun _type() = type
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun type(): Type = type.getRequired("type")
 
-            @JsonProperty("id") @ExcludeMissing fun _id() = id
+            /**
+             * Returns the raw JSON value of [id].
+             *
+             * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
 
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            fun validate(): Function = apply {
-                if (!validated) {
-                    type()
-                    id()
-                    validated = true
-                }
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Function].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .id()
+                 * .type()
+                 * ```
+                 */
+                fun builder() = Builder()
+            }
+
+            /** A builder for [Function]. */
+            class Builder internal constructor() {
+
+                private var id: JsonField<String>? = null
+                private var type: JsonField<Type>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                internal fun from(function: Function) = apply {
+                    id = function.id
+                    type = function.type
+                    additionalProperties = function.additionalProperties.toMutableMap()
+                }
+
+                fun id(id: String) = id(JsonField.of(id))
+
+                /**
+                 * Sets [Builder.id] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.id] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun id(id: JsonField<String>) = apply { this.id = id }
+
+                fun type(type: Type) = type(JsonField.of(type))
+
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonField<Type>) = apply { this.type = type }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Function].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .id()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Function =
+                    Function(
+                        checkRequired("id", id),
+                        checkRequired("type", type),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Function = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                id()
+                type().validate()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (id.asKnown() == null) 0 else 1) + (type.asKnown()?.validity() ?: 0)
+
+            class Type @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    val FUNCTION = of("function")
+
+                    fun of(value: String) = Type(JsonField.of(value))
+                }
+
+                /** An enum containing [Type]'s known values. */
+                enum class Known {
+                    FUNCTION
+                }
+
+                /**
+                 * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Type] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    FUNCTION,
+                    /**
+                     * An enum member indicating that [Type] was instantiated with an unknown value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        FUNCTION -> Value.FUNCTION
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        FUNCTION -> Known.FUNCTION
+                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
+
+                private var validated: Boolean = false
+
+                fun validate(): Type = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Type && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -4832,63 +5499,129 @@ private constructor(
                 }
 
                 return other is Function &&
-                    this.type == other.type &&
-                    this.id == other.id &&
-                    this.additionalProperties == other.additionalProperties
+                    id == other.id &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
             }
 
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode =
-                        Objects.hash(
-                            type,
-                            id,
-                            additionalProperties,
-                        )
-                }
-                return hashCode
-            }
+            private val hashCode: Int by lazy { Objects.hash(id, type, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Function{type=$type, id=$id, additionalProperties=$additionalProperties}"
+                "Function{id=$id, type=$type, additionalProperties=$additionalProperties}"
+        }
+
+        class Global
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val name: JsonField<String>,
+            private val type: JsonField<Type>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+            ) : this(name, type, mutableMapOf())
+
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun name(): String = name.getRequired("name")
+
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun type(): Type = type.getRequired("type")
+
+            /**
+             * Returns the raw JSON value of [name].
+             *
+             * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Global].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .name()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
-            class Builder {
+            /** A builder for [Global]. */
+            class Builder internal constructor() {
 
-                private var type: JsonField<Type> = JsonMissing.of()
-                private var id: JsonField<String> = JsonMissing.of()
+                private var name: JsonField<String>? = null
+                private var type: JsonField<Type>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-                internal fun from(function: Function) = apply {
-                    this.type = function.type
-                    this.id = function.id
-                    additionalProperties(function.additionalProperties)
+                internal fun from(global: Global) = apply {
+                    name = global.name
+                    type = global.type
+                    additionalProperties = global.additionalProperties.toMutableMap()
                 }
+
+                fun name(name: String) = name(JsonField.of(name))
+
+                /**
+                 * Sets [Builder.name] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.name] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun name(name: JsonField<String>) = apply { this.name = name }
 
                 fun type(type: Type) = type(JsonField.of(type))
 
-                @JsonProperty("type")
-                @ExcludeMissing
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
-
-                fun id(id: String) = id(JsonField.of(id))
-
-                @JsonProperty("id")
-                @ExcludeMissing
-                fun id(id: JsonField<String>) = apply { this.id = id }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
+                    putAllAdditionalProperties(additionalProperties)
                 }
 
-                @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
+                    additionalProperties.put(key, value)
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -4896,100 +5629,186 @@ private constructor(
                         this.additionalProperties.putAll(additionalProperties)
                     }
 
-                fun build(): Function =
-                    Function(
-                        type,
-                        id,
-                        additionalProperties.toUnmodifiable(),
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Global].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .name()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Global =
+                    Global(
+                        checkRequired("name", name),
+                        checkRequired("type", type),
+                        additionalProperties.toMutableMap(),
                     )
             }
 
-            class Type
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            private var validated: Boolean = false
 
+            fun validate(): Global = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                name()
+                type().validate()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (name.asKnown() == null) 0 else 1) + (type.asKnown()?.validity() ?: 0)
+
+            class Type @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
                 @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    val GLOBAL = of("global")
+
+                    fun of(value: String) = Type(JsonField.of(value))
+                }
+
+                /** An enum containing [Type]'s known values. */
+                enum class Known {
+                    GLOBAL
+                }
+
+                /**
+                 * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Type] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    GLOBAL,
+                    /**
+                     * An enum member indicating that [Type] was instantiated with an unknown value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        GLOBAL -> Value.GLOBAL
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        GLOBAL -> Known.GLOBAL
+                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
+
+                private var validated: Boolean = false
+
+                fun validate(): Type = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
                     }
 
-                    return other is Type && this.value == other.value
+                    return other is Type && value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
 
                 override fun toString() = value.toString()
-
-                companion object {
-
-                    val FUNCTION = Type(JsonField.of("function"))
-
-                    fun of(value: String) = Type(JsonField.of(value))
-                }
-
-                enum class Known {
-                    FUNCTION,
-                }
-
-                enum class Value {
-                    FUNCTION,
-                    _UNKNOWN,
-                }
-
-                fun value(): Value =
-                    when (this) {
-                        FUNCTION -> Value.FUNCTION
-                        else -> Value._UNKNOWN
-                    }
-
-                fun known(): Known =
-                    when (this) {
-                        FUNCTION -> Known.FUNCTION
-                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                    }
-
-                fun asString(): String = _value().asStringOrThrow()
             }
-        }
-
-        @JsonDeserialize(builder = Global.Builder::class)
-        @NoAutoDetect
-        class Global
-        private constructor(
-            private val type: JsonField<Type>,
-            private val name: JsonField<String>,
-            private val additionalProperties: Map<String, JsonValue>,
-        ) {
-
-            private var validated: Boolean = false
-
-            private var hashCode: Int = 0
-
-            fun type(): Type = type.getRequired("type")
-
-            fun name(): String = name.getRequired("name")
-
-            @JsonProperty("type") @ExcludeMissing fun _type() = type
-
-            @JsonProperty("name") @ExcludeMissing fun _name() = name
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            fun validate(): Global = apply {
-                if (!validated) {
-                    type()
-                    name()
-                    validated = true
-                }
-            }
-
-            fun toBuilder() = Builder().from(this)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -4997,128 +5816,40 @@ private constructor(
                 }
 
                 return other is Global &&
-                    this.type == other.type &&
-                    this.name == other.name &&
-                    this.additionalProperties == other.additionalProperties
+                    name == other.name &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
             }
 
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode =
-                        Objects.hash(
-                            type,
-                            name,
-                            additionalProperties,
-                        )
-                }
-                return hashCode
-            }
+            private val hashCode: Int by lazy { Objects.hash(name, type, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Global{type=$type, name=$name, additionalProperties=$additionalProperties}"
-
-            companion object {
-
-                fun builder() = Builder()
-            }
-
-            class Builder {
-
-                private var type: JsonField<Type> = JsonMissing.of()
-                private var name: JsonField<String> = JsonMissing.of()
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                internal fun from(global: Global) = apply {
-                    this.type = global.type
-                    this.name = global.name
-                    additionalProperties(global.additionalProperties)
-                }
-
-                fun type(type: Type) = type(JsonField.of(type))
-
-                @JsonProperty("type")
-                @ExcludeMissing
-                fun type(type: JsonField<Type>) = apply { this.type = type }
-
-                fun name(name: String) = name(JsonField.of(name))
-
-                @JsonProperty("name")
-                @ExcludeMissing
-                fun name(name: JsonField<String>) = apply { this.name = name }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
-                }
-
-                @JsonAnySetter
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun build(): Global =
-                    Global(
-                        type,
-                        name,
-                        additionalProperties.toUnmodifiable(),
-                    )
-            }
-
-            class Type
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
-
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return other is Type && this.value == other.value
-                }
-
-                override fun hashCode() = value.hashCode()
-
-                override fun toString() = value.toString()
-
-                companion object {
-
-                    val GLOBAL = Type(JsonField.of("global"))
-
-                    fun of(value: String) = Type(JsonField.of(value))
-                }
-
-                enum class Known {
-                    GLOBAL,
-                }
-
-                enum class Value {
-                    GLOBAL,
-                    _UNKNOWN,
-                }
-
-                fun value(): Value =
-                    when (this) {
-                        GLOBAL -> Value.GLOBAL
-                        else -> Value._UNKNOWN
-                    }
-
-                fun known(): Known =
-                    when (this) {
-                        GLOBAL -> Known.GLOBAL
-                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                    }
-
-                fun asString(): String = _value().asStringOrThrow()
-            }
+                "Global{name=$name, type=$type, additionalProperties=$additionalProperties}"
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is PromptData &&
+            options == other.options &&
+            origin == other.origin &&
+            parser == other.parser &&
+            prompt == other.prompt &&
+            toolFunctions == other.toolFunctions &&
+            additionalProperties == other.additionalProperties
+    }
+
+    private val hashCode: Int by lazy {
+        Objects.hash(options, origin, parser, prompt, toolFunctions, additionalProperties)
+    }
+
+    override fun hashCode(): Int = hashCode
+
+    override fun toString() =
+        "PromptData{options=$options, origin=$origin, parser=$parser, prompt=$prompt, toolFunctions=$toolFunctions, additionalProperties=$additionalProperties}"
 }

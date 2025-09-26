@@ -2,25 +2,110 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class CrossObjectInsertResponseTest {
+internal class CrossObjectInsertResponseTest {
 
     @Test
-    fun createCrossObjectInsertResponse() {
+    fun create() {
         val crossObjectInsertResponse =
             CrossObjectInsertResponse.builder()
-                .dataset(CrossObjectInsertResponse.Dataset.builder().build())
-                .experiment(CrossObjectInsertResponse.Experiment.builder().build())
-                .projectLogs(CrossObjectInsertResponse.ProjectLogs.builder().build())
+                .dataset(
+                    CrossObjectInsertResponse.Dataset.builder()
+                        .putAdditionalProperty(
+                            "foo",
+                            JsonValue.from(mapOf("row_ids" to listOf("string"))),
+                        )
+                        .build()
+                )
+                .experiment(
+                    CrossObjectInsertResponse.Experiment.builder()
+                        .putAdditionalProperty(
+                            "foo",
+                            JsonValue.from(mapOf("row_ids" to listOf("string"))),
+                        )
+                        .build()
+                )
+                .projectLogs(
+                    CrossObjectInsertResponse.ProjectLogs.builder()
+                        .putAdditionalProperty(
+                            "foo",
+                            JsonValue.from(mapOf("row_ids" to listOf("string"))),
+                        )
+                        .build()
+                )
                 .build()
-        assertThat(crossObjectInsertResponse).isNotNull
+
         assertThat(crossObjectInsertResponse.dataset())
-            .isEqualTo(CrossObjectInsertResponse.Dataset.builder().build())
+            .isEqualTo(
+                CrossObjectInsertResponse.Dataset.builder()
+                    .putAdditionalProperty(
+                        "foo",
+                        JsonValue.from(mapOf("row_ids" to listOf("string"))),
+                    )
+                    .build()
+            )
         assertThat(crossObjectInsertResponse.experiment())
-            .isEqualTo(CrossObjectInsertResponse.Experiment.builder().build())
+            .isEqualTo(
+                CrossObjectInsertResponse.Experiment.builder()
+                    .putAdditionalProperty(
+                        "foo",
+                        JsonValue.from(mapOf("row_ids" to listOf("string"))),
+                    )
+                    .build()
+            )
         assertThat(crossObjectInsertResponse.projectLogs())
-            .isEqualTo(CrossObjectInsertResponse.ProjectLogs.builder().build())
+            .isEqualTo(
+                CrossObjectInsertResponse.ProjectLogs.builder()
+                    .putAdditionalProperty(
+                        "foo",
+                        JsonValue.from(mapOf("row_ids" to listOf("string"))),
+                    )
+                    .build()
+            )
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val crossObjectInsertResponse =
+            CrossObjectInsertResponse.builder()
+                .dataset(
+                    CrossObjectInsertResponse.Dataset.builder()
+                        .putAdditionalProperty(
+                            "foo",
+                            JsonValue.from(mapOf("row_ids" to listOf("string"))),
+                        )
+                        .build()
+                )
+                .experiment(
+                    CrossObjectInsertResponse.Experiment.builder()
+                        .putAdditionalProperty(
+                            "foo",
+                            JsonValue.from(mapOf("row_ids" to listOf("string"))),
+                        )
+                        .build()
+                )
+                .projectLogs(
+                    CrossObjectInsertResponse.ProjectLogs.builder()
+                        .putAdditionalProperty(
+                            "foo",
+                            JsonValue.from(mapOf("row_ids" to listOf("string"))),
+                        )
+                        .build()
+                )
+                .build()
+
+        val roundtrippedCrossObjectInsertResponse =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(crossObjectInsertResponse),
+                jacksonTypeRef<CrossObjectInsertResponse>(),
+            )
+
+        assertThat(roundtrippedCrossObjectInsertResponse).isEqualTo(crossObjectInsertResponse)
     }
 }

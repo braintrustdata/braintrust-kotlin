@@ -2,29 +2,107 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.AutoPager
+import com.braintrustdata.api.core.Page
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.GroupService
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
+/** @see GroupService.list */
 class GroupListPage
 private constructor(
-    private val groupsService: GroupService,
+    private val service: GroupService,
     private val params: GroupListParams,
-    private val response: Response,
-) {
+    private val response: GroupListPageResponse,
+) : Page<Group> {
 
-    fun response(): Response = response
+    /**
+     * Delegates to [GroupListPageResponse], but gracefully handles missing data.
+     *
+     * @see GroupListPageResponse.objects
+     */
+    fun objects(): List<Group> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun objects(): List<Group> = response().objects()
+    override fun items(): List<Group> = objects()
+
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
+
+    fun nextPageParams(): GroupListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
+        } else {
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
+        }
+
+    override fun nextPage(): GroupListPage = service.list(nextPageParams())
+
+    fun autoPager(): AutoPager<Group> = AutoPager.from(this)
+
+    /** The parameters that were used to request this page. */
+    fun params(): GroupListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): GroupListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [GroupListPage].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [GroupListPage]. */
+    class Builder internal constructor() {
+
+        private var service: GroupService? = null
+        private var params: GroupListParams? = null
+        private var response: GroupListPageResponse? = null
+
+        internal fun from(groupListPage: GroupListPage) = apply {
+            service = groupListPage.service
+            params = groupListPage.params
+            response = groupListPage.response
+        }
+
+        fun service(service: GroupService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: GroupListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: GroupListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [GroupListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): GroupListPage =
+            GroupListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -32,142 +110,12 @@ private constructor(
         }
 
         return other is GroupListPage &&
-            this.groupsService == other.groupsService &&
-            this.params == other.params &&
-            this.response == other.response
+            service == other.service &&
+            params == other.params &&
+            response == other.response
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            groupsService,
-            params,
-            response,
-        )
-    }
+    override fun hashCode(): Int = Objects.hash(service, params, response)
 
-    override fun toString() =
-        "GroupListPage{groupsService=$groupsService, params=$params, response=$response}"
-
-    fun hasNextPage(): Boolean {
-        return !objects().isEmpty()
-    }
-
-    fun getNextPageParams(): GroupListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
-
-        return if (params.endingBefore() != null) {
-            GroupListParams.builder().from(params).endingBefore(objects().first().id()).build()
-        } else {
-            GroupListParams.builder().from(params).startingAfter(objects().last().id()).build()
-        }
-    }
-
-    fun getNextPage(): GroupListPage? {
-        return getNextPageParams()?.let { groupsService.list(it) }
-    }
-
-    fun autoPager(): AutoPager = AutoPager(this)
-
-    companion object {
-
-        fun of(groupsService: GroupService, params: GroupListParams, response: Response) =
-            GroupListPage(
-                groupsService,
-                params,
-                response,
-            )
-    }
-
-    @JsonDeserialize(builder = Response.Builder::class)
-    @NoAutoDetect
-    class Response
-    constructor(
-        private val objects: JsonField<List<Group>>,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
-
-        private var validated: Boolean = false
-
-        fun objects(): List<Group> = objects.getNullable("objects") ?: listOf()
-
-        @JsonProperty("objects") fun _objects(): JsonField<List<Group>>? = objects
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun validate(): Response = apply {
-            if (!validated) {
-                objects().map { it.validate() }
-                validated = true
-            }
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Response &&
-                this.objects == other.objects &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            return Objects.hash(objects, additionalProperties)
-        }
-
-        override fun toString() =
-            "GroupListPage.Response{objects=$objects, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var objects: JsonField<List<Group>> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(page: Response) = apply {
-                this.objects = page.objects
-                this.additionalProperties.putAll(page.additionalProperties)
-            }
-
-            fun objects(objects: List<Group>) = objects(JsonField.of(objects))
-
-            @JsonProperty("objects")
-            fun objects(objects: JsonField<List<Group>>) = apply { this.objects = objects }
-
-            @JsonAnySetter
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            fun build() = Response(objects, additionalProperties.toUnmodifiable())
-        }
-    }
-
-    class AutoPager
-    constructor(
-        private val firstPage: GroupListPage,
-    ) : Sequence<Group> {
-
-        override fun iterator(): Iterator<Group> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    yield(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
-    }
+    override fun toString() = "GroupListPage{service=$service, params=$params, response=$response}"
 }

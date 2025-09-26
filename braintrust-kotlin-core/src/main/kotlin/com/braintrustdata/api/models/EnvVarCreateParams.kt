@@ -5,358 +5,666 @@ package com.braintrustdata.api.models
 import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
+/**
+ * Create a new env_var. If there is an existing env_var with the same name as the one specified in
+ * the request, will return the existing env_var unmodified
+ */
 class EnvVarCreateParams
-constructor(
-    private val name: String,
-    private val objectId: String,
-    private val objectType: ObjectType,
-    private val value: String?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+private constructor(
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun name(): String = name
+    /**
+     * The name of the environment variable
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun name(): String = body.name()
 
-    fun objectId(): String = objectId
+    /**
+     * The id of the object the environment variable is scoped for
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun objectId(): String = body.objectId()
 
-    fun objectType(): ObjectType = objectType
+    /**
+     * The type of the object the environment variable is scoped for
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun objectType(): ObjectType = body.objectType()
 
-    fun value(): String? = value
+    /**
+     * The value of the environment variable. Will be encrypted at rest.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun value(): String? = body.value()
 
-    internal fun getBody(): EnvVarCreateBody {
-        return EnvVarCreateBody(
-            name,
-            objectId,
-            objectType,
-            value,
-            additionalBodyProperties,
-        )
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _name(): JsonField<String> = body._name()
+
+    /**
+     * Returns the raw JSON value of [objectId].
+     *
+     * Unlike [objectId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _objectId(): JsonField<String> = body._objectId()
+
+    /**
+     * Returns the raw JSON value of [objectType].
+     *
+     * Unlike [objectType], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _objectType(): JsonField<ObjectType> = body._objectType()
+
+    /**
+     * Returns the raw JSON value of [value].
+     *
+     * Unlike [value], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _value(): JsonField<String> = body._value()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [EnvVarCreateParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .name()
+         * .objectId()
+         * .objectType()
+         * ```
+         */
+        fun builder() = Builder()
     }
 
-    internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
+    /** A builder for [EnvVarCreateParams]. */
+    class Builder internal constructor() {
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-    @JsonDeserialize(builder = EnvVarCreateBody.Builder::class)
-    @NoAutoDetect
-    class EnvVarCreateBody
-    internal constructor(
-        private val name: String?,
-        private val objectId: String?,
-        private val objectType: ObjectType?,
-        private val value: String?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+        internal fun from(envVarCreateParams: EnvVarCreateParams) = apply {
+            body = envVarCreateParams.body.toBuilder()
+            additionalHeaders = envVarCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = envVarCreateParams.additionalQueryParams.toBuilder()
+        }
 
-        private var hashCode: Int = 0
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [name]
+         * - [objectId]
+         * - [objectType]
+         * - [value]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** The name of the environment variable */
-        @JsonProperty("name") fun name(): String? = name
+        fun name(name: String) = apply { body.name(name) }
+
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { body.name(name) }
 
         /** The id of the object the environment variable is scoped for */
-        @JsonProperty("object_id") fun objectId(): String? = objectId
+        fun objectId(objectId: String) = apply { body.objectId(objectId) }
+
+        /**
+         * Sets [Builder.objectId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.objectId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun objectId(objectId: JsonField<String>) = apply { body.objectId(objectId) }
 
         /** The type of the object the environment variable is scoped for */
-        @JsonProperty("object_type") fun objectType(): ObjectType? = objectType
+        fun objectType(objectType: ObjectType) = apply { body.objectType(objectType) }
+
+        /**
+         * Sets [Builder.objectType] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.objectType] with a well-typed [ObjectType] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun objectType(objectType: JsonField<ObjectType>) = apply { body.objectType(objectType) }
 
         /** The value of the environment variable. Will be encrypted at rest. */
-        @JsonProperty("value") fun value(): String? = value
+        fun value(value: String?) = apply { body.value(value) }
+
+        /**
+         * Sets [Builder.value] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.value] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun value(value: JsonField<String>) = apply { body.value(value) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [EnvVarCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .name()
+         * .objectId()
+         * .objectType()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): EnvVarCreateParams =
+            EnvVarCreateParams(
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
+    fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val name: JsonField<String>,
+        private val objectId: JsonField<String>,
+        private val objectType: JsonField<ObjectType>,
+        private val value: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("object_id")
+            @ExcludeMissing
+            objectId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("object_type")
+            @ExcludeMissing
+            objectType: JsonField<ObjectType> = JsonMissing.of(),
+            @JsonProperty("value") @ExcludeMissing value: JsonField<String> = JsonMissing.of(),
+        ) : this(name, objectId, objectType, value, mutableMapOf())
+
+        /**
+         * The name of the environment variable
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun name(): String = name.getRequired("name")
+
+        /**
+         * The id of the object the environment variable is scoped for
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun objectId(): String = objectId.getRequired("object_id")
+
+        /**
+         * The type of the object the environment variable is scoped for
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun objectType(): ObjectType = objectType.getRequired("object_type")
+
+        /**
+         * The value of the environment variable. Will be encrypted at rest.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun value(): String? = value.getNullable("value")
+
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+        /**
+         * Returns the raw JSON value of [objectId].
+         *
+         * Unlike [objectId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("object_id") @ExcludeMissing fun _objectId(): JsonField<String> = objectId
+
+        /**
+         * Returns the raw JSON value of [objectType].
+         *
+         * Unlike [objectType], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("object_type")
+        @ExcludeMissing
+        fun _objectType(): JsonField<ObjectType> = objectType
+
+        /**
+         * Returns the raw JSON value of [value].
+         *
+         * Unlike [value], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("value") @ExcludeMissing fun _value(): JsonField<String> = value
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is EnvVarCreateBody &&
-                this.name == other.name &&
-                this.objectId == other.objectId &&
-                this.objectType == other.objectType &&
-                this.value == other.value &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        name,
-                        objectId,
-                        objectType,
-                        value,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "EnvVarCreateBody{name=$name, objectId=$objectId, objectType=$objectType, value=$value, additionalProperties=$additionalProperties}"
-
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .name()
+             * .objectId()
+             * .objectType()
+             * ```
+             */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
 
-            private var name: String? = null
-            private var objectId: String? = null
-            private var objectType: ObjectType? = null
-            private var value: String? = null
+            private var name: JsonField<String>? = null
+            private var objectId: JsonField<String>? = null
+            private var objectType: JsonField<ObjectType>? = null
+            private var value: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(envVarCreateBody: EnvVarCreateBody) = apply {
-                this.name = envVarCreateBody.name
-                this.objectId = envVarCreateBody.objectId
-                this.objectType = envVarCreateBody.objectType
-                this.value = envVarCreateBody.value
-                additionalProperties(envVarCreateBody.additionalProperties)
+            internal fun from(body: Body) = apply {
+                name = body.name
+                objectId = body.objectId
+                objectType = body.objectType
+                value = body.value
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The name of the environment variable */
-            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+            fun name(name: String) = name(JsonField.of(name))
+
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /** The id of the object the environment variable is scoped for */
-            @JsonProperty("object_id")
-            fun objectId(objectId: String) = apply { this.objectId = objectId }
+            fun objectId(objectId: String) = objectId(JsonField.of(objectId))
+
+            /**
+             * Sets [Builder.objectId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
 
             /** The type of the object the environment variable is scoped for */
-            @JsonProperty("object_type")
-            fun objectType(objectType: ObjectType) = apply { this.objectType = objectType }
+            fun objectType(objectType: ObjectType) = objectType(JsonField.of(objectType))
+
+            /**
+             * Sets [Builder.objectType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectType] with a well-typed [ObjectType] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun objectType(objectType: JsonField<ObjectType>) = apply {
+                this.objectType = objectType
+            }
 
             /** The value of the environment variable. Will be encrypted at rest. */
-            @JsonProperty("value") fun value(value: String) = apply { this.value = value }
+            fun value(value: String?) = value(JsonField.ofNullable(value))
+
+            /**
+             * Sets [Builder.value] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.value] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun value(value: JsonField<String>) = apply { this.value = value }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): EnvVarCreateBody =
-                EnvVarCreateBody(
-                    checkNotNull(name) { "`name` is required but was not set" },
-                    checkNotNull(objectId) { "`objectId` is required but was not set" },
-                    checkNotNull(objectType) { "`objectType` is required but was not set" },
-                    value,
-                    additionalProperties.toUnmodifiable(),
-                )
-        }
-    }
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
 
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is EnvVarCreateParams &&
-            this.name == other.name &&
-            this.objectId == other.objectId &&
-            this.objectType == other.objectType &&
-            this.value == other.value &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            name,
-            objectId,
-            objectType,
-            value,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
-    }
-
-    override fun toString() =
-        "EnvVarCreateParams{name=$name, objectId=$objectId, objectType=$objectType, value=$value, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
-
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    @NoAutoDetect
-    class Builder {
-
-        private var name: String? = null
-        private var objectId: String? = null
-        private var objectType: ObjectType? = null
-        private var value: String? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(envVarCreateParams: EnvVarCreateParams) = apply {
-            this.name = envVarCreateParams.name
-            this.objectId = envVarCreateParams.objectId
-            this.objectType = envVarCreateParams.objectType
-            this.value = envVarCreateParams.value
-            additionalQueryParams(envVarCreateParams.additionalQueryParams)
-            additionalHeaders(envVarCreateParams.additionalHeaders)
-            additionalBodyProperties(envVarCreateParams.additionalBodyProperties)
-        }
-
-        /** The name of the environment variable */
-        fun name(name: String) = apply { this.name = name }
-
-        /** The id of the object the environment variable is scoped for */
-        fun objectId(objectId: String) = apply { this.objectId = objectId }
-
-        /** The type of the object the environment variable is scoped for */
-        fun objectType(objectType: ObjectType) = apply { this.objectType = objectType }
-
-        /** The value of the environment variable. Will be encrypted at rest. */
-        fun value(value: String) = apply { this.value = value }
-
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
-        }
-
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
-        }
-
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            this.additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
-        fun build(): EnvVarCreateParams =
-            EnvVarCreateParams(
-                checkNotNull(name) { "`name` is required but was not set" },
-                checkNotNull(objectId) { "`objectId` is required but was not set" },
-                checkNotNull(objectType) { "`objectType` is required but was not set" },
-                value,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
-    }
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .name()
+             * .objectId()
+             * .objectType()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("name", name),
+                    checkRequired("objectId", objectId),
+                    checkRequired("objectType", objectType),
+                    value,
+                    additionalProperties.toMutableMap(),
+                )
+        }
 
-    class ObjectType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+        private var validated: Boolean = false
 
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            name()
+            objectId()
+            objectType().validate()
+            value()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (if (name.asKnown() == null) 0 else 1) +
+                (if (objectId.asKnown() == null) 0 else 1) +
+                (objectType.asKnown()?.validity() ?: 0) +
+                (if (value.asKnown() == null) 0 else 1)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is ObjectType && this.value == other.value
+            return other is Body &&
+                name == other.name &&
+                objectId == other.objectId &&
+                objectType == other.objectType &&
+                value == other.value &&
+                additionalProperties == other.additionalProperties
         }
 
-        override fun hashCode() = value.hashCode()
+        private val hashCode: Int by lazy {
+            Objects.hash(name, objectId, objectType, value, additionalProperties)
+        }
 
-        override fun toString() = value.toString()
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{name=$name, objectId=$objectId, objectType=$objectType, value=$value, additionalProperties=$additionalProperties}"
+    }
+
+    /** The type of the object the environment variable is scoped for */
+    class ObjectType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
 
-            val ORGANIZATION = ObjectType(JsonField.of("organization"))
+            val ORGANIZATION = of("organization")
 
-            val PROJECT = ObjectType(JsonField.of("project"))
+            val PROJECT = of("project")
 
-            val FUNCTION = ObjectType(JsonField.of("function"))
+            val FUNCTION = of("function")
 
             fun of(value: String) = ObjectType(JsonField.of(value))
         }
 
+        /** An enum containing [ObjectType]'s known values. */
         enum class Known {
             ORGANIZATION,
             PROJECT,
             FUNCTION,
         }
 
+        /**
+         * An enum containing [ObjectType]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [ObjectType] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
         enum class Value {
             ORGANIZATION,
             PROJECT,
             FUNCTION,
+            /**
+             * An enum member indicating that [ObjectType] was instantiated with an unknown value.
+             */
             _UNKNOWN,
         }
 
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
         fun value(): Value =
             when (this) {
                 ORGANIZATION -> Value.ORGANIZATION
@@ -365,6 +673,15 @@ constructor(
                 else -> Value._UNKNOWN
             }
 
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
         fun known(): Known =
             when (this) {
                 ORGANIZATION -> Known.ORGANIZATION
@@ -373,6 +690,71 @@ constructor(
                 else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
+
+        private var validated: Boolean = false
+
+        fun validate(): ObjectType = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ObjectType && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is EnvVarCreateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
+    }
+
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
+
+    override fun toString() =
+        "EnvVarCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

@@ -2,59 +2,59 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class AclCreateParamsTest {
+internal class AclCreateParamsTest {
 
     @Test
-    fun createAclCreateParams() {
+    fun create() {
         AclCreateParams.builder()
             .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-            .objectType(AclCreateParams.ObjectType.ORGANIZATION)
+            .objectType(AclObjectType.ORGANIZATION)
             .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-            .permission(AclCreateParams.Permission.CREATE)
-            .restrictObjectType(AclCreateParams.RestrictObjectType.ORGANIZATION)
+            .permission(Permission.CREATE)
+            .restrictObjectType(AclObjectType.ORGANIZATION)
             .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .build()
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             AclCreateParams.builder()
                 .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .objectType(AclCreateParams.ObjectType.ORGANIZATION)
+                .objectType(AclObjectType.ORGANIZATION)
                 .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .permission(AclCreateParams.Permission.CREATE)
-                .restrictObjectType(AclCreateParams.RestrictObjectType.ORGANIZATION)
+                .permission(Permission.CREATE)
+                .restrictObjectType(AclObjectType.ORGANIZATION)
                 .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
+
+        val body = params._body()
+
         assertThat(body.objectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        assertThat(body.objectType()).isEqualTo(AclCreateParams.ObjectType.ORGANIZATION)
+        assertThat(body.objectType()).isEqualTo(AclObjectType.ORGANIZATION)
         assertThat(body.groupId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        assertThat(body.permission()).isEqualTo(AclCreateParams.Permission.CREATE)
-        assertThat(body.restrictObjectType())
-            .isEqualTo(AclCreateParams.RestrictObjectType.ORGANIZATION)
+        assertThat(body.permission()).isEqualTo(Permission.CREATE)
+        assertThat(body.restrictObjectType()).isEqualTo(AclObjectType.ORGANIZATION)
         assertThat(body.roleId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(body.userId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             AclCreateParams.builder()
                 .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .objectType(AclCreateParams.ObjectType.ORGANIZATION)
+                .objectType(AclObjectType.ORGANIZATION)
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
+
+        val body = params._body()
+
         assertThat(body.objectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        assertThat(body.objectType()).isEqualTo(AclCreateParams.ObjectType.ORGANIZATION)
+        assertThat(body.objectType()).isEqualTo(AclObjectType.ORGANIZATION)
     }
 }

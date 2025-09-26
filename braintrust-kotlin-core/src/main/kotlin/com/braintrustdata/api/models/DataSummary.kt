@@ -6,45 +6,158 @@ import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
 /** Summary of a dataset's data */
-@JsonDeserialize(builder = DataSummary.Builder::class)
-@NoAutoDetect
 class DataSummary
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val totalRecords: JsonField<Long>,
-    private val additionalProperties: Map<String, JsonValue>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
+    @JsonCreator
+    private constructor(
+        @JsonProperty("total_records")
+        @ExcludeMissing
+        totalRecords: JsonField<Long> = JsonMissing.of()
+    ) : this(totalRecords, mutableMapOf())
 
-    private var hashCode: Int = 0
-
-    /** Total number of records in the dataset */
+    /**
+     * Total number of records in the dataset
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun totalRecords(): Long = totalRecords.getRequired("total_records")
 
-    /** Total number of records in the dataset */
-    @JsonProperty("total_records") @ExcludeMissing fun _totalRecords() = totalRecords
+    /**
+     * Returns the raw JSON value of [totalRecords].
+     *
+     * Unlike [totalRecords], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("total_records")
+    @ExcludeMissing
+    fun _totalRecords(): JsonField<Long> = totalRecords
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun validate(): DataSummary = apply {
-        if (!validated) {
-            totalRecords()
-            validated = true
-        }
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [DataSummary].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .totalRecords()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [DataSummary]. */
+    class Builder internal constructor() {
+
+        private var totalRecords: JsonField<Long>? = null
+        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+        internal fun from(dataSummary: DataSummary) = apply {
+            totalRecords = dataSummary.totalRecords
+            additionalProperties = dataSummary.additionalProperties.toMutableMap()
+        }
+
+        /** Total number of records in the dataset */
+        fun totalRecords(totalRecords: Long) = totalRecords(JsonField.of(totalRecords))
+
+        /**
+         * Sets [Builder.totalRecords] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.totalRecords] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun totalRecords(totalRecords: JsonField<Long>) = apply { this.totalRecords = totalRecords }
+
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
+
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
+
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [DataSummary].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .totalRecords()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): DataSummary =
+            DataSummary(
+                checkRequired("totalRecords", totalRecords),
+                additionalProperties.toMutableMap(),
+            )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): DataSummary = apply {
+        if (validated) {
+            return@apply
+        }
+
+        totalRecords()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int = (if (totalRecords.asKnown() == null) 0 else 1)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -52,57 +165,14 @@ private constructor(
         }
 
         return other is DataSummary &&
-            this.totalRecords == other.totalRecords &&
-            this.additionalProperties == other.additionalProperties
+            totalRecords == other.totalRecords &&
+            additionalProperties == other.additionalProperties
     }
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = Objects.hash(totalRecords, additionalProperties)
-        }
-        return hashCode
-    }
+    private val hashCode: Int by lazy { Objects.hash(totalRecords, additionalProperties) }
+
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "DataSummary{totalRecords=$totalRecords, additionalProperties=$additionalProperties}"
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    class Builder {
-
-        private var totalRecords: JsonField<Long> = JsonMissing.of()
-        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(dataSummary: DataSummary) = apply {
-            this.totalRecords = dataSummary.totalRecords
-            additionalProperties(dataSummary.additionalProperties)
-        }
-
-        /** Total number of records in the dataset */
-        fun totalRecords(totalRecords: Long) = totalRecords(JsonField.of(totalRecords))
-
-        /** Total number of records in the dataset */
-        @JsonProperty("total_records")
-        @ExcludeMissing
-        fun totalRecords(totalRecords: JsonField<Long>) = apply { this.totalRecords = totalRecords }
-
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        @JsonAnySetter
-        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
-        }
-
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        fun build(): DataSummary = DataSummary(totalRecords, additionalProperties.toUnmodifiable())
-    }
 }

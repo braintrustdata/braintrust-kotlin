@@ -3,81 +3,197 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
+/**
+ * Fetch the events in a project logs. Equivalent to the GET form of the same path, but with the
+ * parameters in the request body rather than in the URL query. For more complex queries, use the
+ * `POST /btql` endpoint.
+ */
 class ProjectLogFetchPostParams
-constructor(
-    private val projectId: String,
-    private val cursor: String?,
-    private val filters: List<PathLookupFilter>?,
-    private val limit: Long?,
-    private val maxRootSpanId: String?,
-    private val maxXactId: String?,
-    private val version: String?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+private constructor(
+    private val projectId: String?,
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun projectId(): String = projectId
+    /** Project id */
+    fun projectId(): String? = projectId
 
-    fun cursor(): String? = cursor
+    /**
+     * An opaque string to be used as a cursor for the next page of results, in order from latest to
+     * earliest.
+     *
+     * The string can be obtained directly from the `cursor` property of the previous fetch query
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun cursor(): String? = body.cursor()
 
-    fun filters(): List<PathLookupFilter>? = filters
+    /**
+     * limit the number of traces fetched
+     *
+     * Fetch queries may be paginated if the total result size is expected to be large (e.g.
+     * project_logs which accumulate over a long time). Note that fetch queries only support
+     * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore, later
+     * pages may return rows which showed up in earlier pages, except with an earlier `_xact_id`.
+     * This happens because pagination occurs over the whole version history of the event log. You
+     * will most likely want to exclude any such duplicate, outdated rows (by `id`) from your
+     * combined result set.
+     *
+     * The `limit` parameter controls the number of full traces to return. So you may end up with
+     * more individual rows than the specified limit if you are fetching events containing traces.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun limit(): Long? = body.limit()
 
-    fun limit(): Long? = limit
+    /**
+     * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of the
+     * explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor' argument
+     * going forwards.
+     *
+     * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+     *
+     * Since a paginated fetch query returns results in order from latest to earliest, the cursor
+     * for the next page can be found as the row with the minimum (earliest) value of the tuple
+     * `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of paginating
+     * fetch queries.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun maxRootSpanId(): String? = body.maxRootSpanId()
 
-    fun maxRootSpanId(): String? = maxRootSpanId
+    /**
+     * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of the
+     * explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor' argument
+     * going forwards.
+     *
+     * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+     *
+     * Since a paginated fetch query returns results in order from latest to earliest, the cursor
+     * for the next page can be found as the row with the minimum (earliest) value of the tuple
+     * `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of paginating
+     * fetch queries.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun maxXactId(): String? = body.maxXactId()
 
-    fun maxXactId(): String? = maxXactId
+    /**
+     * Retrieve a snapshot of events from a past time
+     *
+     * The version id is essentially a filter on the latest event transaction id. You can use the
+     * `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun version(): String? = body.version()
 
-    fun version(): String? = version
+    /**
+     * Returns the raw JSON value of [cursor].
+     *
+     * Unlike [cursor], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _cursor(): JsonField<String> = body._cursor()
 
-    internal fun getBody(): ProjectLogFetchPostBody {
-        return ProjectLogFetchPostBody(
-            cursor,
-            filters,
-            limit,
-            maxRootSpanId,
-            maxXactId,
-            version,
-            additionalBodyProperties,
-        )
+    /**
+     * Returns the raw JSON value of [limit].
+     *
+     * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _limit(): JsonField<Long> = body._limit()
+
+    /**
+     * Returns the raw JSON value of [maxRootSpanId].
+     *
+     * Unlike [maxRootSpanId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _maxRootSpanId(): JsonField<String> = body._maxRootSpanId()
+
+    /**
+     * Returns the raw JSON value of [maxXactId].
+     *
+     * Unlike [maxXactId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _maxXactId(): JsonField<String> = body._maxXactId()
+
+    /**
+     * Returns the raw JSON value of [version].
+     *
+     * Unlike [version], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _version(): JsonField<String> = body._version()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        fun none(): ProjectLogFetchPostParams = builder().build()
+
+        /**
+         * Returns a mutable builder for constructing an instance of [ProjectLogFetchPostParams].
+         */
+        fun builder() = Builder()
     }
 
-    internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
+    /** A builder for [ProjectLogFetchPostParams]. */
+    class Builder internal constructor() {
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+        private var projectId: String? = null
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-    fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> projectId
-            else -> ""
+        internal fun from(projectLogFetchPostParams: ProjectLogFetchPostParams) = apply {
+            projectId = projectLogFetchPostParams.projectId
+            body = projectLogFetchPostParams.body.toBuilder()
+            additionalHeaders = projectLogFetchPostParams.additionalHeaders.toBuilder()
+            additionalQueryParams = projectLogFetchPostParams.additionalQueryParams.toBuilder()
         }
-    }
 
-    @JsonDeserialize(builder = ProjectLogFetchPostBody.Builder::class)
-    @NoAutoDetect
-    class ProjectLogFetchPostBody
-    internal constructor(
-        private val cursor: String?,
-        private val filters: List<PathLookupFilter>?,
-        private val limit: Long?,
-        private val maxRootSpanId: String?,
-        private val maxXactId: String?,
-        private val version: String?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+        /** Project id */
+        fun projectId(projectId: String?) = apply { this.projectId = projectId }
 
-        private var hashCode: Int = 0
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [cursor]
+         * - [limit]
+         * - [maxRootSpanId]
+         * - [maxXactId]
+         * - [version]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
          * An opaque string to be used as a cursor for the next page of results, in order from
@@ -86,17 +202,15 @@ constructor(
          * The string can be obtained directly from the `cursor` property of the previous fetch
          * query
          */
-        @JsonProperty("cursor") fun cursor(): String? = cursor
+        fun cursor(cursor: String?) = apply { body.cursor(cursor) }
 
         /**
-         * NOTE: This parameter is deprecated and will be removed in a future revision. Consider
-         * using the `/btql` endpoint (https://www.braintrust.dev/docs/reference/btql) for more
-         * advanced filtering.
+         * Sets [Builder.cursor] to an arbitrary JSON value.
          *
-         * A list of filters on the events to fetch. Currently, only path-lookup type filters are
-         * supported.
+         * You should usually call [Builder.cursor] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        @JsonProperty("filters") fun filters(): List<PathLookupFilter>? = filters
+        fun cursor(cursor: JsonField<String>) = apply { body.cursor(cursor) }
 
         /**
          * limit the number of traces fetched
@@ -113,7 +227,22 @@ constructor(
          * with more individual rows than the specified limit if you are fetching events containing
          * traces.
          */
-        @JsonProperty("limit") fun limit(): Long? = limit
+        fun limit(limit: Long?) = apply { body.limit(limit) }
+
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun limit(limit: Long) = limit(limit as Long?)
+
+        /**
+         * Sets [Builder.limit] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.limit] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun limit(limit: JsonField<Long>) = apply { body.limit(limit) }
 
         /**
          * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
@@ -127,7 +256,18 @@ constructor(
          * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
          * paginating fetch queries.
          */
-        @JsonProperty("max_root_span_id") fun maxRootSpanId(): String? = maxRootSpanId
+        fun maxRootSpanId(maxRootSpanId: String?) = apply { body.maxRootSpanId(maxRootSpanId) }
+
+        /**
+         * Sets [Builder.maxRootSpanId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.maxRootSpanId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun maxRootSpanId(maxRootSpanId: JsonField<String>) = apply {
+            body.maxRootSpanId(maxRootSpanId)
+        }
 
         /**
          * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
@@ -141,7 +281,16 @@ constructor(
          * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
          * paginating fetch queries.
          */
-        @JsonProperty("max_xact_id") fun maxXactId(): String? = maxXactId
+        fun maxXactId(maxXactId: String?) = apply { body.maxXactId(maxXactId) }
+
+        /**
+         * Sets [Builder.maxXactId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.maxXactId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun maxXactId(maxXactId: JsonField<String>) = apply { body.maxXactId(maxXactId) }
 
         /**
          * Retrieve a snapshot of events from a past time
@@ -149,71 +298,333 @@ constructor(
          * The version id is essentially a filter on the latest event transaction id. You can use
          * the `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
          */
-        @JsonProperty("version") fun version(): String? = version
+        fun version(version: String?) = apply { body.version(version) }
+
+        /**
+         * Sets [Builder.version] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.version] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun version(version: JsonField<String>) = apply { body.version(version) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [ProjectLogFetchPostParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
+        fun build(): ProjectLogFetchPostParams =
+            ProjectLogFetchPostParams(
+                projectId,
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
+    fun _body(): Body = body
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> projectId ?: ""
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val cursor: JsonField<String>,
+        private val limit: JsonField<Long>,
+        private val maxRootSpanId: JsonField<String>,
+        private val maxXactId: JsonField<String>,
+        private val version: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("cursor") @ExcludeMissing cursor: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("limit") @ExcludeMissing limit: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("max_root_span_id")
+            @ExcludeMissing
+            maxRootSpanId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("max_xact_id")
+            @ExcludeMissing
+            maxXactId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("version") @ExcludeMissing version: JsonField<String> = JsonMissing.of(),
+        ) : this(cursor, limit, maxRootSpanId, maxXactId, version, mutableMapOf())
+
+        /**
+         * An opaque string to be used as a cursor for the next page of results, in order from
+         * latest to earliest.
+         *
+         * The string can be obtained directly from the `cursor` property of the previous fetch
+         * query
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun cursor(): String? = cursor.getNullable("cursor")
+
+        /**
+         * limit the number of traces fetched
+         *
+         * Fetch queries may be paginated if the total result size is expected to be large (e.g.
+         * project_logs which accumulate over a long time). Note that fetch queries only support
+         * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore,
+         * later pages may return rows which showed up in earlier pages, except with an earlier
+         * `_xact_id`. This happens because pagination occurs over the whole version history of the
+         * event log. You will most likely want to exclude any such duplicate, outdated rows (by
+         * `id`) from your combined result set.
+         *
+         * The `limit` parameter controls the number of full traces to return. So you may end up
+         * with more individual rows than the specified limit if you are fetching events containing
+         * traces.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun limit(): Long? = limit.getNullable("limit")
+
+        /**
+         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
+         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
+         * argument going forwards.
+         *
+         * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+         *
+         * Since a paginated fetch query returns results in order from latest to earliest, the
+         * cursor for the next page can be found as the row with the minimum (earliest) value of the
+         * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
+         * paginating fetch queries.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun maxRootSpanId(): String? = maxRootSpanId.getNullable("max_root_span_id")
+
+        /**
+         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
+         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
+         * argument going forwards.
+         *
+         * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
+         *
+         * Since a paginated fetch query returns results in order from latest to earliest, the
+         * cursor for the next page can be found as the row with the minimum (earliest) value of the
+         * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
+         * paginating fetch queries.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun maxXactId(): String? = maxXactId.getNullable("max_xact_id")
+
+        /**
+         * Retrieve a snapshot of events from a past time
+         *
+         * The version id is essentially a filter on the latest event transaction id. You can use
+         * the `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun version(): String? = version.getNullable("version")
+
+        /**
+         * Returns the raw JSON value of [cursor].
+         *
+         * Unlike [cursor], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("cursor") @ExcludeMissing fun _cursor(): JsonField<String> = cursor
+
+        /**
+         * Returns the raw JSON value of [limit].
+         *
+         * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("limit") @ExcludeMissing fun _limit(): JsonField<Long> = limit
+
+        /**
+         * Returns the raw JSON value of [maxRootSpanId].
+         *
+         * Unlike [maxRootSpanId], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("max_root_span_id")
+        @ExcludeMissing
+        fun _maxRootSpanId(): JsonField<String> = maxRootSpanId
+
+        /**
+         * Returns the raw JSON value of [maxXactId].
+         *
+         * Unlike [maxXactId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("max_xact_id") @ExcludeMissing fun _maxXactId(): JsonField<String> = maxXactId
+
+        /**
+         * Returns the raw JSON value of [version].
+         *
+         * Unlike [version], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("version") @ExcludeMissing fun _version(): JsonField<String> = version
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is ProjectLogFetchPostBody &&
-                this.cursor == other.cursor &&
-                this.filters == other.filters &&
-                this.limit == other.limit &&
-                this.maxRootSpanId == other.maxRootSpanId &&
-                this.maxXactId == other.maxXactId &&
-                this.version == other.version &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        cursor,
-                        filters,
-                        limit,
-                        maxRootSpanId,
-                        maxXactId,
-                        version,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "ProjectLogFetchPostBody{cursor=$cursor, filters=$filters, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalProperties=$additionalProperties}"
-
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
 
-            private var cursor: String? = null
-            private var filters: List<PathLookupFilter>? = null
-            private var limit: Long? = null
-            private var maxRootSpanId: String? = null
-            private var maxXactId: String? = null
-            private var version: String? = null
+            private var cursor: JsonField<String> = JsonMissing.of()
+            private var limit: JsonField<Long> = JsonMissing.of()
+            private var maxRootSpanId: JsonField<String> = JsonMissing.of()
+            private var maxXactId: JsonField<String> = JsonMissing.of()
+            private var version: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(projectLogFetchPostBody: ProjectLogFetchPostBody) = apply {
-                this.cursor = projectLogFetchPostBody.cursor
-                this.filters = projectLogFetchPostBody.filters
-                this.limit = projectLogFetchPostBody.limit
-                this.maxRootSpanId = projectLogFetchPostBody.maxRootSpanId
-                this.maxXactId = projectLogFetchPostBody.maxXactId
-                this.version = projectLogFetchPostBody.version
-                additionalProperties(projectLogFetchPostBody.additionalProperties)
+            internal fun from(body: Body) = apply {
+                cursor = body.cursor
+                limit = body.limit
+                maxRootSpanId = body.maxRootSpanId
+                maxXactId = body.maxXactId
+                version = body.version
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -223,18 +634,16 @@ constructor(
              * The string can be obtained directly from the `cursor` property of the previous fetch
              * query
              */
-            @JsonProperty("cursor") fun cursor(cursor: String) = apply { this.cursor = cursor }
+            fun cursor(cursor: String?) = cursor(JsonField.ofNullable(cursor))
 
             /**
-             * NOTE: This parameter is deprecated and will be removed in a future revision. Consider
-             * using the `/btql` endpoint (https://www.braintrust.dev/docs/reference/btql) for more
-             * advanced filtering.
+             * Sets [Builder.cursor] to an arbitrary JSON value.
              *
-             * A list of filters on the events to fetch. Currently, only path-lookup type filters
-             * are supported.
+             * You should usually call [Builder.cursor] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            @JsonProperty("filters")
-            fun filters(filters: List<PathLookupFilter>) = apply { this.filters = filters }
+            fun cursor(cursor: JsonField<String>) = apply { this.cursor = cursor }
 
             /**
              * limit the number of traces fetched
@@ -251,7 +660,23 @@ constructor(
              * with more individual rows than the specified limit if you are fetching events
              * containing traces.
              */
-            @JsonProperty("limit") fun limit(limit: Long) = apply { this.limit = limit }
+            fun limit(limit: Long?) = limit(JsonField.ofNullable(limit))
+
+            /**
+             * Alias for [Builder.limit].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun limit(limit: Long) = limit(limit as Long?)
+
+            /**
+             * Sets [Builder.limit] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.limit] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun limit(limit: JsonField<Long>) = apply { this.limit = limit }
 
             /**
              * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor
@@ -265,8 +690,19 @@ constructor(
              * the tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an
              * overview of paginating fetch queries.
              */
-            @JsonProperty("max_root_span_id")
-            fun maxRootSpanId(maxRootSpanId: String) = apply { this.maxRootSpanId = maxRootSpanId }
+            fun maxRootSpanId(maxRootSpanId: String?) =
+                maxRootSpanId(JsonField.ofNullable(maxRootSpanId))
+
+            /**
+             * Sets [Builder.maxRootSpanId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.maxRootSpanId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun maxRootSpanId(maxRootSpanId: JsonField<String>) = apply {
+                this.maxRootSpanId = maxRootSpanId
+            }
 
             /**
              * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor
@@ -280,8 +716,16 @@ constructor(
              * the tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an
              * overview of paginating fetch queries.
              */
-            @JsonProperty("max_xact_id")
-            fun maxXactId(maxXactId: String) = apply { this.maxXactId = maxXactId }
+            fun maxXactId(maxXactId: String?) = maxXactId(JsonField.ofNullable(maxXactId))
+
+            /**
+             * Sets [Builder.maxXactId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.maxXactId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun maxXactId(maxXactId: JsonField<String>) = apply { this.maxXactId = maxXactId }
 
             /**
              * Retrieve a snapshot of events from a past time
@@ -290,40 +734,111 @@ constructor(
              * use the `max_xact_id` returned by a past fetch as the version to reproduce that exact
              * fetch.
              */
-            @JsonProperty("version") fun version(version: String) = apply { this.version = version }
+            fun version(version: String?) = version(JsonField.ofNullable(version))
+
+            /**
+             * Sets [Builder.version] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.version] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun version(version: JsonField<String>) = apply { this.version = version }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): ProjectLogFetchPostBody =
-                ProjectLogFetchPostBody(
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Body =
+                Body(
                     cursor,
-                    filters?.toUnmodifiable(),
                     limit,
                     maxRootSpanId,
                     maxXactId,
                     version,
-                    additionalProperties.toUnmodifiable(),
+                    additionalProperties.toMutableMap(),
                 )
         }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            cursor()
+            limit()
+            maxRootSpanId()
+            maxXactId()
+            version()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (if (cursor.asKnown() == null) 0 else 1) +
+                (if (limit.asKnown() == null) 0 else 1) +
+                (if (maxRootSpanId.asKnown() == null) 0 else 1) +
+                (if (maxXactId.asKnown() == null) 0 else 1) +
+                (if (version.asKnown() == null) 0 else 1)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Body &&
+                cursor == other.cursor &&
+                limit == other.limit &&
+                maxRootSpanId == other.maxRootSpanId &&
+                maxXactId == other.maxXactId &&
+                version == other.version &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(cursor, limit, maxRootSpanId, maxXactId, version, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{cursor=$cursor, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalProperties=$additionalProperties}"
     }
-
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -331,224 +846,15 @@ constructor(
         }
 
         return other is ProjectLogFetchPostParams &&
-            this.projectId == other.projectId &&
-            this.cursor == other.cursor &&
-            this.filters == other.filters &&
-            this.limit == other.limit &&
-            this.maxRootSpanId == other.maxRootSpanId &&
-            this.maxXactId == other.maxXactId &&
-            this.version == other.version &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+            projectId == other.projectId &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            projectId,
-            cursor,
-            filters,
-            limit,
-            maxRootSpanId,
-            maxXactId,
-            version,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
-    }
+    override fun hashCode(): Int =
+        Objects.hash(projectId, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "ProjectLogFetchPostParams{projectId=$projectId, cursor=$cursor, filters=$filters, limit=$limit, maxRootSpanId=$maxRootSpanId, maxXactId=$maxXactId, version=$version, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
-
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    @NoAutoDetect
-    class Builder {
-
-        private var projectId: String? = null
-        private var cursor: String? = null
-        private var filters: MutableList<PathLookupFilter> = mutableListOf()
-        private var limit: Long? = null
-        private var maxRootSpanId: String? = null
-        private var maxXactId: String? = null
-        private var version: String? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(projectLogFetchPostParams: ProjectLogFetchPostParams) = apply {
-            this.projectId = projectLogFetchPostParams.projectId
-            this.cursor = projectLogFetchPostParams.cursor
-            this.filters(projectLogFetchPostParams.filters ?: listOf())
-            this.limit = projectLogFetchPostParams.limit
-            this.maxRootSpanId = projectLogFetchPostParams.maxRootSpanId
-            this.maxXactId = projectLogFetchPostParams.maxXactId
-            this.version = projectLogFetchPostParams.version
-            additionalQueryParams(projectLogFetchPostParams.additionalQueryParams)
-            additionalHeaders(projectLogFetchPostParams.additionalHeaders)
-            additionalBodyProperties(projectLogFetchPostParams.additionalBodyProperties)
-        }
-
-        /** Project id */
-        fun projectId(projectId: String) = apply { this.projectId = projectId }
-
-        /**
-         * An opaque string to be used as a cursor for the next page of results, in order from
-         * latest to earliest.
-         *
-         * The string can be obtained directly from the `cursor` property of the previous fetch
-         * query
-         */
-        fun cursor(cursor: String) = apply { this.cursor = cursor }
-
-        /**
-         * NOTE: This parameter is deprecated and will be removed in a future revision. Consider
-         * using the `/btql` endpoint (https://www.braintrust.dev/docs/reference/btql) for more
-         * advanced filtering.
-         *
-         * A list of filters on the events to fetch. Currently, only path-lookup type filters are
-         * supported.
-         */
-        fun filters(filters: List<PathLookupFilter>) = apply {
-            this.filters.clear()
-            this.filters.addAll(filters)
-        }
-
-        /**
-         * NOTE: This parameter is deprecated and will be removed in a future revision. Consider
-         * using the `/btql` endpoint (https://www.braintrust.dev/docs/reference/btql) for more
-         * advanced filtering.
-         *
-         * A list of filters on the events to fetch. Currently, only path-lookup type filters are
-         * supported.
-         */
-        fun addFilter(filter: PathLookupFilter) = apply { this.filters.add(filter) }
-
-        /**
-         * limit the number of traces fetched
-         *
-         * Fetch queries may be paginated if the total result size is expected to be large (e.g.
-         * project_logs which accumulate over a long time). Note that fetch queries only support
-         * pagination in descending time order (from latest to earliest `_xact_id`. Furthermore,
-         * later pages may return rows which showed up in earlier pages, except with an earlier
-         * `_xact_id`. This happens because pagination occurs over the whole version history of the
-         * event log. You will most likely want to exclude any such duplicate, outdated rows (by
-         * `id`) from your combined result set.
-         *
-         * The `limit` parameter controls the number of full traces to return. So you may end up
-         * with more individual rows than the specified limit if you are fetching events containing
-         * traces.
-         */
-        fun limit(limit: Long) = apply { this.limit = limit }
-
-        /**
-         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
-         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
-         * argument going forwards.
-         *
-         * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
-         *
-         * Since a paginated fetch query returns results in order from latest to earliest, the
-         * cursor for the next page can be found as the row with the minimum (earliest) value of the
-         * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
-         * paginating fetch queries.
-         */
-        fun maxRootSpanId(maxRootSpanId: String) = apply { this.maxRootSpanId = maxRootSpanId }
-
-        /**
-         * DEPRECATION NOTICE: The manually-constructed pagination cursor is deprecated in favor of
-         * the explicit 'cursor' returned by object fetch requests. Please prefer the 'cursor'
-         * argument going forwards.
-         *
-         * Together, `max_xact_id` and `max_root_span_id` form a pagination cursor
-         *
-         * Since a paginated fetch query returns results in order from latest to earliest, the
-         * cursor for the next page can be found as the row with the minimum (earliest) value of the
-         * tuple `(_xact_id, root_span_id)`. See the documentation of `limit` for an overview of
-         * paginating fetch queries.
-         */
-        fun maxXactId(maxXactId: String) = apply { this.maxXactId = maxXactId }
-
-        /**
-         * Retrieve a snapshot of events from a past time
-         *
-         * The version id is essentially a filter on the latest event transaction id. You can use
-         * the `max_xact_id` returned by a past fetch as the version to reproduce that exact fetch.
-         */
-        fun version(version: String) = apply { this.version = version }
-
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
-        }
-
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
-        }
-
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            this.additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
-
-        fun build(): ProjectLogFetchPostParams =
-            ProjectLogFetchPostParams(
-                checkNotNull(projectId) { "`projectId` is required but was not set" },
-                cursor,
-                if (filters.size == 0) null else filters.toUnmodifiable(),
-                limit,
-                maxRootSpanId,
-                maxXactId,
-                version,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
-    }
+        "ProjectLogFetchPostParams{projectId=$projectId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

@@ -7,119 +7,669 @@ import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.time.OffsetDateTime
+import java.util.Collections
 import java.util.Objects
 
-@JsonDeserialize(builder = View.Builder::class)
-@NoAutoDetect
 class View
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
-    private val objectType: JsonField<ObjectType>,
-    private val objectId: JsonField<String>,
-    private val viewType: JsonField<ViewType>,
     private val name: JsonField<String>,
+    private val objectId: JsonField<String>,
+    private val objectType: JsonField<AclObjectType>,
+    private val viewType: JsonField<ViewType>,
     private val created: JsonField<OffsetDateTime>,
-    private val viewData: JsonField<ViewData>,
+    private val deletedAt: JsonField<OffsetDateTime>,
     private val options: JsonField<ViewOptions>,
     private val userId: JsonField<String>,
-    private val deletedAt: JsonField<OffsetDateTime>,
-    private val additionalProperties: Map<String, JsonValue>,
+    private val viewData: JsonField<ViewData>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object_id") @ExcludeMissing objectId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object_type")
+        @ExcludeMissing
+        objectType: JsonField<AclObjectType> = JsonMissing.of(),
+        @JsonProperty("view_type") @ExcludeMissing viewType: JsonField<ViewType> = JsonMissing.of(),
+        @JsonProperty("created")
+        @ExcludeMissing
+        created: JsonField<OffsetDateTime> = JsonMissing.of(),
+        @JsonProperty("deleted_at")
+        @ExcludeMissing
+        deletedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
+        @JsonProperty("options") @ExcludeMissing options: JsonField<ViewOptions> = JsonMissing.of(),
+        @JsonProperty("user_id") @ExcludeMissing userId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("view_data") @ExcludeMissing viewData: JsonField<ViewData> = JsonMissing.of(),
+    ) : this(
+        id,
+        name,
+        objectId,
+        objectType,
+        viewType,
+        created,
+        deletedAt,
+        options,
+        userId,
+        viewData,
+        mutableMapOf(),
+    )
 
-    private var hashCode: Int = 0
-
-    /** Unique identifier for the view */
+    /**
+     * Unique identifier for the view
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The object type that the ACL applies to */
-    fun objectType(): ObjectType = objectType.getRequired("object_type")
-
-    /** The id of the object the view applies to */
-    fun objectId(): String = objectId.getRequired("object_id")
-
-    /** Type of table that the view corresponds to. */
-    fun viewType(): ViewType? = viewType.getNullable("view_type")
-
-    /** Name of the view */
+    /**
+     * Name of the view
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun name(): String = name.getRequired("name")
 
-    /** Date of view creation */
+    /**
+     * The id of the object the view applies to
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun objectId(): String = objectId.getRequired("object_id")
+
+    /**
+     * The object type that the ACL applies to
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun objectType(): AclObjectType = objectType.getRequired("object_type")
+
+    /**
+     * Type of table that the view corresponds to.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun viewType(): ViewType? = viewType.getNullable("view_type")
+
+    /**
+     * Date of view creation
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun created(): OffsetDateTime? = created.getNullable("created")
 
-    /** The view definition */
-    fun viewData(): ViewData? = viewData.getNullable("view_data")
-
-    /** Options for the view in the app */
-    fun options(): ViewOptions? = options.getNullable("options")
-
-    /** Identifies the user who created the view */
-    fun userId(): String? = userId.getNullable("user_id")
-
-    /** Date of role deletion, or null if the role is still active */
+    /**
+     * Date of role deletion, or null if the role is still active
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun deletedAt(): OffsetDateTime? = deletedAt.getNullable("deleted_at")
 
-    /** Unique identifier for the view */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    /**
+     * Options for the view in the app
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun options(): ViewOptions? = options.getNullable("options")
 
-    /** The object type that the ACL applies to */
-    @JsonProperty("object_type") @ExcludeMissing fun _objectType() = objectType
+    /**
+     * Identifies the user who created the view
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun userId(): String? = userId.getNullable("user_id")
 
-    /** The id of the object the view applies to */
-    @JsonProperty("object_id") @ExcludeMissing fun _objectId() = objectId
+    /**
+     * The view definition
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun viewData(): ViewData? = viewData.getNullable("view_data")
 
-    /** Type of table that the view corresponds to. */
-    @JsonProperty("view_type") @ExcludeMissing fun _viewType() = viewType
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** Name of the view */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
-    /** Date of view creation */
-    @JsonProperty("created") @ExcludeMissing fun _created() = created
+    /**
+     * Returns the raw JSON value of [objectId].
+     *
+     * Unlike [objectId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("object_id") @ExcludeMissing fun _objectId(): JsonField<String> = objectId
 
-    /** The view definition */
-    @JsonProperty("view_data") @ExcludeMissing fun _viewData() = viewData
+    /**
+     * Returns the raw JSON value of [objectType].
+     *
+     * Unlike [objectType], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("object_type")
+    @ExcludeMissing
+    fun _objectType(): JsonField<AclObjectType> = objectType
 
-    /** Options for the view in the app */
-    @JsonProperty("options") @ExcludeMissing fun _options() = options
+    /**
+     * Returns the raw JSON value of [viewType].
+     *
+     * Unlike [viewType], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("view_type") @ExcludeMissing fun _viewType(): JsonField<ViewType> = viewType
 
-    /** Identifies the user who created the view */
-    @JsonProperty("user_id") @ExcludeMissing fun _userId() = userId
+    /**
+     * Returns the raw JSON value of [created].
+     *
+     * Unlike [created], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<OffsetDateTime> = created
 
-    /** Date of role deletion, or null if the role is still active */
-    @JsonProperty("deleted_at") @ExcludeMissing fun _deletedAt() = deletedAt
+    /**
+     * Returns the raw JSON value of [deletedAt].
+     *
+     * Unlike [deletedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("deleted_at")
+    @ExcludeMissing
+    fun _deletedAt(): JsonField<OffsetDateTime> = deletedAt
+
+    /**
+     * Returns the raw JSON value of [options].
+     *
+     * Unlike [options], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("options") @ExcludeMissing fun _options(): JsonField<ViewOptions> = options
+
+    /**
+     * Returns the raw JSON value of [userId].
+     *
+     * Unlike [userId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
+
+    /**
+     * Returns the raw JSON value of [viewData].
+     *
+     * Unlike [viewData], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("view_data") @ExcludeMissing fun _viewData(): JsonField<ViewData> = viewData
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun validate(): View = apply {
-        if (!validated) {
-            id()
-            objectType()
-            objectId()
-            viewType()
-            name()
-            created()
-            viewData()?.validate()
-            options()?.validate()
-            userId()
-            deletedAt()
-            validated = true
-        }
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [View].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .name()
+         * .objectId()
+         * .objectType()
+         * .viewType()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [View]. */
+    class Builder internal constructor() {
+
+        private var id: JsonField<String>? = null
+        private var name: JsonField<String>? = null
+        private var objectId: JsonField<String>? = null
+        private var objectType: JsonField<AclObjectType>? = null
+        private var viewType: JsonField<ViewType>? = null
+        private var created: JsonField<OffsetDateTime> = JsonMissing.of()
+        private var deletedAt: JsonField<OffsetDateTime> = JsonMissing.of()
+        private var options: JsonField<ViewOptions> = JsonMissing.of()
+        private var userId: JsonField<String> = JsonMissing.of()
+        private var viewData: JsonField<ViewData> = JsonMissing.of()
+        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+        internal fun from(view: View) = apply {
+            id = view.id
+            name = view.name
+            objectId = view.objectId
+            objectType = view.objectType
+            viewType = view.viewType
+            created = view.created
+            deletedAt = view.deletedAt
+            options = view.options
+            userId = view.userId
+            viewData = view.viewData
+            additionalProperties = view.additionalProperties.toMutableMap()
+        }
+
+        /** Unique identifier for the view */
+        fun id(id: String) = id(JsonField.of(id))
+
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /** Name of the view */
+        fun name(name: String) = name(JsonField.of(name))
+
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { this.name = name }
+
+        /** The id of the object the view applies to */
+        fun objectId(objectId: String) = objectId(JsonField.of(objectId))
+
+        /**
+         * Sets [Builder.objectId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.objectId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
+
+        /** The object type that the ACL applies to */
+        fun objectType(objectType: AclObjectType) = objectType(JsonField.of(objectType))
+
+        /**
+         * Sets [Builder.objectType] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.objectType] with a well-typed [AclObjectType] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun objectType(objectType: JsonField<AclObjectType>) = apply {
+            this.objectType = objectType
+        }
+
+        /** Type of table that the view corresponds to. */
+        fun viewType(viewType: ViewType?) = viewType(JsonField.ofNullable(viewType))
+
+        /**
+         * Sets [Builder.viewType] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.viewType] with a well-typed [ViewType] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun viewType(viewType: JsonField<ViewType>) = apply { this.viewType = viewType }
+
+        /** Date of view creation */
+        fun created(created: OffsetDateTime?) = created(JsonField.ofNullable(created))
+
+        /**
+         * Sets [Builder.created] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.created] with a well-typed [OffsetDateTime] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
+
+        /** Date of role deletion, or null if the role is still active */
+        fun deletedAt(deletedAt: OffsetDateTime?) = deletedAt(JsonField.ofNullable(deletedAt))
+
+        /**
+         * Sets [Builder.deletedAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.deletedAt] with a well-typed [OffsetDateTime] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun deletedAt(deletedAt: JsonField<OffsetDateTime>) = apply { this.deletedAt = deletedAt }
+
+        /** Options for the view in the app */
+        fun options(options: ViewOptions?) = options(JsonField.ofNullable(options))
+
+        /**
+         * Sets [Builder.options] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.options] with a well-typed [ViewOptions] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun options(options: JsonField<ViewOptions>) = apply { this.options = options }
+
+        /** Identifies the user who created the view */
+        fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+        /**
+         * Sets [Builder.userId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.userId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun userId(userId: JsonField<String>) = apply { this.userId = userId }
+
+        /** The view definition */
+        fun viewData(viewData: ViewData?) = viewData(JsonField.ofNullable(viewData))
+
+        /**
+         * Sets [Builder.viewData] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.viewData] with a well-typed [ViewData] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun viewData(viewData: JsonField<ViewData>) = apply { this.viewData = viewData }
+
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
+
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
+
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [View].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .name()
+         * .objectId()
+         * .objectType()
+         * .viewType()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): View =
+            View(
+                checkRequired("id", id),
+                checkRequired("name", name),
+                checkRequired("objectId", objectId),
+                checkRequired("objectType", objectType),
+                checkRequired("viewType", viewType),
+                created,
+                deletedAt,
+                options,
+                userId,
+                viewData,
+                additionalProperties.toMutableMap(),
+            )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): View = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        name()
+        objectId()
+        objectType().validate()
+        viewType()?.validate()
+        created()
+        deletedAt()
+        options()?.validate()
+        userId()
+        viewData()?.validate()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (if (id.asKnown() == null) 0 else 1) +
+            (if (name.asKnown() == null) 0 else 1) +
+            (if (objectId.asKnown() == null) 0 else 1) +
+            (objectType.asKnown()?.validity() ?: 0) +
+            (viewType.asKnown()?.validity() ?: 0) +
+            (if (created.asKnown() == null) 0 else 1) +
+            (if (deletedAt.asKnown() == null) 0 else 1) +
+            (options.asKnown()?.validity() ?: 0) +
+            (if (userId.asKnown() == null) 0 else 1) +
+            (viewData.asKnown()?.validity() ?: 0)
+
+    /** Type of table that the view corresponds to. */
+    class ViewType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            val PROJECTS = of("projects")
+
+            val EXPERIMENTS = of("experiments")
+
+            val EXPERIMENT = of("experiment")
+
+            val PLAYGROUNDS = of("playgrounds")
+
+            val PLAYGROUND = of("playground")
+
+            val DATASETS = of("datasets")
+
+            val DATASET = of("dataset")
+
+            val PROMPTS = of("prompts")
+
+            val TOOLS = of("tools")
+
+            val SCORERS = of("scorers")
+
+            val LOGS = of("logs")
+
+            fun of(value: String) = ViewType(JsonField.of(value))
+        }
+
+        /** An enum containing [ViewType]'s known values. */
+        enum class Known {
+            PROJECTS,
+            EXPERIMENTS,
+            EXPERIMENT,
+            PLAYGROUNDS,
+            PLAYGROUND,
+            DATASETS,
+            DATASET,
+            PROMPTS,
+            TOOLS,
+            SCORERS,
+            LOGS,
+        }
+
+        /**
+         * An enum containing [ViewType]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [ViewType] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            PROJECTS,
+            EXPERIMENTS,
+            EXPERIMENT,
+            PLAYGROUNDS,
+            PLAYGROUND,
+            DATASETS,
+            DATASET,
+            PROMPTS,
+            TOOLS,
+            SCORERS,
+            LOGS,
+            /** An enum member indicating that [ViewType] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                PROJECTS -> Value.PROJECTS
+                EXPERIMENTS -> Value.EXPERIMENTS
+                EXPERIMENT -> Value.EXPERIMENT
+                PLAYGROUNDS -> Value.PLAYGROUNDS
+                PLAYGROUND -> Value.PLAYGROUND
+                DATASETS -> Value.DATASETS
+                DATASET -> Value.DATASET
+                PROMPTS -> Value.PROMPTS
+                TOOLS -> Value.TOOLS
+                SCORERS -> Value.SCORERS
+                LOGS -> Value.LOGS
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                PROJECTS -> Known.PROJECTS
+                EXPERIMENTS -> Known.EXPERIMENTS
+                EXPERIMENT -> Known.EXPERIMENT
+                PLAYGROUNDS -> Known.PLAYGROUNDS
+                PLAYGROUND -> Known.PLAYGROUND
+                DATASETS -> Known.DATASETS
+                DATASET -> Known.DATASET
+                PROMPTS -> Known.PROMPTS
+                TOOLS -> Known.TOOLS
+                SCORERS -> Known.SCORERS
+                LOGS -> Known.LOGS
+                else -> throw BraintrustInvalidDataException("Unknown ViewType: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
+
+        private var validated: Boolean = false
+
+        fun validate(): ViewType = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ViewType && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -127,384 +677,37 @@ private constructor(
         }
 
         return other is View &&
-            this.id == other.id &&
-            this.objectType == other.objectType &&
-            this.objectId == other.objectId &&
-            this.viewType == other.viewType &&
-            this.name == other.name &&
-            this.created == other.created &&
-            this.viewData == other.viewData &&
-            this.options == other.options &&
-            this.userId == other.userId &&
-            this.deletedAt == other.deletedAt &&
-            this.additionalProperties == other.additionalProperties
+            id == other.id &&
+            name == other.name &&
+            objectId == other.objectId &&
+            objectType == other.objectType &&
+            viewType == other.viewType &&
+            created == other.created &&
+            deletedAt == other.deletedAt &&
+            options == other.options &&
+            userId == other.userId &&
+            viewData == other.viewData &&
+            additionalProperties == other.additionalProperties
     }
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    id,
-                    objectType,
-                    objectId,
-                    viewType,
-                    name,
-                    created,
-                    viewData,
-                    options,
-                    userId,
-                    deletedAt,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            name,
+            objectId,
+            objectType,
+            viewType,
+            created,
+            deletedAt,
+            options,
+            userId,
+            viewData,
+            additionalProperties,
+        )
     }
+
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "View{id=$id, objectType=$objectType, objectId=$objectId, viewType=$viewType, name=$name, created=$created, viewData=$viewData, options=$options, userId=$userId, deletedAt=$deletedAt, additionalProperties=$additionalProperties}"
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    class Builder {
-
-        private var id: JsonField<String> = JsonMissing.of()
-        private var objectType: JsonField<ObjectType> = JsonMissing.of()
-        private var objectId: JsonField<String> = JsonMissing.of()
-        private var viewType: JsonField<ViewType> = JsonMissing.of()
-        private var name: JsonField<String> = JsonMissing.of()
-        private var created: JsonField<OffsetDateTime> = JsonMissing.of()
-        private var viewData: JsonField<ViewData> = JsonMissing.of()
-        private var options: JsonField<ViewOptions> = JsonMissing.of()
-        private var userId: JsonField<String> = JsonMissing.of()
-        private var deletedAt: JsonField<OffsetDateTime> = JsonMissing.of()
-        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(view: View) = apply {
-            this.id = view.id
-            this.objectType = view.objectType
-            this.objectId = view.objectId
-            this.viewType = view.viewType
-            this.name = view.name
-            this.created = view.created
-            this.viewData = view.viewData
-            this.options = view.options
-            this.userId = view.userId
-            this.deletedAt = view.deletedAt
-            additionalProperties(view.additionalProperties)
-        }
-
-        /** Unique identifier for the view */
-        fun id(id: String) = id(JsonField.of(id))
-
-        /** Unique identifier for the view */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
-
-        /** The object type that the ACL applies to */
-        fun objectType(objectType: ObjectType) = objectType(JsonField.of(objectType))
-
-        /** The object type that the ACL applies to */
-        @JsonProperty("object_type")
-        @ExcludeMissing
-        fun objectType(objectType: JsonField<ObjectType>) = apply { this.objectType = objectType }
-
-        /** The id of the object the view applies to */
-        fun objectId(objectId: String) = objectId(JsonField.of(objectId))
-
-        /** The id of the object the view applies to */
-        @JsonProperty("object_id")
-        @ExcludeMissing
-        fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
-
-        /** Type of table that the view corresponds to. */
-        fun viewType(viewType: ViewType) = viewType(JsonField.of(viewType))
-
-        /** Type of table that the view corresponds to. */
-        @JsonProperty("view_type")
-        @ExcludeMissing
-        fun viewType(viewType: JsonField<ViewType>) = apply { this.viewType = viewType }
-
-        /** Name of the view */
-        fun name(name: String) = name(JsonField.of(name))
-
-        /** Name of the view */
-        @JsonProperty("name")
-        @ExcludeMissing
-        fun name(name: JsonField<String>) = apply { this.name = name }
-
-        /** Date of view creation */
-        fun created(created: OffsetDateTime) = created(JsonField.of(created))
-
-        /** Date of view creation */
-        @JsonProperty("created")
-        @ExcludeMissing
-        fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
-
-        /** The view definition */
-        fun viewData(viewData: ViewData) = viewData(JsonField.of(viewData))
-
-        /** The view definition */
-        @JsonProperty("view_data")
-        @ExcludeMissing
-        fun viewData(viewData: JsonField<ViewData>) = apply { this.viewData = viewData }
-
-        /** Options for the view in the app */
-        fun options(options: ViewOptions) = options(JsonField.of(options))
-
-        /** Options for the view in the app */
-        @JsonProperty("options")
-        @ExcludeMissing
-        fun options(options: JsonField<ViewOptions>) = apply { this.options = options }
-
-        /** Identifies the user who created the view */
-        fun userId(userId: String) = userId(JsonField.of(userId))
-
-        /** Identifies the user who created the view */
-        @JsonProperty("user_id")
-        @ExcludeMissing
-        fun userId(userId: JsonField<String>) = apply { this.userId = userId }
-
-        /** Date of role deletion, or null if the role is still active */
-        fun deletedAt(deletedAt: OffsetDateTime) = deletedAt(JsonField.of(deletedAt))
-
-        /** Date of role deletion, or null if the role is still active */
-        @JsonProperty("deleted_at")
-        @ExcludeMissing
-        fun deletedAt(deletedAt: JsonField<OffsetDateTime>) = apply { this.deletedAt = deletedAt }
-
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        @JsonAnySetter
-        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
-        }
-
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        fun build(): View =
-            View(
-                id,
-                objectType,
-                objectId,
-                viewType,
-                name,
-                created,
-                viewData,
-                options,
-                userId,
-                deletedAt,
-                additionalProperties.toUnmodifiable(),
-            )
-    }
-
-    class ObjectType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is ObjectType && this.value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            val ORGANIZATION = ObjectType(JsonField.of("organization"))
-
-            val PROJECT = ObjectType(JsonField.of("project"))
-
-            val EXPERIMENT = ObjectType(JsonField.of("experiment"))
-
-            val DATASET = ObjectType(JsonField.of("dataset"))
-
-            val PROMPT = ObjectType(JsonField.of("prompt"))
-
-            val PROMPT_SESSION = ObjectType(JsonField.of("prompt_session"))
-
-            val GROUP = ObjectType(JsonField.of("group"))
-
-            val ROLE = ObjectType(JsonField.of("role"))
-
-            val ORG_MEMBER = ObjectType(JsonField.of("org_member"))
-
-            val PROJECT_LOG = ObjectType(JsonField.of("project_log"))
-
-            val ORG_PROJECT = ObjectType(JsonField.of("org_project"))
-
-            fun of(value: String) = ObjectType(JsonField.of(value))
-        }
-
-        enum class Known {
-            ORGANIZATION,
-            PROJECT,
-            EXPERIMENT,
-            DATASET,
-            PROMPT,
-            PROMPT_SESSION,
-            GROUP,
-            ROLE,
-            ORG_MEMBER,
-            PROJECT_LOG,
-            ORG_PROJECT,
-        }
-
-        enum class Value {
-            ORGANIZATION,
-            PROJECT,
-            EXPERIMENT,
-            DATASET,
-            PROMPT,
-            PROMPT_SESSION,
-            GROUP,
-            ROLE,
-            ORG_MEMBER,
-            PROJECT_LOG,
-            ORG_PROJECT,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                ORGANIZATION -> Value.ORGANIZATION
-                PROJECT -> Value.PROJECT
-                EXPERIMENT -> Value.EXPERIMENT
-                DATASET -> Value.DATASET
-                PROMPT -> Value.PROMPT
-                PROMPT_SESSION -> Value.PROMPT_SESSION
-                GROUP -> Value.GROUP
-                ROLE -> Value.ROLE
-                ORG_MEMBER -> Value.ORG_MEMBER
-                PROJECT_LOG -> Value.PROJECT_LOG
-                ORG_PROJECT -> Value.ORG_PROJECT
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                ORGANIZATION -> Known.ORGANIZATION
-                PROJECT -> Known.PROJECT
-                EXPERIMENT -> Known.EXPERIMENT
-                DATASET -> Known.DATASET
-                PROMPT -> Known.PROMPT
-                PROMPT_SESSION -> Known.PROMPT_SESSION
-                GROUP -> Known.GROUP
-                ROLE -> Known.ROLE
-                ORG_MEMBER -> Known.ORG_MEMBER
-                PROJECT_LOG -> Known.PROJECT_LOG
-                ORG_PROJECT -> Known.ORG_PROJECT
-                else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-    }
-
-    class ViewType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is ViewType && this.value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            val PROJECTS = ViewType(JsonField.of("projects"))
-
-            val LOGS = ViewType(JsonField.of("logs"))
-
-            val EXPERIMENTS = ViewType(JsonField.of("experiments"))
-
-            val DATASETS = ViewType(JsonField.of("datasets"))
-
-            val PROMPTS = ViewType(JsonField.of("prompts"))
-
-            val PLAYGROUNDS = ViewType(JsonField.of("playgrounds"))
-
-            val EXPERIMENT = ViewType(JsonField.of("experiment"))
-
-            val DATASET = ViewType(JsonField.of("dataset"))
-
-            fun of(value: String) = ViewType(JsonField.of(value))
-        }
-
-        enum class Known {
-            PROJECTS,
-            LOGS,
-            EXPERIMENTS,
-            DATASETS,
-            PROMPTS,
-            PLAYGROUNDS,
-            EXPERIMENT,
-            DATASET,
-        }
-
-        enum class Value {
-            PROJECTS,
-            LOGS,
-            EXPERIMENTS,
-            DATASETS,
-            PROMPTS,
-            PLAYGROUNDS,
-            EXPERIMENT,
-            DATASET,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                PROJECTS -> Value.PROJECTS
-                LOGS -> Value.LOGS
-                EXPERIMENTS -> Value.EXPERIMENTS
-                DATASETS -> Value.DATASETS
-                PROMPTS -> Value.PROMPTS
-                PLAYGROUNDS -> Value.PLAYGROUNDS
-                EXPERIMENT -> Value.EXPERIMENT
-                DATASET -> Value.DATASET
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                PROJECTS -> Known.PROJECTS
-                LOGS -> Known.LOGS
-                EXPERIMENTS -> Known.EXPERIMENTS
-                DATASETS -> Known.DATASETS
-                PROMPTS -> Known.PROMPTS
-                PLAYGROUNDS -> Known.PLAYGROUNDS
-                EXPERIMENT -> Known.EXPERIMENT
-                DATASET -> Known.DATASET
-                else -> throw BraintrustInvalidDataException("Unknown ViewType: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-    }
+        "View{id=$id, name=$name, objectId=$objectId, objectType=$objectType, viewType=$viewType, created=$created, deletedAt=$deletedAt, options=$options, userId=$userId, viewData=$viewData, additionalProperties=$additionalProperties}"
 }

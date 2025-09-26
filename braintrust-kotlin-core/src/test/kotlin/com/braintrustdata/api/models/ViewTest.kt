@@ -2,29 +2,42 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ViewTest {
+internal class ViewTest {
 
     @Test
-    fun createView() {
+    fun create() {
         val view =
             View.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .name("name")
                 .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .objectType(View.ObjectType.ORGANIZATION)
+                .objectType(AclObjectType.ORGANIZATION)
                 .viewType(View.ViewType.PROJECTS)
                 .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .deletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .options(
                     ViewOptions.builder()
-                        .columnOrder(listOf("string"))
-                        .columnSizing(ViewOptions.ColumnSizing.builder().build())
-                        .columnVisibility(ViewOptions.ColumnVisibility.builder().build())
+                        .addColumnOrder("string")
+                        .columnSizing(
+                            ViewOptions.ColumnSizing.builder()
+                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                .build()
+                        )
+                        .columnVisibility(
+                            ViewOptions.ColumnVisibility.builder()
+                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                .build()
+                        )
+                        .grouping("grouping")
+                        .layout("layout")
+                        .rowHeight("rowHeight")
                         .build()
                 )
                 .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -32,29 +45,40 @@ class ViewTest {
                     ViewData.builder()
                         .search(
                             ViewDataSearch.builder()
-                                .filter(listOf(JsonNull.of()))
-                                .match(listOf(JsonNull.of()))
-                                .sort(listOf(JsonNull.of()))
-                                .tag(listOf(JsonNull.of()))
+                                .addFilter(JsonValue.from(mapOf<String, Any>()))
+                                .addMatch(JsonValue.from(mapOf<String, Any>()))
+                                .addSort(JsonValue.from(mapOf<String, Any>()))
+                                .addTag(JsonValue.from(mapOf<String, Any>()))
                                 .build()
                         )
                         .build()
                 )
                 .build()
-        assertThat(view).isNotNull
+
         assertThat(view.id()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(view.name()).isEqualTo("name")
         assertThat(view.objectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        assertThat(view.objectType()).isEqualTo(View.ObjectType.ORGANIZATION)
+        assertThat(view.objectType()).isEqualTo(AclObjectType.ORGANIZATION)
         assertThat(view.viewType()).isEqualTo(View.ViewType.PROJECTS)
         assertThat(view.created()).isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(view.deletedAt()).isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(view.options())
             .isEqualTo(
                 ViewOptions.builder()
-                    .columnOrder(listOf("string"))
-                    .columnSizing(ViewOptions.ColumnSizing.builder().build())
-                    .columnVisibility(ViewOptions.ColumnVisibility.builder().build())
+                    .addColumnOrder("string")
+                    .columnSizing(
+                        ViewOptions.ColumnSizing.builder()
+                            .putAdditionalProperty("foo", JsonValue.from(0))
+                            .build()
+                    )
+                    .columnVisibility(
+                        ViewOptions.ColumnVisibility.builder()
+                            .putAdditionalProperty("foo", JsonValue.from(true))
+                            .build()
+                    )
+                    .grouping("grouping")
+                    .layout("layout")
+                    .rowHeight("rowHeight")
                     .build()
             )
         assertThat(view.userId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -63,13 +87,64 @@ class ViewTest {
                 ViewData.builder()
                     .search(
                         ViewDataSearch.builder()
-                            .filter(listOf(JsonNull.of()))
-                            .match(listOf(JsonNull.of()))
-                            .sort(listOf(JsonNull.of()))
-                            .tag(listOf(JsonNull.of()))
+                            .addFilter(JsonValue.from(mapOf<String, Any>()))
+                            .addMatch(JsonValue.from(mapOf<String, Any>()))
+                            .addSort(JsonValue.from(mapOf<String, Any>()))
+                            .addTag(JsonValue.from(mapOf<String, Any>()))
                             .build()
                     )
                     .build()
             )
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val view =
+            View.builder()
+                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .name("name")
+                .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .objectType(AclObjectType.ORGANIZATION)
+                .viewType(View.ViewType.PROJECTS)
+                .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .deletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .options(
+                    ViewOptions.builder()
+                        .addColumnOrder("string")
+                        .columnSizing(
+                            ViewOptions.ColumnSizing.builder()
+                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                .build()
+                        )
+                        .columnVisibility(
+                            ViewOptions.ColumnVisibility.builder()
+                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                .build()
+                        )
+                        .grouping("grouping")
+                        .layout("layout")
+                        .rowHeight("rowHeight")
+                        .build()
+                )
+                .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .viewData(
+                    ViewData.builder()
+                        .search(
+                            ViewDataSearch.builder()
+                                .addFilter(JsonValue.from(mapOf<String, Any>()))
+                                .addMatch(JsonValue.from(mapOf<String, Any>()))
+                                .addSort(JsonValue.from(mapOf<String, Any>()))
+                                .addTag(JsonValue.from(mapOf<String, Any>()))
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+
+        val roundtrippedView =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(view), jacksonTypeRef<View>())
+
+        assertThat(roundtrippedView).isEqualTo(view)
     }
 }

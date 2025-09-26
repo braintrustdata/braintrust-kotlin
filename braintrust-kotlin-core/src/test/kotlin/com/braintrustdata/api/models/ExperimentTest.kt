@@ -2,14 +2,17 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ExperimentTest {
+internal class ExperimentTest {
 
     @Test
-    fun createExperiment() {
+    fun create() {
         val experiment =
             Experiment.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -23,7 +26,11 @@ class ExperimentTest {
                 .datasetVersion("dataset_version")
                 .deletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .description("description")
-                .metadata(Experiment.Metadata.builder().build())
+                .metadata(
+                    Experiment.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
                 .repoInfo(
                     RepoInfo.builder()
                         .authorEmail("author_email")
@@ -39,7 +46,7 @@ class ExperimentTest {
                 )
                 .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        assertThat(experiment).isNotNull
+
         assertThat(experiment.id()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(experiment.name()).isEqualTo("name")
         assertThat(experiment.projectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -52,7 +59,12 @@ class ExperimentTest {
         assertThat(experiment.deletedAt())
             .isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(experiment.description()).isEqualTo("description")
-        assertThat(experiment.metadata()).isEqualTo(Experiment.Metadata.builder().build())
+        assertThat(experiment.metadata())
+            .isEqualTo(
+                Experiment.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
         assertThat(experiment.repoInfo())
             .isEqualTo(
                 RepoInfo.builder()
@@ -68,5 +80,51 @@ class ExperimentTest {
                     .build()
             )
         assertThat(experiment.userId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val experiment =
+            Experiment.builder()
+                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .name("name")
+                .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .public_(true)
+                .baseExpId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .commit("commit")
+                .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .datasetId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .datasetVersion("dataset_version")
+                .deletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .description("description")
+                .metadata(
+                    Experiment.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
+                .repoInfo(
+                    RepoInfo.builder()
+                        .authorEmail("author_email")
+                        .authorName("author_name")
+                        .branch("branch")
+                        .commit("commit")
+                        .commitMessage("commit_message")
+                        .commitTime("commit_time")
+                        .dirty(true)
+                        .gitDiff("git_diff")
+                        .tag("tag")
+                        .build()
+                )
+                .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .build()
+
+        val roundtrippedExperiment =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(experiment),
+                jacksonTypeRef<Experiment>(),
+            )
+
+        assertThat(roundtrippedExperiment).isEqualTo(experiment)
     }
 }

@@ -3,142 +3,473 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkKnown
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
+/** Modify organization membership */
 class OrganizationMemberUpdateParams
-constructor(
-    private val inviteUsers: InviteUsers?,
-    private val orgId: String?,
-    private val orgName: String?,
-    private val removeUsers: RemoveUsers?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+private constructor(
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun inviteUsers(): InviteUsers? = inviteUsers
+    /**
+     * Users to invite to the organization
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun inviteUsers(): InviteUsers? = body.inviteUsers()
 
-    fun orgId(): String? = orgId
+    /**
+     * For nearly all users, this parameter should be unnecessary. But in the rare case that your
+     * API key belongs to multiple organizations, or in case you want to explicitly assert the
+     * organization you are modifying, you may specify the id of the organization.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun orgId(): String? = body.orgId()
 
-    fun orgName(): String? = orgName
+    /**
+     * For nearly all users, this parameter should be unnecessary. But in the rare case that your
+     * API key belongs to multiple organizations, or in case you want to explicitly assert the
+     * organization you are modifying, you may specify the name of the organization.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun orgName(): String? = body.orgName()
 
-    fun removeUsers(): RemoveUsers? = removeUsers
+    /**
+     * Users to remove from the organization
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun removeUsers(): RemoveUsers? = body.removeUsers()
 
-    internal fun getBody(): OrganizationMemberUpdateBody {
-        return OrganizationMemberUpdateBody(
-            inviteUsers,
-            orgId,
-            orgName,
-            removeUsers,
-            additionalBodyProperties,
-        )
+    /**
+     * Returns the raw JSON value of [inviteUsers].
+     *
+     * Unlike [inviteUsers], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _inviteUsers(): JsonField<InviteUsers> = body._inviteUsers()
+
+    /**
+     * Returns the raw JSON value of [orgId].
+     *
+     * Unlike [orgId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _orgId(): JsonField<String> = body._orgId()
+
+    /**
+     * Returns the raw JSON value of [orgName].
+     *
+     * Unlike [orgName], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _orgName(): JsonField<String> = body._orgName()
+
+    /**
+     * Returns the raw JSON value of [removeUsers].
+     *
+     * Unlike [removeUsers], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _removeUsers(): JsonField<RemoveUsers> = body._removeUsers()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        fun none(): OrganizationMemberUpdateParams = builder().build()
+
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [OrganizationMemberUpdateParams].
+         */
+        fun builder() = Builder()
     }
 
-    internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
+    /** A builder for [OrganizationMemberUpdateParams]. */
+    class Builder internal constructor() {
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-    @JsonDeserialize(builder = OrganizationMemberUpdateBody.Builder::class)
-    @NoAutoDetect
-    class OrganizationMemberUpdateBody
-    internal constructor(
-        private val inviteUsers: InviteUsers?,
-        private val orgId: String?,
-        private val orgName: String?,
-        private val removeUsers: RemoveUsers?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+        internal fun from(organizationMemberUpdateParams: OrganizationMemberUpdateParams) = apply {
+            body = organizationMemberUpdateParams.body.toBuilder()
+            additionalHeaders = organizationMemberUpdateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = organizationMemberUpdateParams.additionalQueryParams.toBuilder()
+        }
 
-        private var hashCode: Int = 0
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [inviteUsers]
+         * - [orgId]
+         * - [orgName]
+         * - [removeUsers]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** Users to invite to the organization */
-        @JsonProperty("invite_users") fun inviteUsers(): InviteUsers? = inviteUsers
+        fun inviteUsers(inviteUsers: InviteUsers?) = apply { body.inviteUsers(inviteUsers) }
+
+        /**
+         * Sets [Builder.inviteUsers] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.inviteUsers] with a well-typed [InviteUsers] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun inviteUsers(inviteUsers: JsonField<InviteUsers>) = apply {
+            body.inviteUsers(inviteUsers)
+        }
 
         /**
          * For nearly all users, this parameter should be unnecessary. But in the rare case that
          * your API key belongs to multiple organizations, or in case you want to explicitly assert
          * the organization you are modifying, you may specify the id of the organization.
          */
-        @JsonProperty("org_id") fun orgId(): String? = orgId
+        fun orgId(orgId: String?) = apply { body.orgId(orgId) }
+
+        /**
+         * Sets [Builder.orgId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.orgId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun orgId(orgId: JsonField<String>) = apply { body.orgId(orgId) }
 
         /**
          * For nearly all users, this parameter should be unnecessary. But in the rare case that
          * your API key belongs to multiple organizations, or in case you want to explicitly assert
          * the organization you are modifying, you may specify the name of the organization.
          */
-        @JsonProperty("org_name") fun orgName(): String? = orgName
+        fun orgName(orgName: String?) = apply { body.orgName(orgName) }
+
+        /**
+         * Sets [Builder.orgName] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.orgName] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun orgName(orgName: JsonField<String>) = apply { body.orgName(orgName) }
 
         /** Users to remove from the organization */
-        @JsonProperty("remove_users") fun removeUsers(): RemoveUsers? = removeUsers
+        fun removeUsers(removeUsers: RemoveUsers?) = apply { body.removeUsers(removeUsers) }
+
+        /**
+         * Sets [Builder.removeUsers] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.removeUsers] with a well-typed [RemoveUsers] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun removeUsers(removeUsers: JsonField<RemoveUsers>) = apply {
+            body.removeUsers(removeUsers)
+        }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [OrganizationMemberUpdateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
+        fun build(): OrganizationMemberUpdateParams =
+            OrganizationMemberUpdateParams(
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
+    fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val inviteUsers: JsonField<InviteUsers>,
+        private val orgId: JsonField<String>,
+        private val orgName: JsonField<String>,
+        private val removeUsers: JsonField<RemoveUsers>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("invite_users")
+            @ExcludeMissing
+            inviteUsers: JsonField<InviteUsers> = JsonMissing.of(),
+            @JsonProperty("org_id") @ExcludeMissing orgId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("org_name") @ExcludeMissing orgName: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("remove_users")
+            @ExcludeMissing
+            removeUsers: JsonField<RemoveUsers> = JsonMissing.of(),
+        ) : this(inviteUsers, orgId, orgName, removeUsers, mutableMapOf())
+
+        /**
+         * Users to invite to the organization
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun inviteUsers(): InviteUsers? = inviteUsers.getNullable("invite_users")
+
+        /**
+         * For nearly all users, this parameter should be unnecessary. But in the rare case that
+         * your API key belongs to multiple organizations, or in case you want to explicitly assert
+         * the organization you are modifying, you may specify the id of the organization.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun orgId(): String? = orgId.getNullable("org_id")
+
+        /**
+         * For nearly all users, this parameter should be unnecessary. But in the rare case that
+         * your API key belongs to multiple organizations, or in case you want to explicitly assert
+         * the organization you are modifying, you may specify the name of the organization.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun orgName(): String? = orgName.getNullable("org_name")
+
+        /**
+         * Users to remove from the organization
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun removeUsers(): RemoveUsers? = removeUsers.getNullable("remove_users")
+
+        /**
+         * Returns the raw JSON value of [inviteUsers].
+         *
+         * Unlike [inviteUsers], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("invite_users")
+        @ExcludeMissing
+        fun _inviteUsers(): JsonField<InviteUsers> = inviteUsers
+
+        /**
+         * Returns the raw JSON value of [orgId].
+         *
+         * Unlike [orgId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("org_id") @ExcludeMissing fun _orgId(): JsonField<String> = orgId
+
+        /**
+         * Returns the raw JSON value of [orgName].
+         *
+         * Unlike [orgName], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("org_name") @ExcludeMissing fun _orgName(): JsonField<String> = orgName
+
+        /**
+         * Returns the raw JSON value of [removeUsers].
+         *
+         * Unlike [removeUsers], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("remove_users")
+        @ExcludeMissing
+        fun _removeUsers(): JsonField<RemoveUsers> = removeUsers
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is OrganizationMemberUpdateBody &&
-                this.inviteUsers == other.inviteUsers &&
-                this.orgId == other.orgId &&
-                this.orgName == other.orgName &&
-                this.removeUsers == other.removeUsers &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        inviteUsers,
-                        orgId,
-                        orgName,
-                        removeUsers,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "OrganizationMemberUpdateBody{inviteUsers=$inviteUsers, orgId=$orgId, orgName=$orgName, removeUsers=$removeUsers, additionalProperties=$additionalProperties}"
-
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
 
-            private var inviteUsers: InviteUsers? = null
-            private var orgId: String? = null
-            private var orgName: String? = null
-            private var removeUsers: RemoveUsers? = null
+            private var inviteUsers: JsonField<InviteUsers> = JsonMissing.of()
+            private var orgId: JsonField<String> = JsonMissing.of()
+            private var orgName: JsonField<String> = JsonMissing.of()
+            private var removeUsers: JsonField<RemoveUsers> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(organizationMemberUpdateBody: OrganizationMemberUpdateBody) = apply {
-                this.inviteUsers = organizationMemberUpdateBody.inviteUsers
-                this.orgId = organizationMemberUpdateBody.orgId
-                this.orgName = organizationMemberUpdateBody.orgName
-                this.removeUsers = organizationMemberUpdateBody.removeUsers
-                additionalProperties(organizationMemberUpdateBody.additionalProperties)
+            internal fun from(body: Body) = apply {
+                inviteUsers = body.inviteUsers
+                orgId = body.orgId
+                orgName = body.orgName
+                removeUsers = body.removeUsers
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** Users to invite to the organization */
-            @JsonProperty("invite_users")
-            fun inviteUsers(inviteUsers: InviteUsers) = apply { this.inviteUsers = inviteUsers }
+            fun inviteUsers(inviteUsers: InviteUsers?) =
+                inviteUsers(JsonField.ofNullable(inviteUsers))
+
+            /**
+             * Sets [Builder.inviteUsers] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.inviteUsers] with a well-typed [InviteUsers] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun inviteUsers(inviteUsers: JsonField<InviteUsers>) = apply {
+                this.inviteUsers = inviteUsers
+            }
 
             /**
              * For nearly all users, this parameter should be unnecessary. But in the rare case that
@@ -146,7 +477,16 @@ constructor(
              * assert the organization you are modifying, you may specify the id of the
              * organization.
              */
-            @JsonProperty("org_id") fun orgId(orgId: String) = apply { this.orgId = orgId }
+            fun orgId(orgId: String?) = orgId(JsonField.ofNullable(orgId))
+
+            /**
+             * Sets [Builder.orgId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.orgId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun orgId(orgId: JsonField<String>) = apply { this.orgId = orgId }
 
             /**
              * For nearly all users, this parameter should be unnecessary. But in the rare case that
@@ -154,231 +494,538 @@ constructor(
              * assert the organization you are modifying, you may specify the name of the
              * organization.
              */
-            @JsonProperty("org_name")
-            fun orgName(orgName: String) = apply { this.orgName = orgName }
+            fun orgName(orgName: String?) = orgName(JsonField.ofNullable(orgName))
+
+            /**
+             * Sets [Builder.orgName] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.orgName] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun orgName(orgName: JsonField<String>) = apply { this.orgName = orgName }
 
             /** Users to remove from the organization */
-            @JsonProperty("remove_users")
-            fun removeUsers(removeUsers: RemoveUsers) = apply { this.removeUsers = removeUsers }
+            fun removeUsers(removeUsers: RemoveUsers?) =
+                removeUsers(JsonField.ofNullable(removeUsers))
+
+            /**
+             * Sets [Builder.removeUsers] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.removeUsers] with a well-typed [RemoveUsers] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun removeUsers(removeUsers: JsonField<RemoveUsers>) = apply {
+                this.removeUsers = removeUsers
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): OrganizationMemberUpdateBody =
-                OrganizationMemberUpdateBody(
-                    inviteUsers,
-                    orgId,
-                    orgName,
-                    removeUsers,
-                    additionalProperties.toUnmodifiable(),
-                )
-        }
-    }
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
 
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is OrganizationMemberUpdateParams &&
-            this.inviteUsers == other.inviteUsers &&
-            this.orgId == other.orgId &&
-            this.orgName == other.orgName &&
-            this.removeUsers == other.removeUsers &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            inviteUsers,
-            orgId,
-            orgName,
-            removeUsers,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
-    }
-
-    override fun toString() =
-        "OrganizationMemberUpdateParams{inviteUsers=$inviteUsers, orgId=$orgId, orgName=$orgName, removeUsers=$removeUsers, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
-
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    @NoAutoDetect
-    class Builder {
-
-        private var inviteUsers: InviteUsers? = null
-        private var orgId: String? = null
-        private var orgName: String? = null
-        private var removeUsers: RemoveUsers? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(organizationMemberUpdateParams: OrganizationMemberUpdateParams) = apply {
-            this.inviteUsers = organizationMemberUpdateParams.inviteUsers
-            this.orgId = organizationMemberUpdateParams.orgId
-            this.orgName = organizationMemberUpdateParams.orgName
-            this.removeUsers = organizationMemberUpdateParams.removeUsers
-            additionalQueryParams(organizationMemberUpdateParams.additionalQueryParams)
-            additionalHeaders(organizationMemberUpdateParams.additionalHeaders)
-            additionalBodyProperties(organizationMemberUpdateParams.additionalBodyProperties)
-        }
-
-        /** Users to invite to the organization */
-        fun inviteUsers(inviteUsers: InviteUsers) = apply { this.inviteUsers = inviteUsers }
-
-        /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, or in case you want to explicitly assert
-         * the organization you are modifying, you may specify the id of the organization.
-         */
-        fun orgId(orgId: String) = apply { this.orgId = orgId }
-
-        /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, or in case you want to explicitly assert
-         * the organization you are modifying, you may specify the name of the organization.
-         */
-        fun orgName(orgName: String) = apply { this.orgName = orgName }
-
-        /** Users to remove from the organization */
-        fun removeUsers(removeUsers: RemoveUsers) = apply { this.removeUsers = removeUsers }
-
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
-        }
-
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
-        }
-
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            this.additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
-        fun build(): OrganizationMemberUpdateParams =
-            OrganizationMemberUpdateParams(
-                inviteUsers,
-                orgId,
-                orgName,
-                removeUsers,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Body =
+                Body(inviteUsers, orgId, orgName, removeUsers, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            inviteUsers()?.validate()
+            orgId()
+            orgName()
+            removeUsers()?.validate()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (inviteUsers.asKnown()?.validity() ?: 0) +
+                (if (orgId.asKnown() == null) 0 else 1) +
+                (if (orgName.asKnown() == null) 0 else 1) +
+                (removeUsers.asKnown()?.validity() ?: 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Body &&
+                inviteUsers == other.inviteUsers &&
+                orgId == other.orgId &&
+                orgName == other.orgName &&
+                removeUsers == other.removeUsers &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(inviteUsers, orgId, orgName, removeUsers, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{inviteUsers=$inviteUsers, orgId=$orgId, orgName=$orgName, removeUsers=$removeUsers, additionalProperties=$additionalProperties}"
     }
 
     /** Users to invite to the organization */
-    @JsonDeserialize(builder = InviteUsers.Builder::class)
-    @NoAutoDetect
     class InviteUsers
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val ids: List<String>?,
-        private val emails: List<String>?,
-        private val sendInviteEmails: Boolean?,
-        private val groupIds: List<String>?,
-        private val groupNames: List<String>?,
-        private val groupId: String?,
-        private val groupName: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+        private val emails: JsonField<List<String>>,
+        private val groupId: JsonField<String>,
+        private val groupIds: JsonField<List<String>>,
+        private val groupName: JsonField<String>,
+        private val groupNames: JsonField<List<String>>,
+        private val ids: JsonField<List<String>>,
+        private val sendInviteEmails: JsonField<Boolean>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
+        @JsonCreator
+        private constructor(
+            @JsonProperty("emails")
+            @ExcludeMissing
+            emails: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("group_id") @ExcludeMissing groupId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("group_ids")
+            @ExcludeMissing
+            groupIds: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("group_name")
+            @ExcludeMissing
+            groupName: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("group_names")
+            @ExcludeMissing
+            groupNames: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("ids") @ExcludeMissing ids: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("send_invite_emails")
+            @ExcludeMissing
+            sendInviteEmails: JsonField<Boolean> = JsonMissing.of(),
+        ) : this(
+            emails,
+            groupId,
+            groupIds,
+            groupName,
+            groupNames,
+            ids,
+            sendInviteEmails,
+            mutableMapOf(),
+        )
 
-        /** Ids of existing users to invite */
-        @JsonProperty("ids") fun ids(): List<String>? = ids
+        /**
+         * Emails of users to invite
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun emails(): List<String>? = emails.getNullable("emails")
 
-        /** Emails of users to invite */
-        @JsonProperty("emails") fun emails(): List<String>? = emails
+        /**
+         * Singular form of group_ids
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun groupId(): String? = groupId.getNullable("group_id")
 
-        /** If true, send invite emails to the users who wore actually added */
-        @JsonProperty("send_invite_emails") fun sendInviteEmails(): Boolean? = sendInviteEmails
+        /**
+         * Optional list of group ids to add newly-invited users to.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun groupIds(): List<String>? = groupIds.getNullable("group_ids")
 
-        /** Optional list of group ids to add newly-invited users to. */
-        @JsonProperty("group_ids") fun groupIds(): List<String>? = groupIds
+        /**
+         * Singular form of group_names
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun groupName(): String? = groupName.getNullable("group_name")
 
-        /** Optional list of group names to add newly-invited users to. */
-        @JsonProperty("group_names") fun groupNames(): List<String>? = groupNames
+        /**
+         * Optional list of group names to add newly-invited users to.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun groupNames(): List<String>? = groupNames.getNullable("group_names")
 
-        /** Singular form of group_ids */
-        @JsonProperty("group_id") fun groupId(): String? = groupId
+        /**
+         * Ids of existing users to invite
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun ids(): List<String>? = ids.getNullable("ids")
 
-        /** Singular form of group_names */
-        @JsonProperty("group_name") fun groupName(): String? = groupName
+        /**
+         * If true, send invite emails to the users who wore actually added
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun sendInviteEmails(): Boolean? = sendInviteEmails.getNullable("send_invite_emails")
+
+        /**
+         * Returns the raw JSON value of [emails].
+         *
+         * Unlike [emails], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("emails") @ExcludeMissing fun _emails(): JsonField<List<String>> = emails
+
+        /**
+         * Returns the raw JSON value of [groupId].
+         *
+         * Unlike [groupId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("group_id") @ExcludeMissing fun _groupId(): JsonField<String> = groupId
+
+        /**
+         * Returns the raw JSON value of [groupIds].
+         *
+         * Unlike [groupIds], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("group_ids")
+        @ExcludeMissing
+        fun _groupIds(): JsonField<List<String>> = groupIds
+
+        /**
+         * Returns the raw JSON value of [groupName].
+         *
+         * Unlike [groupName], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("group_name") @ExcludeMissing fun _groupName(): JsonField<String> = groupName
+
+        /**
+         * Returns the raw JSON value of [groupNames].
+         *
+         * Unlike [groupNames], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("group_names")
+        @ExcludeMissing
+        fun _groupNames(): JsonField<List<String>> = groupNames
+
+        /**
+         * Returns the raw JSON value of [ids].
+         *
+         * Unlike [ids], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("ids") @ExcludeMissing fun _ids(): JsonField<List<String>> = ids
+
+        /**
+         * Returns the raw JSON value of [sendInviteEmails].
+         *
+         * Unlike [sendInviteEmails], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("send_invite_emails")
+        @ExcludeMissing
+        fun _sendInviteEmails(): JsonField<Boolean> = sendInviteEmails
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [InviteUsers]. */
+            fun builder() = Builder()
+        }
+
+        /** A builder for [InviteUsers]. */
+        class Builder internal constructor() {
+
+            private var emails: JsonField<MutableList<String>>? = null
+            private var groupId: JsonField<String> = JsonMissing.of()
+            private var groupIds: JsonField<MutableList<String>>? = null
+            private var groupName: JsonField<String> = JsonMissing.of()
+            private var groupNames: JsonField<MutableList<String>>? = null
+            private var ids: JsonField<MutableList<String>>? = null
+            private var sendInviteEmails: JsonField<Boolean> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            internal fun from(inviteUsers: InviteUsers) = apply {
+                emails = inviteUsers.emails.map { it.toMutableList() }
+                groupId = inviteUsers.groupId
+                groupIds = inviteUsers.groupIds.map { it.toMutableList() }
+                groupName = inviteUsers.groupName
+                groupNames = inviteUsers.groupNames.map { it.toMutableList() }
+                ids = inviteUsers.ids.map { it.toMutableList() }
+                sendInviteEmails = inviteUsers.sendInviteEmails
+                additionalProperties = inviteUsers.additionalProperties.toMutableMap()
+            }
+
+            /** Emails of users to invite */
+            fun emails(emails: List<String>?) = emails(JsonField.ofNullable(emails))
+
+            /**
+             * Sets [Builder.emails] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.emails] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun emails(emails: JsonField<List<String>>) = apply {
+                this.emails = emails.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [emails].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addEmail(email: String) = apply {
+                emails =
+                    (emails ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("emails", it).add(email)
+                    }
+            }
+
+            /** Singular form of group_ids */
+            fun groupId(groupId: String?) = groupId(JsonField.ofNullable(groupId))
+
+            /**
+             * Sets [Builder.groupId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun groupId(groupId: JsonField<String>) = apply { this.groupId = groupId }
+
+            /** Optional list of group ids to add newly-invited users to. */
+            fun groupIds(groupIds: List<String>?) = groupIds(JsonField.ofNullable(groupIds))
+
+            /**
+             * Sets [Builder.groupIds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupIds] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun groupIds(groupIds: JsonField<List<String>>) = apply {
+                this.groupIds = groupIds.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [groupIds].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addGroupId(groupId: String) = apply {
+                groupIds =
+                    (groupIds ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("groupIds", it).add(groupId)
+                    }
+            }
+
+            /** Singular form of group_names */
+            fun groupName(groupName: String?) = groupName(JsonField.ofNullable(groupName))
+
+            /**
+             * Sets [Builder.groupName] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupName] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun groupName(groupName: JsonField<String>) = apply { this.groupName = groupName }
+
+            /** Optional list of group names to add newly-invited users to. */
+            fun groupNames(groupNames: List<String>?) = groupNames(JsonField.ofNullable(groupNames))
+
+            /**
+             * Sets [Builder.groupNames] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupNames] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun groupNames(groupNames: JsonField<List<String>>) = apply {
+                this.groupNames = groupNames.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [groupNames].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addGroupName(groupName: String) = apply {
+                groupNames =
+                    (groupNames ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("groupNames", it).add(groupName)
+                    }
+            }
+
+            /** Ids of existing users to invite */
+            fun ids(ids: List<String>?) = ids(JsonField.ofNullable(ids))
+
+            /**
+             * Sets [Builder.ids] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ids] with a well-typed `List<String>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun ids(ids: JsonField<List<String>>) = apply {
+                this.ids = ids.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [ids].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addId(id: String) = apply {
+                ids = (ids ?: JsonField.of(mutableListOf())).also { checkKnown("ids", it).add(id) }
+            }
+
+            /** If true, send invite emails to the users who wore actually added */
+            fun sendInviteEmails(sendInviteEmails: Boolean?) =
+                sendInviteEmails(JsonField.ofNullable(sendInviteEmails))
+
+            /**
+             * Alias for [Builder.sendInviteEmails].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun sendInviteEmails(sendInviteEmails: Boolean) =
+                sendInviteEmails(sendInviteEmails as Boolean?)
+
+            /**
+             * Sets [Builder.sendInviteEmails] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sendInviteEmails] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun sendInviteEmails(sendInviteEmails: JsonField<Boolean>) = apply {
+                this.sendInviteEmails = sendInviteEmails
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [InviteUsers].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): InviteUsers =
+                InviteUsers(
+                    (emails ?: JsonMissing.of()).map { it.toImmutable() },
+                    groupId,
+                    (groupIds ?: JsonMissing.of()).map { it.toImmutable() },
+                    groupName,
+                    (groupNames ?: JsonMissing.of()).map { it.toImmutable() },
+                    (ids ?: JsonMissing.of()).map { it.toImmutable() },
+                    sendInviteEmails,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): InviteUsers = apply {
+            if (validated) {
+                return@apply
+            }
+
+            emails()
+            groupId()
+            groupIds()
+            groupName()
+            groupNames()
+            ids()
+            sendInviteEmails()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (emails.asKnown()?.size ?: 0) +
+                (if (groupId.asKnown() == null) 0 else 1) +
+                (groupIds.asKnown()?.size ?: 0) +
+                (if (groupName.asKnown() == null) 0 else 1) +
+                (groupNames.asKnown()?.size ?: 0) +
+                (ids.asKnown()?.size ?: 0) +
+                (if (sendInviteEmails.asKnown() == null) 0 else 1)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -386,143 +1033,221 @@ constructor(
             }
 
             return other is InviteUsers &&
-                this.ids == other.ids &&
-                this.emails == other.emails &&
-                this.sendInviteEmails == other.sendInviteEmails &&
-                this.groupIds == other.groupIds &&
-                this.groupNames == other.groupNames &&
-                this.groupId == other.groupId &&
-                this.groupName == other.groupName &&
-                this.additionalProperties == other.additionalProperties
+                emails == other.emails &&
+                groupId == other.groupId &&
+                groupIds == other.groupIds &&
+                groupName == other.groupName &&
+                groupNames == other.groupNames &&
+                ids == other.ids &&
+                sendInviteEmails == other.sendInviteEmails &&
+                additionalProperties == other.additionalProperties
         }
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        ids,
-                        emails,
-                        sendInviteEmails,
-                        groupIds,
-                        groupNames,
-                        groupId,
-                        groupName,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                emails,
+                groupId,
+                groupIds,
+                groupName,
+                groupNames,
+                ids,
+                sendInviteEmails,
+                additionalProperties,
+            )
         }
+
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "InviteUsers{ids=$ids, emails=$emails, sendInviteEmails=$sendInviteEmails, groupIds=$groupIds, groupNames=$groupNames, groupId=$groupId, groupName=$groupName, additionalProperties=$additionalProperties}"
+            "InviteUsers{emails=$emails, groupId=$groupId, groupIds=$groupIds, groupName=$groupName, groupNames=$groupNames, ids=$ids, sendInviteEmails=$sendInviteEmails, additionalProperties=$additionalProperties}"
+    }
+
+    /** Users to remove from the organization */
+    class RemoveUsers
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val emails: JsonField<List<String>>,
+        private val ids: JsonField<List<String>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("emails")
+            @ExcludeMissing
+            emails: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("ids") @ExcludeMissing ids: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(emails, ids, mutableMapOf())
+
+        /**
+         * Emails of users to remove
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun emails(): List<String>? = emails.getNullable("emails")
+
+        /**
+         * Ids of users to remove
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun ids(): List<String>? = ids.getNullable("ids")
+
+        /**
+         * Returns the raw JSON value of [emails].
+         *
+         * Unlike [emails], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("emails") @ExcludeMissing fun _emails(): JsonField<List<String>> = emails
+
+        /**
+         * Returns the raw JSON value of [ids].
+         *
+         * Unlike [ids], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("ids") @ExcludeMissing fun _ids(): JsonField<List<String>> = ids
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [RemoveUsers]. */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [RemoveUsers]. */
+        class Builder internal constructor() {
 
-            private var ids: List<String>? = null
-            private var emails: List<String>? = null
-            private var sendInviteEmails: Boolean? = null
-            private var groupIds: List<String>? = null
-            private var groupNames: List<String>? = null
-            private var groupId: String? = null
-            private var groupName: String? = null
+            private var emails: JsonField<MutableList<String>>? = null
+            private var ids: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(inviteUsers: InviteUsers) = apply {
-                this.ids = inviteUsers.ids
-                this.emails = inviteUsers.emails
-                this.sendInviteEmails = inviteUsers.sendInviteEmails
-                this.groupIds = inviteUsers.groupIds
-                this.groupNames = inviteUsers.groupNames
-                this.groupId = inviteUsers.groupId
-                this.groupName = inviteUsers.groupName
-                additionalProperties(inviteUsers.additionalProperties)
+            internal fun from(removeUsers: RemoveUsers) = apply {
+                emails = removeUsers.emails.map { it.toMutableList() }
+                ids = removeUsers.ids.map { it.toMutableList() }
+                additionalProperties = removeUsers.additionalProperties.toMutableMap()
             }
 
-            /** Ids of existing users to invite */
-            @JsonProperty("ids") fun ids(ids: List<String>) = apply { this.ids = ids }
+            /** Emails of users to remove */
+            fun emails(emails: List<String>?) = emails(JsonField.ofNullable(emails))
 
-            /** Emails of users to invite */
-            @JsonProperty("emails")
-            fun emails(emails: List<String>) = apply { this.emails = emails }
-
-            /** If true, send invite emails to the users who wore actually added */
-            @JsonProperty("send_invite_emails")
-            fun sendInviteEmails(sendInviteEmails: Boolean) = apply {
-                this.sendInviteEmails = sendInviteEmails
+            /**
+             * Sets [Builder.emails] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.emails] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun emails(emails: JsonField<List<String>>) = apply {
+                this.emails = emails.map { it.toMutableList() }
             }
 
-            /** Optional list of group ids to add newly-invited users to. */
-            @JsonProperty("group_ids")
-            fun groupIds(groupIds: List<String>) = apply { this.groupIds = groupIds }
+            /**
+             * Adds a single [String] to [emails].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addEmail(email: String) = apply {
+                emails =
+                    (emails ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("emails", it).add(email)
+                    }
+            }
 
-            /** Optional list of group names to add newly-invited users to. */
-            @JsonProperty("group_names")
-            fun groupNames(groupNames: List<String>) = apply { this.groupNames = groupNames }
+            /** Ids of users to remove */
+            fun ids(ids: List<String>?) = ids(JsonField.ofNullable(ids))
 
-            /** Singular form of group_ids */
-            @JsonProperty("group_id")
-            fun groupId(groupId: String) = apply { this.groupId = groupId }
+            /**
+             * Sets [Builder.ids] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ids] with a well-typed `List<String>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun ids(ids: JsonField<List<String>>) = apply {
+                this.ids = ids.map { it.toMutableList() }
+            }
 
-            /** Singular form of group_names */
-            @JsonProperty("group_name")
-            fun groupName(groupName: String) = apply { this.groupName = groupName }
+            /**
+             * Adds a single [String] to [ids].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addId(id: String) = apply {
+                ids = (ids ?: JsonField.of(mutableListOf())).also { checkKnown("ids", it).add(id) }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): InviteUsers =
-                InviteUsers(
-                    ids?.toUnmodifiable(),
-                    emails?.toUnmodifiable(),
-                    sendInviteEmails,
-                    groupIds?.toUnmodifiable(),
-                    groupNames?.toUnmodifiable(),
-                    groupId,
-                    groupName,
-                    additionalProperties.toUnmodifiable(),
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [RemoveUsers].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): RemoveUsers =
+                RemoveUsers(
+                    (emails ?: JsonMissing.of()).map { it.toImmutable() },
+                    (ids ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
                 )
         }
-    }
 
-    /** Users to remove from the organization */
-    @JsonDeserialize(builder = RemoveUsers.Builder::class)
-    @NoAutoDetect
-    class RemoveUsers
-    private constructor(
-        private val ids: List<String>?,
-        private val emails: List<String>?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+        private var validated: Boolean = false
 
-        private var hashCode: Int = 0
+        fun validate(): RemoveUsers = apply {
+            if (validated) {
+                return@apply
+            }
 
-        /** Ids of users to remove */
-        @JsonProperty("ids") fun ids(): List<String>? = ids
+            emails()
+            ids()
+            validated = true
+        }
 
-        /** Emails of users to remove */
-        @JsonProperty("emails") fun emails(): List<String>? = emails
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
 
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun toBuilder() = Builder().from(this)
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int = (emails.asKnown()?.size ?: 0) + (ids.asKnown()?.size ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -530,70 +1255,32 @@ constructor(
             }
 
             return other is RemoveUsers &&
-                this.ids == other.ids &&
-                this.emails == other.emails &&
-                this.additionalProperties == other.additionalProperties
+                emails == other.emails &&
+                ids == other.ids &&
+                additionalProperties == other.additionalProperties
         }
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        ids,
-                        emails,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
+        private val hashCode: Int by lazy { Objects.hash(emails, ids, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "RemoveUsers{ids=$ids, emails=$emails, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var ids: List<String>? = null
-            private var emails: List<String>? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(removeUsers: RemoveUsers) = apply {
-                this.ids = removeUsers.ids
-                this.emails = removeUsers.emails
-                additionalProperties(removeUsers.additionalProperties)
-            }
-
-            /** Ids of users to remove */
-            @JsonProperty("ids") fun ids(ids: List<String>) = apply { this.ids = ids }
-
-            /** Emails of users to remove */
-            @JsonProperty("emails")
-            fun emails(emails: List<String>) = apply { this.emails = emails }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            @JsonAnySetter
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun build(): RemoveUsers =
-                RemoveUsers(
-                    ids?.toUnmodifiable(),
-                    emails?.toUnmodifiable(),
-                    additionalProperties.toUnmodifiable(),
-                )
-        }
+            "RemoveUsers{emails=$emails, ids=$ids, additionalProperties=$additionalProperties}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is OrganizationMemberUpdateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
+    }
+
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
+
+    override fun toString() =
+        "OrganizationMemberUpdateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

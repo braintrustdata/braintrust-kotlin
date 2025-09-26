@@ -2,65 +2,425 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
+/**
+ * Create a new acl. If there is an existing acl with the same contents as the one specified in the
+ * request, will return the existing acl unmodified
+ */
 class AclCreateParams
-constructor(
-    private val objectId: String,
-    private val objectType: ObjectType,
-    private val groupId: String?,
-    private val permission: Permission?,
-    private val restrictObjectType: RestrictObjectType?,
-    private val roleId: String?,
-    private val userId: String?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+private constructor(
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun objectId(): String = objectId
+    /**
+     * The id of the object the ACL applies to
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun objectId(): String = body.objectId()
 
-    fun objectType(): ObjectType = objectType
+    /**
+     * The object type that the ACL applies to
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun objectType(): AclObjectType = body.objectType()
 
-    fun groupId(): String? = groupId
+    /**
+     * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be provided
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun groupId(): String? = body.groupId()
 
-    fun permission(): Permission? = permission
+    /**
+     * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun permission(): Permission? = body.permission()
 
-    fun restrictObjectType(): RestrictObjectType? = restrictObjectType
+    /**
+     * When setting a permission directly, optionally restricts the permission grant to just the
+     * specified object type. Cannot be set alongside a `role_id`.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun restrictObjectType(): AclObjectType? = body.restrictObjectType()
 
-    fun roleId(): String? = roleId
+    /**
+     * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun roleId(): String? = body.roleId()
 
-    fun userId(): String? = userId
+    /**
+     * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be provided
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun userId(): String? = body.userId()
 
-    internal fun getBody(): AclCreateBody {
-        return AclCreateBody(
-            objectId,
-            objectType,
-            groupId,
-            permission,
-            restrictObjectType,
-            roleId,
-            userId,
-            additionalBodyProperties,
-        )
+    /**
+     * Returns the raw JSON value of [objectId].
+     *
+     * Unlike [objectId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _objectId(): JsonField<String> = body._objectId()
+
+    /**
+     * Returns the raw JSON value of [objectType].
+     *
+     * Unlike [objectType], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _objectType(): JsonField<AclObjectType> = body._objectType()
+
+    /**
+     * Returns the raw JSON value of [groupId].
+     *
+     * Unlike [groupId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _groupId(): JsonField<String> = body._groupId()
+
+    /**
+     * Returns the raw JSON value of [permission].
+     *
+     * Unlike [permission], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _permission(): JsonField<Permission> = body._permission()
+
+    /**
+     * Returns the raw JSON value of [restrictObjectType].
+     *
+     * Unlike [restrictObjectType], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _restrictObjectType(): JsonField<AclObjectType> = body._restrictObjectType()
+
+    /**
+     * Returns the raw JSON value of [roleId].
+     *
+     * Unlike [roleId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _roleId(): JsonField<String> = body._roleId()
+
+    /**
+     * Returns the raw JSON value of [userId].
+     *
+     * Unlike [userId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _userId(): JsonField<String> = body._userId()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [AclCreateParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .objectId()
+         * .objectType()
+         * ```
+         */
+        fun builder() = Builder()
     }
 
-    internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
+    /** A builder for [AclCreateParams]. */
+    class Builder internal constructor() {
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
+
+        internal fun from(aclCreateParams: AclCreateParams) = apply {
+            body = aclCreateParams.body.toBuilder()
+            additionalHeaders = aclCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = aclCreateParams.additionalQueryParams.toBuilder()
+        }
+
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [objectId]
+         * - [objectType]
+         * - [groupId]
+         * - [permission]
+         * - [restrictObjectType]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /** The id of the object the ACL applies to */
+        fun objectId(objectId: String) = apply { body.objectId(objectId) }
+
+        /**
+         * Sets [Builder.objectId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.objectId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun objectId(objectId: JsonField<String>) = apply { body.objectId(objectId) }
+
+        /** The object type that the ACL applies to */
+        fun objectType(objectType: AclObjectType) = apply { body.objectType(objectType) }
+
+        /**
+         * Sets [Builder.objectType] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.objectType] with a well-typed [AclObjectType] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun objectType(objectType: JsonField<AclObjectType>) = apply { body.objectType(objectType) }
+
+        /**
+         * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
+         * provided
+         */
+        fun groupId(groupId: String?) = apply { body.groupId(groupId) }
+
+        /**
+         * Sets [Builder.groupId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.groupId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun groupId(groupId: JsonField<String>) = apply { body.groupId(groupId) }
+
+        /** Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided */
+        fun permission(permission: Permission?) = apply { body.permission(permission) }
+
+        /**
+         * Sets [Builder.permission] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.permission] with a well-typed [Permission] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun permission(permission: JsonField<Permission>) = apply { body.permission(permission) }
+
+        /**
+         * When setting a permission directly, optionally restricts the permission grant to just the
+         * specified object type. Cannot be set alongside a `role_id`.
+         */
+        fun restrictObjectType(restrictObjectType: AclObjectType?) = apply {
+            body.restrictObjectType(restrictObjectType)
+        }
+
+        /**
+         * Sets [Builder.restrictObjectType] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.restrictObjectType] with a well-typed [AclObjectType]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun restrictObjectType(restrictObjectType: JsonField<AclObjectType>) = apply {
+            body.restrictObjectType(restrictObjectType)
+        }
+
+        /**
+         * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided
+         */
+        fun roleId(roleId: String?) = apply { body.roleId(roleId) }
+
+        /**
+         * Sets [Builder.roleId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.roleId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun roleId(roleId: JsonField<String>) = apply { body.roleId(roleId) }
+
+        /**
+         * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
+         * provided
+         */
+        fun userId(userId: String?) = apply { body.userId(userId) }
+
+        /**
+         * Sets [Builder.userId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.userId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun userId(userId: JsonField<String>) = apply { body.userId(userId) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [AclCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .objectId()
+         * .objectType()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): AclCreateParams =
+            AclCreateParams(body.build(), additionalHeaders.build(), additionalQueryParams.build())
+    }
+
+    fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     /**
      * An ACL grants a certain permission or role to a certain user or group on an object.
@@ -72,221 +432,37 @@ constructor(
      * To restrict a grant to a particular sub-object, you may specify `restrict_object_type` in the
      * ACL, as part of a direct permission grant or as part of a role.
      */
-    @JsonDeserialize(builder = AclCreateBody.Builder::class)
-    @NoAutoDetect
-    class AclCreateBody
-    internal constructor(
-        private val objectId: String?,
-        private val objectType: ObjectType?,
-        private val groupId: String?,
-        private val permission: Permission?,
-        private val restrictObjectType: RestrictObjectType?,
-        private val roleId: String?,
-        private val userId: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val objectId: JsonField<String>,
+        private val objectType: JsonField<AclObjectType>,
+        private val groupId: JsonField<String>,
+        private val permission: JsonField<Permission>,
+        private val restrictObjectType: JsonField<AclObjectType>,
+        private val roleId: JsonField<String>,
+        private val userId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
-        private var hashCode: Int = 0
-
-        /** The id of the object the ACL applies to */
-        @JsonProperty("object_id") fun objectId(): String? = objectId
-
-        /** The object type that the ACL applies to */
-        @JsonProperty("object_type") fun objectType(): ObjectType? = objectType
-
-        /**
-         * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
-         * provided
-         */
-        @JsonProperty("group_id") fun groupId(): String? = groupId
-
-        /**
-         * Each permission permits a certain type of operation on an object in the system
-         *
-         * Permissions can be assigned to to objects on an individual basis, or grouped into roles
-         */
-        @JsonProperty("permission") fun permission(): Permission? = permission
-
-        /** The object type that the ACL applies to */
-        @JsonProperty("restrict_object_type")
-        fun restrictObjectType(): RestrictObjectType? = restrictObjectType
-
-        /**
-         * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided
-         */
-        @JsonProperty("role_id") fun roleId(): String? = roleId
-
-        /**
-         * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
-         * provided
-         */
-        @JsonProperty("user_id") fun userId(): String? = userId
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is AclCreateBody &&
-                this.objectId == other.objectId &&
-                this.objectType == other.objectType &&
-                this.groupId == other.groupId &&
-                this.permission == other.permission &&
-                this.restrictObjectType == other.restrictObjectType &&
-                this.roleId == other.roleId &&
-                this.userId == other.userId &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        objectId,
-                        objectType,
-                        groupId,
-                        permission,
-                        restrictObjectType,
-                        roleId,
-                        userId,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "AclCreateBody{objectId=$objectId, objectType=$objectType, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, userId=$userId, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var objectId: String? = null
-            private var objectType: ObjectType? = null
-            private var groupId: String? = null
-            private var permission: Permission? = null
-            private var restrictObjectType: RestrictObjectType? = null
-            private var roleId: String? = null
-            private var userId: String? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(aclCreateBody: AclCreateBody) = apply {
-                this.objectId = aclCreateBody.objectId
-                this.objectType = aclCreateBody.objectType
-                this.groupId = aclCreateBody.groupId
-                this.permission = aclCreateBody.permission
-                this.restrictObjectType = aclCreateBody.restrictObjectType
-                this.roleId = aclCreateBody.roleId
-                this.userId = aclCreateBody.userId
-                additionalProperties(aclCreateBody.additionalProperties)
-            }
-
-            /** The id of the object the ACL applies to */
+        @JsonCreator
+        private constructor(
             @JsonProperty("object_id")
-            fun objectId(objectId: String) = apply { this.objectId = objectId }
-
-            /** The object type that the ACL applies to */
+            @ExcludeMissing
+            objectId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("object_type")
-            fun objectType(objectType: ObjectType) = apply { this.objectType = objectType }
-
-            /**
-             * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
-             * provided
-             */
-            @JsonProperty("group_id")
-            fun groupId(groupId: String) = apply { this.groupId = groupId }
-
-            /**
-             * Each permission permits a certain type of operation on an object in the system
-             *
-             * Permissions can be assigned to to objects on an individual basis, or grouped into
-             * roles
-             */
+            @ExcludeMissing
+            objectType: JsonField<AclObjectType> = JsonMissing.of(),
+            @JsonProperty("group_id") @ExcludeMissing groupId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("permission")
-            fun permission(permission: Permission) = apply { this.permission = permission }
-
-            /** The object type that the ACL applies to */
+            @ExcludeMissing
+            permission: JsonField<Permission> = JsonMissing.of(),
             @JsonProperty("restrict_object_type")
-            fun restrictObjectType(restrictObjectType: RestrictObjectType) = apply {
-                this.restrictObjectType = restrictObjectType
-            }
-
-            /**
-             * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be
-             * provided
-             */
-            @JsonProperty("role_id") fun roleId(roleId: String) = apply { this.roleId = roleId }
-
-            /**
-             * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
-             * provided
-             */
-            @JsonProperty("user_id") fun userId(userId: String) = apply { this.userId = userId }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            @JsonAnySetter
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun build(): AclCreateBody =
-                AclCreateBody(
-                    checkNotNull(objectId) { "`objectId` is required but was not set" },
-                    checkNotNull(objectType) { "`objectType` is required but was not set" },
-                    groupId,
-                    permission,
-                    restrictObjectType,
-                    roleId,
-                    userId,
-                    additionalProperties.toUnmodifiable(),
-                )
-        }
-    }
-
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is AclCreateParams &&
-            this.objectId == other.objectId &&
-            this.objectType == other.objectType &&
-            this.groupId == other.groupId &&
-            this.permission == other.permission &&
-            this.restrictObjectType == other.restrictObjectType &&
-            this.roleId == other.roleId &&
-            this.userId == other.userId &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
+            @ExcludeMissing
+            restrictObjectType: JsonField<AclObjectType> = JsonMissing.of(),
+            @JsonProperty("role_id") @ExcludeMissing roleId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("user_id") @ExcludeMissing userId: JsonField<String> = JsonMissing.of(),
+        ) : this(
             objectId,
             objectType,
             groupId,
@@ -294,465 +470,412 @@ constructor(
             restrictObjectType,
             roleId,
             userId,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
+            mutableMapOf(),
         )
-    }
 
-    override fun toString() =
-        "AclCreateParams{objectId=$objectId, objectType=$objectType, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, userId=$userId, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
+        /**
+         * The id of the object the ACL applies to
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun objectId(): String = objectId.getRequired("object_id")
 
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    @NoAutoDetect
-    class Builder {
-
-        private var objectId: String? = null
-        private var objectType: ObjectType? = null
-        private var groupId: String? = null
-        private var permission: Permission? = null
-        private var restrictObjectType: RestrictObjectType? = null
-        private var roleId: String? = null
-        private var userId: String? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(aclCreateParams: AclCreateParams) = apply {
-            this.objectId = aclCreateParams.objectId
-            this.objectType = aclCreateParams.objectType
-            this.groupId = aclCreateParams.groupId
-            this.permission = aclCreateParams.permission
-            this.restrictObjectType = aclCreateParams.restrictObjectType
-            this.roleId = aclCreateParams.roleId
-            this.userId = aclCreateParams.userId
-            additionalQueryParams(aclCreateParams.additionalQueryParams)
-            additionalHeaders(aclCreateParams.additionalHeaders)
-            additionalBodyProperties(aclCreateParams.additionalBodyProperties)
-        }
-
-        /** The id of the object the ACL applies to */
-        fun objectId(objectId: String) = apply { this.objectId = objectId }
-
-        /** The object type that the ACL applies to */
-        fun objectType(objectType: ObjectType) = apply { this.objectType = objectType }
+        /**
+         * The object type that the ACL applies to
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun objectType(): AclObjectType = objectType.getRequired("object_type")
 
         /**
          * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
          * provided
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
-        fun groupId(groupId: String) = apply { this.groupId = groupId }
+        fun groupId(): String? = groupId.getNullable("group_id")
 
         /**
-         * Each permission permits a certain type of operation on an object in the system
+         * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
          *
-         * Permissions can be assigned to to objects on an individual basis, or grouped into roles
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
-        fun permission(permission: Permission) = apply { this.permission = permission }
+        fun permission(): Permission? = permission.getNullable("permission")
 
-        /** The object type that the ACL applies to */
-        fun restrictObjectType(restrictObjectType: RestrictObjectType) = apply {
-            this.restrictObjectType = restrictObjectType
-        }
+        /**
+         * When setting a permission directly, optionally restricts the permission grant to just the
+         * specified object type. Cannot be set alongside a `role_id`.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun restrictObjectType(): AclObjectType? =
+            restrictObjectType.getNullable("restrict_object_type")
 
         /**
          * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
-        fun roleId(roleId: String) = apply { this.roleId = roleId }
+        fun roleId(): String? = roleId.getNullable("role_id")
 
         /**
          * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
          * provided
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
-        fun userId(userId: String) = apply { this.userId = userId }
+        fun userId(): String? = userId.getNullable("user_id")
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
+        /**
+         * Returns the raw JSON value of [objectId].
+         *
+         * Unlike [objectId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("object_id") @ExcludeMissing fun _objectId(): JsonField<String> = objectId
+
+        /**
+         * Returns the raw JSON value of [objectType].
+         *
+         * Unlike [objectType], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("object_type")
+        @ExcludeMissing
+        fun _objectType(): JsonField<AclObjectType> = objectType
+
+        /**
+         * Returns the raw JSON value of [groupId].
+         *
+         * Unlike [groupId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("group_id") @ExcludeMissing fun _groupId(): JsonField<String> = groupId
+
+        /**
+         * Returns the raw JSON value of [permission].
+         *
+         * Unlike [permission], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("permission")
+        @ExcludeMissing
+        fun _permission(): JsonField<Permission> = permission
+
+        /**
+         * Returns the raw JSON value of [restrictObjectType].
+         *
+         * Unlike [restrictObjectType], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("restrict_object_type")
+        @ExcludeMissing
+        fun _restrictObjectType(): JsonField<AclObjectType> = restrictObjectType
+
+        /**
+         * Returns the raw JSON value of [roleId].
+         *
+         * Unlike [roleId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("role_id") @ExcludeMissing fun _roleId(): JsonField<String> = roleId
+
+        /**
+         * Returns the raw JSON value of [userId].
+         *
+         * Unlike [userId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
         }
 
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .objectId()
+             * .objectType()
+             * ```
+             */
+            fun builder() = Builder()
         }
 
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
 
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
+            private var objectId: JsonField<String>? = null
+            private var objectType: JsonField<AclObjectType>? = null
+            private var groupId: JsonField<String> = JsonMissing.of()
+            private var permission: JsonField<Permission> = JsonMissing.of()
+            private var restrictObjectType: JsonField<AclObjectType> = JsonMissing.of()
+            private var roleId: JsonField<String> = JsonMissing.of()
+            private var userId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
-        }
-
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
-        }
-
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            this.additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
+            internal fun from(body: Body) = apply {
+                objectId = body.objectId
+                objectType = body.objectType
+                groupId = body.groupId
+                permission = body.permission
+                restrictObjectType = body.restrictObjectType
+                roleId = body.roleId
+                userId = body.userId
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-        fun build(): AclCreateParams =
-            AclCreateParams(
-                checkNotNull(objectId) { "`objectId` is required but was not set" },
-                checkNotNull(objectType) { "`objectType` is required but was not set" },
+            /** The id of the object the ACL applies to */
+            fun objectId(objectId: String) = objectId(JsonField.of(objectId))
+
+            /**
+             * Sets [Builder.objectId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun objectId(objectId: JsonField<String>) = apply { this.objectId = objectId }
+
+            /** The object type that the ACL applies to */
+            fun objectType(objectType: AclObjectType) = objectType(JsonField.of(objectType))
+
+            /**
+             * Sets [Builder.objectType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectType] with a well-typed [AclObjectType] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun objectType(objectType: JsonField<AclObjectType>) = apply {
+                this.objectType = objectType
+            }
+
+            /**
+             * Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be
+             * provided
+             */
+            fun groupId(groupId: String?) = groupId(JsonField.ofNullable(groupId))
+
+            /**
+             * Sets [Builder.groupId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun groupId(groupId: JsonField<String>) = apply { this.groupId = groupId }
+
+            /**
+             * Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided
+             */
+            fun permission(permission: Permission?) = permission(JsonField.ofNullable(permission))
+
+            /**
+             * Sets [Builder.permission] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.permission] with a well-typed [Permission] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun permission(permission: JsonField<Permission>) = apply {
+                this.permission = permission
+            }
+
+            /**
+             * When setting a permission directly, optionally restricts the permission grant to just
+             * the specified object type. Cannot be set alongside a `role_id`.
+             */
+            fun restrictObjectType(restrictObjectType: AclObjectType?) =
+                restrictObjectType(JsonField.ofNullable(restrictObjectType))
+
+            /**
+             * Sets [Builder.restrictObjectType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.restrictObjectType] with a well-typed
+             * [AclObjectType] value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
+             */
+            fun restrictObjectType(restrictObjectType: JsonField<AclObjectType>) = apply {
+                this.restrictObjectType = restrictObjectType
+            }
+
+            /**
+             * Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be
+             * provided
+             */
+            fun roleId(roleId: String?) = roleId(JsonField.ofNullable(roleId))
+
+            /**
+             * Sets [Builder.roleId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.roleId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun roleId(roleId: JsonField<String>) = apply { this.roleId = roleId }
+
+            /**
+             * Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be
+             * provided
+             */
+            fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+            /**
+             * Sets [Builder.userId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.userId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun userId(userId: JsonField<String>) = apply { this.userId = userId }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .objectId()
+             * .objectType()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("objectId", objectId),
+                    checkRequired("objectType", objectType),
+                    groupId,
+                    permission,
+                    restrictObjectType,
+                    roleId,
+                    userId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            objectId()
+            objectType().validate()
+            groupId()
+            permission()?.validate()
+            restrictObjectType()?.validate()
+            roleId()
+            userId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (if (objectId.asKnown() == null) 0 else 1) +
+                (objectType.asKnown()?.validity() ?: 0) +
+                (if (groupId.asKnown() == null) 0 else 1) +
+                (permission.asKnown()?.validity() ?: 0) +
+                (restrictObjectType.asKnown()?.validity() ?: 0) +
+                (if (roleId.asKnown() == null) 0 else 1) +
+                (if (userId.asKnown() == null) 0 else 1)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Body &&
+                objectId == other.objectId &&
+                objectType == other.objectType &&
+                groupId == other.groupId &&
+                permission == other.permission &&
+                restrictObjectType == other.restrictObjectType &&
+                roleId == other.roleId &&
+                userId == other.userId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                objectId,
+                objectType,
                 groupId,
                 permission,
                 restrictObjectType,
                 roleId,
                 userId,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
+                additionalProperties,
             )
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{objectId=$objectId, objectType=$objectType, groupId=$groupId, permission=$permission, restrictObjectType=$restrictObjectType, roleId=$roleId, userId=$userId, additionalProperties=$additionalProperties}"
     }
 
-    class ObjectType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is ObjectType && this.value == other.value
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
         }
 
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            val ORGANIZATION = ObjectType(JsonField.of("organization"))
-
-            val PROJECT = ObjectType(JsonField.of("project"))
-
-            val EXPERIMENT = ObjectType(JsonField.of("experiment"))
-
-            val DATASET = ObjectType(JsonField.of("dataset"))
-
-            val PROMPT = ObjectType(JsonField.of("prompt"))
-
-            val PROMPT_SESSION = ObjectType(JsonField.of("prompt_session"))
-
-            val GROUP = ObjectType(JsonField.of("group"))
-
-            val ROLE = ObjectType(JsonField.of("role"))
-
-            val ORG_MEMBER = ObjectType(JsonField.of("org_member"))
-
-            val PROJECT_LOG = ObjectType(JsonField.of("project_log"))
-
-            val ORG_PROJECT = ObjectType(JsonField.of("org_project"))
-
-            fun of(value: String) = ObjectType(JsonField.of(value))
-        }
-
-        enum class Known {
-            ORGANIZATION,
-            PROJECT,
-            EXPERIMENT,
-            DATASET,
-            PROMPT,
-            PROMPT_SESSION,
-            GROUP,
-            ROLE,
-            ORG_MEMBER,
-            PROJECT_LOG,
-            ORG_PROJECT,
-        }
-
-        enum class Value {
-            ORGANIZATION,
-            PROJECT,
-            EXPERIMENT,
-            DATASET,
-            PROMPT,
-            PROMPT_SESSION,
-            GROUP,
-            ROLE,
-            ORG_MEMBER,
-            PROJECT_LOG,
-            ORG_PROJECT,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                ORGANIZATION -> Value.ORGANIZATION
-                PROJECT -> Value.PROJECT
-                EXPERIMENT -> Value.EXPERIMENT
-                DATASET -> Value.DATASET
-                PROMPT -> Value.PROMPT
-                PROMPT_SESSION -> Value.PROMPT_SESSION
-                GROUP -> Value.GROUP
-                ROLE -> Value.ROLE
-                ORG_MEMBER -> Value.ORG_MEMBER
-                PROJECT_LOG -> Value.PROJECT_LOG
-                ORG_PROJECT -> Value.ORG_PROJECT
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                ORGANIZATION -> Known.ORGANIZATION
-                PROJECT -> Known.PROJECT
-                EXPERIMENT -> Known.EXPERIMENT
-                DATASET -> Known.DATASET
-                PROMPT -> Known.PROMPT
-                PROMPT_SESSION -> Known.PROMPT_SESSION
-                GROUP -> Known.GROUP
-                ROLE -> Known.ROLE
-                ORG_MEMBER -> Known.ORG_MEMBER
-                PROJECT_LOG -> Known.PROJECT_LOG
-                ORG_PROJECT -> Known.ORG_PROJECT
-                else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
+        return other is AclCreateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    class Permission
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Permission && this.value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            val CREATE = Permission(JsonField.of("create"))
-
-            val READ = Permission(JsonField.of("read"))
-
-            val UPDATE = Permission(JsonField.of("update"))
-
-            val DELETE = Permission(JsonField.of("delete"))
-
-            val CREATE_ACLS = Permission(JsonField.of("create_acls"))
-
-            val READ_ACLS = Permission(JsonField.of("read_acls"))
-
-            val UPDATE_ACLS = Permission(JsonField.of("update_acls"))
-
-            val DELETE_ACLS = Permission(JsonField.of("delete_acls"))
-
-            fun of(value: String) = Permission(JsonField.of(value))
-        }
-
-        enum class Known {
-            CREATE,
-            READ,
-            UPDATE,
-            DELETE,
-            CREATE_ACLS,
-            READ_ACLS,
-            UPDATE_ACLS,
-            DELETE_ACLS,
-        }
-
-        enum class Value {
-            CREATE,
-            READ,
-            UPDATE,
-            DELETE,
-            CREATE_ACLS,
-            READ_ACLS,
-            UPDATE_ACLS,
-            DELETE_ACLS,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                CREATE -> Value.CREATE
-                READ -> Value.READ
-                UPDATE -> Value.UPDATE
-                DELETE -> Value.DELETE
-                CREATE_ACLS -> Value.CREATE_ACLS
-                READ_ACLS -> Value.READ_ACLS
-                UPDATE_ACLS -> Value.UPDATE_ACLS
-                DELETE_ACLS -> Value.DELETE_ACLS
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                CREATE -> Known.CREATE
-                READ -> Known.READ
-                UPDATE -> Known.UPDATE
-                DELETE -> Known.DELETE
-                CREATE_ACLS -> Known.CREATE_ACLS
-                READ_ACLS -> Known.READ_ACLS
-                UPDATE_ACLS -> Known.UPDATE_ACLS
-                DELETE_ACLS -> Known.DELETE_ACLS
-                else -> throw BraintrustInvalidDataException("Unknown Permission: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-    }
-
-    class RestrictObjectType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is RestrictObjectType && this.value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            val ORGANIZATION = RestrictObjectType(JsonField.of("organization"))
-
-            val PROJECT = RestrictObjectType(JsonField.of("project"))
-
-            val EXPERIMENT = RestrictObjectType(JsonField.of("experiment"))
-
-            val DATASET = RestrictObjectType(JsonField.of("dataset"))
-
-            val PROMPT = RestrictObjectType(JsonField.of("prompt"))
-
-            val PROMPT_SESSION = RestrictObjectType(JsonField.of("prompt_session"))
-
-            val GROUP = RestrictObjectType(JsonField.of("group"))
-
-            val ROLE = RestrictObjectType(JsonField.of("role"))
-
-            val ORG_MEMBER = RestrictObjectType(JsonField.of("org_member"))
-
-            val PROJECT_LOG = RestrictObjectType(JsonField.of("project_log"))
-
-            val ORG_PROJECT = RestrictObjectType(JsonField.of("org_project"))
-
-            fun of(value: String) = RestrictObjectType(JsonField.of(value))
-        }
-
-        enum class Known {
-            ORGANIZATION,
-            PROJECT,
-            EXPERIMENT,
-            DATASET,
-            PROMPT,
-            PROMPT_SESSION,
-            GROUP,
-            ROLE,
-            ORG_MEMBER,
-            PROJECT_LOG,
-            ORG_PROJECT,
-        }
-
-        enum class Value {
-            ORGANIZATION,
-            PROJECT,
-            EXPERIMENT,
-            DATASET,
-            PROMPT,
-            PROMPT_SESSION,
-            GROUP,
-            ROLE,
-            ORG_MEMBER,
-            PROJECT_LOG,
-            ORG_PROJECT,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                ORGANIZATION -> Value.ORGANIZATION
-                PROJECT -> Value.PROJECT
-                EXPERIMENT -> Value.EXPERIMENT
-                DATASET -> Value.DATASET
-                PROMPT -> Value.PROMPT
-                PROMPT_SESSION -> Value.PROMPT_SESSION
-                GROUP -> Value.GROUP
-                ROLE -> Value.ROLE
-                ORG_MEMBER -> Value.ORG_MEMBER
-                PROJECT_LOG -> Value.PROJECT_LOG
-                ORG_PROJECT -> Value.ORG_PROJECT
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                ORGANIZATION -> Known.ORGANIZATION
-                PROJECT -> Known.PROJECT
-                EXPERIMENT -> Known.EXPERIMENT
-                DATASET -> Known.DATASET
-                PROMPT -> Known.PROMPT
-                PROMPT_SESSION -> Known.PROMPT_SESSION
-                GROUP -> Known.GROUP
-                ROLE -> Known.ROLE
-                ORG_MEMBER -> Known.ORG_MEMBER
-                PROJECT_LOG -> Known.PROJECT_LOG
-                ORG_PROJECT -> Known.ORG_PROJECT
-                else -> throw BraintrustInvalidDataException("Unknown RestrictObjectType: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-    }
+    override fun toString() =
+        "AclCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

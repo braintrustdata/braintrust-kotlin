@@ -2,29 +2,107 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.AutoPager
+import com.braintrustdata.api.core.Page
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.ProjectService
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
+/** @see ProjectService.list */
 class ProjectListPage
 private constructor(
-    private val projectsService: ProjectService,
+    private val service: ProjectService,
     private val params: ProjectListParams,
-    private val response: Response,
-) {
+    private val response: ProjectListPageResponse,
+) : Page<Project> {
 
-    fun response(): Response = response
+    /**
+     * Delegates to [ProjectListPageResponse], but gracefully handles missing data.
+     *
+     * @see ProjectListPageResponse.objects
+     */
+    fun objects(): List<Project> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun objects(): List<Project> = response().objects()
+    override fun items(): List<Project> = objects()
+
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
+
+    fun nextPageParams(): ProjectListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
+        } else {
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
+        }
+
+    override fun nextPage(): ProjectListPage = service.list(nextPageParams())
+
+    fun autoPager(): AutoPager<Project> = AutoPager.from(this)
+
+    /** The parameters that were used to request this page. */
+    fun params(): ProjectListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): ProjectListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [ProjectListPage].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [ProjectListPage]. */
+    class Builder internal constructor() {
+
+        private var service: ProjectService? = null
+        private var params: ProjectListParams? = null
+        private var response: ProjectListPageResponse? = null
+
+        internal fun from(projectListPage: ProjectListPage) = apply {
+            service = projectListPage.service
+            params = projectListPage.params
+            response = projectListPage.response
+        }
+
+        fun service(service: ProjectService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: ProjectListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: ProjectListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [ProjectListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): ProjectListPage =
+            ProjectListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -32,142 +110,13 @@ private constructor(
         }
 
         return other is ProjectListPage &&
-            this.projectsService == other.projectsService &&
-            this.params == other.params &&
-            this.response == other.response
+            service == other.service &&
+            params == other.params &&
+            response == other.response
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            projectsService,
-            params,
-            response,
-        )
-    }
+    override fun hashCode(): Int = Objects.hash(service, params, response)
 
     override fun toString() =
-        "ProjectListPage{projectsService=$projectsService, params=$params, response=$response}"
-
-    fun hasNextPage(): Boolean {
-        return !objects().isEmpty()
-    }
-
-    fun getNextPageParams(): ProjectListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
-
-        return if (params.endingBefore() != null) {
-            ProjectListParams.builder().from(params).endingBefore(objects().first().id()).build()
-        } else {
-            ProjectListParams.builder().from(params).startingAfter(objects().last().id()).build()
-        }
-    }
-
-    fun getNextPage(): ProjectListPage? {
-        return getNextPageParams()?.let { projectsService.list(it) }
-    }
-
-    fun autoPager(): AutoPager = AutoPager(this)
-
-    companion object {
-
-        fun of(projectsService: ProjectService, params: ProjectListParams, response: Response) =
-            ProjectListPage(
-                projectsService,
-                params,
-                response,
-            )
-    }
-
-    @JsonDeserialize(builder = Response.Builder::class)
-    @NoAutoDetect
-    class Response
-    constructor(
-        private val objects: JsonField<List<Project>>,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
-
-        private var validated: Boolean = false
-
-        fun objects(): List<Project> = objects.getNullable("objects") ?: listOf()
-
-        @JsonProperty("objects") fun _objects(): JsonField<List<Project>>? = objects
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun validate(): Response = apply {
-            if (!validated) {
-                objects().map { it.validate() }
-                validated = true
-            }
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Response &&
-                this.objects == other.objects &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            return Objects.hash(objects, additionalProperties)
-        }
-
-        override fun toString() =
-            "ProjectListPage.Response{objects=$objects, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var objects: JsonField<List<Project>> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(page: Response) = apply {
-                this.objects = page.objects
-                this.additionalProperties.putAll(page.additionalProperties)
-            }
-
-            fun objects(objects: List<Project>) = objects(JsonField.of(objects))
-
-            @JsonProperty("objects")
-            fun objects(objects: JsonField<List<Project>>) = apply { this.objects = objects }
-
-            @JsonAnySetter
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            fun build() = Response(objects, additionalProperties.toUnmodifiable())
-        }
-    }
-
-    class AutoPager
-    constructor(
-        private val firstPage: ProjectListPage,
-    ) : Sequence<Project> {
-
-        override fun iterator(): Iterator<Project> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    yield(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
-    }
+        "ProjectListPage{service=$service, params=$params, response=$response}"
 }

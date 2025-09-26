@@ -2,15 +2,31 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class DataSummaryTest {
+internal class DataSummaryTest {
 
     @Test
-    fun createDataSummary() {
-        val dataSummary = DataSummary.builder().totalRecords(123L).build()
-        assertThat(dataSummary).isNotNull
-        assertThat(dataSummary.totalRecords()).isEqualTo(123L)
+    fun create() {
+        val dataSummary = DataSummary.builder().totalRecords(0L).build()
+
+        assertThat(dataSummary.totalRecords()).isEqualTo(0L)
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val dataSummary = DataSummary.builder().totalRecords(0L).build()
+
+        val roundtrippedDataSummary =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(dataSummary),
+                jacksonTypeRef<DataSummary>(),
+            )
+
+        assertThat(roundtrippedDataSummary).isEqualTo(dataSummary)
     }
 }

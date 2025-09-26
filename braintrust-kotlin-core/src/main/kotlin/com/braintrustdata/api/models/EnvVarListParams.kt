@@ -2,192 +2,217 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
 import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.toImmutable
 import java.util.Objects
 
+/**
+ * List out all env_vars. The env_vars are sorted by creation date, with the most recently-created
+ * env_vars coming first
+ */
 class EnvVarListParams
-constructor(
+private constructor(
     private val envVarName: String?,
     private val ids: Ids?,
     private val limit: Long?,
     private val objectId: String?,
-    private val objectType: ObjectType?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-) {
+    private val objectType: EnvVarObjectType?,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
+    /** Name of the env_var to search for */
     fun envVarName(): String? = envVarName
 
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     fun ids(): Ids? = ids
 
+    /** Limit the number of objects to return */
     fun limit(): Long? = limit
 
+    /** The id of the object the environment variable is scoped for */
     fun objectId(): String? = objectId
 
-    fun objectType(): ObjectType? = objectType
+    /** The type of the object the environment variable is scoped for */
+    fun objectType(): EnvVarObjectType? = objectType
 
-    internal fun getQueryParams(): Map<String, List<String>> {
-        val params = mutableMapOf<String, List<String>>()
-        this.envVarName?.let { params.put("env_var_name", listOf(it.toString())) }
-        this.ids?.let { params.put("ids", listOf(it.toString())) }
-        this.limit?.let { params.put("limit", listOf(it.toString())) }
-        this.objectId?.let { params.put("object_id", listOf(it.toString())) }
-        this.objectType?.let { params.put("object_type", listOf(it.toString())) }
-        params.putAll(additionalQueryParams)
-        return params.toUnmodifiable()
-    }
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is EnvVarListParams &&
-            this.envVarName == other.envVarName &&
-            this.ids == other.ids &&
-            this.limit == other.limit &&
-            this.objectId == other.objectId &&
-            this.objectType == other.objectType &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            envVarName,
-            ids,
-            limit,
-            objectId,
-            objectType,
-            additionalQueryParams,
-            additionalHeaders,
-        )
-    }
-
-    override fun toString() =
-        "EnvVarListParams{envVarName=$envVarName, ids=$ids, limit=$limit, objectId=$objectId, objectType=$objectType, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
 
     companion object {
 
+        fun none(): EnvVarListParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [EnvVarListParams]. */
         fun builder() = Builder()
     }
 
-    @NoAutoDetect
-    class Builder {
+    /** A builder for [EnvVarListParams]. */
+    class Builder internal constructor() {
 
         private var envVarName: String? = null
         private var ids: Ids? = null
         private var limit: Long? = null
         private var objectId: String? = null
-        private var objectType: ObjectType? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
+        private var objectType: EnvVarObjectType? = null
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(envVarListParams: EnvVarListParams) = apply {
-            this.envVarName = envVarListParams.envVarName
-            this.ids = envVarListParams.ids
-            this.limit = envVarListParams.limit
-            this.objectId = envVarListParams.objectId
-            this.objectType = envVarListParams.objectType
-            additionalQueryParams(envVarListParams.additionalQueryParams)
-            additionalHeaders(envVarListParams.additionalHeaders)
+            envVarName = envVarListParams.envVarName
+            ids = envVarListParams.ids
+            limit = envVarListParams.limit
+            objectId = envVarListParams.objectId
+            objectType = envVarListParams.objectType
+            additionalHeaders = envVarListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = envVarListParams.additionalQueryParams.toBuilder()
         }
 
         /** Name of the env_var to search for */
-        fun envVarName(envVarName: String) = apply { this.envVarName = envVarName }
+        fun envVarName(envVarName: String?) = apply { this.envVarName = envVarName }
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun ids(ids: Ids) = apply { this.ids = ids }
+        fun ids(ids: Ids?) = apply { this.ids = ids }
 
-        /**
-         * Filter search results to a particular set of object IDs. To specify a list of IDs,
-         * include the query param multiple times
-         */
-        fun ids(string: String) = apply { this.ids = Ids.ofString(string) }
+        /** Alias for calling [ids] with `Ids.ofString(string)`. */
+        fun ids(string: String) = ids(Ids.ofString(string))
 
-        /**
-         * Filter search results to a particular set of object IDs. To specify a list of IDs,
-         * include the query param multiple times
-         */
-        fun ids(strings: List<String>) = apply { this.ids = Ids.ofStrings(strings) }
+        /** Alias for calling [ids] with `Ids.ofStrings(strings)`. */
+        fun idsOfStrings(strings: List<String>) = ids(Ids.ofStrings(strings))
 
         /** Limit the number of objects to return */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long?) = apply { this.limit = limit }
+
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun limit(limit: Long) = limit(limit as Long?)
 
         /** The id of the object the environment variable is scoped for */
-        fun objectId(objectId: String) = apply { this.objectId = objectId }
+        fun objectId(objectId: String?) = apply { this.objectId = objectId }
 
         /** The type of the object the environment variable is scoped for */
-        fun objectType(objectType: ObjectType) = apply { this.objectType = objectType }
+        fun objectType(objectType: EnvVarObjectType?) = apply { this.objectType = objectType }
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
         }
 
         fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
             this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
+            putAllAdditionalHeaders(additionalHeaders)
         }
 
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
         }
 
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
         }
 
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
 
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [EnvVarListParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): EnvVarListParams =
             EnvVarListParams(
                 envVarName,
@@ -195,21 +220,44 @@ constructor(
                 limit,
                 objectId,
                 objectType,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
             )
     }
 
-    @JsonDeserialize(using = Ids.Deserializer::class)
-    @JsonSerialize(using = Ids.Serializer::class)
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                envVarName?.let { put("env_var_name", it) }
+                ids?.accept(
+                    object : Ids.Visitor<Unit> {
+                        override fun visitString(string: String) {
+                            put("ids", string)
+                        }
+
+                        override fun visitStrings(strings: List<String>) {
+                            put("ids", strings.joinToString(","))
+                        }
+                    }
+                )
+                limit?.let { put("limit", it.toString()) }
+                objectId?.let { put("object_id", it) }
+                objectType?.let { put("object_type", it.toString()) }
+                putAll(additionalQueryParams)
+            }
+            .build()
+
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     class Ids
     private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -223,156 +271,72 @@ constructor(
 
         fun asStrings(): List<String> = strings.getOrThrow("strings")
 
-        fun _json(): JsonValue? = _json
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
+                else -> throw IllegalStateException("Invalid Ids")
             }
-        }
-
-        fun validate(): Ids = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown Ids: $_json")
-                }
-                validated = true
-            }
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is Ids && this.string == other.string && this.strings == other.strings
+            return other is Ids && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int {
-            return Objects.hash(string, strings)
-        }
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 string != null -> "Ids{string=$string}"
                 strings != null -> "Ids{strings=$strings}"
-                _json != null -> "Ids{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Ids")
             }
-        }
 
         companion object {
 
             fun ofString(string: String) = Ids(string = string)
 
-            fun ofStrings(strings: List<String>) = Ids(strings = strings)
+            fun ofStrings(strings: List<String>) = Ids(strings = strings.toImmutable())
         }
 
+        /** An interface that defines how to map each variant of [Ids] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
-
-            fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown Ids: $json")
-            }
-        }
-
-        class Deserializer : BaseDeserializer<Ids>(Ids::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): Ids {
-                val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return Ids(string = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                    return Ids(strings = it, _json = json)
-                }
-
-                return Ids(_json = json)
-            }
-        }
-
-        class Serializer : BaseSerializer<Ids>(Ids::class) {
-
-            override fun serialize(
-                value: Ids,
-                generator: JsonGenerator,
-                provider: SerializerProvider
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Ids")
-                }
-            }
         }
     }
 
-    class ObjectType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is ObjectType && this.value == other.value
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
         }
 
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            val ORGANIZATION = ObjectType(JsonField.of("organization"))
-
-            val PROJECT = ObjectType(JsonField.of("project"))
-
-            val FUNCTION = ObjectType(JsonField.of("function"))
-
-            fun of(value: String) = ObjectType(JsonField.of(value))
-        }
-
-        enum class Known {
-            ORGANIZATION,
-            PROJECT,
-            FUNCTION,
-        }
-
-        enum class Value {
-            ORGANIZATION,
-            PROJECT,
-            FUNCTION,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                ORGANIZATION -> Value.ORGANIZATION
-                PROJECT -> Value.PROJECT
-                FUNCTION -> Value.FUNCTION
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                ORGANIZATION -> Known.ORGANIZATION
-                PROJECT -> Known.PROJECT
-                FUNCTION -> Known.FUNCTION
-                else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
+        return other is EnvVarListParams &&
+            envVarName == other.envVarName &&
+            ids == other.ids &&
+            limit == other.limit &&
+            objectId == other.objectId &&
+            objectType == other.objectType &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
+
+    override fun hashCode(): Int =
+        Objects.hash(
+            envVarName,
+            ids,
+            limit,
+            objectId,
+            objectType,
+            additionalHeaders,
+            additionalQueryParams,
+        )
+
+    override fun toString() =
+        "EnvVarListParams{envVarName=$envVarName, ids=$ids, limit=$limit, objectId=$objectId, objectType=$objectType, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

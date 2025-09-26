@@ -4,82 +4,110 @@ package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.annotation.JsonCreator
+import java.util.Collections
 import java.util.Objects
 
-@JsonDeserialize(builder = FunctionInvokeResponse.Builder::class)
-@NoAutoDetect
 class FunctionInvokeResponse
-private constructor(
-    private val additionalProperties: Map<String, JsonValue>,
-) {
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
+private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
 
-    private var validated: Boolean = false
+    @JsonCreator private constructor() : this(mutableMapOf())
 
-    private var hashCode: Int = 0
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun validate(): FunctionInvokeResponse = apply {
-        if (!validated) {
-            validated = true
-        }
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is FunctionInvokeResponse &&
-            this.additionalProperties == other.additionalProperties
-    }
-
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = Objects.hash(additionalProperties)
-        }
-        return hashCode
-    }
-
-    override fun toString() = "FunctionInvokeResponse{additionalProperties=$additionalProperties}"
-
     companion object {
 
+        /** Returns a mutable builder for constructing an instance of [FunctionInvokeResponse]. */
         fun builder() = Builder()
     }
 
-    class Builder {
+    /** A builder for [FunctionInvokeResponse]. */
+    class Builder internal constructor() {
 
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(functionInvokeResponse: FunctionInvokeResponse) = apply {
-            additionalProperties(functionInvokeResponse.additionalProperties)
+            additionalProperties = functionInvokeResponse.additionalProperties.toMutableMap()
         }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
         }
 
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [FunctionInvokeResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): FunctionInvokeResponse =
-            FunctionInvokeResponse(additionalProperties.toUnmodifiable())
+            FunctionInvokeResponse(additionalProperties.toMutableMap())
     }
+
+    private var validated: Boolean = false
+
+    fun validate(): FunctionInvokeResponse = apply {
+        if (validated) {
+            return@apply
+        }
+
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int = 0
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FunctionInvokeResponse && additionalProperties == other.additionalProperties
+    }
+
+    private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+    override fun hashCode(): Int = hashCode
+
+    override fun toString() = "FunctionInvokeResponse{additionalProperties=$additionalProperties}"
 }

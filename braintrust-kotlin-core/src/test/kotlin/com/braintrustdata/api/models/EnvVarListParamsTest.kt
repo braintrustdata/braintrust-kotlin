@@ -2,49 +2,54 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.http.QueryParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class EnvVarListParamsTest {
+internal class EnvVarListParamsTest {
 
     @Test
-    fun createEnvVarListParams() {
+    fun create() {
         EnvVarListParams.builder()
             .envVarName("env_var_name")
-            .ids(EnvVarListParams.Ids.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-            .limit(123L)
+            .ids("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .limit(0L)
             .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-            .objectType(EnvVarListParams.ObjectType.ORGANIZATION)
+            .objectType(EnvVarObjectType.ORGANIZATION)
             .build()
     }
 
     @Test
-    fun getQueryParams() {
+    fun queryParams() {
         val params =
             EnvVarListParams.builder()
                 .envVarName("env_var_name")
-                .ids(EnvVarListParams.Ids.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-                .limit(123L)
+                .ids("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .limit(0L)
                 .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .objectType(EnvVarListParams.ObjectType.ORGANIZATION)
+                .objectType(EnvVarObjectType.ORGANIZATION)
                 .build()
-        val expected = mutableMapOf<String, List<String>>()
-        expected.put("env_var_name", listOf("env_var_name"))
-        expected.put(
-            "ids",
-            listOf(EnvVarListParams.Ids.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").toString())
-        )
-        expected.put("limit", listOf("123"))
-        expected.put("object_id", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-        expected.put("object_type", listOf(EnvVarListParams.ObjectType.ORGANIZATION.toString()))
-        assertThat(params.getQueryParams()).isEqualTo(expected)
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams)
+            .isEqualTo(
+                QueryParams.builder()
+                    .put("env_var_name", "env_var_name")
+                    .put("ids", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .put("limit", "0")
+                    .put("object_id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .put("object_type", "organization")
+                    .build()
+            )
     }
 
     @Test
-    fun getQueryParamsWithoutOptionalFields() {
+    fun queryParamsWithoutOptionalFields() {
         val params = EnvVarListParams.builder().build()
-        val expected = mutableMapOf<String, List<String>>()
-        assertThat(params.getQueryParams()).isEqualTo(expected)
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams).isEqualTo(QueryParams.builder().build())
     }
 }

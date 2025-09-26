@@ -6,13 +6,16 @@ import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.checkKnown
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.time.OffsetDateTime
+import java.util.Collections
 import java.util.Objects
 
 /**
@@ -20,195 +23,276 @@ import java.util.Objects
  *
  * Groups can consist of individual users, as well as a set of groups they inherit from
  */
-@JsonDeserialize(builder = Group.Builder::class)
-@NoAutoDetect
 class Group
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
-    private val orgId: JsonField<String>,
-    private val userId: JsonField<String>,
-    private val created: JsonField<OffsetDateTime>,
     private val name: JsonField<String>,
-    private val description: JsonField<String>,
+    private val orgId: JsonField<String>,
+    private val created: JsonField<OffsetDateTime>,
     private val deletedAt: JsonField<OffsetDateTime>,
-    private val memberUsers: JsonField<List<String>>,
+    private val description: JsonField<String>,
     private val memberGroups: JsonField<List<String>>,
-    private val additionalProperties: Map<String, JsonValue>,
+    private val memberUsers: JsonField<List<String>>,
+    private val userId: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("org_id") @ExcludeMissing orgId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("created")
+        @ExcludeMissing
+        created: JsonField<OffsetDateTime> = JsonMissing.of(),
+        @JsonProperty("deleted_at")
+        @ExcludeMissing
+        deletedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
+        @JsonProperty("description")
+        @ExcludeMissing
+        description: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("member_groups")
+        @ExcludeMissing
+        memberGroups: JsonField<List<String>> = JsonMissing.of(),
+        @JsonProperty("member_users")
+        @ExcludeMissing
+        memberUsers: JsonField<List<String>> = JsonMissing.of(),
+        @JsonProperty("user_id") @ExcludeMissing userId: JsonField<String> = JsonMissing.of(),
+    ) : this(
+        id,
+        name,
+        orgId,
+        created,
+        deletedAt,
+        description,
+        memberGroups,
+        memberUsers,
+        userId,
+        mutableMapOf(),
+    )
 
-    private var hashCode: Int = 0
-
-    /** Unique identifier for the group */
+    /**
+     * Unique identifier for the group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
     /**
+     * Name of the group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun name(): String = name.getRequired("name")
+
+    /**
      * Unique id for the organization that the group belongs under
      *
      * It is forbidden to change the org after creating a group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun orgId(): String = orgId.getRequired("org_id")
 
-    /** Identifies the user who created the group */
-    fun userId(): String? = userId.getNullable("user_id")
-
-    /** Date of group creation */
+    /**
+     * Date of group creation
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun created(): OffsetDateTime? = created.getNullable("created")
 
-    /** Name of the group */
-    fun name(): String = name.getRequired("name")
-
-    /** Textual description of the group */
-    fun description(): String? = description.getNullable("description")
-
-    /** Date of group deletion, or null if the group is still active */
+    /**
+     * Date of group deletion, or null if the group is still active
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun deletedAt(): OffsetDateTime? = deletedAt.getNullable("deleted_at")
 
-    /** Ids of users which belong to this group */
-    fun memberUsers(): List<String>? = memberUsers.getNullable("member_users")
+    /**
+     * Textual description of the group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun description(): String? = description.getNullable("description")
 
     /**
      * Ids of the groups this group inherits from
      *
      * An inheriting group has all the users contained in its member groups, as well as all of their
      * inherited users
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun memberGroups(): List<String>? = memberGroups.getNullable("member_groups")
 
-    /** Unique identifier for the group */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    /**
+     * Ids of users which belong to this group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun memberUsers(): List<String>? = memberUsers.getNullable("member_users")
 
     /**
-     * Unique id for the organization that the group belongs under
+     * Identifies the user who created the group
      *
-     * It is forbidden to change the org after creating a group
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    @JsonProperty("org_id") @ExcludeMissing fun _orgId() = orgId
-
-    /** Identifies the user who created the group */
-    @JsonProperty("user_id") @ExcludeMissing fun _userId() = userId
-
-    /** Date of group creation */
-    @JsonProperty("created") @ExcludeMissing fun _created() = created
-
-    /** Name of the group */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
-
-    /** Textual description of the group */
-    @JsonProperty("description") @ExcludeMissing fun _description() = description
-
-    /** Date of group deletion, or null if the group is still active */
-    @JsonProperty("deleted_at") @ExcludeMissing fun _deletedAt() = deletedAt
-
-    /** Ids of users which belong to this group */
-    @JsonProperty("member_users") @ExcludeMissing fun _memberUsers() = memberUsers
+    fun userId(): String? = userId.getNullable("user_id")
 
     /**
-     * Ids of the groups this group inherits from
+     * Returns the raw JSON value of [id].
      *
-     * An inheriting group has all the users contained in its member groups, as well as all of their
-     * inherited users
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("member_groups") @ExcludeMissing fun _memberGroups() = memberGroups
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+    /**
+     * Returns the raw JSON value of [orgId].
+     *
+     * Unlike [orgId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("org_id") @ExcludeMissing fun _orgId(): JsonField<String> = orgId
+
+    /**
+     * Returns the raw JSON value of [created].
+     *
+     * Unlike [created], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<OffsetDateTime> = created
+
+    /**
+     * Returns the raw JSON value of [deletedAt].
+     *
+     * Unlike [deletedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("deleted_at")
+    @ExcludeMissing
+    fun _deletedAt(): JsonField<OffsetDateTime> = deletedAt
+
+    /**
+     * Returns the raw JSON value of [description].
+     *
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("description") @ExcludeMissing fun _description(): JsonField<String> = description
+
+    /**
+     * Returns the raw JSON value of [memberGroups].
+     *
+     * Unlike [memberGroups], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("member_groups")
+    @ExcludeMissing
+    fun _memberGroups(): JsonField<List<String>> = memberGroups
+
+    /**
+     * Returns the raw JSON value of [memberUsers].
+     *
+     * Unlike [memberUsers], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("member_users")
+    @ExcludeMissing
+    fun _memberUsers(): JsonField<List<String>> = memberUsers
+
+    /**
+     * Returns the raw JSON value of [userId].
+     *
+     * Unlike [userId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun validate(): Group = apply {
-        if (!validated) {
-            id()
-            orgId()
-            userId()
-            created()
-            name()
-            description()
-            deletedAt()
-            memberUsers()
-            memberGroups()
-            validated = true
-        }
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is Group &&
-            this.id == other.id &&
-            this.orgId == other.orgId &&
-            this.userId == other.userId &&
-            this.created == other.created &&
-            this.name == other.name &&
-            this.description == other.description &&
-            this.deletedAt == other.deletedAt &&
-            this.memberUsers == other.memberUsers &&
-            this.memberGroups == other.memberGroups &&
-            this.additionalProperties == other.additionalProperties
-    }
-
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    id,
-                    orgId,
-                    userId,
-                    created,
-                    name,
-                    description,
-                    deletedAt,
-                    memberUsers,
-                    memberGroups,
-                    additionalProperties,
-                )
-        }
-        return hashCode
-    }
-
-    override fun toString() =
-        "Group{id=$id, orgId=$orgId, userId=$userId, created=$created, name=$name, description=$description, deletedAt=$deletedAt, memberUsers=$memberUsers, memberGroups=$memberGroups, additionalProperties=$additionalProperties}"
-
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Group].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .name()
+         * .orgId()
+         * ```
+         */
         fun builder() = Builder()
     }
 
-    class Builder {
+    /** A builder for [Group]. */
+    class Builder internal constructor() {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var orgId: JsonField<String> = JsonMissing.of()
-        private var userId: JsonField<String> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var name: JsonField<String>? = null
+        private var orgId: JsonField<String>? = null
         private var created: JsonField<OffsetDateTime> = JsonMissing.of()
-        private var name: JsonField<String> = JsonMissing.of()
-        private var description: JsonField<String> = JsonMissing.of()
         private var deletedAt: JsonField<OffsetDateTime> = JsonMissing.of()
-        private var memberUsers: JsonField<List<String>> = JsonMissing.of()
-        private var memberGroups: JsonField<List<String>> = JsonMissing.of()
+        private var description: JsonField<String> = JsonMissing.of()
+        private var memberGroups: JsonField<MutableList<String>>? = null
+        private var memberUsers: JsonField<MutableList<String>>? = null
+        private var userId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(group: Group) = apply {
-            this.id = group.id
-            this.orgId = group.orgId
-            this.userId = group.userId
-            this.created = group.created
-            this.name = group.name
-            this.description = group.description
-            this.deletedAt = group.deletedAt
-            this.memberUsers = group.memberUsers
-            this.memberGroups = group.memberGroups
-            additionalProperties(group.additionalProperties)
+            id = group.id
+            name = group.name
+            orgId = group.orgId
+            created = group.created
+            deletedAt = group.deletedAt
+            description = group.description
+            memberGroups = group.memberGroups.map { it.toMutableList() }
+            memberUsers = group.memberUsers.map { it.toMutableList() }
+            userId = group.userId
+            additionalProperties = group.additionalProperties.toMutableMap()
         }
 
         /** Unique identifier for the group */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** Unique identifier for the group */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /** Name of the group */
+        fun name(name: String) = name(JsonField.of(name))
+
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { this.name = name }
 
         /**
          * Unique id for the organization that the group belongs under
@@ -218,63 +302,48 @@ private constructor(
         fun orgId(orgId: String) = orgId(JsonField.of(orgId))
 
         /**
-         * Unique id for the organization that the group belongs under
+         * Sets [Builder.orgId] to an arbitrary JSON value.
          *
-         * It is forbidden to change the org after creating a group
+         * You should usually call [Builder.orgId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        @JsonProperty("org_id")
-        @ExcludeMissing
         fun orgId(orgId: JsonField<String>) = apply { this.orgId = orgId }
 
-        /** Identifies the user who created the group */
-        fun userId(userId: String) = userId(JsonField.of(userId))
-
-        /** Identifies the user who created the group */
-        @JsonProperty("user_id")
-        @ExcludeMissing
-        fun userId(userId: JsonField<String>) = apply { this.userId = userId }
-
         /** Date of group creation */
-        fun created(created: OffsetDateTime) = created(JsonField.of(created))
+        fun created(created: OffsetDateTime?) = created(JsonField.ofNullable(created))
 
-        /** Date of group creation */
-        @JsonProperty("created")
-        @ExcludeMissing
+        /**
+         * Sets [Builder.created] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.created] with a well-typed [OffsetDateTime] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun created(created: JsonField<OffsetDateTime>) = apply { this.created = created }
 
-        /** Name of the group */
-        fun name(name: String) = name(JsonField.of(name))
-
-        /** Name of the group */
-        @JsonProperty("name")
-        @ExcludeMissing
-        fun name(name: JsonField<String>) = apply { this.name = name }
-
-        /** Textual description of the group */
-        fun description(description: String) = description(JsonField.of(description))
-
-        /** Textual description of the group */
-        @JsonProperty("description")
-        @ExcludeMissing
-        fun description(description: JsonField<String>) = apply { this.description = description }
-
         /** Date of group deletion, or null if the group is still active */
-        fun deletedAt(deletedAt: OffsetDateTime) = deletedAt(JsonField.of(deletedAt))
+        fun deletedAt(deletedAt: OffsetDateTime?) = deletedAt(JsonField.ofNullable(deletedAt))
 
-        /** Date of group deletion, or null if the group is still active */
-        @JsonProperty("deleted_at")
-        @ExcludeMissing
+        /**
+         * Sets [Builder.deletedAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.deletedAt] with a well-typed [OffsetDateTime] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun deletedAt(deletedAt: JsonField<OffsetDateTime>) = apply { this.deletedAt = deletedAt }
 
-        /** Ids of users which belong to this group */
-        fun memberUsers(memberUsers: List<String>) = memberUsers(JsonField.of(memberUsers))
+        /** Textual description of the group */
+        fun description(description: String?) = description(JsonField.ofNullable(description))
 
-        /** Ids of users which belong to this group */
-        @JsonProperty("member_users")
-        @ExcludeMissing
-        fun memberUsers(memberUsers: JsonField<List<String>>) = apply {
-            this.memberUsers = memberUsers
-        }
+        /**
+         * Sets [Builder.description] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun description(description: JsonField<String>) = apply { this.description = description }
 
         /**
          * Ids of the groups this group inherits from
@@ -282,46 +351,195 @@ private constructor(
          * An inheriting group has all the users contained in its member groups, as well as all of
          * their inherited users
          */
-        fun memberGroups(memberGroups: List<String>) = memberGroups(JsonField.of(memberGroups))
+        fun memberGroups(memberGroups: List<String>?) =
+            memberGroups(JsonField.ofNullable(memberGroups))
 
         /**
-         * Ids of the groups this group inherits from
+         * Sets [Builder.memberGroups] to an arbitrary JSON value.
          *
-         * An inheriting group has all the users contained in its member groups, as well as all of
-         * their inherited users
+         * You should usually call [Builder.memberGroups] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        @JsonProperty("member_groups")
-        @ExcludeMissing
         fun memberGroups(memberGroups: JsonField<List<String>>) = apply {
-            this.memberGroups = memberGroups
+            this.memberGroups = memberGroups.map { it.toMutableList() }
         }
+
+        /**
+         * Adds a single [String] to [memberGroups].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addMemberGroup(memberGroup: String) = apply {
+            memberGroups =
+                (memberGroups ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("memberGroups", it).add(memberGroup)
+                }
+        }
+
+        /** Ids of users which belong to this group */
+        fun memberUsers(memberUsers: List<String>?) = memberUsers(JsonField.ofNullable(memberUsers))
+
+        /**
+         * Sets [Builder.memberUsers] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.memberUsers] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun memberUsers(memberUsers: JsonField<List<String>>) = apply {
+            this.memberUsers = memberUsers.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [String] to [memberUsers].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addMemberUser(memberUser: String) = apply {
+            memberUsers =
+                (memberUsers ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("memberUsers", it).add(memberUser)
+                }
+        }
+
+        /** Identifies the user who created the group */
+        fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+        /**
+         * Sets [Builder.userId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.userId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun userId(userId: JsonField<String>) = apply { this.userId = userId }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
         }
 
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [Group].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .id()
+         * .name()
+         * .orgId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Group =
             Group(
-                id,
-                orgId,
-                userId,
+                checkRequired("id", id),
+                checkRequired("name", name),
+                checkRequired("orgId", orgId),
                 created,
-                name,
-                description,
                 deletedAt,
-                memberUsers.map { it.toUnmodifiable() },
-                memberGroups.map { it.toUnmodifiable() },
-                additionalProperties.toUnmodifiable(),
+                description,
+                (memberGroups ?: JsonMissing.of()).map { it.toImmutable() },
+                (memberUsers ?: JsonMissing.of()).map { it.toImmutable() },
+                userId,
+                additionalProperties.toMutableMap(),
             )
     }
+
+    private var validated: Boolean = false
+
+    fun validate(): Group = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        name()
+        orgId()
+        created()
+        deletedAt()
+        description()
+        memberGroups()
+        memberUsers()
+        userId()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (if (id.asKnown() == null) 0 else 1) +
+            (if (name.asKnown() == null) 0 else 1) +
+            (if (orgId.asKnown() == null) 0 else 1) +
+            (if (created.asKnown() == null) 0 else 1) +
+            (if (deletedAt.asKnown() == null) 0 else 1) +
+            (if (description.asKnown() == null) 0 else 1) +
+            (memberGroups.asKnown()?.size ?: 0) +
+            (memberUsers.asKnown()?.size ?: 0) +
+            (if (userId.asKnown() == null) 0 else 1)
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is Group &&
+            id == other.id &&
+            name == other.name &&
+            orgId == other.orgId &&
+            created == other.created &&
+            deletedAt == other.deletedAt &&
+            description == other.description &&
+            memberGroups == other.memberGroups &&
+            memberUsers == other.memberUsers &&
+            userId == other.userId &&
+            additionalProperties == other.additionalProperties
+    }
+
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            name,
+            orgId,
+            created,
+            deletedAt,
+            description,
+            memberGroups,
+            memberUsers,
+            userId,
+            additionalProperties,
+        )
+    }
+
+    override fun hashCode(): Int = hashCode
+
+    override fun toString() =
+        "Group{id=$id, name=$name, orgId=$orgId, created=$created, deletedAt=$deletedAt, description=$description, memberGroups=$memberGroups, memberUsers=$memberUsers, userId=$userId, additionalProperties=$additionalProperties}"
 }

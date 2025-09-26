@@ -2,14 +2,16 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ProjectScoreTest {
+internal class ProjectScoreTest {
 
     @Test
-    fun createProjectScore() {
+    fun create() {
         val projectScore =
             ProjectScore.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -17,32 +19,24 @@ class ProjectScoreTest {
                 .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .scoreType(ProjectScoreType.SLIDER)
                 .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .categories(
-                    ProjectScore.Categories.ofProjectScoreCategories(
-                        listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
-                    )
+                .categoriesOfCategorical(
+                    listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                 )
                 .config(
                     ProjectScoreConfig.builder()
-                        .destination(ProjectScoreConfig.Destination.EXPECTED)
+                        .destination("destination")
                         .multiSelect(true)
                         .online(
                             OnlineScoreConfig.builder()
-                                .samplingRate(1.0)
-                                .scorers(
-                                    listOf(
-                                        OnlineScoreConfig.Scorer.ofFunction(
-                                            OnlineScoreConfig.Scorer.Function.builder()
-                                                .id("id")
-                                                .type(
-                                                    OnlineScoreConfig.Scorer.Function.Type.FUNCTION
-                                                )
-                                                .build()
-                                        )
-                                    )
+                                .samplingRate(0.0)
+                                .addScorer(
+                                    OnlineScoreConfig.Scorer.Function.builder()
+                                        .id("id")
+                                        .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                        .build()
                                 )
                                 .applyToRootSpan(true)
-                                .applyToSpanNames(listOf("string"))
+                                .addApplyToSpanName("string")
                                 .build()
                         )
                         .build()
@@ -51,7 +45,7 @@ class ProjectScoreTest {
                 .description("description")
                 .position("position")
                 .build()
-        assertThat(projectScore).isNotNull
+
         assertThat(projectScore.id()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(projectScore.name()).isEqualTo("name")
         assertThat(projectScore.projectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -59,30 +53,26 @@ class ProjectScoreTest {
         assertThat(projectScore.userId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(projectScore.categories())
             .isEqualTo(
-                ProjectScore.Categories.ofProjectScoreCategories(
-                    listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
+                ProjectScore.Categories.ofCategorical(
+                    listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                 )
             )
         assertThat(projectScore.config())
             .isEqualTo(
                 ProjectScoreConfig.builder()
-                    .destination(ProjectScoreConfig.Destination.EXPECTED)
+                    .destination("destination")
                     .multiSelect(true)
                     .online(
                         OnlineScoreConfig.builder()
-                            .samplingRate(1.0)
-                            .scorers(
-                                listOf(
-                                    OnlineScoreConfig.Scorer.ofFunction(
-                                        OnlineScoreConfig.Scorer.Function.builder()
-                                            .id("id")
-                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
-                                            .build()
-                                    )
-                                )
+                            .samplingRate(0.0)
+                            .addScorer(
+                                OnlineScoreConfig.Scorer.Function.builder()
+                                    .id("id")
+                                    .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                    .build()
                             )
                             .applyToRootSpan(true)
-                            .applyToSpanNames(listOf("string"))
+                            .addApplyToSpanName("string")
                             .build()
                     )
                     .build()
@@ -91,5 +81,51 @@ class ProjectScoreTest {
             .isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(projectScore.description()).isEqualTo("description")
         assertThat(projectScore.position()).isEqualTo("position")
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val projectScore =
+            ProjectScore.builder()
+                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .name("name")
+                .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .scoreType(ProjectScoreType.SLIDER)
+                .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .categoriesOfCategorical(
+                    listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
+                )
+                .config(
+                    ProjectScoreConfig.builder()
+                        .destination("destination")
+                        .multiSelect(true)
+                        .online(
+                            OnlineScoreConfig.builder()
+                                .samplingRate(0.0)
+                                .addScorer(
+                                    OnlineScoreConfig.Scorer.Function.builder()
+                                        .id("id")
+                                        .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                        .build()
+                                )
+                                .applyToRootSpan(true)
+                                .addApplyToSpanName("string")
+                                .build()
+                        )
+                        .build()
+                )
+                .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .description("description")
+                .position("position")
+                .build()
+
+        val roundtrippedProjectScore =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(projectScore),
+                jacksonTypeRef<ProjectScore>(),
+            )
+
+        assertThat(roundtrippedProjectScore).isEqualTo(projectScore)
     }
 }

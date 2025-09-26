@@ -4,22 +4,24 @@ package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
-import com.braintrustdata.api.models.*
-import com.braintrustdata.api.models.ProjectTagListParams
+import com.braintrustdata.api.models.ProjectTagCreateParams
+import com.braintrustdata.api.models.ProjectTagReplaceParams
+import com.braintrustdata.api.models.ProjectTagUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class ProjectTagServiceTest {
+internal class ProjectTagServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectTagService = client.projectTags()
+
         val projectTag =
             projectTagService.create(
                 ProjectTagCreateParams.builder()
@@ -29,36 +31,33 @@ class ProjectTagServiceTest {
                     .description("description")
                     .build()
             )
-        println(projectTag)
+
         projectTag.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectTagService = client.projectTags()
-        val projectTag =
-            projectTagService.retrieve(
-                ProjectTagRetrieveParams.builder()
-                    .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
-        println(projectTag)
+
+        val projectTag = projectTagService.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
         projectTag.validate()
     }
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectTagService = client.projectTags()
+
         val projectTag =
             projectTagService.update(
                 ProjectTagUpdateParams.builder()
@@ -68,49 +67,47 @@ class ProjectTagServiceTest {
                     .name("name")
                     .build()
             )
-        println(projectTag)
+
         projectTag.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectTagService = client.projectTags()
-        val response = projectTagService.list(ProjectTagListParams.builder().build())
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        val page = projectTagService.list()
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectTagService = client.projectTags()
-        val projectTag =
-            projectTagService.delete(
-                ProjectTagDeleteParams.builder()
-                    .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
-        println(projectTag)
+
+        val projectTag = projectTagService.delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
         projectTag.validate()
     }
 
     @Test
-    fun callReplace() {
+    fun replace() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectTagService = client.projectTags()
+
         val projectTag =
             projectTagService.replace(
                 ProjectTagReplaceParams.builder()
@@ -120,7 +117,7 @@ class ProjectTagServiceTest {
                     .description("description")
                     .build()
             )
-        println(projectTag)
+
         projectTag.validate()
     }
 }

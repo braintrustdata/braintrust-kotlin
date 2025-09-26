@@ -2,40 +2,33 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ProjectScoreUpdateParamsTest {
+internal class ProjectScoreUpdateParamsTest {
 
     @Test
-    fun createProjectScoreUpdateParams() {
+    fun create() {
         ProjectScoreUpdateParams.builder()
             .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-            .categories(
-                ProjectScoreUpdateParams.Categories.ofProjectScoreCategories(
-                    listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
-                )
+            .categoriesOfCategorical(
+                listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
             )
             .config(
                 ProjectScoreConfig.builder()
-                    .destination(ProjectScoreConfig.Destination.EXPECTED)
+                    .destination("destination")
                     .multiSelect(true)
                     .online(
                         OnlineScoreConfig.builder()
-                            .samplingRate(1.0)
-                            .scorers(
-                                listOf(
-                                    OnlineScoreConfig.Scorer.ofFunction(
-                                        OnlineScoreConfig.Scorer.Function.builder()
-                                            .id("id")
-                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
-                                            .build()
-                                    )
-                                )
+                            .samplingRate(0.0)
+                            .addScorer(
+                                OnlineScoreConfig.Scorer.Function.builder()
+                                    .id("id")
+                                    .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                    .build()
                             )
                             .applyToRootSpan(true)
-                            .applyToSpanNames(listOf("string"))
+                            .addApplyToSpanName("string")
                             .build()
                     )
                     .build()
@@ -47,36 +40,40 @@ class ProjectScoreUpdateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun pathParams() {
         val params =
             ProjectScoreUpdateParams.builder()
                 .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .categories(
-                    ProjectScoreUpdateParams.Categories.ofProjectScoreCategories(
-                        listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
-                    )
+                .build()
+
+        assertThat(params._pathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
+    fun body() {
+        val params =
+            ProjectScoreUpdateParams.builder()
+                .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .categoriesOfCategorical(
+                    listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                 )
                 .config(
                     ProjectScoreConfig.builder()
-                        .destination(ProjectScoreConfig.Destination.EXPECTED)
+                        .destination("destination")
                         .multiSelect(true)
                         .online(
                             OnlineScoreConfig.builder()
-                                .samplingRate(1.0)
-                                .scorers(
-                                    listOf(
-                                        OnlineScoreConfig.Scorer.ofFunction(
-                                            OnlineScoreConfig.Scorer.Function.builder()
-                                                .id("id")
-                                                .type(
-                                                    OnlineScoreConfig.Scorer.Function.Type.FUNCTION
-                                                )
-                                                .build()
-                                        )
-                                    )
+                                .samplingRate(0.0)
+                                .addScorer(
+                                    OnlineScoreConfig.Scorer.Function.builder()
+                                        .id("id")
+                                        .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                        .build()
                                 )
                                 .applyToRootSpan(true)
-                                .applyToSpanNames(listOf("string"))
+                                .addApplyToSpanName("string")
                                 .build()
                         )
                         .build()
@@ -85,34 +82,31 @@ class ProjectScoreUpdateParamsTest {
                 .name("name")
                 .scoreType(ProjectScoreType.SLIDER)
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
+
+        val body = params._body()
+
         assertThat(body.categories())
             .isEqualTo(
-                ProjectScoreUpdateParams.Categories.ofProjectScoreCategories(
-                    listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
+                ProjectScoreUpdateParams.Categories.ofCategorical(
+                    listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                 )
             )
         assertThat(body.config())
             .isEqualTo(
                 ProjectScoreConfig.builder()
-                    .destination(ProjectScoreConfig.Destination.EXPECTED)
+                    .destination("destination")
                     .multiSelect(true)
                     .online(
                         OnlineScoreConfig.builder()
-                            .samplingRate(1.0)
-                            .scorers(
-                                listOf(
-                                    OnlineScoreConfig.Scorer.ofFunction(
-                                        OnlineScoreConfig.Scorer.Function.builder()
-                                            .id("id")
-                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
-                                            .build()
-                                    )
-                                )
+                            .samplingRate(0.0)
+                            .addScorer(
+                                OnlineScoreConfig.Scorer.Function.builder()
+                                    .id("id")
+                                    .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                    .build()
                             )
                             .applyToRootSpan(true)
-                            .applyToSpanNames(listOf("string"))
+                            .addApplyToSpanName("string")
                             .build()
                     )
                     .build()
@@ -123,25 +117,12 @@ class ProjectScoreUpdateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             ProjectScoreUpdateParams.builder()
                 .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
-    }
 
-    @Test
-    fun getPathParam() {
-        val params =
-            ProjectScoreUpdateParams.builder()
-                .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .build()
-        assertThat(params).isNotNull
-        // path param "projectScoreId"
-        assertThat(params.getPathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        val body = params._body()
     }
 }

@@ -2,123 +2,99 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class AclBatchUpdateParamsTest {
+internal class AclBatchUpdateParamsTest {
 
     @Test
-    fun createAclBatchUpdateParams() {
+    fun create() {
         AclBatchUpdateParams.builder()
-            .addAcls(
-                listOf(
-                    AclBatchUpdateParams.AddAcl.builder()
-                        .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .objectType(AclBatchUpdateParams.AddAcl.ObjectType.ORGANIZATION)
-                        .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .permission(AclBatchUpdateParams.AddAcl.Permission.CREATE)
-                        .restrictObjectType(
-                            AclBatchUpdateParams.AddAcl.RestrictObjectType.ORGANIZATION
-                        )
-                        .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .build()
-                )
+            .addAddAcl(
+                AclBatchUpdateParams.AddAcl.builder()
+                    .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .objectType(AclObjectType.ORGANIZATION)
+                    .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .permission(Permission.CREATE)
+                    .restrictObjectType(AclObjectType.ORGANIZATION)
+                    .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
             )
-            .removeAcls(
-                listOf(
-                    AclBatchUpdateParams.RemoveAcl.builder()
-                        .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .objectType(AclBatchUpdateParams.RemoveAcl.ObjectType.ORGANIZATION)
-                        .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .permission(AclBatchUpdateParams.RemoveAcl.Permission.CREATE)
-                        .restrictObjectType(
-                            AclBatchUpdateParams.RemoveAcl.RestrictObjectType.ORGANIZATION
-                        )
-                        .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .build()
-                )
+            .addRemoveAcl(
+                AclBatchUpdateParams.RemoveAcl.builder()
+                    .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .objectType(AclObjectType.ORGANIZATION)
+                    .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .permission(Permission.CREATE)
+                    .restrictObjectType(AclObjectType.ORGANIZATION)
+                    .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
             )
             .build()
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             AclBatchUpdateParams.builder()
-                .addAcls(
-                    listOf(
-                        AclBatchUpdateParams.AddAcl.builder()
-                            .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .objectType(AclBatchUpdateParams.AddAcl.ObjectType.ORGANIZATION)
-                            .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .permission(AclBatchUpdateParams.AddAcl.Permission.CREATE)
-                            .restrictObjectType(
-                                AclBatchUpdateParams.AddAcl.RestrictObjectType.ORGANIZATION
-                            )
-                            .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .build()
-                    )
-                )
-                .removeAcls(
-                    listOf(
-                        AclBatchUpdateParams.RemoveAcl.builder()
-                            .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .objectType(AclBatchUpdateParams.RemoveAcl.ObjectType.ORGANIZATION)
-                            .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .permission(AclBatchUpdateParams.RemoveAcl.Permission.CREATE)
-                            .restrictObjectType(
-                                AclBatchUpdateParams.RemoveAcl.RestrictObjectType.ORGANIZATION
-                            )
-                            .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .build()
-                    )
-                )
-                .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
-        assertThat(body.addAcls())
-            .isEqualTo(
-                listOf(
+                .addAddAcl(
                     AclBatchUpdateParams.AddAcl.builder()
                         .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .objectType(AclBatchUpdateParams.AddAcl.ObjectType.ORGANIZATION)
+                        .objectType(AclObjectType.ORGANIZATION)
                         .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .permission(AclBatchUpdateParams.AddAcl.Permission.CREATE)
-                        .restrictObjectType(
-                            AclBatchUpdateParams.AddAcl.RestrictObjectType.ORGANIZATION
-                        )
+                        .permission(Permission.CREATE)
+                        .restrictObjectType(AclObjectType.ORGANIZATION)
                         .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .build()
                 )
-            )
-        assertThat(body.removeAcls())
-            .isEqualTo(
-                listOf(
+                .addRemoveAcl(
                     AclBatchUpdateParams.RemoveAcl.builder()
                         .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .objectType(AclBatchUpdateParams.RemoveAcl.ObjectType.ORGANIZATION)
+                        .objectType(AclObjectType.ORGANIZATION)
                         .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .permission(AclBatchUpdateParams.RemoveAcl.Permission.CREATE)
-                        .restrictObjectType(
-                            AclBatchUpdateParams.RemoveAcl.RestrictObjectType.ORGANIZATION
-                        )
+                        .permission(Permission.CREATE)
+                        .restrictObjectType(AclObjectType.ORGANIZATION)
                         .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .build()
                 )
+                .build()
+
+        val body = params._body()
+
+        assertThat(body.addAcls())
+            .containsExactly(
+                AclBatchUpdateParams.AddAcl.builder()
+                    .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .objectType(AclObjectType.ORGANIZATION)
+                    .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .permission(Permission.CREATE)
+                    .restrictObjectType(AclObjectType.ORGANIZATION)
+                    .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
+            )
+        assertThat(body.removeAcls())
+            .containsExactly(
+                AclBatchUpdateParams.RemoveAcl.builder()
+                    .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .objectType(AclObjectType.ORGANIZATION)
+                    .groupId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .permission(Permission.CREATE)
+                    .restrictObjectType(AclObjectType.ORGANIZATION)
+                    .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
             )
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params = AclBatchUpdateParams.builder().build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
+
+        val body = params._body()
     }
 }

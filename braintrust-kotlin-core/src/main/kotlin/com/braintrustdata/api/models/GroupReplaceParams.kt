@@ -3,72 +3,186 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkKnown
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
+/**
+ * Create or replace group. If there is an existing group with the same name as the one specified in
+ * the request, will replace the existing group with the provided fields
+ */
 class GroupReplaceParams
-constructor(
-    private val name: String,
-    private val description: String?,
-    private val memberGroups: List<String>?,
-    private val memberUsers: List<String>?,
-    private val orgName: String?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+private constructor(
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun name(): String = name
+    /**
+     * Name of the group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun name(): String = body.name()
 
-    fun description(): String? = description
+    /**
+     * Textual description of the group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun description(): String? = body.description()
 
-    fun memberGroups(): List<String>? = memberGroups
+    /**
+     * Ids of the groups this group inherits from
+     *
+     * An inheriting group has all the users contained in its member groups, as well as all of their
+     * inherited users
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun memberGroups(): List<String>? = body.memberGroups()
 
-    fun memberUsers(): List<String>? = memberUsers
+    /**
+     * Ids of users which belong to this group
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun memberUsers(): List<String>? = body.memberUsers()
 
-    fun orgName(): String? = orgName
+    /**
+     * For nearly all users, this parameter should be unnecessary. But in the rare case that your
+     * API key belongs to multiple organizations, you may specify the name of the organization the
+     * group belongs in.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun orgName(): String? = body.orgName()
 
-    internal fun getBody(): GroupReplaceBody {
-        return GroupReplaceBody(
-            name,
-            description,
-            memberGroups,
-            memberUsers,
-            orgName,
-            additionalBodyProperties,
-        )
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _name(): JsonField<String> = body._name()
+
+    /**
+     * Returns the raw JSON value of [description].
+     *
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _description(): JsonField<String> = body._description()
+
+    /**
+     * Returns the raw JSON value of [memberGroups].
+     *
+     * Unlike [memberGroups], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _memberGroups(): JsonField<List<String>> = body._memberGroups()
+
+    /**
+     * Returns the raw JSON value of [memberUsers].
+     *
+     * Unlike [memberUsers], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _memberUsers(): JsonField<List<String>> = body._memberUsers()
+
+    /**
+     * Returns the raw JSON value of [orgName].
+     *
+     * Unlike [orgName], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _orgName(): JsonField<String> = body._orgName()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [GroupReplaceParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .name()
+         * ```
+         */
+        fun builder() = Builder()
     }
 
-    internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
+    /** A builder for [GroupReplaceParams]. */
+    class Builder internal constructor() {
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-    @JsonDeserialize(builder = GroupReplaceBody.Builder::class)
-    @NoAutoDetect
-    class GroupReplaceBody
-    internal constructor(
-        private val name: String?,
-        private val description: String?,
-        private val memberGroups: List<String>?,
-        private val memberUsers: List<String>?,
-        private val orgName: String?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+        internal fun from(groupReplaceParams: GroupReplaceParams) = apply {
+            body = groupReplaceParams.body.toBuilder()
+            additionalHeaders = groupReplaceParams.additionalHeaders.toBuilder()
+            additionalQueryParams = groupReplaceParams.additionalQueryParams.toBuilder()
+        }
 
-        private var hashCode: Int = 0
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [name]
+         * - [description]
+         * - [memberGroups]
+         * - [memberUsers]
+         * - [orgName]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** Name of the group */
-        @JsonProperty("name") fun name(): String? = name
+        fun name(name: String) = apply { body.name(name) }
+
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { body.name(name) }
 
         /** Textual description of the group */
-        @JsonProperty("description") fun description(): String? = description
+        fun description(description: String?) = apply { body.description(description) }
+
+        /**
+         * Sets [Builder.description] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun description(description: JsonField<String>) = apply { body.description(description) }
 
         /**
          * Ids of the groups this group inherits from
@@ -76,85 +190,387 @@ constructor(
          * An inheriting group has all the users contained in its member groups, as well as all of
          * their inherited users
          */
-        @JsonProperty("member_groups") fun memberGroups(): List<String>? = memberGroups
+        fun memberGroups(memberGroups: List<String>?) = apply { body.memberGroups(memberGroups) }
+
+        /**
+         * Sets [Builder.memberGroups] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.memberGroups] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun memberGroups(memberGroups: JsonField<List<String>>) = apply {
+            body.memberGroups(memberGroups)
+        }
+
+        /**
+         * Adds a single [String] to [memberGroups].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addMemberGroup(memberGroup: String) = apply { body.addMemberGroup(memberGroup) }
 
         /** Ids of users which belong to this group */
-        @JsonProperty("member_users") fun memberUsers(): List<String>? = memberUsers
+        fun memberUsers(memberUsers: List<String>?) = apply { body.memberUsers(memberUsers) }
+
+        /**
+         * Sets [Builder.memberUsers] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.memberUsers] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun memberUsers(memberUsers: JsonField<List<String>>) = apply {
+            body.memberUsers(memberUsers)
+        }
+
+        /**
+         * Adds a single [String] to [memberUsers].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addMemberUser(memberUser: String) = apply { body.addMemberUser(memberUser) }
 
         /**
          * For nearly all users, this parameter should be unnecessary. But in the rare case that
          * your API key belongs to multiple organizations, you may specify the name of the
          * organization the group belongs in.
          */
-        @JsonProperty("org_name") fun orgName(): String? = orgName
+        fun orgName(orgName: String?) = apply { body.orgName(orgName) }
+
+        /**
+         * Sets [Builder.orgName] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.orgName] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun orgName(orgName: JsonField<String>) = apply { body.orgName(orgName) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [GroupReplaceParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .name()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): GroupReplaceParams =
+            GroupReplaceParams(
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
+    fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val name: JsonField<String>,
+        private val description: JsonField<String>,
+        private val memberGroups: JsonField<List<String>>,
+        private val memberUsers: JsonField<List<String>>,
+        private val orgName: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("description")
+            @ExcludeMissing
+            description: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("member_groups")
+            @ExcludeMissing
+            memberGroups: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("member_users")
+            @ExcludeMissing
+            memberUsers: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("org_name") @ExcludeMissing orgName: JsonField<String> = JsonMissing.of(),
+        ) : this(name, description, memberGroups, memberUsers, orgName, mutableMapOf())
+
+        /**
+         * Name of the group
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun name(): String = name.getRequired("name")
+
+        /**
+         * Textual description of the group
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun description(): String? = description.getNullable("description")
+
+        /**
+         * Ids of the groups this group inherits from
+         *
+         * An inheriting group has all the users contained in its member groups, as well as all of
+         * their inherited users
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun memberGroups(): List<String>? = memberGroups.getNullable("member_groups")
+
+        /**
+         * Ids of users which belong to this group
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun memberUsers(): List<String>? = memberUsers.getNullable("member_users")
+
+        /**
+         * For nearly all users, this parameter should be unnecessary. But in the rare case that
+         * your API key belongs to multiple organizations, you may specify the name of the
+         * organization the group belongs in.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun orgName(): String? = orgName.getNullable("org_name")
+
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+        /**
+         * Returns the raw JSON value of [description].
+         *
+         * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("description")
+        @ExcludeMissing
+        fun _description(): JsonField<String> = description
+
+        /**
+         * Returns the raw JSON value of [memberGroups].
+         *
+         * Unlike [memberGroups], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("member_groups")
+        @ExcludeMissing
+        fun _memberGroups(): JsonField<List<String>> = memberGroups
+
+        /**
+         * Returns the raw JSON value of [memberUsers].
+         *
+         * Unlike [memberUsers], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("member_users")
+        @ExcludeMissing
+        fun _memberUsers(): JsonField<List<String>> = memberUsers
+
+        /**
+         * Returns the raw JSON value of [orgName].
+         *
+         * Unlike [orgName], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("org_name") @ExcludeMissing fun _orgName(): JsonField<String> = orgName
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is GroupReplaceBody &&
-                this.name == other.name &&
-                this.description == other.description &&
-                this.memberGroups == other.memberGroups &&
-                this.memberUsers == other.memberUsers &&
-                this.orgName == other.orgName &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        name,
-                        description,
-                        memberGroups,
-                        memberUsers,
-                        orgName,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "GroupReplaceBody{name=$name, description=$description, memberGroups=$memberGroups, memberUsers=$memberUsers, orgName=$orgName, additionalProperties=$additionalProperties}"
-
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .name()
+             * ```
+             */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
 
-            private var name: String? = null
-            private var description: String? = null
-            private var memberGroups: List<String>? = null
-            private var memberUsers: List<String>? = null
-            private var orgName: String? = null
+            private var name: JsonField<String>? = null
+            private var description: JsonField<String> = JsonMissing.of()
+            private var memberGroups: JsonField<MutableList<String>>? = null
+            private var memberUsers: JsonField<MutableList<String>>? = null
+            private var orgName: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(groupReplaceBody: GroupReplaceBody) = apply {
-                this.name = groupReplaceBody.name
-                this.description = groupReplaceBody.description
-                this.memberGroups = groupReplaceBody.memberGroups
-                this.memberUsers = groupReplaceBody.memberUsers
-                this.orgName = groupReplaceBody.orgName
-                additionalProperties(groupReplaceBody.additionalProperties)
+            internal fun from(body: Body) = apply {
+                name = body.name
+                description = body.description
+                memberGroups = body.memberGroups.map { it.toMutableList() }
+                memberUsers = body.memberUsers.map { it.toMutableList() }
+                orgName = body.orgName
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** Name of the group */
-            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+            fun name(name: String) = name(JsonField.of(name))
+
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /** Textual description of the group */
-            @JsonProperty("description")
-            fun description(description: String) = apply { this.description = description }
+            fun description(description: String?) = description(JsonField.ofNullable(description))
+
+            /**
+             * Sets [Builder.description] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.description] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun description(description: JsonField<String>) = apply {
+                this.description = description
+            }
 
             /**
              * Ids of the groups this group inherits from
@@ -162,54 +578,183 @@ constructor(
              * An inheriting group has all the users contained in its member groups, as well as all
              * of their inherited users
              */
-            @JsonProperty("member_groups")
-            fun memberGroups(memberGroups: List<String>) = apply {
-                this.memberGroups = memberGroups
+            fun memberGroups(memberGroups: List<String>?) =
+                memberGroups(JsonField.ofNullable(memberGroups))
+
+            /**
+             * Sets [Builder.memberGroups] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.memberGroups] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun memberGroups(memberGroups: JsonField<List<String>>) = apply {
+                this.memberGroups = memberGroups.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [memberGroups].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addMemberGroup(memberGroup: String) = apply {
+                memberGroups =
+                    (memberGroups ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("memberGroups", it).add(memberGroup)
+                    }
             }
 
             /** Ids of users which belong to this group */
-            @JsonProperty("member_users")
-            fun memberUsers(memberUsers: List<String>) = apply { this.memberUsers = memberUsers }
+            fun memberUsers(memberUsers: List<String>?) =
+                memberUsers(JsonField.ofNullable(memberUsers))
+
+            /**
+             * Sets [Builder.memberUsers] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.memberUsers] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun memberUsers(memberUsers: JsonField<List<String>>) = apply {
+                this.memberUsers = memberUsers.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [memberUsers].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addMemberUser(memberUser: String) = apply {
+                memberUsers =
+                    (memberUsers ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("memberUsers", it).add(memberUser)
+                    }
+            }
 
             /**
              * For nearly all users, this parameter should be unnecessary. But in the rare case that
              * your API key belongs to multiple organizations, you may specify the name of the
              * organization the group belongs in.
              */
-            @JsonProperty("org_name")
-            fun orgName(orgName: String) = apply { this.orgName = orgName }
+            fun orgName(orgName: String?) = orgName(JsonField.ofNullable(orgName))
+
+            /**
+             * Sets [Builder.orgName] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.orgName] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun orgName(orgName: JsonField<String>) = apply { this.orgName = orgName }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): GroupReplaceBody =
-                GroupReplaceBody(
-                    checkNotNull(name) { "`name` is required but was not set" },
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .name()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("name", name),
                     description,
-                    memberGroups?.toUnmodifiable(),
-                    memberUsers?.toUnmodifiable(),
+                    (memberGroups ?: JsonMissing.of()).map { it.toImmutable() },
+                    (memberUsers ?: JsonMissing.of()).map { it.toImmutable() },
                     orgName,
-                    additionalProperties.toUnmodifiable(),
+                    additionalProperties.toMutableMap(),
                 )
         }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            name()
+            description()
+            memberGroups()
+            memberUsers()
+            orgName()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (if (name.asKnown() == null) 0 else 1) +
+                (if (description.asKnown() == null) 0 else 1) +
+                (memberGroups.asKnown()?.size ?: 0) +
+                (memberUsers.asKnown()?.size ?: 0) +
+                (if (orgName.asKnown() == null) 0 else 1)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Body &&
+                name == other.name &&
+                description == other.description &&
+                memberGroups == other.memberGroups &&
+                memberUsers == other.memberUsers &&
+                orgName == other.orgName &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                name,
+                description,
+                memberGroups,
+                memberUsers,
+                orgName,
+                additionalProperties,
+            )
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{name=$name, description=$description, memberGroups=$memberGroups, memberUsers=$memberUsers, orgName=$orgName, additionalProperties=$additionalProperties}"
     }
-
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -217,167 +762,13 @@ constructor(
         }
 
         return other is GroupReplaceParams &&
-            this.name == other.name &&
-            this.description == other.description &&
-            this.memberGroups == other.memberGroups &&
-            this.memberUsers == other.memberUsers &&
-            this.orgName == other.orgName &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            name,
-            description,
-            memberGroups,
-            memberUsers,
-            orgName,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
-    }
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "GroupReplaceParams{name=$name, description=$description, memberGroups=$memberGroups, memberUsers=$memberUsers, orgName=$orgName, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
-
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    @NoAutoDetect
-    class Builder {
-
-        private var name: String? = null
-        private var description: String? = null
-        private var memberGroups: MutableList<String> = mutableListOf()
-        private var memberUsers: MutableList<String> = mutableListOf()
-        private var orgName: String? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(groupReplaceParams: GroupReplaceParams) = apply {
-            this.name = groupReplaceParams.name
-            this.description = groupReplaceParams.description
-            this.memberGroups(groupReplaceParams.memberGroups ?: listOf())
-            this.memberUsers(groupReplaceParams.memberUsers ?: listOf())
-            this.orgName = groupReplaceParams.orgName
-            additionalQueryParams(groupReplaceParams.additionalQueryParams)
-            additionalHeaders(groupReplaceParams.additionalHeaders)
-            additionalBodyProperties(groupReplaceParams.additionalBodyProperties)
-        }
-
-        /** Name of the group */
-        fun name(name: String) = apply { this.name = name }
-
-        /** Textual description of the group */
-        fun description(description: String) = apply { this.description = description }
-
-        /**
-         * Ids of the groups this group inherits from
-         *
-         * An inheriting group has all the users contained in its member groups, as well as all of
-         * their inherited users
-         */
-        fun memberGroups(memberGroups: List<String>) = apply {
-            this.memberGroups.clear()
-            this.memberGroups.addAll(memberGroups)
-        }
-
-        /**
-         * Ids of the groups this group inherits from
-         *
-         * An inheriting group has all the users contained in its member groups, as well as all of
-         * their inherited users
-         */
-        fun addMemberGroup(memberGroup: String) = apply { this.memberGroups.add(memberGroup) }
-
-        /** Ids of users which belong to this group */
-        fun memberUsers(memberUsers: List<String>) = apply {
-            this.memberUsers.clear()
-            this.memberUsers.addAll(memberUsers)
-        }
-
-        /** Ids of users which belong to this group */
-        fun addMemberUser(memberUser: String) = apply { this.memberUsers.add(memberUser) }
-
-        /**
-         * For nearly all users, this parameter should be unnecessary. But in the rare case that
-         * your API key belongs to multiple organizations, you may specify the name of the
-         * organization the group belongs in.
-         */
-        fun orgName(orgName: String) = apply { this.orgName = orgName }
-
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
-        }
-
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
-        }
-
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            this.additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
-
-        fun build(): GroupReplaceParams =
-            GroupReplaceParams(
-                checkNotNull(name) { "`name` is required but was not set" },
-                description,
-                if (memberGroups.size == 0) null else memberGroups.toUnmodifiable(),
-                if (memberUsers.size == 0) null else memberUsers.toUnmodifiable(),
-                orgName,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
-    }
+        "GroupReplaceParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

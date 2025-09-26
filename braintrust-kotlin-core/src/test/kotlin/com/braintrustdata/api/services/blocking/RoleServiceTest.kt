@@ -4,166 +4,147 @@ package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
-import com.braintrustdata.api.models.*
-import com.braintrustdata.api.models.RoleListParams
+import com.braintrustdata.api.models.AclObjectType
+import com.braintrustdata.api.models.Permission
+import com.braintrustdata.api.models.RoleCreateParams
+import com.braintrustdata.api.models.RoleReplaceParams
+import com.braintrustdata.api.models.RoleUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class RoleServiceTest {
+internal class RoleServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val roleService = client.roles()
+
         val role =
             roleService.create(
                 RoleCreateParams.builder()
-                    .name("name")
+                    .name("x")
                     .description("description")
-                    .memberPermissions(
-                        listOf(
-                            RoleCreateParams.MemberPermission.builder()
-                                .permission(RoleCreateParams.MemberPermission.Permission.CREATE)
-                                .restrictObjectType(
-                                    RoleCreateParams.MemberPermission.RestrictObjectType
-                                        .ORGANIZATION
-                                )
-                                .build()
-                        )
+                    .addMemberPermission(
+                        RoleCreateParams.MemberPermission.builder()
+                            .permission(Permission.CREATE)
+                            .restrictObjectType(AclObjectType.ORGANIZATION)
+                            .build()
                     )
-                    .memberRoles(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                    .addMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .orgName("org_name")
                     .build()
             )
-        println(role)
+
         role.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val roleService = client.roles()
-        val role =
-            roleService.retrieve(
-                RoleRetrieveParams.builder().roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
-            )
-        println(role)
+
+        val role = roleService.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
         role.validate()
     }
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val roleService = client.roles()
+
         val role =
             roleService.update(
                 RoleUpdateParams.builder()
                     .roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .addMemberPermissions(
-                        listOf(
-                            RoleUpdateParams.AddMemberPermission.builder()
-                                .permission(RoleUpdateParams.AddMemberPermission.Permission.CREATE)
-                                .restrictObjectType(
-                                    RoleUpdateParams.AddMemberPermission.RestrictObjectType
-                                        .ORGANIZATION
-                                )
-                                .build()
-                        )
+                    .addAddMemberPermission(
+                        RoleUpdateParams.AddMemberPermission.builder()
+                            .permission(Permission.CREATE)
+                            .restrictObjectType(AclObjectType.ORGANIZATION)
+                            .build()
                     )
-                    .addMemberRoles(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                    .addAddMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .description("description")
-                    .name("name")
-                    .removeMemberPermissions(
-                        listOf(
-                            RoleUpdateParams.RemoveMemberPermission.builder()
-                                .permission(
-                                    RoleUpdateParams.RemoveMemberPermission.Permission.CREATE
-                                )
-                                .restrictObjectType(
-                                    RoleUpdateParams.RemoveMemberPermission.RestrictObjectType
-                                        .ORGANIZATION
-                                )
-                                .build()
-                        )
+                    .name("x")
+                    .addRemoveMemberPermission(
+                        RoleUpdateParams.RemoveMemberPermission.builder()
+                            .permission(Permission.CREATE)
+                            .restrictObjectType(AclObjectType.ORGANIZATION)
+                            .build()
                     )
-                    .removeMemberRoles(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                    .addRemoveMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .build()
             )
-        println(role)
+
         role.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val roleService = client.roles()
-        val response = roleService.list(RoleListParams.builder().build())
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        val page = roleService.list()
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val roleService = client.roles()
-        val role =
-            roleService.delete(
-                RoleDeleteParams.builder().roleId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
-            )
-        println(role)
+
+        val role = roleService.delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
         role.validate()
     }
 
     @Test
-    fun callReplace() {
+    fun replace() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val roleService = client.roles()
+
         val role =
             roleService.replace(
                 RoleReplaceParams.builder()
-                    .name("name")
+                    .name("x")
                     .description("description")
-                    .memberPermissions(
-                        listOf(
-                            RoleReplaceParams.MemberPermission.builder()
-                                .permission(RoleReplaceParams.MemberPermission.Permission.CREATE)
-                                .restrictObjectType(
-                                    RoleReplaceParams.MemberPermission.RestrictObjectType
-                                        .ORGANIZATION
-                                )
-                                .build()
-                        )
+                    .addMemberPermission(
+                        RoleReplaceParams.MemberPermission.builder()
+                            .permission(Permission.CREATE)
+                            .restrictObjectType(AclObjectType.ORGANIZATION)
+                            .build()
                     )
-                    .memberRoles(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                    .addMemberRole("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .orgName("org_name")
                     .build()
             )
-        println(role)
+
         role.validate()
     }
 }

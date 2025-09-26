@@ -1,29 +1,107 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.braintrustdata.api.services.blocking
 
+import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.User
 import com.braintrustdata.api.models.UserListPage
 import com.braintrustdata.api.models.UserListParams
 import com.braintrustdata.api.models.UserRetrieveParams
+import com.google.errorprone.annotations.MustBeClosed
 
 interface UserService {
 
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: (ClientOptions.Builder) -> Unit): UserService
+
     /** Get a user object by its id */
     fun retrieve(
+        userId: String,
+        params: UserRetrieveParams = UserRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): User = retrieve(params.toBuilder().userId(userId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(
         params: UserRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): User
+
+    /** @see retrieve */
+    fun retrieve(userId: String, requestOptions: RequestOptions): User =
+        retrieve(userId, UserRetrieveParams.none(), requestOptions)
 
     /**
      * List out all users. The users are sorted by creation date, with the most recently-created
      * users coming first
      */
     fun list(
-        params: UserListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        params: UserListParams = UserListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): UserListPage
+
+    /** @see list */
+    fun list(requestOptions: RequestOptions): UserListPage =
+        list(UserListParams.none(), requestOptions)
+
+    /** A view of [UserService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: (ClientOptions.Builder) -> Unit): UserService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `get /v1/user/{user_id}`, but is otherwise the same as
+         * [UserService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(
+            userId: String,
+            params: UserRetrieveParams = UserRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<User> =
+            retrieve(params.toBuilder().userId(userId).build(), requestOptions)
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            params: UserRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<User>
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(userId: String, requestOptions: RequestOptions): HttpResponseFor<User> =
+            retrieve(userId, UserRetrieveParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /v1/user`, but is otherwise the same as
+         * [UserService.list].
+         */
+        @MustBeClosed
+        fun list(
+            params: UserListParams = UserListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<UserListPage>
+
+        /** @see list */
+        @MustBeClosed
+        fun list(requestOptions: RequestOptions): HttpResponseFor<UserListPage> =
+            list(UserListParams.none(), requestOptions)
+    }
 }

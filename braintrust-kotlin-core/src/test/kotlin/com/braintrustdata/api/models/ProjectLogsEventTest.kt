@@ -2,15 +2,17 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ProjectLogsEventTest {
+internal class ProjectLogsEventTest {
 
     @Test
-    fun createProjectLogsEvent() {
+    fun create() {
         val projectLogsEvent =
             ProjectLogsEvent.builder()
                 .id("id")
@@ -25,34 +27,46 @@ class ProjectLogsEventTest {
                     ProjectLogsEvent.Context.builder()
                         .callerFilename("caller_filename")
                         .callerFunctionname("caller_functionname")
-                        .callerLineno(123L)
+                        .callerLineno(0L)
                         .build()
                 )
-                .error(JsonNull.of())
-                .expected(JsonNull.of())
-                .input(JsonNull.of())
-                .metadata(ProjectLogsEvent.Metadata.builder().build())
+                .error(JsonValue.from(mapOf<String, Any>()))
+                .expected(JsonValue.from(mapOf<String, Any>()))
+                .input(JsonValue.from(mapOf<String, Any>()))
+                .isRoot(true)
+                .metadata(ProjectLogsEvent.Metadata.builder().model("model").build())
                 .metrics(
                     ProjectLogsEvent.Metrics.builder()
-                        .completionTokens(123L)
-                        .end(42.23)
-                        .promptTokens(123L)
-                        .start(42.23)
-                        .tokens(123L)
+                        .callerFilename(JsonValue.from(mapOf<String, Any>()))
+                        .callerFunctionname(JsonValue.from(mapOf<String, Any>()))
+                        .callerLineno(JsonValue.from(mapOf<String, Any>()))
+                        .completionTokens(0L)
+                        .end(0.0)
+                        .promptTokens(0L)
+                        .start(0.0)
+                        .tokens(0L)
                         .build()
                 )
-                .output(JsonNull.of())
-                .scores(ProjectLogsEvent.Scores.builder().build())
-                .spanAttributes(
-                    ProjectLogsEvent.SpanAttributes.builder()
-                        .name("name")
-                        .type(ProjectLogsEvent.SpanAttributes.Type.LLM)
+                .origin(
+                    ObjectReference.builder()
+                        .id("id")
+                        ._xactId("_xact_id")
+                        .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .objectType(ObjectReference.ObjectType.EXPERIMENT)
+                        .created("created")
                         .build()
                 )
-                .spanParents(listOf("string"))
-                .tags(listOf("string"))
+                .output(JsonValue.from(mapOf<String, Any>()))
+                .scores(
+                    ProjectLogsEvent.Scores.builder()
+                        .putAdditionalProperty("foo", JsonValue.from(0))
+                        .build()
+                )
+                .spanAttributes(SpanAttributes.builder().name("name").type(SpanType.LLM).build())
+                .addSpanParent("string")
+                .addTag("string")
                 .build()
-        assertThat(projectLogsEvent).isNotNull
+
         assertThat(projectLogsEvent.id()).isEqualTo("id")
         assertThat(projectLogsEvent._xactId()).isEqualTo("_xact_id")
         assertThat(projectLogsEvent.created())
@@ -67,34 +81,114 @@ class ProjectLogsEventTest {
                 ProjectLogsEvent.Context.builder()
                     .callerFilename("caller_filename")
                     .callerFunctionname("caller_functionname")
-                    .callerLineno(123L)
+                    .callerLineno(0L)
                     .build()
             )
-        assertThat(projectLogsEvent._error()).isEqualTo(JsonNull.of())
-        assertThat(projectLogsEvent._expected()).isEqualTo(JsonNull.of())
-        assertThat(projectLogsEvent._input()).isEqualTo(JsonNull.of())
+        assertThat(projectLogsEvent._error()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(projectLogsEvent._expected()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(projectLogsEvent._input()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(projectLogsEvent.isRoot()).isEqualTo(true)
         assertThat(projectLogsEvent.metadata())
-            .isEqualTo(ProjectLogsEvent.Metadata.builder().build())
+            .isEqualTo(ProjectLogsEvent.Metadata.builder().model("model").build())
         assertThat(projectLogsEvent.metrics())
             .isEqualTo(
                 ProjectLogsEvent.Metrics.builder()
-                    .completionTokens(123L)
-                    .end(42.23)
-                    .promptTokens(123L)
-                    .start(42.23)
-                    .tokens(123L)
+                    .callerFilename(JsonValue.from(mapOf<String, Any>()))
+                    .callerFunctionname(JsonValue.from(mapOf<String, Any>()))
+                    .callerLineno(JsonValue.from(mapOf<String, Any>()))
+                    .completionTokens(0L)
+                    .end(0.0)
+                    .promptTokens(0L)
+                    .start(0.0)
+                    .tokens(0L)
                     .build()
             )
-        assertThat(projectLogsEvent._output()).isEqualTo(JsonNull.of())
-        assertThat(projectLogsEvent.scores()).isEqualTo(ProjectLogsEvent.Scores.builder().build())
-        assertThat(projectLogsEvent.spanAttributes())
+        assertThat(projectLogsEvent.origin())
             .isEqualTo(
-                ProjectLogsEvent.SpanAttributes.builder()
-                    .name("name")
-                    .type(ProjectLogsEvent.SpanAttributes.Type.LLM)
+                ObjectReference.builder()
+                    .id("id")
+                    ._xactId("_xact_id")
+                    .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .objectType(ObjectReference.ObjectType.EXPERIMENT)
+                    .created("created")
                     .build()
             )
+        assertThat(projectLogsEvent._output()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(projectLogsEvent.scores())
+            .isEqualTo(
+                ProjectLogsEvent.Scores.builder()
+                    .putAdditionalProperty("foo", JsonValue.from(0))
+                    .build()
+            )
+        assertThat(projectLogsEvent.spanAttributes())
+            .isEqualTo(SpanAttributes.builder().name("name").type(SpanType.LLM).build())
         assertThat(projectLogsEvent.spanParents()).containsExactly("string")
         assertThat(projectLogsEvent.tags()).containsExactly("string")
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val projectLogsEvent =
+            ProjectLogsEvent.builder()
+                .id("id")
+                ._xactId("_xact_id")
+                .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .logId(ProjectLogsEvent.LogId.G)
+                .orgId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .rootSpanId("root_span_id")
+                .spanId("span_id")
+                .context(
+                    ProjectLogsEvent.Context.builder()
+                        .callerFilename("caller_filename")
+                        .callerFunctionname("caller_functionname")
+                        .callerLineno(0L)
+                        .build()
+                )
+                .error(JsonValue.from(mapOf<String, Any>()))
+                .expected(JsonValue.from(mapOf<String, Any>()))
+                .input(JsonValue.from(mapOf<String, Any>()))
+                .isRoot(true)
+                .metadata(ProjectLogsEvent.Metadata.builder().model("model").build())
+                .metrics(
+                    ProjectLogsEvent.Metrics.builder()
+                        .callerFilename(JsonValue.from(mapOf<String, Any>()))
+                        .callerFunctionname(JsonValue.from(mapOf<String, Any>()))
+                        .callerLineno(JsonValue.from(mapOf<String, Any>()))
+                        .completionTokens(0L)
+                        .end(0.0)
+                        .promptTokens(0L)
+                        .start(0.0)
+                        .tokens(0L)
+                        .build()
+                )
+                .origin(
+                    ObjectReference.builder()
+                        .id("id")
+                        ._xactId("_xact_id")
+                        .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .objectType(ObjectReference.ObjectType.EXPERIMENT)
+                        .created("created")
+                        .build()
+                )
+                .output(JsonValue.from(mapOf<String, Any>()))
+                .scores(
+                    ProjectLogsEvent.Scores.builder()
+                        .putAdditionalProperty("foo", JsonValue.from(0))
+                        .build()
+                )
+                .spanAttributes(SpanAttributes.builder().name("name").type(SpanType.LLM).build())
+                .addSpanParent("string")
+                .addTag("string")
+                .build()
+
+        val roundtrippedProjectLogsEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(projectLogsEvent),
+                jacksonTypeRef<ProjectLogsEvent>(),
+            )
+
+        assertThat(roundtrippedProjectLogsEvent).isEqualTo(projectLogsEvent)
     }
 }

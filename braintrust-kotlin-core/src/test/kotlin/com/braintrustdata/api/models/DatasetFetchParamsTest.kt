@@ -2,17 +2,17 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.http.QueryParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class DatasetFetchParamsTest {
+internal class DatasetFetchParamsTest {
 
     @Test
-    fun createDatasetFetchParams() {
+    fun create() {
         DatasetFetchParams.builder()
             .datasetId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-            .limit(123L)
+            .limit(0L)
             .maxRootSpanId("max_root_span_id")
             .maxXactId("max_xact_id")
             .version("version")
@@ -20,39 +20,46 @@ class DatasetFetchParamsTest {
     }
 
     @Test
-    fun getQueryParams() {
+    fun pathParams() {
+        val params =
+            DatasetFetchParams.builder().datasetId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+
+        assertThat(params._pathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
+    fun queryParams() {
         val params =
             DatasetFetchParams.builder()
                 .datasetId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .limit(123L)
+                .limit(0L)
                 .maxRootSpanId("max_root_span_id")
                 .maxXactId("max_xact_id")
                 .version("version")
                 .build()
-        val expected = mutableMapOf<String, List<String>>()
-        expected.put("limit", listOf("123"))
-        expected.put("max_root_span_id", listOf("max_root_span_id"))
-        expected.put("max_xact_id", listOf("max_xact_id"))
-        expected.put("version", listOf("version"))
-        assertThat(params.getQueryParams()).isEqualTo(expected)
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams)
+            .isEqualTo(
+                QueryParams.builder()
+                    .put("limit", "0")
+                    .put("max_root_span_id", "max_root_span_id")
+                    .put("max_xact_id", "max_xact_id")
+                    .put("version", "version")
+                    .build()
+            )
     }
 
     @Test
-    fun getQueryParamsWithoutOptionalFields() {
+    fun queryParamsWithoutOptionalFields() {
         val params =
             DatasetFetchParams.builder().datasetId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
-        val expected = mutableMapOf<String, List<String>>()
-        assertThat(params.getQueryParams()).isEqualTo(expected)
-    }
 
-    @Test
-    fun getPathParam() {
-        val params =
-            DatasetFetchParams.builder().datasetId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
-        assertThat(params).isNotNull
-        // path param "datasetId"
-        assertThat(params.getPathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams).isEqualTo(QueryParams.builder().build())
     }
 }

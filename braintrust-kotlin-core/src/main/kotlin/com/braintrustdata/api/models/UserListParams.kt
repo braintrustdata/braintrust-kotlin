@@ -2,25 +2,19 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
 import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.toImmutable
 import java.util.Objects
 
+/**
+ * List out all users. The users are sorted by creation date, with the most recently-created users
+ * coming first
+ */
 class UserListParams
-constructor(
+private constructor(
     private val email: Email?,
     private val endingBefore: String?,
     private val familyName: FamilyName?,
@@ -29,91 +23,76 @@ constructor(
     private val limit: Long?,
     private val orgName: String?,
     private val startingAfter: String?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-) {
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
+    /**
+     * Email of the user to search for. You may pass the param multiple times to filter for more
+     * than one email
+     */
     fun email(): Email? = email
 
+    /**
+     * Pagination cursor id.
+     *
+     * For example, if the initial item in the last page you fetched had an id of `foo`, pass
+     * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
+     * `starting_after` and `ending_before`
+     */
     fun endingBefore(): String? = endingBefore
 
+    /**
+     * Family name of the user to search for. You may pass the param multiple times to filter for
+     * more than one family name
+     */
     fun familyName(): FamilyName? = familyName
 
+    /**
+     * Given name of the user to search for. You may pass the param multiple times to filter for
+     * more than one given name
+     */
     fun givenName(): GivenName? = givenName
 
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     fun ids(): Ids? = ids
 
+    /** Limit the number of objects to return */
     fun limit(): Long? = limit
 
+    /** Filter search results to within a particular organization */
     fun orgName(): String? = orgName
 
+    /**
+     * Pagination cursor id.
+     *
+     * For example, if the final item in the last page you fetched had an id of `foo`, pass
+     * `starting_after=foo` to fetch the next page. Note: you may only pass one of `starting_after`
+     * and `ending_before`
+     */
     fun startingAfter(): String? = startingAfter
 
-    internal fun getQueryParams(): Map<String, List<String>> {
-        val params = mutableMapOf<String, List<String>>()
-        this.email?.let { params.put("email", listOf(it.toString())) }
-        this.endingBefore?.let { params.put("ending_before", listOf(it.toString())) }
-        this.familyName?.let { params.put("family_name", listOf(it.toString())) }
-        this.givenName?.let { params.put("given_name", listOf(it.toString())) }
-        this.ids?.let { params.put("ids", listOf(it.toString())) }
-        this.limit?.let { params.put("limit", listOf(it.toString())) }
-        this.orgName?.let { params.put("org_name", listOf(it.toString())) }
-        this.startingAfter?.let { params.put("starting_after", listOf(it.toString())) }
-        params.putAll(additionalQueryParams)
-        return params.toUnmodifiable()
-    }
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is UserListParams &&
-            this.email == other.email &&
-            this.endingBefore == other.endingBefore &&
-            this.familyName == other.familyName &&
-            this.givenName == other.givenName &&
-            this.ids == other.ids &&
-            this.limit == other.limit &&
-            this.orgName == other.orgName &&
-            this.startingAfter == other.startingAfter &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            email,
-            endingBefore,
-            familyName,
-            givenName,
-            ids,
-            limit,
-            orgName,
-            startingAfter,
-            additionalQueryParams,
-            additionalHeaders,
-        )
-    }
-
-    override fun toString() =
-        "UserListParams{email=$email, endingBefore=$endingBefore, familyName=$familyName, givenName=$givenName, ids=$ids, limit=$limit, orgName=$orgName, startingAfter=$startingAfter, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
 
     companion object {
 
+        fun none(): UserListParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [UserListParams]. */
         fun builder() = Builder()
     }
 
-    @NoAutoDetect
-    class Builder {
+    /** A builder for [UserListParams]. */
+    class Builder internal constructor() {
 
         private var email: Email? = null
         private var endingBefore: String? = null
@@ -123,39 +102,33 @@ constructor(
         private var limit: Long? = null
         private var orgName: String? = null
         private var startingAfter: String? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(userListParams: UserListParams) = apply {
-            this.email = userListParams.email
-            this.endingBefore = userListParams.endingBefore
-            this.familyName = userListParams.familyName
-            this.givenName = userListParams.givenName
-            this.ids = userListParams.ids
-            this.limit = userListParams.limit
-            this.orgName = userListParams.orgName
-            this.startingAfter = userListParams.startingAfter
-            additionalQueryParams(userListParams.additionalQueryParams)
-            additionalHeaders(userListParams.additionalHeaders)
+            email = userListParams.email
+            endingBefore = userListParams.endingBefore
+            familyName = userListParams.familyName
+            givenName = userListParams.givenName
+            ids = userListParams.ids
+            limit = userListParams.limit
+            orgName = userListParams.orgName
+            startingAfter = userListParams.startingAfter
+            additionalHeaders = userListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = userListParams.additionalQueryParams.toBuilder()
         }
 
         /**
          * Email of the user to search for. You may pass the param multiple times to filter for more
          * than one email
          */
-        fun email(email: Email) = apply { this.email = email }
+        fun email(email: Email?) = apply { this.email = email }
 
-        /**
-         * Email of the user to search for. You may pass the param multiple times to filter for more
-         * than one email
-         */
-        fun email(string: String) = apply { this.email = Email.ofString(string) }
+        /** Alias for calling [email] with `Email.ofString(string)`. */
+        fun email(string: String) = email(Email.ofString(string))
 
-        /**
-         * Email of the user to search for. You may pass the param multiple times to filter for more
-         * than one email
-         */
-        fun email(strings: List<String>) = apply { this.email = Email.ofStrings(strings) }
+        /** Alias for calling [email] with `Email.ofStrings(strings)`. */
+        fun emailOfStrings(strings: List<String>) = email(Email.ofStrings(strings))
 
         /**
          * Pagination cursor id.
@@ -164,71 +137,56 @@ constructor(
          * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun endingBefore(endingBefore: String) = apply { this.endingBefore = endingBefore }
+        fun endingBefore(endingBefore: String?) = apply { this.endingBefore = endingBefore }
 
         /**
          * Family name of the user to search for. You may pass the param multiple times to filter
          * for more than one family name
          */
-        fun familyName(familyName: FamilyName) = apply { this.familyName = familyName }
+        fun familyName(familyName: FamilyName?) = apply { this.familyName = familyName }
 
-        /**
-         * Family name of the user to search for. You may pass the param multiple times to filter
-         * for more than one family name
-         */
-        fun familyName(string: String) = apply { this.familyName = FamilyName.ofString(string) }
+        /** Alias for calling [familyName] with `FamilyName.ofString(string)`. */
+        fun familyName(string: String) = familyName(FamilyName.ofString(string))
 
-        /**
-         * Family name of the user to search for. You may pass the param multiple times to filter
-         * for more than one family name
-         */
-        fun familyName(strings: List<String>) = apply {
-            this.familyName = FamilyName.ofStrings(strings)
-        }
+        /** Alias for calling [familyName] with `FamilyName.ofStrings(strings)`. */
+        fun familyNameOfStrings(strings: List<String>) = familyName(FamilyName.ofStrings(strings))
 
         /**
          * Given name of the user to search for. You may pass the param multiple times to filter for
          * more than one given name
          */
-        fun givenName(givenName: GivenName) = apply { this.givenName = givenName }
+        fun givenName(givenName: GivenName?) = apply { this.givenName = givenName }
 
-        /**
-         * Given name of the user to search for. You may pass the param multiple times to filter for
-         * more than one given name
-         */
-        fun givenName(string: String) = apply { this.givenName = GivenName.ofString(string) }
+        /** Alias for calling [givenName] with `GivenName.ofString(string)`. */
+        fun givenName(string: String) = givenName(GivenName.ofString(string))
 
-        /**
-         * Given name of the user to search for. You may pass the param multiple times to filter for
-         * more than one given name
-         */
-        fun givenName(strings: List<String>) = apply {
-            this.givenName = GivenName.ofStrings(strings)
-        }
+        /** Alias for calling [givenName] with `GivenName.ofStrings(strings)`. */
+        fun givenNameOfStrings(strings: List<String>) = givenName(GivenName.ofStrings(strings))
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun ids(ids: Ids) = apply { this.ids = ids }
+        fun ids(ids: Ids?) = apply { this.ids = ids }
 
-        /**
-         * Filter search results to a particular set of object IDs. To specify a list of IDs,
-         * include the query param multiple times
-         */
-        fun ids(string: String) = apply { this.ids = Ids.ofString(string) }
+        /** Alias for calling [ids] with `Ids.ofString(string)`. */
+        fun ids(string: String) = ids(Ids.ofString(string))
 
-        /**
-         * Filter search results to a particular set of object IDs. To specify a list of IDs,
-         * include the query param multiple times
-         */
-        fun ids(strings: List<String>) = apply { this.ids = Ids.ofStrings(strings) }
+        /** Alias for calling [ids] with `Ids.ofStrings(strings)`. */
+        fun idsOfStrings(strings: List<String>) = ids(Ids.ofStrings(strings))
 
         /** Limit the number of objects to return */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long?) = apply { this.limit = limit }
+
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun limit(limit: Long) = limit(limit as Long?)
 
         /** Filter search results to within a particular organization */
-        fun orgName(orgName: String) = apply { this.orgName = orgName }
+        fun orgName(orgName: String?) = apply { this.orgName = orgName }
 
         /**
          * Pagination cursor id.
@@ -237,48 +195,111 @@ constructor(
          * `starting_after=foo` to fetch the next page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun startingAfter(startingAfter: String) = apply { this.startingAfter = startingAfter }
+        fun startingAfter(startingAfter: String?) = apply { this.startingAfter = startingAfter }
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
         }
 
         fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
             this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
+            putAllAdditionalHeaders(additionalHeaders)
         }
 
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
         }
 
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
         }
 
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
 
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [UserListParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): UserListParams =
             UserListParams(
                 email,
@@ -289,21 +310,77 @@ constructor(
                 limit,
                 orgName,
                 startingAfter,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
             )
     }
 
-    @JsonDeserialize(using = Email.Deserializer::class)
-    @JsonSerialize(using = Email.Serializer::class)
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                email?.accept(
+                    object : Email.Visitor<Unit> {
+                        override fun visitString(string: String) {
+                            put("email", string)
+                        }
+
+                        override fun visitStrings(strings: List<String>) {
+                            put("email", strings.joinToString(","))
+                        }
+                    }
+                )
+                endingBefore?.let { put("ending_before", it) }
+                familyName?.accept(
+                    object : FamilyName.Visitor<Unit> {
+                        override fun visitString(string: String) {
+                            put("family_name", string)
+                        }
+
+                        override fun visitStrings(strings: List<String>) {
+                            put("family_name", strings.joinToString(","))
+                        }
+                    }
+                )
+                givenName?.accept(
+                    object : GivenName.Visitor<Unit> {
+                        override fun visitString(string: String) {
+                            put("given_name", string)
+                        }
+
+                        override fun visitStrings(strings: List<String>) {
+                            put("given_name", strings.joinToString(","))
+                        }
+                    }
+                )
+                ids?.accept(
+                    object : Ids.Visitor<Unit> {
+                        override fun visitString(string: String) {
+                            put("ids", string)
+                        }
+
+                        override fun visitStrings(strings: List<String>) {
+                            put("ids", strings.joinToString(","))
+                        }
+                    }
+                )
+                limit?.let { put("limit", it.toString()) }
+                orgName?.let { put("org_name", it) }
+                startingAfter?.let { put("starting_after", it) }
+                putAll(additionalQueryParams)
+            }
+            .build()
+
+    /**
+     * Email of the user to search for. You may pass the param multiple times to filter for more
+     * than one email
+     */
     class Email
     private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -317,106 +394,55 @@ constructor(
 
         fun asStrings(): List<String> = strings.getOrThrow("strings")
 
-        fun _json(): JsonValue? = _json
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
+                else -> throw IllegalStateException("Invalid Email")
             }
-        }
-
-        fun validate(): Email = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown Email: $_json")
-                }
-                validated = true
-            }
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is Email && this.string == other.string && this.strings == other.strings
+            return other is Email && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int {
-            return Objects.hash(string, strings)
-        }
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 string != null -> "Email{string=$string}"
                 strings != null -> "Email{strings=$strings}"
-                _json != null -> "Email{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Email")
             }
-        }
 
         companion object {
 
             fun ofString(string: String) = Email(string = string)
 
-            fun ofStrings(strings: List<String>) = Email(strings = strings)
+            fun ofStrings(strings: List<String>) = Email(strings = strings.toImmutable())
         }
 
+        /** An interface that defines how to map each variant of [Email] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
-
-            fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown Email: $json")
-            }
-        }
-
-        class Deserializer : BaseDeserializer<Email>(Email::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): Email {
-                val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return Email(string = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                    return Email(strings = it, _json = json)
-                }
-
-                return Email(_json = json)
-            }
-        }
-
-        class Serializer : BaseSerializer<Email>(Email::class) {
-
-            override fun serialize(
-                value: Email,
-                generator: JsonGenerator,
-                provider: SerializerProvider
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Email")
-                }
-            }
         }
     }
 
-    @JsonDeserialize(using = FamilyName.Deserializer::class)
-    @JsonSerialize(using = FamilyName.Serializer::class)
+    /**
+     * Family name of the user to search for. You may pass the param multiple times to filter for
+     * more than one family name
+     */
     class FamilyName
     private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -430,108 +456,57 @@ constructor(
 
         fun asStrings(): List<String> = strings.getOrThrow("strings")
 
-        fun _json(): JsonValue? = _json
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
+                else -> throw IllegalStateException("Invalid FamilyName")
             }
-        }
-
-        fun validate(): FamilyName = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown FamilyName: $_json")
-                }
-                validated = true
-            }
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is FamilyName &&
-                this.string == other.string &&
-                this.strings == other.strings
+            return other is FamilyName && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int {
-            return Objects.hash(string, strings)
-        }
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 string != null -> "FamilyName{string=$string}"
                 strings != null -> "FamilyName{strings=$strings}"
-                _json != null -> "FamilyName{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid FamilyName")
             }
-        }
 
         companion object {
 
             fun ofString(string: String) = FamilyName(string = string)
 
-            fun ofStrings(strings: List<String>) = FamilyName(strings = strings)
+            fun ofStrings(strings: List<String>) = FamilyName(strings = strings.toImmutable())
         }
 
+        /**
+         * An interface that defines how to map each variant of [FamilyName] to a value of type [T].
+         */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
-
-            fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown FamilyName: $json")
-            }
-        }
-
-        class Deserializer : BaseDeserializer<FamilyName>(FamilyName::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): FamilyName {
-                val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return FamilyName(string = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                    return FamilyName(strings = it, _json = json)
-                }
-
-                return FamilyName(_json = json)
-            }
-        }
-
-        class Serializer : BaseSerializer<FamilyName>(FamilyName::class) {
-
-            override fun serialize(
-                value: FamilyName,
-                generator: JsonGenerator,
-                provider: SerializerProvider
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid FamilyName")
-                }
-            }
         }
     }
 
-    @JsonDeserialize(using = GivenName.Deserializer::class)
-    @JsonSerialize(using = GivenName.Serializer::class)
+    /**
+     * Given name of the user to search for. You may pass the param multiple times to filter for
+     * more than one given name
+     */
     class GivenName
     private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -545,108 +520,57 @@ constructor(
 
         fun asStrings(): List<String> = strings.getOrThrow("strings")
 
-        fun _json(): JsonValue? = _json
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
+                else -> throw IllegalStateException("Invalid GivenName")
             }
-        }
-
-        fun validate(): GivenName = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown GivenName: $_json")
-                }
-                validated = true
-            }
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is GivenName &&
-                this.string == other.string &&
-                this.strings == other.strings
+            return other is GivenName && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int {
-            return Objects.hash(string, strings)
-        }
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 string != null -> "GivenName{string=$string}"
                 strings != null -> "GivenName{strings=$strings}"
-                _json != null -> "GivenName{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid GivenName")
             }
-        }
 
         companion object {
 
             fun ofString(string: String) = GivenName(string = string)
 
-            fun ofStrings(strings: List<String>) = GivenName(strings = strings)
+            fun ofStrings(strings: List<String>) = GivenName(strings = strings.toImmutable())
         }
 
+        /**
+         * An interface that defines how to map each variant of [GivenName] to a value of type [T].
+         */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
-
-            fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown GivenName: $json")
-            }
-        }
-
-        class Deserializer : BaseDeserializer<GivenName>(GivenName::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): GivenName {
-                val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return GivenName(string = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                    return GivenName(strings = it, _json = json)
-                }
-
-                return GivenName(_json = json)
-            }
-        }
-
-        class Serializer : BaseSerializer<GivenName>(GivenName::class) {
-
-            override fun serialize(
-                value: GivenName,
-                generator: JsonGenerator,
-                provider: SerializerProvider
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid GivenName")
-                }
-            }
         }
     }
 
-    @JsonDeserialize(using = Ids.Deserializer::class)
-    @JsonSerialize(using = Ids.Serializer::class)
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     class Ids
     private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -660,93 +584,78 @@ constructor(
 
         fun asStrings(): List<String> = strings.getOrThrow("strings")
 
-        fun _json(): JsonValue? = _json
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
+                else -> throw IllegalStateException("Invalid Ids")
             }
-        }
-
-        fun validate(): Ids = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown Ids: $_json")
-                }
-                validated = true
-            }
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is Ids && this.string == other.string && this.strings == other.strings
+            return other is Ids && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int {
-            return Objects.hash(string, strings)
-        }
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 string != null -> "Ids{string=$string}"
                 strings != null -> "Ids{strings=$strings}"
-                _json != null -> "Ids{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Ids")
             }
-        }
 
         companion object {
 
             fun ofString(string: String) = Ids(string = string)
 
-            fun ofStrings(strings: List<String>) = Ids(strings = strings)
+            fun ofStrings(strings: List<String>) = Ids(strings = strings.toImmutable())
         }
 
+        /** An interface that defines how to map each variant of [Ids] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
-
-            fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown Ids: $json")
-            }
-        }
-
-        class Deserializer : BaseDeserializer<Ids>(Ids::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): Ids {
-                val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return Ids(string = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                    return Ids(strings = it, _json = json)
-                }
-
-                return Ids(_json = json)
-            }
-        }
-
-        class Serializer : BaseSerializer<Ids>(Ids::class) {
-
-            override fun serialize(
-                value: Ids,
-                generator: JsonGenerator,
-                provider: SerializerProvider
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Ids")
-                }
-            }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is UserListParams &&
+            email == other.email &&
+            endingBefore == other.endingBefore &&
+            familyName == other.familyName &&
+            givenName == other.givenName &&
+            ids == other.ids &&
+            limit == other.limit &&
+            orgName == other.orgName &&
+            startingAfter == other.startingAfter &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
+    }
+
+    override fun hashCode(): Int =
+        Objects.hash(
+            email,
+            endingBefore,
+            familyName,
+            givenName,
+            ids,
+            limit,
+            orgName,
+            startingAfter,
+            additionalHeaders,
+            additionalQueryParams,
+        )
+
+    override fun toString() =
+        "UserListParams{email=$email, endingBefore=$endingBefore, familyName=$familyName, givenName=$givenName, ids=$ids, limit=$limit, orgName=$orgName, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

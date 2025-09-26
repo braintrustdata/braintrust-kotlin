@@ -2,14 +2,13 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class OrganizationUpdateParamsTest {
+internal class OrganizationUpdateParamsTest {
 
     @Test
-    fun createOrganizationUpdateParams() {
+    fun create() {
         OrganizationUpdateParams.builder()
             .organizationId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .apiUrl("api_url")
@@ -21,7 +20,19 @@ class OrganizationUpdateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun pathParams() {
+        val params =
+            OrganizationUpdateParams.builder()
+                .organizationId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .build()
+
+        assertThat(params._pathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
+    fun body() {
         val params =
             OrganizationUpdateParams.builder()
                 .organizationId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -31,8 +42,9 @@ class OrganizationUpdateParamsTest {
                 .proxyUrl("proxy_url")
                 .realtimeUrl("realtime_url")
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
+
+        val body = params._body()
+
         assertThat(body.apiUrl()).isEqualTo("api_url")
         assertThat(body.isUniversalApi()).isEqualTo(true)
         assertThat(body.name()).isEqualTo("name")
@@ -41,25 +53,12 @@ class OrganizationUpdateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             OrganizationUpdateParams.builder()
                 .organizationId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
-    }
 
-    @Test
-    fun getPathParam() {
-        val params =
-            OrganizationUpdateParams.builder()
-                .organizationId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .build()
-        assertThat(params).isNotNull
-        // path param "organizationId"
-        assertThat(params.getPathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        val body = params._body()
     }
 }

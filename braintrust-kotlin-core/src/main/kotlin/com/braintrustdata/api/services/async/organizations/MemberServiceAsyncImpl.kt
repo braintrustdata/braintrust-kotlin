@@ -4,51 +4,78 @@ package com.braintrustdata.api.services.async.organizations
 
 import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.handlers.errorBodyHandler
+import com.braintrustdata.api.core.handlers.errorHandler
+import com.braintrustdata.api.core.handlers.jsonHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
+import com.braintrustdata.api.core.http.HttpResponse
 import com.braintrustdata.api.core.http.HttpResponse.Handler
-import com.braintrustdata.api.errors.BraintrustError
+import com.braintrustdata.api.core.http.HttpResponseFor
+import com.braintrustdata.api.core.http.json
+import com.braintrustdata.api.core.http.parseable
+import com.braintrustdata.api.core.prepareAsync
 import com.braintrustdata.api.models.OrganizationMemberUpdateParams
 import com.braintrustdata.api.models.PatchOrganizationMembersOutput
-import com.braintrustdata.api.services.errorHandler
-import com.braintrustdata.api.services.json
-import com.braintrustdata.api.services.jsonHandler
-import com.braintrustdata.api.services.withErrorHandler
 
-class MemberServiceAsyncImpl
-constructor(
-    private val clientOptions: ClientOptions,
-) : MemberServiceAsync {
+class MemberServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    MemberServiceAsync {
 
-    private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
+    private val withRawResponse: MemberServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
-    private val updateHandler: Handler<PatchOrganizationMembersOutput> =
-        jsonHandler<PatchOrganizationMembersOutput>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
+    override fun withRawResponse(): MemberServiceAsync.WithRawResponse = withRawResponse
 
-    /** Modify organization membership */
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): MemberServiceAsync =
+        MemberServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun update(
         params: OrganizationMemberUpdateParams,
-        requestOptions: RequestOptions
-    ): PatchOrganizationMembersOutput {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.PATCH)
-                .addPathSegments("v1", "organization", "members")
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
-                .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
-            response
-                .use { updateHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
+        requestOptions: RequestOptions,
+    ): PatchOrganizationMembersOutput =
+        // patch /v1/organization/members
+        withRawResponse().update(params, requestOptions).parse()
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        MemberServiceAsync.WithRawResponse {
+
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): MemberServiceAsync.WithRawResponse =
+            MemberServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
+
+        private val updateHandler: Handler<PatchOrganizationMembersOutput> =
+            jsonHandler<PatchOrganizationMembersOutput>(clientOptions.jsonMapper)
+
+        override suspend fun update(
+            params: OrganizationMemberUpdateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<PatchOrganizationMembersOutput> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PATCH)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "organization", "members")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { updateHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
                     }
-                }
+            }
         }
     }
 }

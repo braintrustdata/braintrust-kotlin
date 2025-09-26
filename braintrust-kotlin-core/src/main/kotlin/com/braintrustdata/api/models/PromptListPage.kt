@@ -2,29 +2,107 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.AutoPager
+import com.braintrustdata.api.core.Page
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.PromptService
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
+/** @see PromptService.list */
 class PromptListPage
 private constructor(
-    private val promptsService: PromptService,
+    private val service: PromptService,
     private val params: PromptListParams,
-    private val response: Response,
-) {
+    private val response: PromptListPageResponse,
+) : Page<Prompt> {
 
-    fun response(): Response = response
+    /**
+     * Delegates to [PromptListPageResponse], but gracefully handles missing data.
+     *
+     * @see PromptListPageResponse.objects
+     */
+    fun objects(): List<Prompt> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun objects(): List<Prompt> = response().objects()
+    override fun items(): List<Prompt> = objects()
+
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
+
+    fun nextPageParams(): PromptListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
+        } else {
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
+        }
+
+    override fun nextPage(): PromptListPage = service.list(nextPageParams())
+
+    fun autoPager(): AutoPager<Prompt> = AutoPager.from(this)
+
+    /** The parameters that were used to request this page. */
+    fun params(): PromptListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): PromptListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [PromptListPage].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [PromptListPage]. */
+    class Builder internal constructor() {
+
+        private var service: PromptService? = null
+        private var params: PromptListParams? = null
+        private var response: PromptListPageResponse? = null
+
+        internal fun from(promptListPage: PromptListPage) = apply {
+            service = promptListPage.service
+            params = promptListPage.params
+            response = promptListPage.response
+        }
+
+        fun service(service: PromptService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: PromptListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: PromptListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [PromptListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): PromptListPage =
+            PromptListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -32,142 +110,12 @@ private constructor(
         }
 
         return other is PromptListPage &&
-            this.promptsService == other.promptsService &&
-            this.params == other.params &&
-            this.response == other.response
+            service == other.service &&
+            params == other.params &&
+            response == other.response
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            promptsService,
-            params,
-            response,
-        )
-    }
+    override fun hashCode(): Int = Objects.hash(service, params, response)
 
-    override fun toString() =
-        "PromptListPage{promptsService=$promptsService, params=$params, response=$response}"
-
-    fun hasNextPage(): Boolean {
-        return !objects().isEmpty()
-    }
-
-    fun getNextPageParams(): PromptListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
-
-        return if (params.endingBefore() != null) {
-            PromptListParams.builder().from(params).endingBefore(objects().first().id()).build()
-        } else {
-            PromptListParams.builder().from(params).startingAfter(objects().last().id()).build()
-        }
-    }
-
-    fun getNextPage(): PromptListPage? {
-        return getNextPageParams()?.let { promptsService.list(it) }
-    }
-
-    fun autoPager(): AutoPager = AutoPager(this)
-
-    companion object {
-
-        fun of(promptsService: PromptService, params: PromptListParams, response: Response) =
-            PromptListPage(
-                promptsService,
-                params,
-                response,
-            )
-    }
-
-    @JsonDeserialize(builder = Response.Builder::class)
-    @NoAutoDetect
-    class Response
-    constructor(
-        private val objects: JsonField<List<Prompt>>,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
-
-        private var validated: Boolean = false
-
-        fun objects(): List<Prompt> = objects.getNullable("objects") ?: listOf()
-
-        @JsonProperty("objects") fun _objects(): JsonField<List<Prompt>>? = objects
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun validate(): Response = apply {
-            if (!validated) {
-                objects().map { it.validate() }
-                validated = true
-            }
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Response &&
-                this.objects == other.objects &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            return Objects.hash(objects, additionalProperties)
-        }
-
-        override fun toString() =
-            "PromptListPage.Response{objects=$objects, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var objects: JsonField<List<Prompt>> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(page: Response) = apply {
-                this.objects = page.objects
-                this.additionalProperties.putAll(page.additionalProperties)
-            }
-
-            fun objects(objects: List<Prompt>) = objects(JsonField.of(objects))
-
-            @JsonProperty("objects")
-            fun objects(objects: JsonField<List<Prompt>>) = apply { this.objects = objects }
-
-            @JsonAnySetter
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            fun build() = Response(objects, additionalProperties.toUnmodifiable())
-        }
-    }
-
-    class AutoPager
-    constructor(
-        private val firstPage: PromptListPage,
-    ) : Sequence<Prompt> {
-
-        override fun iterator(): Iterator<Prompt> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    yield(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
-    }
+    override fun toString() = "PromptListPage{service=$service, params=$params, response=$response}"
 }

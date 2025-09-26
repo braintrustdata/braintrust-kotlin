@@ -2,81 +2,81 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class FunctionReplaceParamsTest {
+internal class FunctionReplaceParamsTest {
 
     @Test
-    fun createFunctionReplaceParams() {
+    fun create() {
         FunctionReplaceParams.builder()
             .functionData(
-                FunctionReplaceParams.FunctionData.ofPrompt(
-                    FunctionReplaceParams.FunctionData.Prompt.builder()
-                        .type(FunctionReplaceParams.FunctionData.Prompt.Type.PROMPT)
-                        .build()
-                )
+                FunctionReplaceParams.FunctionData.Prompt.builder()
+                    .type(FunctionReplaceParams.FunctionData.Prompt.Type.PROMPT)
+                    .build()
             )
-            .name("name")
+            .name("x")
             .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-            .slug("slug")
+            .slug("x")
             .description("description")
             .functionSchema(
                 FunctionReplaceParams.FunctionSchema.builder()
-                    .parameters(JsonNull.of())
-                    .returns(JsonNull.of())
+                    .parameters(JsonValue.from(mapOf<String, Any>()))
+                    .returns(JsonValue.from(mapOf<String, Any>()))
                     .build()
             )
             .functionType(FunctionReplaceParams.FunctionType.LLM)
             .origin(
                 FunctionReplaceParams.Origin.builder()
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(FunctionReplaceParams.Origin.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .internal_(true)
                     .build()
             )
             .promptData(
                 PromptData.builder()
                     .options(
-                        PromptData.Options.builder()
+                        PromptOptions.builder()
                             .model("model")
                             .params(
-                                PromptData.Options.Params.ofOpenAIModelParams(
-                                    PromptData.Options.Params.OpenAIModelParams.builder()
-                                        .frequencyPenalty(42.23)
-                                        .functionCall(
-                                            PromptData.Options.Params.OpenAIModelParams.FunctionCall
-                                                .ofAuto(
-                                                    PromptData.Options.Params.OpenAIModelParams
-                                                        .FunctionCall
-                                                        .Auto
-                                                        .AUTO
-                                                )
-                                        )
-                                        .maxTokens(42.23)
-                                        .n(42.23)
-                                        .presencePenalty(42.23)
-                                        .responseFormat(
-                                            PromptData.Options.Params.OpenAIModelParams
-                                                .ResponseFormat
-                                                .builder()
-                                                .type(
-                                                    PromptData.Options.Params.OpenAIModelParams
-                                                        .ResponseFormat
-                                                        .Type
-                                                        .JSON_OBJECT
-                                                )
-                                                .build()
-                                        )
-                                        .stop(listOf("string"))
-                                        .temperature(42.23)
-                                        .toolChoice(ToolChoice.ofAuto(ToolChoice.Auto.AUTO))
-                                        .topP(42.23)
-                                        .useCache(true)
-                                        .build()
-                                )
+                                PromptOptions.Params.OpenAIModelParams.builder()
+                                    .frequencyPenalty(0.0)
+                                    .functionCall(
+                                        PromptOptions.Params.OpenAIModelParams.FunctionCall
+                                            .UnionMember0
+                                            .AUTO
+                                    )
+                                    .maxCompletionTokens(0.0)
+                                    .maxTokens(0.0)
+                                    .n(0.0)
+                                    .presencePenalty(0.0)
+                                    .reasoningEffort(
+                                        PromptOptions.Params.OpenAIModelParams.ReasoningEffort.LOW
+                                    )
+                                    .responseFormat(
+                                        PromptOptions.Params.OpenAIModelParams.ResponseFormat
+                                            .JsonObject
+                                            .builder()
+                                            .type(
+                                                PromptOptions.Params.OpenAIModelParams
+                                                    .ResponseFormat
+                                                    .JsonObject
+                                                    .Type
+                                                    .JSON_OBJECT
+                                            )
+                                            .build()
+                                    )
+                                    .addStop("string")
+                                    .temperature(0.0)
+                                    .toolChoice(
+                                        PromptOptions.Params.OpenAIModelParams.ToolChoice
+                                            .UnionMember0
+                                            .AUTO
+                                    )
+                                    .topP(0.0)
+                                    .useCache(true)
+                                    .build()
                             )
                             .position("position")
                             .build()
@@ -90,105 +90,104 @@ class FunctionReplaceParamsTest {
                     )
                     .parser(
                         PromptData.Parser.builder()
-                            .choiceScores(PromptData.Parser.ChoiceScores.builder().build())
+                            .choiceScores(
+                                PromptData.Parser.ChoiceScores.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                    .build()
+                            )
                             .type(PromptData.Parser.Type.LLM_CLASSIFIER)
                             .useCot(true)
                             .build()
                     )
                     .prompt(
-                        PromptData.Prompt.ofCompletion(
-                            PromptData.Prompt.Completion.builder()
-                                .content("content")
-                                .type(PromptData.Prompt.Completion.Type.COMPLETION)
-                                .build()
-                        )
+                        PromptData.Prompt.Completion.builder()
+                            .content("content")
+                            .type(PromptData.Prompt.Completion.Type.COMPLETION)
+                            .build()
                     )
-                    .toolFunctions(
-                        listOf(
-                            PromptData.ToolFunction.ofFunction(
-                                PromptData.ToolFunction.Function.builder()
-                                    .id("id")
-                                    .type(PromptData.ToolFunction.Function.Type.FUNCTION)
-                                    .build()
-                            )
-                        )
+                    .addToolFunction(
+                        PromptData.ToolFunction.Function.builder()
+                            .id("id")
+                            .type(PromptData.ToolFunction.Function.Type.FUNCTION)
+                            .build()
                     )
                     .build()
             )
-            .tags(listOf("string"))
+            .addTag("string")
             .build()
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             FunctionReplaceParams.builder()
                 .functionData(
-                    FunctionReplaceParams.FunctionData.ofPrompt(
-                        FunctionReplaceParams.FunctionData.Prompt.builder()
-                            .type(FunctionReplaceParams.FunctionData.Prompt.Type.PROMPT)
-                            .build()
-                    )
+                    FunctionReplaceParams.FunctionData.Prompt.builder()
+                        .type(FunctionReplaceParams.FunctionData.Prompt.Type.PROMPT)
+                        .build()
                 )
-                .name("name")
+                .name("x")
                 .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .slug("slug")
+                .slug("x")
                 .description("description")
                 .functionSchema(
                     FunctionReplaceParams.FunctionSchema.builder()
-                        .parameters(JsonNull.of())
-                        .returns(JsonNull.of())
+                        .parameters(JsonValue.from(mapOf<String, Any>()))
+                        .returns(JsonValue.from(mapOf<String, Any>()))
                         .build()
                 )
                 .functionType(FunctionReplaceParams.FunctionType.LLM)
                 .origin(
                     FunctionReplaceParams.Origin.builder()
                         .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .objectType(FunctionReplaceParams.Origin.ObjectType.ORGANIZATION)
+                        .objectType(AclObjectType.ORGANIZATION)
                         .internal_(true)
                         .build()
                 )
                 .promptData(
                     PromptData.builder()
                         .options(
-                            PromptData.Options.builder()
+                            PromptOptions.builder()
                                 .model("model")
                                 .params(
-                                    PromptData.Options.Params.ofOpenAIModelParams(
-                                        PromptData.Options.Params.OpenAIModelParams.builder()
-                                            .frequencyPenalty(42.23)
-                                            .functionCall(
-                                                PromptData.Options.Params.OpenAIModelParams
-                                                    .FunctionCall
-                                                    .ofAuto(
-                                                        PromptData.Options.Params.OpenAIModelParams
-                                                            .FunctionCall
-                                                            .Auto
-                                                            .AUTO
-                                                    )
-                                            )
-                                            .maxTokens(42.23)
-                                            .n(42.23)
-                                            .presencePenalty(42.23)
-                                            .responseFormat(
-                                                PromptData.Options.Params.OpenAIModelParams
-                                                    .ResponseFormat
-                                                    .builder()
-                                                    .type(
-                                                        PromptData.Options.Params.OpenAIModelParams
-                                                            .ResponseFormat
-                                                            .Type
-                                                            .JSON_OBJECT
-                                                    )
-                                                    .build()
-                                            )
-                                            .stop(listOf("string"))
-                                            .temperature(42.23)
-                                            .toolChoice(ToolChoice.ofAuto(ToolChoice.Auto.AUTO))
-                                            .topP(42.23)
-                                            .useCache(true)
-                                            .build()
-                                    )
+                                    PromptOptions.Params.OpenAIModelParams.builder()
+                                        .frequencyPenalty(0.0)
+                                        .functionCall(
+                                            PromptOptions.Params.OpenAIModelParams.FunctionCall
+                                                .UnionMember0
+                                                .AUTO
+                                        )
+                                        .maxCompletionTokens(0.0)
+                                        .maxTokens(0.0)
+                                        .n(0.0)
+                                        .presencePenalty(0.0)
+                                        .reasoningEffort(
+                                            PromptOptions.Params.OpenAIModelParams.ReasoningEffort
+                                                .LOW
+                                        )
+                                        .responseFormat(
+                                            PromptOptions.Params.OpenAIModelParams.ResponseFormat
+                                                .JsonObject
+                                                .builder()
+                                                .type(
+                                                    PromptOptions.Params.OpenAIModelParams
+                                                        .ResponseFormat
+                                                        .JsonObject
+                                                        .Type
+                                                        .JSON_OBJECT
+                                                )
+                                                .build()
+                                        )
+                                        .addStop("string")
+                                        .temperature(0.0)
+                                        .toolChoice(
+                                            PromptOptions.Params.OpenAIModelParams.ToolChoice
+                                                .UnionMember0
+                                                .AUTO
+                                        )
+                                        .topP(0.0)
+                                        .useCache(true)
+                                        .build()
                                 )
                                 .position("position")
                                 .build()
@@ -202,35 +201,34 @@ class FunctionReplaceParamsTest {
                         )
                         .parser(
                             PromptData.Parser.builder()
-                                .choiceScores(PromptData.Parser.ChoiceScores.builder().build())
+                                .choiceScores(
+                                    PromptData.Parser.ChoiceScores.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(0))
+                                        .build()
+                                )
                                 .type(PromptData.Parser.Type.LLM_CLASSIFIER)
                                 .useCot(true)
                                 .build()
                         )
                         .prompt(
-                            PromptData.Prompt.ofCompletion(
-                                PromptData.Prompt.Completion.builder()
-                                    .content("content")
-                                    .type(PromptData.Prompt.Completion.Type.COMPLETION)
-                                    .build()
-                            )
+                            PromptData.Prompt.Completion.builder()
+                                .content("content")
+                                .type(PromptData.Prompt.Completion.Type.COMPLETION)
+                                .build()
                         )
-                        .toolFunctions(
-                            listOf(
-                                PromptData.ToolFunction.ofFunction(
-                                    PromptData.ToolFunction.Function.builder()
-                                        .id("id")
-                                        .type(PromptData.ToolFunction.Function.Type.FUNCTION)
-                                        .build()
-                                )
-                            )
+                        .addToolFunction(
+                            PromptData.ToolFunction.Function.builder()
+                                .id("id")
+                                .type(PromptData.ToolFunction.Function.Type.FUNCTION)
+                                .build()
                         )
                         .build()
                 )
-                .tags(listOf("string"))
+                .addTag("string")
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
+
+        val body = params._body()
+
         assertThat(body.functionData())
             .isEqualTo(
                 FunctionReplaceParams.FunctionData.ofPrompt(
@@ -239,15 +237,15 @@ class FunctionReplaceParamsTest {
                         .build()
                 )
             )
-        assertThat(body.name()).isEqualTo("name")
+        assertThat(body.name()).isEqualTo("x")
         assertThat(body.projectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        assertThat(body.slug()).isEqualTo("slug")
+        assertThat(body.slug()).isEqualTo("x")
         assertThat(body.description()).isEqualTo("description")
         assertThat(body.functionSchema())
             .isEqualTo(
                 FunctionReplaceParams.FunctionSchema.builder()
-                    .parameters(JsonNull.of())
-                    .returns(JsonNull.of())
+                    .parameters(JsonValue.from(mapOf<String, Any>()))
+                    .returns(JsonValue.from(mapOf<String, Any>()))
                     .build()
             )
         assertThat(body.functionType()).isEqualTo(FunctionReplaceParams.FunctionType.LLM)
@@ -255,7 +253,7 @@ class FunctionReplaceParamsTest {
             .isEqualTo(
                 FunctionReplaceParams.Origin.builder()
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(FunctionReplaceParams.Origin.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .internal_(true)
                     .build()
             )
@@ -263,43 +261,46 @@ class FunctionReplaceParamsTest {
             .isEqualTo(
                 PromptData.builder()
                     .options(
-                        PromptData.Options.builder()
+                        PromptOptions.builder()
                             .model("model")
                             .params(
-                                PromptData.Options.Params.ofOpenAIModelParams(
-                                    PromptData.Options.Params.OpenAIModelParams.builder()
-                                        .frequencyPenalty(42.23)
-                                        .functionCall(
-                                            PromptData.Options.Params.OpenAIModelParams.FunctionCall
-                                                .ofAuto(
-                                                    PromptData.Options.Params.OpenAIModelParams
-                                                        .FunctionCall
-                                                        .Auto
-                                                        .AUTO
-                                                )
-                                        )
-                                        .maxTokens(42.23)
-                                        .n(42.23)
-                                        .presencePenalty(42.23)
-                                        .responseFormat(
-                                            PromptData.Options.Params.OpenAIModelParams
-                                                .ResponseFormat
-                                                .builder()
-                                                .type(
-                                                    PromptData.Options.Params.OpenAIModelParams
-                                                        .ResponseFormat
-                                                        .Type
-                                                        .JSON_OBJECT
-                                                )
-                                                .build()
-                                        )
-                                        .stop(listOf("string"))
-                                        .temperature(42.23)
-                                        .toolChoice(ToolChoice.ofAuto(ToolChoice.Auto.AUTO))
-                                        .topP(42.23)
-                                        .useCache(true)
-                                        .build()
-                                )
+                                PromptOptions.Params.OpenAIModelParams.builder()
+                                    .frequencyPenalty(0.0)
+                                    .functionCall(
+                                        PromptOptions.Params.OpenAIModelParams.FunctionCall
+                                            .UnionMember0
+                                            .AUTO
+                                    )
+                                    .maxCompletionTokens(0.0)
+                                    .maxTokens(0.0)
+                                    .n(0.0)
+                                    .presencePenalty(0.0)
+                                    .reasoningEffort(
+                                        PromptOptions.Params.OpenAIModelParams.ReasoningEffort.LOW
+                                    )
+                                    .responseFormat(
+                                        PromptOptions.Params.OpenAIModelParams.ResponseFormat
+                                            .JsonObject
+                                            .builder()
+                                            .type(
+                                                PromptOptions.Params.OpenAIModelParams
+                                                    .ResponseFormat
+                                                    .JsonObject
+                                                    .Type
+                                                    .JSON_OBJECT
+                                            )
+                                            .build()
+                                    )
+                                    .addStop("string")
+                                    .temperature(0.0)
+                                    .toolChoice(
+                                        PromptOptions.Params.OpenAIModelParams.ToolChoice
+                                            .UnionMember0
+                                            .AUTO
+                                    )
+                                    .topP(0.0)
+                                    .useCache(true)
+                                    .build()
                             )
                             .position("position")
                             .build()
@@ -313,51 +314,48 @@ class FunctionReplaceParamsTest {
                     )
                     .parser(
                         PromptData.Parser.builder()
-                            .choiceScores(PromptData.Parser.ChoiceScores.builder().build())
+                            .choiceScores(
+                                PromptData.Parser.ChoiceScores.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                    .build()
+                            )
                             .type(PromptData.Parser.Type.LLM_CLASSIFIER)
                             .useCot(true)
                             .build()
                     )
                     .prompt(
-                        PromptData.Prompt.ofCompletion(
-                            PromptData.Prompt.Completion.builder()
-                                .content("content")
-                                .type(PromptData.Prompt.Completion.Type.COMPLETION)
-                                .build()
-                        )
+                        PromptData.Prompt.Completion.builder()
+                            .content("content")
+                            .type(PromptData.Prompt.Completion.Type.COMPLETION)
+                            .build()
                     )
-                    .toolFunctions(
-                        listOf(
-                            PromptData.ToolFunction.ofFunction(
-                                PromptData.ToolFunction.Function.builder()
-                                    .id("id")
-                                    .type(PromptData.ToolFunction.Function.Type.FUNCTION)
-                                    .build()
-                            )
-                        )
+                    .addToolFunction(
+                        PromptData.ToolFunction.Function.builder()
+                            .id("id")
+                            .type(PromptData.ToolFunction.Function.Type.FUNCTION)
+                            .build()
                     )
                     .build()
             )
-        assertThat(body.tags()).isEqualTo(listOf("string"))
+        assertThat(body.tags()).containsExactly("string")
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             FunctionReplaceParams.builder()
                 .functionData(
-                    FunctionReplaceParams.FunctionData.ofPrompt(
-                        FunctionReplaceParams.FunctionData.Prompt.builder()
-                            .type(FunctionReplaceParams.FunctionData.Prompt.Type.PROMPT)
-                            .build()
-                    )
+                    FunctionReplaceParams.FunctionData.Prompt.builder()
+                        .type(FunctionReplaceParams.FunctionData.Prompt.Type.PROMPT)
+                        .build()
                 )
-                .name("name")
+                .name("x")
                 .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .slug("slug")
+                .slug("x")
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
+
+        val body = params._body()
+
         assertThat(body.functionData())
             .isEqualTo(
                 FunctionReplaceParams.FunctionData.ofPrompt(
@@ -366,8 +364,8 @@ class FunctionReplaceParamsTest {
                         .build()
                 )
             )
-        assertThat(body.name()).isEqualTo("name")
+        assertThat(body.name()).isEqualTo("x")
         assertThat(body.projectId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        assertThat(body.slug()).isEqualTo("slug")
+        assertThat(body.slug()).isEqualTo("x")
     }
 }

@@ -2,31 +2,73 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class AISecretTest {
+internal class AISecretTest {
 
     @Test
-    fun createAISecret() {
-        val aISecret =
+    fun create() {
+        val aiSecret =
             AISecret.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .name("name")
                 .orgId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                .metadata(AISecret.Metadata.builder().build())
+                .metadata(
+                    AISecret.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
                 .previewSecret("preview_secret")
                 .type("type")
+                .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .build()
-        assertThat(aISecret).isNotNull
-        assertThat(aISecret.id()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        assertThat(aISecret.name()).isEqualTo("name")
-        assertThat(aISecret.orgId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        assertThat(aISecret.created()).isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-        assertThat(aISecret.metadata()).isEqualTo(AISecret.Metadata.builder().build())
-        assertThat(aISecret.previewSecret()).isEqualTo("preview_secret")
-        assertThat(aISecret.type()).isEqualTo("type")
+
+        assertThat(aiSecret.id()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+        assertThat(aiSecret.name()).isEqualTo("name")
+        assertThat(aiSecret.orgId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+        assertThat(aiSecret.created()).isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+        assertThat(aiSecret.metadata())
+            .isEqualTo(
+                AISecret.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
+        assertThat(aiSecret.previewSecret()).isEqualTo("preview_secret")
+        assertThat(aiSecret.type()).isEqualTo("type")
+        assertThat(aiSecret.updatedAt()).isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val aiSecret =
+            AISecret.builder()
+                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .name("name")
+                .orgId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .metadata(
+                    AISecret.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
+                .previewSecret("preview_secret")
+                .type("type")
+                .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .build()
+
+        val roundtrippedAiSecret =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(aiSecret),
+                jacksonTypeRef<AISecret>(),
+            )
+
+        assertThat(roundtrippedAiSecret).isEqualTo(aiSecret)
     }
 }

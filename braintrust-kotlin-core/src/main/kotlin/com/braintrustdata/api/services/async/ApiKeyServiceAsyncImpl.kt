@@ -4,148 +4,199 @@ package com.braintrustdata.api.services.async
 
 import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.handlers.errorBodyHandler
+import com.braintrustdata.api.core.handlers.errorHandler
+import com.braintrustdata.api.core.handlers.jsonHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
+import com.braintrustdata.api.core.http.HttpResponse
 import com.braintrustdata.api.core.http.HttpResponse.Handler
-import com.braintrustdata.api.errors.BraintrustError
+import com.braintrustdata.api.core.http.HttpResponseFor
+import com.braintrustdata.api.core.http.json
+import com.braintrustdata.api.core.http.parseable
+import com.braintrustdata.api.core.prepareAsync
 import com.braintrustdata.api.models.ApiKey
 import com.braintrustdata.api.models.ApiKeyCreateParams
 import com.braintrustdata.api.models.ApiKeyDeleteParams
 import com.braintrustdata.api.models.ApiKeyListPageAsync
+import com.braintrustdata.api.models.ApiKeyListPageResponse
 import com.braintrustdata.api.models.ApiKeyListParams
 import com.braintrustdata.api.models.ApiKeyRetrieveParams
 import com.braintrustdata.api.models.CreateApiKeyOutput
-import com.braintrustdata.api.services.errorHandler
-import com.braintrustdata.api.services.json
-import com.braintrustdata.api.services.jsonHandler
-import com.braintrustdata.api.services.withErrorHandler
 
-class ApiKeyServiceAsyncImpl
-constructor(
-    private val clientOptions: ClientOptions,
-) : ApiKeyServiceAsync {
+class ApiKeyServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    ApiKeyServiceAsync {
 
-    private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
+    private val withRawResponse: ApiKeyServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
-    private val createHandler: Handler<CreateApiKeyOutput> =
-        jsonHandler<CreateApiKeyOutput>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override fun withRawResponse(): ApiKeyServiceAsync.WithRawResponse = withRawResponse
 
-    /**
-     * Create a new api_key. It is possible to have multiple API keys with the same name. There is
-     * no de-duplication
-     */
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ApiKeyServiceAsync =
+        ApiKeyServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun create(
         params: ApiKeyCreateParams,
-        requestOptions: RequestOptions
-    ): CreateApiKeyOutput {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("v1", "api_key")
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
-                .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
-            response
-                .use { createHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-        }
-    }
+        requestOptions: RequestOptions,
+    ): CreateApiKeyOutput =
+        // post /v1/api_key
+        withRawResponse().create(params, requestOptions).parse()
 
-    private val retrieveHandler: Handler<ApiKey> =
-        jsonHandler<ApiKey>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Get an api_key object by its id */
     override suspend fun retrieve(
         params: ApiKeyRetrieveParams,
-        requestOptions: RequestOptions
-    ): ApiKey {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("v1", "api_key", params.getPathParam(0))
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
-            response
-                .use { retrieveHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-        }
-    }
+        requestOptions: RequestOptions,
+    ): ApiKey =
+        // get /v1/api_key/{api_key_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
 
-    private val listHandler: Handler<ApiKeyListPageAsync.Response> =
-        jsonHandler<ApiKeyListPageAsync.Response>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
-
-    /**
-     * List out all api_keys. The api_keys are sorted by creation date, with the most
-     * recently-created api_keys coming first
-     */
     override suspend fun list(
         params: ApiKeyListParams,
-        requestOptions: RequestOptions
-    ): ApiKeyListPageAsync {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("v1", "api_key")
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
-            response
-                .use { listHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-                .let { ApiKeyListPageAsync.of(this, params, it) }
-        }
-    }
+        requestOptions: RequestOptions,
+    ): ApiKeyListPageAsync =
+        // get /v1/api_key
+        withRawResponse().list(params, requestOptions).parse()
 
-    private val deleteHandler: Handler<ApiKey> =
-        jsonHandler<ApiKey>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Delete an api_key object by its id */
     override suspend fun delete(
         params: ApiKeyDeleteParams,
-        requestOptions: RequestOptions
-    ): ApiKey {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.DELETE)
-                .addPathSegments("v1", "api_key", params.getPathParam(0))
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .apply { params.getBody()?.also { body(json(clientOptions.jsonMapper, it)) } }
-                .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
-            response
-                .use { deleteHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
+        requestOptions: RequestOptions,
+    ): ApiKey =
+        // delete /v1/api_key/{api_key_id}
+        withRawResponse().delete(params, requestOptions).parse()
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        ApiKeyServiceAsync.WithRawResponse {
+
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): ApiKeyServiceAsync.WithRawResponse =
+            ApiKeyServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
+
+        private val createHandler: Handler<CreateApiKeyOutput> =
+            jsonHandler<CreateApiKeyOutput>(clientOptions.jsonMapper)
+
+        override suspend fun create(
+            params: ApiKeyCreateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<CreateApiKeyOutput> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "api_key")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
                     }
-                }
+            }
+        }
+
+        private val retrieveHandler: Handler<ApiKey> = jsonHandler<ApiKey>(clientOptions.jsonMapper)
+
+        override suspend fun retrieve(
+            params: ApiKeyRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ApiKey> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("apiKeyId", params.apiKeyId())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "api_key", params._pathParam(0))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val listHandler: Handler<ApiKeyListPageResponse> =
+            jsonHandler<ApiKeyListPageResponse>(clientOptions.jsonMapper)
+
+        override suspend fun list(
+            params: ApiKeyListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ApiKeyListPageAsync> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "api_key")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let {
+                        ApiKeyListPageAsync.builder()
+                            .service(ApiKeyServiceAsyncImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
+            }
+        }
+
+        private val deleteHandler: Handler<ApiKey> = jsonHandler<ApiKey>(clientOptions.jsonMapper)
+
+        override suspend fun delete(
+            params: ApiKeyDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ApiKey> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("apiKeyId", params.apiKeyId())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "api_key", params._pathParam(0))
+                    .apply { params._body()?.let { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { deleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
         }
     }
 }

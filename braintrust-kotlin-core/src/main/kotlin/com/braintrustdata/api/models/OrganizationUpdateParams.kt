@@ -3,196 +3,655 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
+/**
+ * Partially update an organization object. Specify the fields to update in the payload. Any
+ * object-type fields will be deep-merged with existing content. Currently we do not support
+ * removing fields or setting them to null.
+ */
 class OrganizationUpdateParams
-constructor(
-    private val organizationId: String,
-    private val apiUrl: String?,
-    private val isUniversalApi: Boolean?,
-    private val name: String?,
-    private val proxyUrl: String?,
-    private val realtimeUrl: String?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+private constructor(
+    private val organizationId: String?,
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun organizationId(): String = organizationId
+    /** Organization id */
+    fun organizationId(): String? = organizationId
 
-    fun apiUrl(): String? = apiUrl
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun apiUrl(): String? = body.apiUrl()
 
-    fun isUniversalApi(): Boolean? = isUniversalApi
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun isUniversalApi(): Boolean? = body.isUniversalApi()
 
-    fun name(): String? = name
+    /**
+     * Name of the organization
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun name(): String? = body.name()
 
-    fun proxyUrl(): String? = proxyUrl
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun proxyUrl(): String? = body.proxyUrl()
 
-    fun realtimeUrl(): String? = realtimeUrl
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun realtimeUrl(): String? = body.realtimeUrl()
 
-    internal fun getBody(): OrganizationUpdateBody {
-        return OrganizationUpdateBody(
-            apiUrl,
-            isUniversalApi,
-            name,
-            proxyUrl,
-            realtimeUrl,
-            additionalBodyProperties,
-        )
+    /**
+     * Returns the raw JSON value of [apiUrl].
+     *
+     * Unlike [apiUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _apiUrl(): JsonField<String> = body._apiUrl()
+
+    /**
+     * Returns the raw JSON value of [isUniversalApi].
+     *
+     * Unlike [isUniversalApi], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _isUniversalApi(): JsonField<Boolean> = body._isUniversalApi()
+
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _name(): JsonField<String> = body._name()
+
+    /**
+     * Returns the raw JSON value of [proxyUrl].
+     *
+     * Unlike [proxyUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _proxyUrl(): JsonField<String> = body._proxyUrl()
+
+    /**
+     * Returns the raw JSON value of [realtimeUrl].
+     *
+     * Unlike [realtimeUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _realtimeUrl(): JsonField<String> = body._realtimeUrl()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        fun none(): OrganizationUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [OrganizationUpdateParams]. */
+        fun builder() = Builder()
     }
 
-    internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
+    /** A builder for [OrganizationUpdateParams]. */
+    class Builder internal constructor() {
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+        private var organizationId: String? = null
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-    fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> organizationId
-            else -> ""
+        internal fun from(organizationUpdateParams: OrganizationUpdateParams) = apply {
+            organizationId = organizationUpdateParams.organizationId
+            body = organizationUpdateParams.body.toBuilder()
+            additionalHeaders = organizationUpdateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = organizationUpdateParams.additionalQueryParams.toBuilder()
         }
-    }
 
-    @JsonDeserialize(builder = OrganizationUpdateBody.Builder::class)
-    @NoAutoDetect
-    class OrganizationUpdateBody
-    internal constructor(
-        private val apiUrl: String?,
-        private val isUniversalApi: Boolean?,
-        private val name: String?,
-        private val proxyUrl: String?,
-        private val realtimeUrl: String?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+        /** Organization id */
+        fun organizationId(organizationId: String?) = apply { this.organizationId = organizationId }
 
-        private var hashCode: Int = 0
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [apiUrl]
+         * - [isUniversalApi]
+         * - [name]
+         * - [proxyUrl]
+         * - [realtimeUrl]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        @JsonProperty("api_url") fun apiUrl(): String? = apiUrl
+        fun apiUrl(apiUrl: String?) = apply { body.apiUrl(apiUrl) }
 
-        @JsonProperty("is_universal_api") fun isUniversalApi(): Boolean? = isUniversalApi
+        /**
+         * Sets [Builder.apiUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.apiUrl] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun apiUrl(apiUrl: JsonField<String>) = apply { body.apiUrl(apiUrl) }
+
+        fun isUniversalApi(isUniversalApi: Boolean?) = apply { body.isUniversalApi(isUniversalApi) }
+
+        /**
+         * Alias for [Builder.isUniversalApi].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun isUniversalApi(isUniversalApi: Boolean) = isUniversalApi(isUniversalApi as Boolean?)
+
+        /**
+         * Sets [Builder.isUniversalApi] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.isUniversalApi] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun isUniversalApi(isUniversalApi: JsonField<Boolean>) = apply {
+            body.isUniversalApi(isUniversalApi)
+        }
 
         /** Name of the organization */
-        @JsonProperty("name") fun name(): String? = name
+        fun name(name: String?) = apply { body.name(name) }
 
-        @JsonProperty("proxy_url") fun proxyUrl(): String? = proxyUrl
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { body.name(name) }
 
-        @JsonProperty("realtime_url") fun realtimeUrl(): String? = realtimeUrl
+        fun proxyUrl(proxyUrl: String?) = apply { body.proxyUrl(proxyUrl) }
+
+        /**
+         * Sets [Builder.proxyUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.proxyUrl] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun proxyUrl(proxyUrl: JsonField<String>) = apply { body.proxyUrl(proxyUrl) }
+
+        fun realtimeUrl(realtimeUrl: String?) = apply { body.realtimeUrl(realtimeUrl) }
+
+        /**
+         * Sets [Builder.realtimeUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.realtimeUrl] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun realtimeUrl(realtimeUrl: JsonField<String>) = apply { body.realtimeUrl(realtimeUrl) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [OrganizationUpdateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
+        fun build(): OrganizationUpdateParams =
+            OrganizationUpdateParams(
+                organizationId,
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
+    fun _body(): Body = body
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> organizationId ?: ""
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val apiUrl: JsonField<String>,
+        private val isUniversalApi: JsonField<Boolean>,
+        private val name: JsonField<String>,
+        private val proxyUrl: JsonField<String>,
+        private val realtimeUrl: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("api_url") @ExcludeMissing apiUrl: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("is_universal_api")
+            @ExcludeMissing
+            isUniversalApi: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("proxy_url")
+            @ExcludeMissing
+            proxyUrl: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("realtime_url")
+            @ExcludeMissing
+            realtimeUrl: JsonField<String> = JsonMissing.of(),
+        ) : this(apiUrl, isUniversalApi, name, proxyUrl, realtimeUrl, mutableMapOf())
+
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun apiUrl(): String? = apiUrl.getNullable("api_url")
+
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun isUniversalApi(): Boolean? = isUniversalApi.getNullable("is_universal_api")
+
+        /**
+         * Name of the organization
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun name(): String? = name.getNullable("name")
+
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun proxyUrl(): String? = proxyUrl.getNullable("proxy_url")
+
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun realtimeUrl(): String? = realtimeUrl.getNullable("realtime_url")
+
+        /**
+         * Returns the raw JSON value of [apiUrl].
+         *
+         * Unlike [apiUrl], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("api_url") @ExcludeMissing fun _apiUrl(): JsonField<String> = apiUrl
+
+        /**
+         * Returns the raw JSON value of [isUniversalApi].
+         *
+         * Unlike [isUniversalApi], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("is_universal_api")
+        @ExcludeMissing
+        fun _isUniversalApi(): JsonField<Boolean> = isUniversalApi
+
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+        /**
+         * Returns the raw JSON value of [proxyUrl].
+         *
+         * Unlike [proxyUrl], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("proxy_url") @ExcludeMissing fun _proxyUrl(): JsonField<String> = proxyUrl
+
+        /**
+         * Returns the raw JSON value of [realtimeUrl].
+         *
+         * Unlike [realtimeUrl], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("realtime_url")
+        @ExcludeMissing
+        fun _realtimeUrl(): JsonField<String> = realtimeUrl
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is OrganizationUpdateBody &&
-                this.apiUrl == other.apiUrl &&
-                this.isUniversalApi == other.isUniversalApi &&
-                this.name == other.name &&
-                this.proxyUrl == other.proxyUrl &&
-                this.realtimeUrl == other.realtimeUrl &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        apiUrl,
-                        isUniversalApi,
-                        name,
-                        proxyUrl,
-                        realtimeUrl,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "OrganizationUpdateBody{apiUrl=$apiUrl, isUniversalApi=$isUniversalApi, name=$name, proxyUrl=$proxyUrl, realtimeUrl=$realtimeUrl, additionalProperties=$additionalProperties}"
-
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
 
-            private var apiUrl: String? = null
-            private var isUniversalApi: Boolean? = null
-            private var name: String? = null
-            private var proxyUrl: String? = null
-            private var realtimeUrl: String? = null
+            private var apiUrl: JsonField<String> = JsonMissing.of()
+            private var isUniversalApi: JsonField<Boolean> = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
+            private var proxyUrl: JsonField<String> = JsonMissing.of()
+            private var realtimeUrl: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(organizationUpdateBody: OrganizationUpdateBody) = apply {
-                this.apiUrl = organizationUpdateBody.apiUrl
-                this.isUniversalApi = organizationUpdateBody.isUniversalApi
-                this.name = organizationUpdateBody.name
-                this.proxyUrl = organizationUpdateBody.proxyUrl
-                this.realtimeUrl = organizationUpdateBody.realtimeUrl
-                additionalProperties(organizationUpdateBody.additionalProperties)
+            internal fun from(body: Body) = apply {
+                apiUrl = body.apiUrl
+                isUniversalApi = body.isUniversalApi
+                name = body.name
+                proxyUrl = body.proxyUrl
+                realtimeUrl = body.realtimeUrl
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            @JsonProperty("api_url") fun apiUrl(apiUrl: String) = apply { this.apiUrl = apiUrl }
+            fun apiUrl(apiUrl: String?) = apiUrl(JsonField.ofNullable(apiUrl))
 
-            @JsonProperty("is_universal_api")
-            fun isUniversalApi(isUniversalApi: Boolean) = apply {
+            /**
+             * Sets [Builder.apiUrl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.apiUrl] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun apiUrl(apiUrl: JsonField<String>) = apply { this.apiUrl = apiUrl }
+
+            fun isUniversalApi(isUniversalApi: Boolean?) =
+                isUniversalApi(JsonField.ofNullable(isUniversalApi))
+
+            /**
+             * Alias for [Builder.isUniversalApi].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun isUniversalApi(isUniversalApi: Boolean) = isUniversalApi(isUniversalApi as Boolean?)
+
+            /**
+             * Sets [Builder.isUniversalApi] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.isUniversalApi] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun isUniversalApi(isUniversalApi: JsonField<Boolean>) = apply {
                 this.isUniversalApi = isUniversalApi
             }
 
             /** Name of the organization */
-            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+            fun name(name: String?) = name(JsonField.ofNullable(name))
 
-            @JsonProperty("proxy_url")
-            fun proxyUrl(proxyUrl: String) = apply { this.proxyUrl = proxyUrl }
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
-            @JsonProperty("realtime_url")
-            fun realtimeUrl(realtimeUrl: String) = apply { this.realtimeUrl = realtimeUrl }
+            fun proxyUrl(proxyUrl: String?) = proxyUrl(JsonField.ofNullable(proxyUrl))
+
+            /**
+             * Sets [Builder.proxyUrl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.proxyUrl] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun proxyUrl(proxyUrl: JsonField<String>) = apply { this.proxyUrl = proxyUrl }
+
+            fun realtimeUrl(realtimeUrl: String?) = realtimeUrl(JsonField.ofNullable(realtimeUrl))
+
+            /**
+             * Sets [Builder.realtimeUrl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.realtimeUrl] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun realtimeUrl(realtimeUrl: JsonField<String>) = apply {
+                this.realtimeUrl = realtimeUrl
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): OrganizationUpdateBody =
-                OrganizationUpdateBody(
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Body =
+                Body(
                     apiUrl,
                     isUniversalApi,
                     name,
                     proxyUrl,
                     realtimeUrl,
-                    additionalProperties.toUnmodifiable(),
+                    additionalProperties.toMutableMap(),
                 )
         }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            apiUrl()
+            isUniversalApi()
+            name()
+            proxyUrl()
+            realtimeUrl()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (if (apiUrl.asKnown() == null) 0 else 1) +
+                (if (isUniversalApi.asKnown() == null) 0 else 1) +
+                (if (name.asKnown() == null) 0 else 1) +
+                (if (proxyUrl.asKnown() == null) 0 else 1) +
+                (if (realtimeUrl.asKnown() == null) 0 else 1)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Body &&
+                apiUrl == other.apiUrl &&
+                isUniversalApi == other.isUniversalApi &&
+                name == other.name &&
+                proxyUrl == other.proxyUrl &&
+                realtimeUrl == other.realtimeUrl &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(apiUrl, isUniversalApi, name, proxyUrl, realtimeUrl, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{apiUrl=$apiUrl, isUniversalApi=$isUniversalApi, name=$name, proxyUrl=$proxyUrl, realtimeUrl=$realtimeUrl, additionalProperties=$additionalProperties}"
     }
-
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -200,145 +659,15 @@ constructor(
         }
 
         return other is OrganizationUpdateParams &&
-            this.organizationId == other.organizationId &&
-            this.apiUrl == other.apiUrl &&
-            this.isUniversalApi == other.isUniversalApi &&
-            this.name == other.name &&
-            this.proxyUrl == other.proxyUrl &&
-            this.realtimeUrl == other.realtimeUrl &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+            organizationId == other.organizationId &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            organizationId,
-            apiUrl,
-            isUniversalApi,
-            name,
-            proxyUrl,
-            realtimeUrl,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
-    }
+    override fun hashCode(): Int =
+        Objects.hash(organizationId, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "OrganizationUpdateParams{organizationId=$organizationId, apiUrl=$apiUrl, isUniversalApi=$isUniversalApi, name=$name, proxyUrl=$proxyUrl, realtimeUrl=$realtimeUrl, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
-
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    @NoAutoDetect
-    class Builder {
-
-        private var organizationId: String? = null
-        private var apiUrl: String? = null
-        private var isUniversalApi: Boolean? = null
-        private var name: String? = null
-        private var proxyUrl: String? = null
-        private var realtimeUrl: String? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(organizationUpdateParams: OrganizationUpdateParams) = apply {
-            this.organizationId = organizationUpdateParams.organizationId
-            this.apiUrl = organizationUpdateParams.apiUrl
-            this.isUniversalApi = organizationUpdateParams.isUniversalApi
-            this.name = organizationUpdateParams.name
-            this.proxyUrl = organizationUpdateParams.proxyUrl
-            this.realtimeUrl = organizationUpdateParams.realtimeUrl
-            additionalQueryParams(organizationUpdateParams.additionalQueryParams)
-            additionalHeaders(organizationUpdateParams.additionalHeaders)
-            additionalBodyProperties(organizationUpdateParams.additionalBodyProperties)
-        }
-
-        /** Organization id */
-        fun organizationId(organizationId: String) = apply { this.organizationId = organizationId }
-
-        fun apiUrl(apiUrl: String) = apply { this.apiUrl = apiUrl }
-
-        fun isUniversalApi(isUniversalApi: Boolean) = apply { this.isUniversalApi = isUniversalApi }
-
-        /** Name of the organization */
-        fun name(name: String) = apply { this.name = name }
-
-        fun proxyUrl(proxyUrl: String) = apply { this.proxyUrl = proxyUrl }
-
-        fun realtimeUrl(realtimeUrl: String) = apply { this.realtimeUrl = realtimeUrl }
-
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
-        }
-
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
-        }
-
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            this.additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
-
-        fun build(): OrganizationUpdateParams =
-            OrganizationUpdateParams(
-                checkNotNull(organizationId) { "`organizationId` is required but was not set" },
-                apiUrl,
-                isUniversalApi,
-                name,
-                proxyUrl,
-                realtimeUrl,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
-    }
+        "OrganizationUpdateParams{organizationId=$organizationId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

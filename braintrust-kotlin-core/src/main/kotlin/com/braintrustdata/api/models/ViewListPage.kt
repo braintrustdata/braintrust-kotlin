@@ -2,29 +2,107 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.AutoPager
+import com.braintrustdata.api.core.Page
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.ViewService
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
+/** @see ViewService.list */
 class ViewListPage
 private constructor(
-    private val viewsService: ViewService,
+    private val service: ViewService,
     private val params: ViewListParams,
-    private val response: Response,
-) {
+    private val response: ViewListPageResponse,
+) : Page<View> {
 
-    fun response(): Response = response
+    /**
+     * Delegates to [ViewListPageResponse], but gracefully handles missing data.
+     *
+     * @see ViewListPageResponse.objects
+     */
+    fun objects(): List<View> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun objects(): List<View> = response().objects()
+    override fun items(): List<View> = objects()
+
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
+
+    fun nextPageParams(): ViewListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
+        } else {
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
+        }
+
+    override fun nextPage(): ViewListPage = service.list(nextPageParams())
+
+    fun autoPager(): AutoPager<View> = AutoPager.from(this)
+
+    /** The parameters that were used to request this page. */
+    fun params(): ViewListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): ViewListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [ViewListPage].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [ViewListPage]. */
+    class Builder internal constructor() {
+
+        private var service: ViewService? = null
+        private var params: ViewListParams? = null
+        private var response: ViewListPageResponse? = null
+
+        internal fun from(viewListPage: ViewListPage) = apply {
+            service = viewListPage.service
+            params = viewListPage.params
+            response = viewListPage.response
+        }
+
+        fun service(service: ViewService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: ViewListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: ViewListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [ViewListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): ViewListPage =
+            ViewListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -32,142 +110,12 @@ private constructor(
         }
 
         return other is ViewListPage &&
-            this.viewsService == other.viewsService &&
-            this.params == other.params &&
-            this.response == other.response
+            service == other.service &&
+            params == other.params &&
+            response == other.response
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            viewsService,
-            params,
-            response,
-        )
-    }
+    override fun hashCode(): Int = Objects.hash(service, params, response)
 
-    override fun toString() =
-        "ViewListPage{viewsService=$viewsService, params=$params, response=$response}"
-
-    fun hasNextPage(): Boolean {
-        return !objects().isEmpty()
-    }
-
-    fun getNextPageParams(): ViewListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
-
-        return if (params.endingBefore() != null) {
-            ViewListParams.builder().from(params).endingBefore(objects().first().id()).build()
-        } else {
-            ViewListParams.builder().from(params).startingAfter(objects().last().id()).build()
-        }
-    }
-
-    fun getNextPage(): ViewListPage? {
-        return getNextPageParams()?.let { viewsService.list(it) }
-    }
-
-    fun autoPager(): AutoPager = AutoPager(this)
-
-    companion object {
-
-        fun of(viewsService: ViewService, params: ViewListParams, response: Response) =
-            ViewListPage(
-                viewsService,
-                params,
-                response,
-            )
-    }
-
-    @JsonDeserialize(builder = Response.Builder::class)
-    @NoAutoDetect
-    class Response
-    constructor(
-        private val objects: JsonField<List<View>>,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
-
-        private var validated: Boolean = false
-
-        fun objects(): List<View> = objects.getNullable("objects") ?: listOf()
-
-        @JsonProperty("objects") fun _objects(): JsonField<List<View>>? = objects
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun validate(): Response = apply {
-            if (!validated) {
-                objects().map { it.validate() }
-                validated = true
-            }
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Response &&
-                this.objects == other.objects &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            return Objects.hash(objects, additionalProperties)
-        }
-
-        override fun toString() =
-            "ViewListPage.Response{objects=$objects, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var objects: JsonField<List<View>> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(page: Response) = apply {
-                this.objects = page.objects
-                this.additionalProperties.putAll(page.additionalProperties)
-            }
-
-            fun objects(objects: List<View>) = objects(JsonField.of(objects))
-
-            @JsonProperty("objects")
-            fun objects(objects: JsonField<List<View>>) = apply { this.objects = objects }
-
-            @JsonAnySetter
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            fun build() = Response(objects, additionalProperties.toUnmodifiable())
-        }
-    }
-
-    class AutoPager
-    constructor(
-        private val firstPage: ViewListPage,
-    ) : Sequence<View> {
-
-        override fun iterator(): Iterator<View> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    yield(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
-    }
+    override fun toString() = "ViewListPage{service=$service, params=$params, response=$response}"
 }

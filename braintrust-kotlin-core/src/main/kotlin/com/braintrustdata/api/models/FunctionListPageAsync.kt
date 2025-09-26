@@ -2,31 +2,107 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.AutoPagerAsync
+import com.braintrustdata.api.core.PageAsync
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.FunctionServiceAsync
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 
+/** @see FunctionServiceAsync.list */
 class FunctionListPageAsync
 private constructor(
-    private val functionsService: FunctionServiceAsync,
+    private val service: FunctionServiceAsync,
     private val params: FunctionListParams,
-    private val response: Response,
-) {
+    private val response: FunctionListPageResponse,
+) : PageAsync<Function> {
 
-    fun response(): Response = response
+    /**
+     * Delegates to [FunctionListPageResponse], but gracefully handles missing data.
+     *
+     * @see FunctionListPageResponse.objects
+     */
+    fun objects(): List<Function> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun objects(): List<Function> = response().objects()
+    override fun items(): List<Function> = objects()
+
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
+
+    fun nextPageParams(): FunctionListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
+        } else {
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
+        }
+
+    override suspend fun nextPage(): FunctionListPageAsync = service.list(nextPageParams())
+
+    fun autoPager(): AutoPagerAsync<Function> = AutoPagerAsync.from(this)
+
+    /** The parameters that were used to request this page. */
+    fun params(): FunctionListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): FunctionListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [FunctionListPageAsync].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [FunctionListPageAsync]. */
+    class Builder internal constructor() {
+
+        private var service: FunctionServiceAsync? = null
+        private var params: FunctionListParams? = null
+        private var response: FunctionListPageResponse? = null
+
+        internal fun from(functionListPageAsync: FunctionListPageAsync) = apply {
+            service = functionListPageAsync.service
+            params = functionListPageAsync.params
+            response = functionListPageAsync.response
+        }
+
+        fun service(service: FunctionServiceAsync) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: FunctionListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: FunctionListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [FunctionListPageAsync].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): FunctionListPageAsync =
+            FunctionListPageAsync(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -34,146 +110,13 @@ private constructor(
         }
 
         return other is FunctionListPageAsync &&
-            this.functionsService == other.functionsService &&
-            this.params == other.params &&
-            this.response == other.response
+            service == other.service &&
+            params == other.params &&
+            response == other.response
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            functionsService,
-            params,
-            response,
-        )
-    }
+    override fun hashCode(): Int = Objects.hash(service, params, response)
 
     override fun toString() =
-        "FunctionListPageAsync{functionsService=$functionsService, params=$params, response=$response}"
-
-    fun hasNextPage(): Boolean {
-        return !objects().isEmpty()
-    }
-
-    fun getNextPageParams(): FunctionListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
-
-        return if (params.endingBefore() != null) {
-            FunctionListParams.builder().from(params).endingBefore(objects().first().id()).build()
-        } else {
-            FunctionListParams.builder().from(params).startingAfter(objects().last().id()).build()
-        }
-    }
-
-    suspend fun getNextPage(): FunctionListPageAsync? {
-        return getNextPageParams()?.let { functionsService.list(it) }
-    }
-
-    fun autoPager(): AutoPager = AutoPager(this)
-
-    companion object {
-
-        fun of(
-            functionsService: FunctionServiceAsync,
-            params: FunctionListParams,
-            response: Response
-        ) =
-            FunctionListPageAsync(
-                functionsService,
-                params,
-                response,
-            )
-    }
-
-    @JsonDeserialize(builder = Response.Builder::class)
-    @NoAutoDetect
-    class Response
-    constructor(
-        private val objects: JsonField<List<Function>>,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
-
-        private var validated: Boolean = false
-
-        fun objects(): List<Function> = objects.getNullable("objects") ?: listOf()
-
-        @JsonProperty("objects") fun _objects(): JsonField<List<Function>>? = objects
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun validate(): Response = apply {
-            if (!validated) {
-                objects().map { it.validate() }
-                validated = true
-            }
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Response &&
-                this.objects == other.objects &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            return Objects.hash(objects, additionalProperties)
-        }
-
-        override fun toString() =
-            "FunctionListPageAsync.Response{objects=$objects, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var objects: JsonField<List<Function>> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(page: Response) = apply {
-                this.objects = page.objects
-                this.additionalProperties.putAll(page.additionalProperties)
-            }
-
-            fun objects(objects: List<Function>) = objects(JsonField.of(objects))
-
-            @JsonProperty("objects")
-            fun objects(objects: JsonField<List<Function>>) = apply { this.objects = objects }
-
-            @JsonAnySetter
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            fun build() = Response(objects, additionalProperties.toUnmodifiable())
-        }
-    }
-
-    class AutoPager
-    constructor(
-        private val firstPage: FunctionListPageAsync,
-    ) : Flow<Function> {
-
-        override suspend fun collect(collector: FlowCollector<Function>) {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    collector.emit(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
-    }
+        "FunctionListPageAsync{service=$service, params=$params, response=$response}"
 }

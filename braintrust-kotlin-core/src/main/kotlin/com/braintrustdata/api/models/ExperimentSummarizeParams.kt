@@ -2,101 +2,74 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
 import java.util.Objects
 
+/** Summarize experiment */
 class ExperimentSummarizeParams
-constructor(
-    private val experimentId: String,
+private constructor(
+    private val experimentId: String?,
     private val comparisonExperimentId: String?,
     private val summarizeScores: Boolean?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-) {
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun experimentId(): String = experimentId
+    /** Experiment id */
+    fun experimentId(): String? = experimentId
 
+    /**
+     * The experiment to compare against, if summarizing scores and metrics. If omitted, will fall
+     * back to the `base_exp_id` stored in the experiment metadata, and then to the most recent
+     * experiment run in the same project. Must pass `summarize_scores=true` for this id to be used
+     */
     fun comparisonExperimentId(): String? = comparisonExperimentId
 
+    /**
+     * Whether to summarize the scores and metrics. If false (or omitted), only the metadata will be
+     * returned.
+     */
     fun summarizeScores(): Boolean? = summarizeScores
 
-    internal fun getQueryParams(): Map<String, List<String>> {
-        val params = mutableMapOf<String, List<String>>()
-        this.comparisonExperimentId?.let {
-            params.put("comparison_experiment_id", listOf(it.toString()))
-        }
-        this.summarizeScores?.let { params.put("summarize_scores", listOf(it.toString())) }
-        params.putAll(additionalQueryParams)
-        return params.toUnmodifiable()
-    }
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> experimentId
-            else -> ""
-        }
-    }
-
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is ExperimentSummarizeParams &&
-            this.experimentId == other.experimentId &&
-            this.comparisonExperimentId == other.comparisonExperimentId &&
-            this.summarizeScores == other.summarizeScores &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            experimentId,
-            comparisonExperimentId,
-            summarizeScores,
-            additionalQueryParams,
-            additionalHeaders,
-        )
-    }
-
-    override fun toString() =
-        "ExperimentSummarizeParams{experimentId=$experimentId, comparisonExperimentId=$comparisonExperimentId, summarizeScores=$summarizeScores, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
 
     companion object {
 
+        fun none(): ExperimentSummarizeParams = builder().build()
+
+        /**
+         * Returns a mutable builder for constructing an instance of [ExperimentSummarizeParams].
+         */
         fun builder() = Builder()
     }
 
-    @NoAutoDetect
-    class Builder {
+    /** A builder for [ExperimentSummarizeParams]. */
+    class Builder internal constructor() {
 
         private var experimentId: String? = null
         private var comparisonExperimentId: String? = null
         private var summarizeScores: Boolean? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(experimentSummarizeParams: ExperimentSummarizeParams) = apply {
-            this.experimentId = experimentSummarizeParams.experimentId
-            this.comparisonExperimentId = experimentSummarizeParams.comparisonExperimentId
-            this.summarizeScores = experimentSummarizeParams.summarizeScores
-            additionalQueryParams(experimentSummarizeParams.additionalQueryParams)
-            additionalHeaders(experimentSummarizeParams.additionalHeaders)
+            experimentId = experimentSummarizeParams.experimentId
+            comparisonExperimentId = experimentSummarizeParams.comparisonExperimentId
+            summarizeScores = experimentSummarizeParams.summarizeScores
+            additionalHeaders = experimentSummarizeParams.additionalHeaders.toBuilder()
+            additionalQueryParams = experimentSummarizeParams.additionalQueryParams.toBuilder()
         }
 
         /** Experiment id */
-        fun experimentId(experimentId: String) = apply { this.experimentId = experimentId }
+        fun experimentId(experimentId: String?) = apply { this.experimentId = experimentId }
 
         /**
          * The experiment to compare against, if summarizing scores and metrics. If omitted, will
@@ -104,7 +77,7 @@ constructor(
          * recent experiment run in the same project. Must pass `summarize_scores=true` for this id
          * to be used
          */
-        fun comparisonExperimentId(comparisonExperimentId: String) = apply {
+        fun comparisonExperimentId(comparisonExperimentId: String?) = apply {
             this.comparisonExperimentId = comparisonExperimentId
         }
 
@@ -112,57 +85,169 @@ constructor(
          * Whether to summarize the scores and metrics. If false (or omitted), only the metadata
          * will be returned.
          */
-        fun summarizeScores(summarizeScores: Boolean) = apply {
+        fun summarizeScores(summarizeScores: Boolean?) = apply {
             this.summarizeScores = summarizeScores
         }
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
+        /**
+         * Alias for [Builder.summarizeScores].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun summarizeScores(summarizeScores: Boolean) = summarizeScores(summarizeScores as Boolean?)
 
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
         }
 
         fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
             this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
+            putAllAdditionalHeaders(additionalHeaders)
         }
 
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
         }
 
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
         }
 
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
 
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [ExperimentSummarizeParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ExperimentSummarizeParams =
             ExperimentSummarizeParams(
-                checkNotNull(experimentId) { "`experimentId` is required but was not set" },
+                experimentId,
                 comparisonExperimentId,
                 summarizeScores,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
             )
     }
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> experimentId ?: ""
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                comparisonExperimentId?.let { put("comparison_experiment_id", it) }
+                summarizeScores?.let { put("summarize_scores", it.toString()) }
+                putAll(additionalQueryParams)
+            }
+            .build()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is ExperimentSummarizeParams &&
+            experimentId == other.experimentId &&
+            comparisonExperimentId == other.comparisonExperimentId &&
+            summarizeScores == other.summarizeScores &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
+    }
+
+    override fun hashCode(): Int =
+        Objects.hash(
+            experimentId,
+            comparisonExperimentId,
+            summarizeScores,
+            additionalHeaders,
+            additionalQueryParams,
+        )
+
+    override fun toString() =
+        "ExperimentSummarizeParams{experimentId=$experimentId, comparisonExperimentId=$comparisonExperimentId, summarizeScores=$summarizeScores, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

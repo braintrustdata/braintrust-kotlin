@@ -2,31 +2,107 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.AutoPagerAsync
+import com.braintrustdata.api.core.PageAsync
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.async.ApiKeyServiceAsync
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 
+/** @see ApiKeyServiceAsync.list */
 class ApiKeyListPageAsync
 private constructor(
-    private val apiKeysService: ApiKeyServiceAsync,
+    private val service: ApiKeyServiceAsync,
     private val params: ApiKeyListParams,
-    private val response: Response,
-) {
+    private val response: ApiKeyListPageResponse,
+) : PageAsync<ApiKey> {
 
-    fun response(): Response = response
+    /**
+     * Delegates to [ApiKeyListPageResponse], but gracefully handles missing data.
+     *
+     * @see ApiKeyListPageResponse.objects
+     */
+    fun objects(): List<ApiKey> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun objects(): List<ApiKey> = response().objects()
+    override fun items(): List<ApiKey> = objects()
+
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
+
+    fun nextPageParams(): ApiKeyListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
+        } else {
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
+        }
+
+    override suspend fun nextPage(): ApiKeyListPageAsync = service.list(nextPageParams())
+
+    fun autoPager(): AutoPagerAsync<ApiKey> = AutoPagerAsync.from(this)
+
+    /** The parameters that were used to request this page. */
+    fun params(): ApiKeyListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): ApiKeyListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [ApiKeyListPageAsync].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [ApiKeyListPageAsync]. */
+    class Builder internal constructor() {
+
+        private var service: ApiKeyServiceAsync? = null
+        private var params: ApiKeyListParams? = null
+        private var response: ApiKeyListPageResponse? = null
+
+        internal fun from(apiKeyListPageAsync: ApiKeyListPageAsync) = apply {
+            service = apiKeyListPageAsync.service
+            params = apiKeyListPageAsync.params
+            response = apiKeyListPageAsync.response
+        }
+
+        fun service(service: ApiKeyServiceAsync) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: ApiKeyListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: ApiKeyListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [ApiKeyListPageAsync].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): ApiKeyListPageAsync =
+            ApiKeyListPageAsync(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -34,142 +110,13 @@ private constructor(
         }
 
         return other is ApiKeyListPageAsync &&
-            this.apiKeysService == other.apiKeysService &&
-            this.params == other.params &&
-            this.response == other.response
+            service == other.service &&
+            params == other.params &&
+            response == other.response
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            apiKeysService,
-            params,
-            response,
-        )
-    }
+    override fun hashCode(): Int = Objects.hash(service, params, response)
 
     override fun toString() =
-        "ApiKeyListPageAsync{apiKeysService=$apiKeysService, params=$params, response=$response}"
-
-    fun hasNextPage(): Boolean {
-        return !objects().isEmpty()
-    }
-
-    fun getNextPageParams(): ApiKeyListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
-
-        return if (params.endingBefore() != null) {
-            ApiKeyListParams.builder().from(params).endingBefore(objects().first().id()).build()
-        } else {
-            ApiKeyListParams.builder().from(params).startingAfter(objects().last().id()).build()
-        }
-    }
-
-    suspend fun getNextPage(): ApiKeyListPageAsync? {
-        return getNextPageParams()?.let { apiKeysService.list(it) }
-    }
-
-    fun autoPager(): AutoPager = AutoPager(this)
-
-    companion object {
-
-        fun of(apiKeysService: ApiKeyServiceAsync, params: ApiKeyListParams, response: Response) =
-            ApiKeyListPageAsync(
-                apiKeysService,
-                params,
-                response,
-            )
-    }
-
-    @JsonDeserialize(builder = Response.Builder::class)
-    @NoAutoDetect
-    class Response
-    constructor(
-        private val objects: JsonField<List<ApiKey>>,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
-
-        private var validated: Boolean = false
-
-        fun objects(): List<ApiKey> = objects.getNullable("objects") ?: listOf()
-
-        @JsonProperty("objects") fun _objects(): JsonField<List<ApiKey>>? = objects
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun validate(): Response = apply {
-            if (!validated) {
-                objects().map { it.validate() }
-                validated = true
-            }
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Response &&
-                this.objects == other.objects &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            return Objects.hash(objects, additionalProperties)
-        }
-
-        override fun toString() =
-            "ApiKeyListPageAsync.Response{objects=$objects, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var objects: JsonField<List<ApiKey>> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(page: Response) = apply {
-                this.objects = page.objects
-                this.additionalProperties.putAll(page.additionalProperties)
-            }
-
-            fun objects(objects: List<ApiKey>) = objects(JsonField.of(objects))
-
-            @JsonProperty("objects")
-            fun objects(objects: JsonField<List<ApiKey>>) = apply { this.objects = objects }
-
-            @JsonAnySetter
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            fun build() = Response(objects, additionalProperties.toUnmodifiable())
-        }
-    }
-
-    class AutoPager
-    constructor(
-        private val firstPage: ApiKeyListPageAsync,
-    ) : Flow<ApiKey> {
-
-        override suspend fun collect(collector: FlowCollector<ApiKey>) {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    collector.emit(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
-    }
+        "ApiKeyListPageAsync{service=$service, params=$params, response=$response}"
 }

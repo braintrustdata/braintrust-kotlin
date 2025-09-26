@@ -5,426 +5,865 @@ package com.braintrustdata.api.models
 import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkKnown
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
+/**
+ * Create a new prompt. If there is an existing prompt in the project with the same slug as the one
+ * specified in the request, will return the existing prompt unmodified
+ */
 class PromptCreateParams
-constructor(
-    private val name: String,
-    private val projectId: String,
-    private val slug: String,
-    private val description: String?,
-    private val functionType: FunctionType?,
-    private val promptData: PromptData?,
-    private val tags: List<String>?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+private constructor(
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun name(): String = name
+    /**
+     * Name of the prompt
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun name(): String = body.name()
 
-    fun projectId(): String = projectId
+    /**
+     * Unique identifier for the project that the prompt belongs under
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun projectId(): String = body.projectId()
 
-    fun slug(): String = slug
+    /**
+     * Unique identifier for the prompt
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun slug(): String = body.slug()
 
-    fun description(): String? = description
+    /**
+     * Textual description of the prompt
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun description(): String? = body.description()
 
-    fun functionType(): FunctionType? = functionType
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun functionType(): FunctionType? = body.functionType()
 
-    fun promptData(): PromptData? = promptData
+    /**
+     * The prompt, model, and its parameters
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptData(): PromptData? = body.promptData()
 
-    fun tags(): List<String>? = tags
+    /**
+     * A list of tags for the prompt
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun tags(): List<String>? = body.tags()
 
-    internal fun getBody(): PromptCreateBody {
-        return PromptCreateBody(
-            name,
-            projectId,
-            slug,
-            description,
-            functionType,
-            promptData,
-            tags,
-            additionalBodyProperties,
-        )
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _name(): JsonField<String> = body._name()
+
+    /**
+     * Returns the raw JSON value of [projectId].
+     *
+     * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _projectId(): JsonField<String> = body._projectId()
+
+    /**
+     * Returns the raw JSON value of [slug].
+     *
+     * Unlike [slug], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _slug(): JsonField<String> = body._slug()
+
+    /**
+     * Returns the raw JSON value of [description].
+     *
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _description(): JsonField<String> = body._description()
+
+    /**
+     * Returns the raw JSON value of [functionType].
+     *
+     * Unlike [functionType], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _functionType(): JsonField<FunctionType> = body._functionType()
+
+    /**
+     * Returns the raw JSON value of [promptData].
+     *
+     * Unlike [promptData], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _promptData(): JsonField<PromptData> = body._promptData()
+
+    /**
+     * Returns the raw JSON value of [tags].
+     *
+     * Unlike [tags], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _tags(): JsonField<List<String>> = body._tags()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [PromptCreateParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .name()
+         * .projectId()
+         * .slug()
+         * ```
+         */
+        fun builder() = Builder()
     }
 
-    internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
+    /** A builder for [PromptCreateParams]. */
+    class Builder internal constructor() {
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-    @JsonDeserialize(builder = PromptCreateBody.Builder::class)
-    @NoAutoDetect
-    class PromptCreateBody
-    internal constructor(
-        private val name: String?,
-        private val projectId: String?,
-        private val slug: String?,
-        private val description: String?,
-        private val functionType: FunctionType?,
-        private val promptData: PromptData?,
-        private val tags: List<String>?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+        internal fun from(promptCreateParams: PromptCreateParams) = apply {
+            body = promptCreateParams.body.toBuilder()
+            additionalHeaders = promptCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = promptCreateParams.additionalQueryParams.toBuilder()
+        }
 
-        private var hashCode: Int = 0
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [name]
+         * - [projectId]
+         * - [slug]
+         * - [description]
+         * - [functionType]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** Name of the prompt */
-        @JsonProperty("name") fun name(): String? = name
+        fun name(name: String) = apply { body.name(name) }
+
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { body.name(name) }
 
         /** Unique identifier for the project that the prompt belongs under */
-        @JsonProperty("project_id") fun projectId(): String? = projectId
+        fun projectId(projectId: String) = apply { body.projectId(projectId) }
+
+        /**
+         * Sets [Builder.projectId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.projectId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun projectId(projectId: JsonField<String>) = apply { body.projectId(projectId) }
 
         /** Unique identifier for the prompt */
-        @JsonProperty("slug") fun slug(): String? = slug
+        fun slug(slug: String) = apply { body.slug(slug) }
+
+        /**
+         * Sets [Builder.slug] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.slug] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun slug(slug: JsonField<String>) = apply { body.slug(slug) }
 
         /** Textual description of the prompt */
-        @JsonProperty("description") fun description(): String? = description
+        fun description(description: String?) = apply { body.description(description) }
 
-        @JsonProperty("function_type") fun functionType(): FunctionType? = functionType
+        /**
+         * Sets [Builder.description] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun description(description: JsonField<String>) = apply { body.description(description) }
+
+        fun functionType(functionType: FunctionType?) = apply { body.functionType(functionType) }
+
+        /**
+         * Sets [Builder.functionType] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.functionType] with a well-typed [FunctionType] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun functionType(functionType: JsonField<FunctionType>) = apply {
+            body.functionType(functionType)
+        }
 
         /** The prompt, model, and its parameters */
-        @JsonProperty("prompt_data") fun promptData(): PromptData? = promptData
+        fun promptData(promptData: PromptData?) = apply { body.promptData(promptData) }
+
+        /**
+         * Sets [Builder.promptData] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptData] with a well-typed [PromptData] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun promptData(promptData: JsonField<PromptData>) = apply { body.promptData(promptData) }
 
         /** A list of tags for the prompt */
-        @JsonProperty("tags") fun tags(): List<String>? = tags
+        fun tags(tags: List<String>?) = apply { body.tags(tags) }
+
+        /**
+         * Sets [Builder.tags] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.tags] with a well-typed `List<String>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun tags(tags: JsonField<List<String>>) = apply { body.tags(tags) }
+
+        /**
+         * Adds a single [String] to [tags].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addTag(tag: String) = apply { body.addTag(tag) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [PromptCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .name()
+         * .projectId()
+         * .slug()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): PromptCreateParams =
+            PromptCreateParams(
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
+    fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val name: JsonField<String>,
+        private val projectId: JsonField<String>,
+        private val slug: JsonField<String>,
+        private val description: JsonField<String>,
+        private val functionType: JsonField<FunctionType>,
+        private val promptData: JsonField<PromptData>,
+        private val tags: JsonField<List<String>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("project_id")
+            @ExcludeMissing
+            projectId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("slug") @ExcludeMissing slug: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("description")
+            @ExcludeMissing
+            description: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("function_type")
+            @ExcludeMissing
+            functionType: JsonField<FunctionType> = JsonMissing.of(),
+            @JsonProperty("prompt_data")
+            @ExcludeMissing
+            promptData: JsonField<PromptData> = JsonMissing.of(),
+            @JsonProperty("tags") @ExcludeMissing tags: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(name, projectId, slug, description, functionType, promptData, tags, mutableMapOf())
+
+        /**
+         * Name of the prompt
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun name(): String = name.getRequired("name")
+
+        /**
+         * Unique identifier for the project that the prompt belongs under
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun projectId(): String = projectId.getRequired("project_id")
+
+        /**
+         * Unique identifier for the prompt
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun slug(): String = slug.getRequired("slug")
+
+        /**
+         * Textual description of the prompt
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun description(): String? = description.getNullable("description")
+
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun functionType(): FunctionType? = functionType.getNullable("function_type")
+
+        /**
+         * The prompt, model, and its parameters
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun promptData(): PromptData? = promptData.getNullable("prompt_data")
+
+        /**
+         * A list of tags for the prompt
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun tags(): List<String>? = tags.getNullable("tags")
+
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+        /**
+         * Returns the raw JSON value of [projectId].
+         *
+         * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("project_id") @ExcludeMissing fun _projectId(): JsonField<String> = projectId
+
+        /**
+         * Returns the raw JSON value of [slug].
+         *
+         * Unlike [slug], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("slug") @ExcludeMissing fun _slug(): JsonField<String> = slug
+
+        /**
+         * Returns the raw JSON value of [description].
+         *
+         * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("description")
+        @ExcludeMissing
+        fun _description(): JsonField<String> = description
+
+        /**
+         * Returns the raw JSON value of [functionType].
+         *
+         * Unlike [functionType], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("function_type")
+        @ExcludeMissing
+        fun _functionType(): JsonField<FunctionType> = functionType
+
+        /**
+         * Returns the raw JSON value of [promptData].
+         *
+         * Unlike [promptData], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("prompt_data")
+        @ExcludeMissing
+        fun _promptData(): JsonField<PromptData> = promptData
+
+        /**
+         * Returns the raw JSON value of [tags].
+         *
+         * Unlike [tags], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("tags") @ExcludeMissing fun _tags(): JsonField<List<String>> = tags
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is PromptCreateBody &&
-                this.name == other.name &&
-                this.projectId == other.projectId &&
-                this.slug == other.slug &&
-                this.description == other.description &&
-                this.functionType == other.functionType &&
-                this.promptData == other.promptData &&
-                this.tags == other.tags &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        name,
-                        projectId,
-                        slug,
-                        description,
-                        functionType,
-                        promptData,
-                        tags,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "PromptCreateBody{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
-
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .name()
+             * .projectId()
+             * .slug()
+             * ```
+             */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
 
-            private var name: String? = null
-            private var projectId: String? = null
-            private var slug: String? = null
-            private var description: String? = null
-            private var functionType: FunctionType? = null
-            private var promptData: PromptData? = null
-            private var tags: List<String>? = null
+            private var name: JsonField<String>? = null
+            private var projectId: JsonField<String>? = null
+            private var slug: JsonField<String>? = null
+            private var description: JsonField<String> = JsonMissing.of()
+            private var functionType: JsonField<FunctionType> = JsonMissing.of()
+            private var promptData: JsonField<PromptData> = JsonMissing.of()
+            private var tags: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(promptCreateBody: PromptCreateBody) = apply {
-                this.name = promptCreateBody.name
-                this.projectId = promptCreateBody.projectId
-                this.slug = promptCreateBody.slug
-                this.description = promptCreateBody.description
-                this.functionType = promptCreateBody.functionType
-                this.promptData = promptCreateBody.promptData
-                this.tags = promptCreateBody.tags
-                additionalProperties(promptCreateBody.additionalProperties)
+            internal fun from(body: Body) = apply {
+                name = body.name
+                projectId = body.projectId
+                slug = body.slug
+                description = body.description
+                functionType = body.functionType
+                promptData = body.promptData
+                tags = body.tags.map { it.toMutableList() }
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** Name of the prompt */
-            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+            fun name(name: String) = name(JsonField.of(name))
+
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /** Unique identifier for the project that the prompt belongs under */
-            @JsonProperty("project_id")
-            fun projectId(projectId: String) = apply { this.projectId = projectId }
+            fun projectId(projectId: String) = projectId(JsonField.of(projectId))
+
+            /**
+             * Sets [Builder.projectId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.projectId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
 
             /** Unique identifier for the prompt */
-            @JsonProperty("slug") fun slug(slug: String) = apply { this.slug = slug }
+            fun slug(slug: String) = slug(JsonField.of(slug))
+
+            /**
+             * Sets [Builder.slug] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.slug] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun slug(slug: JsonField<String>) = apply { this.slug = slug }
 
             /** Textual description of the prompt */
-            @JsonProperty("description")
-            fun description(description: String) = apply { this.description = description }
+            fun description(description: String?) = description(JsonField.ofNullable(description))
 
-            @JsonProperty("function_type")
-            fun functionType(functionType: FunctionType) = apply {
+            /**
+             * Sets [Builder.description] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.description] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun description(description: JsonField<String>) = apply {
+                this.description = description
+            }
+
+            fun functionType(functionType: FunctionType?) =
+                functionType(JsonField.ofNullable(functionType))
+
+            /**
+             * Sets [Builder.functionType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.functionType] with a well-typed [FunctionType] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun functionType(functionType: JsonField<FunctionType>) = apply {
                 this.functionType = functionType
             }
 
             /** The prompt, model, and its parameters */
-            @JsonProperty("prompt_data")
-            fun promptData(promptData: PromptData) = apply { this.promptData = promptData }
+            fun promptData(promptData: PromptData?) = promptData(JsonField.ofNullable(promptData))
+
+            /**
+             * Sets [Builder.promptData] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptData] with a well-typed [PromptData] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun promptData(promptData: JsonField<PromptData>) = apply {
+                this.promptData = promptData
+            }
 
             /** A list of tags for the prompt */
-            @JsonProperty("tags") fun tags(tags: List<String>) = apply { this.tags = tags }
+            fun tags(tags: List<String>?) = tags(JsonField.ofNullable(tags))
+
+            /**
+             * Sets [Builder.tags] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.tags] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun tags(tags: JsonField<List<String>>) = apply {
+                this.tags = tags.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [tags].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addTag(tag: String) = apply {
+                tags =
+                    (tags ?: JsonField.of(mutableListOf())).also { checkKnown("tags", it).add(tag) }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): PromptCreateBody =
-                PromptCreateBody(
-                    checkNotNull(name) { "`name` is required but was not set" },
-                    checkNotNull(projectId) { "`projectId` is required but was not set" },
-                    checkNotNull(slug) { "`slug` is required but was not set" },
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .name()
+             * .projectId()
+             * .slug()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("name", name),
+                    checkRequired("projectId", projectId),
+                    checkRequired("slug", slug),
                     description,
                     functionType,
                     promptData,
-                    tags?.toUnmodifiable(),
-                    additionalProperties.toUnmodifiable(),
+                    (tags ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
                 )
         }
-    }
 
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
+        private var validated: Boolean = false
 
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is PromptCreateParams &&
-            this.name == other.name &&
-            this.projectId == other.projectId &&
-            this.slug == other.slug &&
-            this.description == other.description &&
-            this.functionType == other.functionType &&
-            this.promptData == other.promptData &&
-            this.tags == other.tags &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            name,
-            projectId,
-            slug,
-            description,
-            functionType,
-            promptData,
-            tags,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
-    }
-
-    override fun toString() =
-        "PromptCreateParams{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
-
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    @NoAutoDetect
-    class Builder {
-
-        private var name: String? = null
-        private var projectId: String? = null
-        private var slug: String? = null
-        private var description: String? = null
-        private var functionType: FunctionType? = null
-        private var promptData: PromptData? = null
-        private var tags: MutableList<String> = mutableListOf()
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(promptCreateParams: PromptCreateParams) = apply {
-            this.name = promptCreateParams.name
-            this.projectId = promptCreateParams.projectId
-            this.slug = promptCreateParams.slug
-            this.description = promptCreateParams.description
-            this.functionType = promptCreateParams.functionType
-            this.promptData = promptCreateParams.promptData
-            this.tags(promptCreateParams.tags ?: listOf())
-            additionalQueryParams(promptCreateParams.additionalQueryParams)
-            additionalHeaders(promptCreateParams.additionalHeaders)
-            additionalBodyProperties(promptCreateParams.additionalBodyProperties)
-        }
-
-        /** Name of the prompt */
-        fun name(name: String) = apply { this.name = name }
-
-        /** Unique identifier for the project that the prompt belongs under */
-        fun projectId(projectId: String) = apply { this.projectId = projectId }
-
-        /** Unique identifier for the prompt */
-        fun slug(slug: String) = apply { this.slug = slug }
-
-        /** Textual description of the prompt */
-        fun description(description: String) = apply { this.description = description }
-
-        fun functionType(functionType: FunctionType) = apply { this.functionType = functionType }
-
-        /** The prompt, model, and its parameters */
-        fun promptData(promptData: PromptData) = apply { this.promptData = promptData }
-
-        /** A list of tags for the prompt */
-        fun tags(tags: List<String>) = apply {
-            this.tags.clear()
-            this.tags.addAll(tags)
-        }
-
-        /** A list of tags for the prompt */
-        fun addTag(tag: String) = apply { this.tags.add(tag) }
-
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
-        }
-
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
-        }
-
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            this.additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
             }
 
-        fun build(): PromptCreateParams =
-            PromptCreateParams(
-                checkNotNull(name) { "`name` is required but was not set" },
-                checkNotNull(projectId) { "`projectId` is required but was not set" },
-                checkNotNull(slug) { "`slug` is required but was not set" },
-                description,
-                functionType,
-                promptData,
-                if (tags.size == 0) null else tags.toUnmodifiable(),
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
-    }
+            name()
+            projectId()
+            slug()
+            description()
+            functionType()?.validate()
+            promptData()?.validate()
+            tags()
+            validated = true
+        }
 
-    class FunctionType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
 
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (if (name.asKnown() == null) 0 else 1) +
+                (if (projectId.asKnown() == null) 0 else 1) +
+                (if (slug.asKnown() == null) 0 else 1) +
+                (if (description.asKnown() == null) 0 else 1) +
+                (functionType.asKnown()?.validity() ?: 0) +
+                (promptData.asKnown()?.validity() ?: 0) +
+                (tags.asKnown()?.size ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is FunctionType && this.value == other.value
+            return other is Body &&
+                name == other.name &&
+                projectId == other.projectId &&
+                slug == other.slug &&
+                description == other.description &&
+                functionType == other.functionType &&
+                promptData == other.promptData &&
+                tags == other.tags &&
+                additionalProperties == other.additionalProperties
         }
 
-        override fun hashCode() = value.hashCode()
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                name,
+                projectId,
+                slug,
+                description,
+                functionType,
+                promptData,
+                tags,
+                additionalProperties,
+            )
+        }
 
-        override fun toString() = value.toString()
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{name=$name, projectId=$projectId, slug=$slug, description=$description, functionType=$functionType, promptData=$promptData, tags=$tags, additionalProperties=$additionalProperties}"
+    }
+
+    class FunctionType @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
 
-            val LLM = FunctionType(JsonField.of("llm"))
+            val LLM = of("llm")
 
-            val SCORER = FunctionType(JsonField.of("scorer"))
+            val SCORER = of("scorer")
 
-            val TASK = FunctionType(JsonField.of("task"))
+            val TASK = of("task")
 
-            val TOOL = FunctionType(JsonField.of("tool"))
+            val TOOL = of("tool")
 
             fun of(value: String) = FunctionType(JsonField.of(value))
         }
 
+        /** An enum containing [FunctionType]'s known values. */
         enum class Known {
             LLM,
             SCORER,
@@ -432,14 +871,33 @@ constructor(
             TOOL,
         }
 
+        /**
+         * An enum containing [FunctionType]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [FunctionType] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
         enum class Value {
             LLM,
             SCORER,
             TASK,
             TOOL,
+            /**
+             * An enum member indicating that [FunctionType] was instantiated with an unknown value.
+             */
             _UNKNOWN,
         }
 
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
         fun value(): Value =
             when (this) {
                 LLM -> Value.LLM
@@ -449,6 +907,15 @@ constructor(
                 else -> Value._UNKNOWN
             }
 
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
         fun known(): Known =
             when (this) {
                 LLM -> Known.LLM
@@ -458,6 +925,71 @@ constructor(
                 else -> throw BraintrustInvalidDataException("Unknown FunctionType: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws BraintrustInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
+
+        private var validated: Boolean = false
+
+        fun validate(): FunctionType = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is FunctionType && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is PromptCreateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
+    }
+
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
+
+    override fun toString() =
+        "PromptCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

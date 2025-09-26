@@ -2,48 +2,642 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.Enum
 import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.checkKnown
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
-@JsonDeserialize(builder = ProjectSettings.Builder::class)
-@NoAutoDetect
 class ProjectSettings
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
+    private val baselineExperimentId: JsonField<String>,
     private val comparisonKey: JsonField<String>,
-    private val additionalProperties: Map<String, JsonValue>,
+    private val spanFieldOrder: JsonField<List<SpanFieldOrder>>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
+    @JsonCreator
+    private constructor(
+        @JsonProperty("baseline_experiment_id")
+        @ExcludeMissing
+        baselineExperimentId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("comparison_key")
+        @ExcludeMissing
+        comparisonKey: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("spanFieldOrder")
+        @ExcludeMissing
+        spanFieldOrder: JsonField<List<SpanFieldOrder>> = JsonMissing.of(),
+    ) : this(baselineExperimentId, comparisonKey, spanFieldOrder, mutableMapOf())
 
-    private var hashCode: Int = 0
+    /**
+     * The id of the experiment to use as the default baseline for comparisons
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun baselineExperimentId(): String? = baselineExperimentId.getNullable("baseline_experiment_id")
 
-    /** The key used to join two experiments (defaults to `input`). */
+    /**
+     * The key used to join two experiments (defaults to `input`)
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun comparisonKey(): String? = comparisonKey.getNullable("comparison_key")
 
-    /** The key used to join two experiments (defaults to `input`). */
-    @JsonProperty("comparison_key") @ExcludeMissing fun _comparisonKey() = comparisonKey
+    /**
+     * The order of the fields to display in the trace view
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun spanFieldOrder(): List<SpanFieldOrder>? = spanFieldOrder.getNullable("spanFieldOrder")
+
+    /**
+     * Returns the raw JSON value of [baselineExperimentId].
+     *
+     * Unlike [baselineExperimentId], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("baseline_experiment_id")
+    @ExcludeMissing
+    fun _baselineExperimentId(): JsonField<String> = baselineExperimentId
+
+    /**
+     * Returns the raw JSON value of [comparisonKey].
+     *
+     * Unlike [comparisonKey], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("comparison_key")
+    @ExcludeMissing
+    fun _comparisonKey(): JsonField<String> = comparisonKey
+
+    /**
+     * Returns the raw JSON value of [spanFieldOrder].
+     *
+     * Unlike [spanFieldOrder], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("spanFieldOrder")
+    @ExcludeMissing
+    fun _spanFieldOrder(): JsonField<List<SpanFieldOrder>> = spanFieldOrder
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun validate(): ProjectSettings = apply {
-        if (!validated) {
-            comparisonKey()
-            validated = true
-        }
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /** Returns a mutable builder for constructing an instance of [ProjectSettings]. */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [ProjectSettings]. */
+    class Builder internal constructor() {
+
+        private var baselineExperimentId: JsonField<String> = JsonMissing.of()
+        private var comparisonKey: JsonField<String> = JsonMissing.of()
+        private var spanFieldOrder: JsonField<MutableList<SpanFieldOrder>>? = null
+        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+        internal fun from(projectSettings: ProjectSettings) = apply {
+            baselineExperimentId = projectSettings.baselineExperimentId
+            comparisonKey = projectSettings.comparisonKey
+            spanFieldOrder = projectSettings.spanFieldOrder.map { it.toMutableList() }
+            additionalProperties = projectSettings.additionalProperties.toMutableMap()
+        }
+
+        /** The id of the experiment to use as the default baseline for comparisons */
+        fun baselineExperimentId(baselineExperimentId: String?) =
+            baselineExperimentId(JsonField.ofNullable(baselineExperimentId))
+
+        /**
+         * Sets [Builder.baselineExperimentId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.baselineExperimentId] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun baselineExperimentId(baselineExperimentId: JsonField<String>) = apply {
+            this.baselineExperimentId = baselineExperimentId
+        }
+
+        /** The key used to join two experiments (defaults to `input`) */
+        fun comparisonKey(comparisonKey: String?) =
+            comparisonKey(JsonField.ofNullable(comparisonKey))
+
+        /**
+         * Sets [Builder.comparisonKey] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.comparisonKey] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun comparisonKey(comparisonKey: JsonField<String>) = apply {
+            this.comparisonKey = comparisonKey
+        }
+
+        /** The order of the fields to display in the trace view */
+        fun spanFieldOrder(spanFieldOrder: List<SpanFieldOrder>?) =
+            spanFieldOrder(JsonField.ofNullable(spanFieldOrder))
+
+        /**
+         * Sets [Builder.spanFieldOrder] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.spanFieldOrder] with a well-typed `List<SpanFieldOrder>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun spanFieldOrder(spanFieldOrder: JsonField<List<SpanFieldOrder>>) = apply {
+            this.spanFieldOrder = spanFieldOrder.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [SpanFieldOrder] to [Builder.spanFieldOrder].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addSpanFieldOrder(spanFieldOrder: SpanFieldOrder) = apply {
+            this.spanFieldOrder =
+                (this.spanFieldOrder ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("spanFieldOrder", it).add(spanFieldOrder)
+                }
+        }
+
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
+
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
+
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [ProjectSettings].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
+        fun build(): ProjectSettings =
+            ProjectSettings(
+                baselineExperimentId,
+                comparisonKey,
+                (spanFieldOrder ?: JsonMissing.of()).map { it.toImmutable() },
+                additionalProperties.toMutableMap(),
+            )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ProjectSettings = apply {
+        if (validated) {
+            return@apply
+        }
+
+        baselineExperimentId()
+        comparisonKey()
+        spanFieldOrder()?.forEach { it.validate() }
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (if (baselineExperimentId.asKnown() == null) 0 else 1) +
+            (if (comparisonKey.asKnown() == null) 0 else 1) +
+            (spanFieldOrder.asKnown()?.sumOf { it.validity().toInt() } ?: 0)
+
+    class SpanFieldOrder
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val columnId: JsonField<String>,
+        private val objectType: JsonField<String>,
+        private val position: JsonField<String>,
+        private val layout: JsonField<Layout>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("column_id")
+            @ExcludeMissing
+            columnId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("object_type")
+            @ExcludeMissing
+            objectType: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("position")
+            @ExcludeMissing
+            position: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("layout") @ExcludeMissing layout: JsonField<Layout> = JsonMissing.of(),
+        ) : this(columnId, objectType, position, layout, mutableMapOf())
+
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun columnId(): String = columnId.getRequired("column_id")
+
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun objectType(): String = objectType.getRequired("object_type")
+
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun position(): String = position.getRequired("position")
+
+        /**
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun layout(): Layout? = layout.getNullable("layout")
+
+        /**
+         * Returns the raw JSON value of [columnId].
+         *
+         * Unlike [columnId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("column_id") @ExcludeMissing fun _columnId(): JsonField<String> = columnId
+
+        /**
+         * Returns the raw JSON value of [objectType].
+         *
+         * Unlike [objectType], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("object_type")
+        @ExcludeMissing
+        fun _objectType(): JsonField<String> = objectType
+
+        /**
+         * Returns the raw JSON value of [position].
+         *
+         * Unlike [position], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("position") @ExcludeMissing fun _position(): JsonField<String> = position
+
+        /**
+         * Returns the raw JSON value of [layout].
+         *
+         * Unlike [layout], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("layout") @ExcludeMissing fun _layout(): JsonField<Layout> = layout
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [SpanFieldOrder].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .columnId()
+             * .objectType()
+             * .position()
+             * ```
+             */
+            fun builder() = Builder()
+        }
+
+        /** A builder for [SpanFieldOrder]. */
+        class Builder internal constructor() {
+
+            private var columnId: JsonField<String>? = null
+            private var objectType: JsonField<String>? = null
+            private var position: JsonField<String>? = null
+            private var layout: JsonField<Layout> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            internal fun from(spanFieldOrder: SpanFieldOrder) = apply {
+                columnId = spanFieldOrder.columnId
+                objectType = spanFieldOrder.objectType
+                position = spanFieldOrder.position
+                layout = spanFieldOrder.layout
+                additionalProperties = spanFieldOrder.additionalProperties.toMutableMap()
+            }
+
+            fun columnId(columnId: String) = columnId(JsonField.of(columnId))
+
+            /**
+             * Sets [Builder.columnId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.columnId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun columnId(columnId: JsonField<String>) = apply { this.columnId = columnId }
+
+            fun objectType(objectType: String) = objectType(JsonField.of(objectType))
+
+            /**
+             * Sets [Builder.objectType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.objectType] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun objectType(objectType: JsonField<String>) = apply { this.objectType = objectType }
+
+            fun position(position: String) = position(JsonField.of(position))
+
+            /**
+             * Sets [Builder.position] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.position] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun position(position: JsonField<String>) = apply { this.position = position }
+
+            fun layout(layout: Layout?) = layout(JsonField.ofNullable(layout))
+
+            /**
+             * Sets [Builder.layout] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.layout] with a well-typed [Layout] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun layout(layout: JsonField<Layout>) = apply { this.layout = layout }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [SpanFieldOrder].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .columnId()
+             * .objectType()
+             * .position()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): SpanFieldOrder =
+                SpanFieldOrder(
+                    checkRequired("columnId", columnId),
+                    checkRequired("objectType", objectType),
+                    checkRequired("position", position),
+                    layout,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): SpanFieldOrder = apply {
+            if (validated) {
+                return@apply
+            }
+
+            columnId()
+            objectType()
+            position()
+            layout()?.validate()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (if (columnId.asKnown() == null) 0 else 1) +
+                (if (objectType.asKnown() == null) 0 else 1) +
+                (if (position.asKnown() == null) 0 else 1) +
+                (layout.asKnown()?.validity() ?: 0)
+
+        class Layout @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                val FULL = of("full")
+
+                val TWO_COLUMN = of("two_column")
+
+                fun of(value: String) = Layout(JsonField.of(value))
+            }
+
+            /** An enum containing [Layout]'s known values. */
+            enum class Known {
+                FULL,
+                TWO_COLUMN,
+            }
+
+            /**
+             * An enum containing [Layout]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Layout] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                FULL,
+                TWO_COLUMN,
+                /**
+                 * An enum member indicating that [Layout] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    FULL -> Value.FULL
+                    TWO_COLUMN -> Value.TWO_COLUMN
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
+            fun known(): Known =
+                when (this) {
+                    FULL -> Known.FULL
+                    TWO_COLUMN -> Known.TWO_COLUMN
+                    else -> throw BraintrustInvalidDataException("Unknown Layout: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws BraintrustInvalidDataException if this class instance's value does not have
+             *   the expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString() ?: throw BraintrustInvalidDataException("Value is not a String")
+
+            private var validated: Boolean = false
+
+            fun validate(): Layout = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Layout && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is SpanFieldOrder &&
+                columnId == other.columnId &&
+                objectType == other.objectType &&
+                position == other.position &&
+                layout == other.layout &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(columnId, objectType, position, layout, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "SpanFieldOrder{columnId=$columnId, objectType=$objectType, position=$position, layout=$layout, additionalProperties=$additionalProperties}"
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -51,60 +645,18 @@ private constructor(
         }
 
         return other is ProjectSettings &&
-            this.comparisonKey == other.comparisonKey &&
-            this.additionalProperties == other.additionalProperties
+            baselineExperimentId == other.baselineExperimentId &&
+            comparisonKey == other.comparisonKey &&
+            spanFieldOrder == other.spanFieldOrder &&
+            additionalProperties == other.additionalProperties
     }
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = Objects.hash(comparisonKey, additionalProperties)
-        }
-        return hashCode
+    private val hashCode: Int by lazy {
+        Objects.hash(baselineExperimentId, comparisonKey, spanFieldOrder, additionalProperties)
     }
+
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ProjectSettings{comparisonKey=$comparisonKey, additionalProperties=$additionalProperties}"
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    class Builder {
-
-        private var comparisonKey: JsonField<String> = JsonMissing.of()
-        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(projectSettings: ProjectSettings) = apply {
-            this.comparisonKey = projectSettings.comparisonKey
-            additionalProperties(projectSettings.additionalProperties)
-        }
-
-        /** The key used to join two experiments (defaults to `input`). */
-        fun comparisonKey(comparisonKey: String) = comparisonKey(JsonField.of(comparisonKey))
-
-        /** The key used to join two experiments (defaults to `input`). */
-        @JsonProperty("comparison_key")
-        @ExcludeMissing
-        fun comparisonKey(comparisonKey: JsonField<String>) = apply {
-            this.comparisonKey = comparisonKey
-        }
-
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        @JsonAnySetter
-        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
-        }
-
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        fun build(): ProjectSettings =
-            ProjectSettings(comparisonKey, additionalProperties.toUnmodifiable())
-    }
+        "ProjectSettings{baselineExperimentId=$baselineExperimentId, comparisonKey=$comparisonKey, spanFieldOrder=$spanFieldOrder, additionalProperties=$additionalProperties}"
 }

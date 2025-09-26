@@ -2,14 +2,16 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class OrganizationTest {
+internal class OrganizationTest {
 
     @Test
-    fun createOrganization() {
+    fun create() {
         val organization =
             Organization.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -20,7 +22,7 @@ class OrganizationTest {
                 .proxyUrl("proxy_url")
                 .realtimeUrl("realtime_url")
                 .build()
-        assertThat(organization).isNotNull
+
         assertThat(organization.id()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(organization.name()).isEqualTo("name")
         assertThat(organization.apiUrl()).isEqualTo("api_url")
@@ -29,5 +31,28 @@ class OrganizationTest {
         assertThat(organization.isUniversalApi()).isEqualTo(true)
         assertThat(organization.proxyUrl()).isEqualTo("proxy_url")
         assertThat(organization.realtimeUrl()).isEqualTo("realtime_url")
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val organization =
+            Organization.builder()
+                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .name("name")
+                .apiUrl("api_url")
+                .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .isUniversalApi(true)
+                .proxyUrl("proxy_url")
+                .realtimeUrl("realtime_url")
+                .build()
+
+        val roundtrippedOrganization =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(organization),
+                jacksonTypeRef<Organization>(),
+            )
+
+        assertThat(roundtrippedOrganization).isEqualTo(organization)
     }
 }

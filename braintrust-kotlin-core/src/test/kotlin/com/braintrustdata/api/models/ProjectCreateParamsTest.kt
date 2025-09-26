@@ -2,31 +2,32 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ProjectCreateParamsTest {
+internal class ProjectCreateParamsTest {
 
     @Test
-    fun createProjectCreateParams() {
-        ProjectCreateParams.builder().name("name").orgName("org_name").build()
+    fun create() {
+        ProjectCreateParams.builder().name("x").orgName("org_name").build()
     }
 
     @Test
-    fun getBody() {
-        val params = ProjectCreateParams.builder().name("name").orgName("org_name").build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
-        assertThat(body.name()).isEqualTo("name")
+    fun body() {
+        val params = ProjectCreateParams.builder().name("x").orgName("org_name").build()
+
+        val body = params._body()
+
+        assertThat(body.name()).isEqualTo("x")
         assertThat(body.orgName()).isEqualTo("org_name")
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
-        val params = ProjectCreateParams.builder().name("name").build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
-        assertThat(body.name()).isEqualTo("name")
+    fun bodyWithoutOptionalFields() {
+        val params = ProjectCreateParams.builder().name("x").build()
+
+        val body = params._body()
+
+        assertThat(body.name()).isEqualTo("x")
     }
 }

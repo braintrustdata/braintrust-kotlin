@@ -2,61 +2,52 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.http.QueryParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ViewRetrieveParamsTest {
+internal class ViewRetrieveParamsTest {
 
     @Test
-    fun createViewRetrieveParams() {
+    fun create() {
         ViewRetrieveParams.builder()
             .viewId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-            .objectType(ViewRetrieveParams.ObjectType.ORGANIZATION)
+            .objectType(AclObjectType.ORGANIZATION)
             .build()
     }
 
     @Test
-    fun getQueryParams() {
+    fun pathParams() {
         val params =
             ViewRetrieveParams.builder()
                 .viewId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .objectType(ViewRetrieveParams.ObjectType.ORGANIZATION)
+                .objectType(AclObjectType.ORGANIZATION)
                 .build()
-        val expected = mutableMapOf<String, List<String>>()
-        expected.put("object_id", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-        expected.put("object_type", listOf(ViewRetrieveParams.ObjectType.ORGANIZATION.toString()))
-        assertThat(params.getQueryParams()).isEqualTo(expected)
-    }
 
-    @Test
-    fun getQueryParamsWithoutOptionalFields() {
-        val params =
-            ViewRetrieveParams.builder()
-                .viewId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .objectType(ViewRetrieveParams.ObjectType.ORGANIZATION)
-                .build()
-        val expected = mutableMapOf<String, List<String>>()
-        expected.put("object_id", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-        expected.put("object_type", listOf(ViewRetrieveParams.ObjectType.ORGANIZATION.toString()))
-        assertThat(params.getQueryParams()).isEqualTo(expected)
-    }
-
-    @Test
-    fun getPathParam() {
-        val params =
-            ViewRetrieveParams.builder()
-                .viewId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .objectType(ViewRetrieveParams.ObjectType.ORGANIZATION)
-                .build()
-        assertThat(params).isNotNull
-        // path param "viewId"
-        assertThat(params.getPathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+        assertThat(params._pathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
+    fun queryParams() {
+        val params =
+            ViewRetrieveParams.builder()
+                .viewId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .objectType(AclObjectType.ORGANIZATION)
+                .build()
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams)
+            .isEqualTo(
+                QueryParams.builder()
+                    .put("object_id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .put("object_type", "organization")
+                    .build()
+            )
     }
 }

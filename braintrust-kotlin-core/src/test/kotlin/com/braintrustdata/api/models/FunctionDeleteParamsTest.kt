@@ -2,27 +2,25 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class FunctionDeleteParamsTest {
+internal class FunctionDeleteParamsTest {
 
     @Test
-    fun createFunctionDeleteParams() {
+    fun create() {
         FunctionDeleteParams.builder().functionId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
     }
 
     @Test
-    fun getPathParam() {
+    fun pathParams() {
         val params =
             FunctionDeleteParams.builder()
                 .functionId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        assertThat(params).isNotNull
-        // path param "functionId"
-        assertThat(params.getPathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
+        assertThat(params._pathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        assertThat(params._pathParam(1)).isEqualTo("")
     }
 }

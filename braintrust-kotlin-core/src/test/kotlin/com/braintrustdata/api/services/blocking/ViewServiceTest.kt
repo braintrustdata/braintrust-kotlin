@@ -4,37 +4,57 @@ package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
-import com.braintrustdata.api.core.JsonNull
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.models.AclObjectType
+import com.braintrustdata.api.models.ViewCreateParams
+import com.braintrustdata.api.models.ViewData
+import com.braintrustdata.api.models.ViewDataSearch
+import com.braintrustdata.api.models.ViewDeleteParams
 import com.braintrustdata.api.models.ViewListParams
+import com.braintrustdata.api.models.ViewOptions
+import com.braintrustdata.api.models.ViewReplaceParams
+import com.braintrustdata.api.models.ViewRetrieveParams
+import com.braintrustdata.api.models.ViewUpdateParams
 import java.time.OffsetDateTime
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class ViewServiceTest {
+internal class ViewServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val viewService = client.views()
+
         val view =
             viewService.create(
                 ViewCreateParams.builder()
                     .name("name")
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(ViewCreateParams.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .viewType(ViewCreateParams.ViewType.PROJECTS)
                     .deletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                     .options(
                         ViewOptions.builder()
-                            .columnOrder(listOf("string"))
-                            .columnSizing(ViewOptions.ColumnSizing.builder().build())
-                            .columnVisibility(ViewOptions.ColumnVisibility.builder().build())
+                            .addColumnOrder("string")
+                            .columnSizing(
+                                ViewOptions.ColumnSizing.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                    .build()
+                            )
+                            .columnVisibility(
+                                ViewOptions.ColumnVisibility.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(true))
+                                    .build()
+                            )
+                            .grouping("grouping")
+                            .layout("layout")
+                            .rowHeight("rowHeight")
                             .build()
                     )
                     .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -42,60 +62,73 @@ class ViewServiceTest {
                         ViewData.builder()
                             .search(
                                 ViewDataSearch.builder()
-                                    .filter(listOf(JsonNull.of()))
-                                    .match(listOf(JsonNull.of()))
-                                    .sort(listOf(JsonNull.of()))
-                                    .tag(listOf(JsonNull.of()))
+                                    .addFilter(JsonValue.from(mapOf<String, Any>()))
+                                    .addMatch(JsonValue.from(mapOf<String, Any>()))
+                                    .addSort(JsonValue.from(mapOf<String, Any>()))
+                                    .addTag(JsonValue.from(mapOf<String, Any>()))
                                     .build()
                             )
                             .build()
                     )
                     .build()
             )
-        println(view)
+
         view.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val viewService = client.views()
+
         val view =
             viewService.retrieve(
                 ViewRetrieveParams.builder()
                     .viewId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(ViewRetrieveParams.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .build()
             )
-        println(view)
+
         view.validate()
     }
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val viewService = client.views()
+
         val view =
             viewService.update(
                 ViewUpdateParams.builder()
                     .viewId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(ViewUpdateParams.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .name("name")
                     .options(
                         ViewOptions.builder()
-                            .columnOrder(listOf("string"))
-                            .columnSizing(ViewOptions.ColumnSizing.builder().build())
-                            .columnVisibility(ViewOptions.ColumnVisibility.builder().build())
+                            .addColumnOrder("string")
+                            .columnSizing(
+                                ViewOptions.ColumnSizing.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                    .build()
+                            )
+                            .columnVisibility(
+                                ViewOptions.ColumnVisibility.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(true))
+                                    .build()
+                            )
+                            .grouping("grouping")
+                            .layout("layout")
+                            .rowHeight("rowHeight")
                             .build()
                     )
                     .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -103,10 +136,10 @@ class ViewServiceTest {
                         ViewData.builder()
                             .search(
                                 ViewDataSearch.builder()
-                                    .filter(listOf(JsonNull.of()))
-                                    .match(listOf(JsonNull.of()))
-                                    .sort(listOf(JsonNull.of()))
-                                    .tag(listOf(JsonNull.of()))
+                                    .addFilter(JsonValue.from(mapOf<String, Any>()))
+                                    .addMatch(JsonValue.from(mapOf<String, Any>()))
+                                    .addSort(JsonValue.from(mapOf<String, Any>()))
+                                    .addTag(JsonValue.from(mapOf<String, Any>()))
                                     .build()
                             )
                             .build()
@@ -114,70 +147,84 @@ class ViewServiceTest {
                     .viewType(ViewUpdateParams.ViewType.PROJECTS)
                     .build()
             )
-        println(view)
+
         view.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val viewService = client.views()
-        val response =
+
+        val page =
             viewService.list(
                 ViewListParams.builder()
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(ViewListParams.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .build()
             )
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val viewService = client.views()
+
         val view =
             viewService.delete(
                 ViewDeleteParams.builder()
                     .viewId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(ViewDeleteParams.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .build()
             )
-        println(view)
+
         view.validate()
     }
 
     @Test
-    fun callReplace() {
+    fun replace() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val viewService = client.views()
+
         val view =
             viewService.replace(
                 ViewReplaceParams.builder()
                     .name("name")
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(ViewReplaceParams.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .viewType(ViewReplaceParams.ViewType.PROJECTS)
                     .deletedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                     .options(
                         ViewOptions.builder()
-                            .columnOrder(listOf("string"))
-                            .columnSizing(ViewOptions.ColumnSizing.builder().build())
-                            .columnVisibility(ViewOptions.ColumnVisibility.builder().build())
+                            .addColumnOrder("string")
+                            .columnSizing(
+                                ViewOptions.ColumnSizing.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                    .build()
+                            )
+                            .columnVisibility(
+                                ViewOptions.ColumnVisibility.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(true))
+                                    .build()
+                            )
+                            .grouping("grouping")
+                            .layout("layout")
+                            .rowHeight("rowHeight")
                             .build()
                     )
                     .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -185,17 +232,17 @@ class ViewServiceTest {
                         ViewData.builder()
                             .search(
                                 ViewDataSearch.builder()
-                                    .filter(listOf(JsonNull.of()))
-                                    .match(listOf(JsonNull.of()))
-                                    .sort(listOf(JsonNull.of()))
-                                    .tag(listOf(JsonNull.of()))
+                                    .addFilter(JsonValue.from(mapOf<String, Any>()))
+                                    .addMatch(JsonValue.from(mapOf<String, Any>()))
+                                    .addSort(JsonValue.from(mapOf<String, Any>()))
+                                    .addTag(JsonValue.from(mapOf<String, Any>()))
                                     .build()
                             )
                             .build()
                     )
                     .build()
             )
-        println(view)
+
         view.validate()
     }
 }

@@ -2,151 +2,125 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
-import com.braintrustdata.api.core.Enum
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.toImmutable
 import java.util.Objects
 
+/**
+ * List out all views. The views are sorted by creation date, with the most recently-created views
+ * coming first
+ */
 class ViewListParams
-constructor(
+private constructor(
     private val objectId: String,
-    private val objectType: ObjectType,
+    private val objectType: AclObjectType,
     private val endingBefore: String?,
     private val ids: Ids?,
     private val limit: Long?,
     private val startingAfter: String?,
     private val viewName: String?,
     private val viewType: ViewType?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-) {
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
+    /** The id of the object the ACL applies to */
     fun objectId(): String = objectId
 
-    fun objectType(): ObjectType = objectType
+    /** The object type that the ACL applies to */
+    fun objectType(): AclObjectType = objectType
 
+    /**
+     * Pagination cursor id.
+     *
+     * For example, if the initial item in the last page you fetched had an id of `foo`, pass
+     * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
+     * `starting_after` and `ending_before`
+     */
     fun endingBefore(): String? = endingBefore
 
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     fun ids(): Ids? = ids
 
+    /** Limit the number of objects to return */
     fun limit(): Long? = limit
 
+    /**
+     * Pagination cursor id.
+     *
+     * For example, if the final item in the last page you fetched had an id of `foo`, pass
+     * `starting_after=foo` to fetch the next page. Note: you may only pass one of `starting_after`
+     * and `ending_before`
+     */
     fun startingAfter(): String? = startingAfter
 
+    /** Name of the view to search for */
     fun viewName(): String? = viewName
 
+    /** Type of table that the view corresponds to. */
     fun viewType(): ViewType? = viewType
 
-    internal fun getQueryParams(): Map<String, List<String>> {
-        val params = mutableMapOf<String, List<String>>()
-        this.objectId.let { params.put("object_id", listOf(it.toString())) }
-        this.objectType.let { params.put("object_type", listOf(it.toString())) }
-        this.endingBefore?.let { params.put("ending_before", listOf(it.toString())) }
-        this.ids?.let { params.put("ids", listOf(it.toString())) }
-        this.limit?.let { params.put("limit", listOf(it.toString())) }
-        this.startingAfter?.let { params.put("starting_after", listOf(it.toString())) }
-        this.viewName?.let { params.put("view_name", listOf(it.toString())) }
-        this.viewType?.let { params.put("view_type", listOf(it.toString())) }
-        params.putAll(additionalQueryParams)
-        return params.toUnmodifiable()
-    }
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is ViewListParams &&
-            this.objectId == other.objectId &&
-            this.objectType == other.objectType &&
-            this.endingBefore == other.endingBefore &&
-            this.ids == other.ids &&
-            this.limit == other.limit &&
-            this.startingAfter == other.startingAfter &&
-            this.viewName == other.viewName &&
-            this.viewType == other.viewType &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            objectId,
-            objectType,
-            endingBefore,
-            ids,
-            limit,
-            startingAfter,
-            viewName,
-            viewType,
-            additionalQueryParams,
-            additionalHeaders,
-        )
-    }
-
-    override fun toString() =
-        "ViewListParams{objectId=$objectId, objectType=$objectType, endingBefore=$endingBefore, ids=$ids, limit=$limit, startingAfter=$startingAfter, viewName=$viewName, viewType=$viewType, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders}"
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ViewListParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .objectId()
+         * .objectType()
+         * ```
+         */
         fun builder() = Builder()
     }
 
-    @NoAutoDetect
-    class Builder {
+    /** A builder for [ViewListParams]. */
+    class Builder internal constructor() {
 
         private var objectId: String? = null
-        private var objectType: ObjectType? = null
+        private var objectType: AclObjectType? = null
         private var endingBefore: String? = null
         private var ids: Ids? = null
         private var limit: Long? = null
         private var startingAfter: String? = null
         private var viewName: String? = null
         private var viewType: ViewType? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         internal fun from(viewListParams: ViewListParams) = apply {
-            this.objectId = viewListParams.objectId
-            this.objectType = viewListParams.objectType
-            this.endingBefore = viewListParams.endingBefore
-            this.ids = viewListParams.ids
-            this.limit = viewListParams.limit
-            this.startingAfter = viewListParams.startingAfter
-            this.viewName = viewListParams.viewName
-            this.viewType = viewListParams.viewType
-            additionalQueryParams(viewListParams.additionalQueryParams)
-            additionalHeaders(viewListParams.additionalHeaders)
+            objectId = viewListParams.objectId
+            objectType = viewListParams.objectType
+            endingBefore = viewListParams.endingBefore
+            ids = viewListParams.ids
+            limit = viewListParams.limit
+            startingAfter = viewListParams.startingAfter
+            viewName = viewListParams.viewName
+            viewType = viewListParams.viewType
+            additionalHeaders = viewListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = viewListParams.additionalQueryParams.toBuilder()
         }
 
         /** The id of the object the ACL applies to */
         fun objectId(objectId: String) = apply { this.objectId = objectId }
 
         /** The object type that the ACL applies to */
-        fun objectType(objectType: ObjectType) = apply { this.objectType = objectType }
+        fun objectType(objectType: AclObjectType) = apply { this.objectType = objectType }
 
         /**
          * Pagination cursor id.
@@ -155,28 +129,29 @@ constructor(
          * `ending_before=foo` to fetch the previous page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun endingBefore(endingBefore: String) = apply { this.endingBefore = endingBefore }
+        fun endingBefore(endingBefore: String?) = apply { this.endingBefore = endingBefore }
 
         /**
          * Filter search results to a particular set of object IDs. To specify a list of IDs,
          * include the query param multiple times
          */
-        fun ids(ids: Ids) = apply { this.ids = ids }
+        fun ids(ids: Ids?) = apply { this.ids = ids }
 
-        /**
-         * Filter search results to a particular set of object IDs. To specify a list of IDs,
-         * include the query param multiple times
-         */
-        fun ids(string: String) = apply { this.ids = Ids.ofString(string) }
+        /** Alias for calling [ids] with `Ids.ofString(string)`. */
+        fun ids(string: String) = ids(Ids.ofString(string))
 
-        /**
-         * Filter search results to a particular set of object IDs. To specify a list of IDs,
-         * include the query param multiple times
-         */
-        fun ids(strings: List<String>) = apply { this.ids = Ids.ofStrings(strings) }
+        /** Alias for calling [ids] with `Ids.ofStrings(strings)`. */
+        fun idsOfStrings(strings: List<String>) = ids(Ids.ofStrings(strings))
 
         /** Limit the number of objects to return */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long?) = apply { this.limit = limit }
+
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun limit(limit: Long) = limit(limit as Long?)
 
         /**
          * Pagination cursor id.
@@ -185,190 +160,176 @@ constructor(
          * `starting_after=foo` to fetch the next page. Note: you may only pass one of
          * `starting_after` and `ending_before`
          */
-        fun startingAfter(startingAfter: String) = apply { this.startingAfter = startingAfter }
+        fun startingAfter(startingAfter: String?) = apply { this.startingAfter = startingAfter }
 
         /** Name of the view to search for */
-        fun viewName(viewName: String) = apply { this.viewName = viewName }
+        fun viewName(viewName: String?) = apply { this.viewName = viewName }
 
         /** Type of table that the view corresponds to. */
-        fun viewType(viewType: ViewType) = apply { this.viewType = viewType }
+        fun viewType(viewType: ViewType?) = apply { this.viewType = viewType }
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
         }
 
         fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
             this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
+            putAllAdditionalHeaders(additionalHeaders)
         }
 
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
         }
 
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
         }
 
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
         }
 
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
 
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [ViewListParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .objectId()
+         * .objectType()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ViewListParams =
             ViewListParams(
-                checkNotNull(objectId) { "`objectId` is required but was not set" },
-                checkNotNull(objectType) { "`objectType` is required but was not set" },
+                checkRequired("objectId", objectId),
+                checkRequired("objectType", objectType),
                 endingBefore,
                 ids,
                 limit,
                 startingAfter,
                 viewName,
                 viewType,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
             )
     }
 
-    class ObjectType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    override fun _headers(): Headers = additionalHeaders
 
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                put("object_id", objectId)
+                put("object_type", objectType.toString())
+                endingBefore?.let { put("ending_before", it) }
+                ids?.accept(
+                    object : Ids.Visitor<Unit> {
+                        override fun visitString(string: String) {
+                            put("ids", string)
+                        }
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
+                        override fun visitStrings(strings: List<String>) {
+                            put("ids", strings.joinToString(","))
+                        }
+                    }
+                )
+                limit?.let { put("limit", it.toString()) }
+                startingAfter?.let { put("starting_after", it) }
+                viewName?.let { put("view_name", it) }
+                viewType?.let { put("view_type", it.toString()) }
+                putAll(additionalQueryParams)
             }
+            .build()
 
-            return other is ObjectType && this.value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            val ORGANIZATION = ObjectType(JsonField.of("organization"))
-
-            val PROJECT = ObjectType(JsonField.of("project"))
-
-            val EXPERIMENT = ObjectType(JsonField.of("experiment"))
-
-            val DATASET = ObjectType(JsonField.of("dataset"))
-
-            val PROMPT = ObjectType(JsonField.of("prompt"))
-
-            val PROMPT_SESSION = ObjectType(JsonField.of("prompt_session"))
-
-            val GROUP = ObjectType(JsonField.of("group"))
-
-            val ROLE = ObjectType(JsonField.of("role"))
-
-            val ORG_MEMBER = ObjectType(JsonField.of("org_member"))
-
-            val PROJECT_LOG = ObjectType(JsonField.of("project_log"))
-
-            val ORG_PROJECT = ObjectType(JsonField.of("org_project"))
-
-            fun of(value: String) = ObjectType(JsonField.of(value))
-        }
-
-        enum class Known {
-            ORGANIZATION,
-            PROJECT,
-            EXPERIMENT,
-            DATASET,
-            PROMPT,
-            PROMPT_SESSION,
-            GROUP,
-            ROLE,
-            ORG_MEMBER,
-            PROJECT_LOG,
-            ORG_PROJECT,
-        }
-
-        enum class Value {
-            ORGANIZATION,
-            PROJECT,
-            EXPERIMENT,
-            DATASET,
-            PROMPT,
-            PROMPT_SESSION,
-            GROUP,
-            ROLE,
-            ORG_MEMBER,
-            PROJECT_LOG,
-            ORG_PROJECT,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                ORGANIZATION -> Value.ORGANIZATION
-                PROJECT -> Value.PROJECT
-                EXPERIMENT -> Value.EXPERIMENT
-                DATASET -> Value.DATASET
-                PROMPT -> Value.PROMPT
-                PROMPT_SESSION -> Value.PROMPT_SESSION
-                GROUP -> Value.GROUP
-                ROLE -> Value.ROLE
-                ORG_MEMBER -> Value.ORG_MEMBER
-                PROJECT_LOG -> Value.PROJECT_LOG
-                ORG_PROJECT -> Value.ORG_PROJECT
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                ORGANIZATION -> Known.ORGANIZATION
-                PROJECT -> Known.PROJECT
-                EXPERIMENT -> Known.EXPERIMENT
-                DATASET -> Known.DATASET
-                PROMPT -> Known.PROMPT
-                PROMPT_SESSION -> Known.PROMPT_SESSION
-                GROUP -> Known.GROUP
-                ROLE -> Known.ROLE
-                ORG_MEMBER -> Known.ORG_MEMBER
-                PROJECT_LOG -> Known.PROJECT_LOG
-                ORG_PROJECT -> Known.ORG_PROJECT
-                else -> throw BraintrustInvalidDataException("Unknown ObjectType: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-    }
-
-    @JsonDeserialize(using = Ids.Deserializer::class)
-    @JsonSerialize(using = Ids.Serializer::class)
+    /**
+     * Filter search results to a particular set of object IDs. To specify a list of IDs, include
+     * the query param multiple times
+     */
     class Ids
     private constructor(
         private val string: String? = null,
         private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun string(): String? = string
 
@@ -382,186 +343,78 @@ constructor(
 
         fun asStrings(): List<String> = strings.getOrThrow("strings")
 
-        fun _json(): JsonValue? = _json
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
+                else -> throw IllegalStateException("Invalid Ids")
             }
-        }
-
-        fun validate(): Ids = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw BraintrustInvalidDataException("Unknown Ids: $_json")
-                }
-                validated = true
-            }
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is Ids && this.string == other.string && this.strings == other.strings
+            return other is Ids && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int {
-            return Objects.hash(string, strings)
-        }
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 string != null -> "Ids{string=$string}"
                 strings != null -> "Ids{strings=$strings}"
-                _json != null -> "Ids{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Ids")
             }
-        }
 
         companion object {
 
             fun ofString(string: String) = Ids(string = string)
 
-            fun ofStrings(strings: List<String>) = Ids(strings = strings)
+            fun ofStrings(strings: List<String>) = Ids(strings = strings.toImmutable())
         }
 
+        /** An interface that defines how to map each variant of [Ids] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
-
-            fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown Ids: $json")
-            }
-        }
-
-        class Deserializer : BaseDeserializer<Ids>(Ids::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): Ids {
-                val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return Ids(string = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                    return Ids(strings = it, _json = json)
-                }
-
-                return Ids(_json = json)
-            }
-        }
-
-        class Serializer : BaseSerializer<Ids>(Ids::class) {
-
-            override fun serialize(
-                value: Ids,
-                generator: JsonGenerator,
-                provider: SerializerProvider
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Ids")
-                }
-            }
         }
     }
 
-    class ViewType
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is ViewType && this.value == other.value
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
         }
 
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            val PROJECTS = ViewType(JsonField.of("projects"))
-
-            val LOGS = ViewType(JsonField.of("logs"))
-
-            val EXPERIMENTS = ViewType(JsonField.of("experiments"))
-
-            val DATASETS = ViewType(JsonField.of("datasets"))
-
-            val PROMPTS = ViewType(JsonField.of("prompts"))
-
-            val PLAYGROUNDS = ViewType(JsonField.of("playgrounds"))
-
-            val EXPERIMENT = ViewType(JsonField.of("experiment"))
-
-            val DATASET = ViewType(JsonField.of("dataset"))
-
-            fun of(value: String) = ViewType(JsonField.of(value))
-        }
-
-        enum class Known {
-            PROJECTS,
-            LOGS,
-            EXPERIMENTS,
-            DATASETS,
-            PROMPTS,
-            PLAYGROUNDS,
-            EXPERIMENT,
-            DATASET,
-        }
-
-        enum class Value {
-            PROJECTS,
-            LOGS,
-            EXPERIMENTS,
-            DATASETS,
-            PROMPTS,
-            PLAYGROUNDS,
-            EXPERIMENT,
-            DATASET,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                PROJECTS -> Value.PROJECTS
-                LOGS -> Value.LOGS
-                EXPERIMENTS -> Value.EXPERIMENTS
-                DATASETS -> Value.DATASETS
-                PROMPTS -> Value.PROMPTS
-                PLAYGROUNDS -> Value.PLAYGROUNDS
-                EXPERIMENT -> Value.EXPERIMENT
-                DATASET -> Value.DATASET
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                PROJECTS -> Known.PROJECTS
-                LOGS -> Known.LOGS
-                EXPERIMENTS -> Known.EXPERIMENTS
-                DATASETS -> Known.DATASETS
-                PROMPTS -> Known.PROMPTS
-                PLAYGROUNDS -> Known.PLAYGROUNDS
-                EXPERIMENT -> Known.EXPERIMENT
-                DATASET -> Known.DATASET
-                else -> throw BraintrustInvalidDataException("Unknown ViewType: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
+        return other is ViewListParams &&
+            objectId == other.objectId &&
+            objectType == other.objectType &&
+            endingBefore == other.endingBefore &&
+            ids == other.ids &&
+            limit == other.limit &&
+            startingAfter == other.startingAfter &&
+            viewName == other.viewName &&
+            viewType == other.viewType &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
+
+    override fun hashCode(): Int =
+        Objects.hash(
+            objectId,
+            objectType,
+            endingBefore,
+            ids,
+            limit,
+            startingAfter,
+            viewName,
+            viewType,
+            additionalHeaders,
+            additionalQueryParams,
+        )
+
+    override fun toString() =
+        "ViewListParams{objectId=$objectId, objectType=$objectType, endingBefore=$endingBefore, ids=$ids, limit=$limit, startingAfter=$startingAfter, viewName=$viewName, viewType=$viewType, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

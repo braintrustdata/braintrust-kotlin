@@ -2,14 +2,13 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ProjectTagUpdateParamsTest {
+internal class ProjectTagUpdateParamsTest {
 
     @Test
-    fun createProjectTagUpdateParams() {
+    fun create() {
         ProjectTagUpdateParams.builder()
             .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .color("color")
@@ -19,7 +18,19 @@ class ProjectTagUpdateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun pathParams() {
+        val params =
+            ProjectTagUpdateParams.builder()
+                .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .build()
+
+        assertThat(params._pathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
+    fun body() {
         val params =
             ProjectTagUpdateParams.builder()
                 .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -27,33 +38,21 @@ class ProjectTagUpdateParamsTest {
                 .description("description")
                 .name("name")
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
+
+        val body = params._body()
+
         assertThat(body.color()).isEqualTo("color")
         assertThat(body.description()).isEqualTo("description")
         assertThat(body.name()).isEqualTo("name")
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             ProjectTagUpdateParams.builder()
                 .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
-    }
 
-    @Test
-    fun getPathParam() {
-        val params =
-            ProjectTagUpdateParams.builder()
-                .projectTagId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .build()
-        assertThat(params).isNotNull
-        // path param "projectTagId"
-        assertThat(params.getPathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        val body = params._body()
     }
 }

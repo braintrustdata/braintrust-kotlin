@@ -2,56 +2,80 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ProjectScoreConfigTest {
+internal class ProjectScoreConfigTest {
 
     @Test
-    fun createProjectScoreConfig() {
+    fun create() {
         val projectScoreConfig =
             ProjectScoreConfig.builder()
-                .destination(ProjectScoreConfig.Destination.EXPECTED)
+                .destination("destination")
                 .multiSelect(true)
                 .online(
                     OnlineScoreConfig.builder()
-                        .samplingRate(1.0)
-                        .scorers(
-                            listOf(
-                                OnlineScoreConfig.Scorer.ofFunction(
-                                    OnlineScoreConfig.Scorer.Function.builder()
-                                        .id("id")
-                                        .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
-                                        .build()
-                                )
-                            )
+                        .samplingRate(0.0)
+                        .addScorer(
+                            OnlineScoreConfig.Scorer.Function.builder()
+                                .id("id")
+                                .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                .build()
                         )
                         .applyToRootSpan(true)
-                        .applyToSpanNames(listOf("string"))
+                        .addApplyToSpanName("string")
                         .build()
                 )
                 .build()
-        assertThat(projectScoreConfig).isNotNull
-        assertThat(projectScoreConfig.destination())
-            .isEqualTo(ProjectScoreConfig.Destination.EXPECTED)
+
+        assertThat(projectScoreConfig.destination()).isEqualTo("destination")
         assertThat(projectScoreConfig.multiSelect()).isEqualTo(true)
         assertThat(projectScoreConfig.online())
             .isEqualTo(
                 OnlineScoreConfig.builder()
-                    .samplingRate(1.0)
-                    .scorers(
-                        listOf(
-                            OnlineScoreConfig.Scorer.ofFunction(
-                                OnlineScoreConfig.Scorer.Function.builder()
-                                    .id("id")
-                                    .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
-                                    .build()
-                            )
-                        )
+                    .samplingRate(0.0)
+                    .addScorer(
+                        OnlineScoreConfig.Scorer.Function.builder()
+                            .id("id")
+                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                            .build()
                     )
                     .applyToRootSpan(true)
-                    .applyToSpanNames(listOf("string"))
+                    .addApplyToSpanName("string")
                     .build()
             )
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val projectScoreConfig =
+            ProjectScoreConfig.builder()
+                .destination("destination")
+                .multiSelect(true)
+                .online(
+                    OnlineScoreConfig.builder()
+                        .samplingRate(0.0)
+                        .addScorer(
+                            OnlineScoreConfig.Scorer.Function.builder()
+                                .id("id")
+                                .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                .build()
+                        )
+                        .applyToRootSpan(true)
+                        .addApplyToSpanName("string")
+                        .build()
+                )
+                .build()
+
+        val roundtrippedProjectScoreConfig =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(projectScoreConfig),
+                jacksonTypeRef<ProjectScoreConfig>(),
+            )
+
+        assertThat(roundtrippedProjectScoreConfig).isEqualTo(projectScoreConfig)
     }
 }

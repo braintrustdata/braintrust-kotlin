@@ -6,77 +6,315 @@ import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
 /** Summary of a dataset */
-@JsonDeserialize(builder = SummarizeDatasetResponse.Builder::class)
-@NoAutoDetect
 class SummarizeDatasetResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
-    private val projectName: JsonField<String>,
     private val datasetName: JsonField<String>,
-    private val projectUrl: JsonField<String>,
     private val datasetUrl: JsonField<String>,
+    private val projectName: JsonField<String>,
+    private val projectUrl: JsonField<String>,
     private val dataSummary: JsonField<DataSummary>,
-    private val additionalProperties: Map<String, JsonValue>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
+    @JsonCreator
+    private constructor(
+        @JsonProperty("dataset_name")
+        @ExcludeMissing
+        datasetName: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("dataset_url")
+        @ExcludeMissing
+        datasetUrl: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("project_name")
+        @ExcludeMissing
+        projectName: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("project_url")
+        @ExcludeMissing
+        projectUrl: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("data_summary")
+        @ExcludeMissing
+        dataSummary: JsonField<DataSummary> = JsonMissing.of(),
+    ) : this(datasetName, datasetUrl, projectName, projectUrl, dataSummary, mutableMapOf())
 
-    private var hashCode: Int = 0
-
-    /** Name of the project that the dataset belongs to */
-    fun projectName(): String = projectName.getRequired("project_name")
-
-    /** Name of the dataset */
+    /**
+     * Name of the dataset
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun datasetName(): String = datasetName.getRequired("dataset_name")
 
-    /** URL to the project's page in the Braintrust app */
-    fun projectUrl(): String = projectUrl.getRequired("project_url")
-
-    /** URL to the dataset's page in the Braintrust app */
+    /**
+     * URL to the dataset's page in the Braintrust app
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun datasetUrl(): String = datasetUrl.getRequired("dataset_url")
 
-    /** Summary of a dataset's data */
+    /**
+     * Name of the project that the dataset belongs to
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun projectName(): String = projectName.getRequired("project_name")
+
+    /**
+     * URL to the project's page in the Braintrust app
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun projectUrl(): String = projectUrl.getRequired("project_url")
+
+    /**
+     * Summary of a dataset's data
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun dataSummary(): DataSummary? = dataSummary.getNullable("data_summary")
 
-    /** Name of the project that the dataset belongs to */
-    @JsonProperty("project_name") @ExcludeMissing fun _projectName() = projectName
+    /**
+     * Returns the raw JSON value of [datasetName].
+     *
+     * Unlike [datasetName], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("dataset_name")
+    @ExcludeMissing
+    fun _datasetName(): JsonField<String> = datasetName
 
-    /** Name of the dataset */
-    @JsonProperty("dataset_name") @ExcludeMissing fun _datasetName() = datasetName
+    /**
+     * Returns the raw JSON value of [datasetUrl].
+     *
+     * Unlike [datasetUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("dataset_url") @ExcludeMissing fun _datasetUrl(): JsonField<String> = datasetUrl
 
-    /** URL to the project's page in the Braintrust app */
-    @JsonProperty("project_url") @ExcludeMissing fun _projectUrl() = projectUrl
+    /**
+     * Returns the raw JSON value of [projectName].
+     *
+     * Unlike [projectName], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("project_name")
+    @ExcludeMissing
+    fun _projectName(): JsonField<String> = projectName
 
-    /** URL to the dataset's page in the Braintrust app */
-    @JsonProperty("dataset_url") @ExcludeMissing fun _datasetUrl() = datasetUrl
+    /**
+     * Returns the raw JSON value of [projectUrl].
+     *
+     * Unlike [projectUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("project_url") @ExcludeMissing fun _projectUrl(): JsonField<String> = projectUrl
 
-    /** Summary of a dataset's data */
-    @JsonProperty("data_summary") @ExcludeMissing fun _dataSummary() = dataSummary
+    /**
+     * Returns the raw JSON value of [dataSummary].
+     *
+     * Unlike [dataSummary], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("data_summary")
+    @ExcludeMissing
+    fun _dataSummary(): JsonField<DataSummary> = dataSummary
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun validate(): SummarizeDatasetResponse = apply {
-        if (!validated) {
-            projectName()
-            datasetName()
-            projectUrl()
-            datasetUrl()
-            dataSummary()?.validate()
-            validated = true
-        }
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [SummarizeDatasetResponse].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .datasetName()
+         * .datasetUrl()
+         * .projectName()
+         * .projectUrl()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [SummarizeDatasetResponse]. */
+    class Builder internal constructor() {
+
+        private var datasetName: JsonField<String>? = null
+        private var datasetUrl: JsonField<String>? = null
+        private var projectName: JsonField<String>? = null
+        private var projectUrl: JsonField<String>? = null
+        private var dataSummary: JsonField<DataSummary> = JsonMissing.of()
+        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+        internal fun from(summarizeDatasetResponse: SummarizeDatasetResponse) = apply {
+            datasetName = summarizeDatasetResponse.datasetName
+            datasetUrl = summarizeDatasetResponse.datasetUrl
+            projectName = summarizeDatasetResponse.projectName
+            projectUrl = summarizeDatasetResponse.projectUrl
+            dataSummary = summarizeDatasetResponse.dataSummary
+            additionalProperties = summarizeDatasetResponse.additionalProperties.toMutableMap()
+        }
+
+        /** Name of the dataset */
+        fun datasetName(datasetName: String) = datasetName(JsonField.of(datasetName))
+
+        /**
+         * Sets [Builder.datasetName] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.datasetName] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun datasetName(datasetName: JsonField<String>) = apply { this.datasetName = datasetName }
+
+        /** URL to the dataset's page in the Braintrust app */
+        fun datasetUrl(datasetUrl: String) = datasetUrl(JsonField.of(datasetUrl))
+
+        /**
+         * Sets [Builder.datasetUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.datasetUrl] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun datasetUrl(datasetUrl: JsonField<String>) = apply { this.datasetUrl = datasetUrl }
+
+        /** Name of the project that the dataset belongs to */
+        fun projectName(projectName: String) = projectName(JsonField.of(projectName))
+
+        /**
+         * Sets [Builder.projectName] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.projectName] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun projectName(projectName: JsonField<String>) = apply { this.projectName = projectName }
+
+        /** URL to the project's page in the Braintrust app */
+        fun projectUrl(projectUrl: String) = projectUrl(JsonField.of(projectUrl))
+
+        /**
+         * Sets [Builder.projectUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.projectUrl] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun projectUrl(projectUrl: JsonField<String>) = apply { this.projectUrl = projectUrl }
+
+        /** Summary of a dataset's data */
+        fun dataSummary(dataSummary: DataSummary?) = dataSummary(JsonField.ofNullable(dataSummary))
+
+        /**
+         * Sets [Builder.dataSummary] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.dataSummary] with a well-typed [DataSummary] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun dataSummary(dataSummary: JsonField<DataSummary>) = apply {
+            this.dataSummary = dataSummary
+        }
+
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
+
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
+
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [SummarizeDatasetResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .datasetName()
+         * .datasetUrl()
+         * .projectName()
+         * .projectUrl()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): SummarizeDatasetResponse =
+            SummarizeDatasetResponse(
+                checkRequired("datasetName", datasetName),
+                checkRequired("datasetUrl", datasetUrl),
+                checkRequired("projectName", projectName),
+                checkRequired("projectUrl", projectUrl),
+                dataSummary,
+                additionalProperties.toMutableMap(),
+            )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): SummarizeDatasetResponse = apply {
+        if (validated) {
+            return@apply
+        }
+
+        datasetName()
+        datasetUrl()
+        projectName()
+        projectUrl()
+        dataSummary()?.validate()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (if (datasetName.asKnown() == null) 0 else 1) +
+            (if (datasetUrl.asKnown() == null) 0 else 1) +
+            (if (projectName.asKnown() == null) 0 else 1) +
+            (if (projectUrl.asKnown() == null) 0 else 1) +
+            (dataSummary.asKnown()?.validity() ?: 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -84,119 +322,27 @@ private constructor(
         }
 
         return other is SummarizeDatasetResponse &&
-            this.projectName == other.projectName &&
-            this.datasetName == other.datasetName &&
-            this.projectUrl == other.projectUrl &&
-            this.datasetUrl == other.datasetUrl &&
-            this.dataSummary == other.dataSummary &&
-            this.additionalProperties == other.additionalProperties
+            datasetName == other.datasetName &&
+            datasetUrl == other.datasetUrl &&
+            projectName == other.projectName &&
+            projectUrl == other.projectUrl &&
+            dataSummary == other.dataSummary &&
+            additionalProperties == other.additionalProperties
     }
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    projectName,
-                    datasetName,
-                    projectUrl,
-                    datasetUrl,
-                    dataSummary,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            datasetName,
+            datasetUrl,
+            projectName,
+            projectUrl,
+            dataSummary,
+            additionalProperties,
+        )
     }
+
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "SummarizeDatasetResponse{projectName=$projectName, datasetName=$datasetName, projectUrl=$projectUrl, datasetUrl=$datasetUrl, dataSummary=$dataSummary, additionalProperties=$additionalProperties}"
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    class Builder {
-
-        private var projectName: JsonField<String> = JsonMissing.of()
-        private var datasetName: JsonField<String> = JsonMissing.of()
-        private var projectUrl: JsonField<String> = JsonMissing.of()
-        private var datasetUrl: JsonField<String> = JsonMissing.of()
-        private var dataSummary: JsonField<DataSummary> = JsonMissing.of()
-        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(summarizeDatasetResponse: SummarizeDatasetResponse) = apply {
-            this.projectName = summarizeDatasetResponse.projectName
-            this.datasetName = summarizeDatasetResponse.datasetName
-            this.projectUrl = summarizeDatasetResponse.projectUrl
-            this.datasetUrl = summarizeDatasetResponse.datasetUrl
-            this.dataSummary = summarizeDatasetResponse.dataSummary
-            additionalProperties(summarizeDatasetResponse.additionalProperties)
-        }
-
-        /** Name of the project that the dataset belongs to */
-        fun projectName(projectName: String) = projectName(JsonField.of(projectName))
-
-        /** Name of the project that the dataset belongs to */
-        @JsonProperty("project_name")
-        @ExcludeMissing
-        fun projectName(projectName: JsonField<String>) = apply { this.projectName = projectName }
-
-        /** Name of the dataset */
-        fun datasetName(datasetName: String) = datasetName(JsonField.of(datasetName))
-
-        /** Name of the dataset */
-        @JsonProperty("dataset_name")
-        @ExcludeMissing
-        fun datasetName(datasetName: JsonField<String>) = apply { this.datasetName = datasetName }
-
-        /** URL to the project's page in the Braintrust app */
-        fun projectUrl(projectUrl: String) = projectUrl(JsonField.of(projectUrl))
-
-        /** URL to the project's page in the Braintrust app */
-        @JsonProperty("project_url")
-        @ExcludeMissing
-        fun projectUrl(projectUrl: JsonField<String>) = apply { this.projectUrl = projectUrl }
-
-        /** URL to the dataset's page in the Braintrust app */
-        fun datasetUrl(datasetUrl: String) = datasetUrl(JsonField.of(datasetUrl))
-
-        /** URL to the dataset's page in the Braintrust app */
-        @JsonProperty("dataset_url")
-        @ExcludeMissing
-        fun datasetUrl(datasetUrl: JsonField<String>) = apply { this.datasetUrl = datasetUrl }
-
-        /** Summary of a dataset's data */
-        fun dataSummary(dataSummary: DataSummary) = dataSummary(JsonField.of(dataSummary))
-
-        /** Summary of a dataset's data */
-        @JsonProperty("data_summary")
-        @ExcludeMissing
-        fun dataSummary(dataSummary: JsonField<DataSummary>) = apply {
-            this.dataSummary = dataSummary
-        }
-
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        @JsonAnySetter
-        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
-        }
-
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        fun build(): SummarizeDatasetResponse =
-            SummarizeDatasetResponse(
-                projectName,
-                datasetName,
-                projectUrl,
-                datasetUrl,
-                dataSummary,
-                additionalProperties.toUnmodifiable(),
-            )
-    }
+        "SummarizeDatasetResponse{datasetName=$datasetName, datasetUrl=$datasetUrl, projectName=$projectName, projectUrl=$projectUrl, dataSummary=$dataSummary, additionalProperties=$additionalProperties}"
 }

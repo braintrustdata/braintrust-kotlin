@@ -6,115 +6,444 @@ import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
 /** Metadata about the state of the repo when the experiment was created */
-@JsonDeserialize(builder = RepoInfo.Builder::class)
-@NoAutoDetect
 class RepoInfo
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
-    private val commit: JsonField<String>,
-    private val branch: JsonField<String>,
-    private val tag: JsonField<String>,
-    private val dirty: JsonField<Boolean>,
-    private val authorName: JsonField<String>,
     private val authorEmail: JsonField<String>,
+    private val authorName: JsonField<String>,
+    private val branch: JsonField<String>,
+    private val commit: JsonField<String>,
     private val commitMessage: JsonField<String>,
     private val commitTime: JsonField<String>,
+    private val dirty: JsonField<Boolean>,
     private val gitDiff: JsonField<String>,
-    private val additionalProperties: Map<String, JsonValue>,
+    private val tag: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
+    @JsonCreator
+    private constructor(
+        @JsonProperty("author_email")
+        @ExcludeMissing
+        authorEmail: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("author_name")
+        @ExcludeMissing
+        authorName: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("branch") @ExcludeMissing branch: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("commit") @ExcludeMissing commit: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("commit_message")
+        @ExcludeMissing
+        commitMessage: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("commit_time")
+        @ExcludeMissing
+        commitTime: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("dirty") @ExcludeMissing dirty: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("git_diff") @ExcludeMissing gitDiff: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("tag") @ExcludeMissing tag: JsonField<String> = JsonMissing.of(),
+    ) : this(
+        authorEmail,
+        authorName,
+        branch,
+        commit,
+        commitMessage,
+        commitTime,
+        dirty,
+        gitDiff,
+        tag,
+        mutableMapOf(),
+    )
 
-    private var hashCode: Int = 0
-
-    /** SHA of most recent commit */
-    fun commit(): String? = commit.getNullable("commit")
-
-    /** Name of the branch the most recent commit belongs to */
-    fun branch(): String? = branch.getNullable("branch")
-
-    /** Name of the tag on the most recent commit */
-    fun tag(): String? = tag.getNullable("tag")
-
-    /** Whether or not the repo had uncommitted changes when snapshotted */
-    fun dirty(): Boolean? = dirty.getNullable("dirty")
-
-    /** Name of the author of the most recent commit */
-    fun authorName(): String? = authorName.getNullable("author_name")
-
-    /** Email of the author of the most recent commit */
+    /**
+     * Email of the author of the most recent commit
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun authorEmail(): String? = authorEmail.getNullable("author_email")
 
-    /** Most recent commit message */
+    /**
+     * Name of the author of the most recent commit
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun authorName(): String? = authorName.getNullable("author_name")
+
+    /**
+     * Name of the branch the most recent commit belongs to
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun branch(): String? = branch.getNullable("branch")
+
+    /**
+     * SHA of most recent commit
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun commit(): String? = commit.getNullable("commit")
+
+    /**
+     * Most recent commit message
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun commitMessage(): String? = commitMessage.getNullable("commit_message")
 
-    /** Time of the most recent commit */
+    /**
+     * Time of the most recent commit
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun commitTime(): String? = commitTime.getNullable("commit_time")
 
     /**
-     * If the repo was dirty when run, this includes the diff between the current state of the repo
-     * and the most recent commit.
+     * Whether or not the repo had uncommitted changes when snapshotted
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun gitDiff(): String? = gitDiff.getNullable("git_diff")
-
-    /** SHA of most recent commit */
-    @JsonProperty("commit") @ExcludeMissing fun _commit() = commit
-
-    /** Name of the branch the most recent commit belongs to */
-    @JsonProperty("branch") @ExcludeMissing fun _branch() = branch
-
-    /** Name of the tag on the most recent commit */
-    @JsonProperty("tag") @ExcludeMissing fun _tag() = tag
-
-    /** Whether or not the repo had uncommitted changes when snapshotted */
-    @JsonProperty("dirty") @ExcludeMissing fun _dirty() = dirty
-
-    /** Name of the author of the most recent commit */
-    @JsonProperty("author_name") @ExcludeMissing fun _authorName() = authorName
-
-    /** Email of the author of the most recent commit */
-    @JsonProperty("author_email") @ExcludeMissing fun _authorEmail() = authorEmail
-
-    /** Most recent commit message */
-    @JsonProperty("commit_message") @ExcludeMissing fun _commitMessage() = commitMessage
-
-    /** Time of the most recent commit */
-    @JsonProperty("commit_time") @ExcludeMissing fun _commitTime() = commitTime
+    fun dirty(): Boolean? = dirty.getNullable("dirty")
 
     /**
      * If the repo was dirty when run, this includes the diff between the current state of the repo
      * and the most recent commit.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    @JsonProperty("git_diff") @ExcludeMissing fun _gitDiff() = gitDiff
+    fun gitDiff(): String? = gitDiff.getNullable("git_diff")
+
+    /**
+     * Name of the tag on the most recent commit
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun tag(): String? = tag.getNullable("tag")
+
+    /**
+     * Returns the raw JSON value of [authorEmail].
+     *
+     * Unlike [authorEmail], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("author_email")
+    @ExcludeMissing
+    fun _authorEmail(): JsonField<String> = authorEmail
+
+    /**
+     * Returns the raw JSON value of [authorName].
+     *
+     * Unlike [authorName], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("author_name") @ExcludeMissing fun _authorName(): JsonField<String> = authorName
+
+    /**
+     * Returns the raw JSON value of [branch].
+     *
+     * Unlike [branch], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("branch") @ExcludeMissing fun _branch(): JsonField<String> = branch
+
+    /**
+     * Returns the raw JSON value of [commit].
+     *
+     * Unlike [commit], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("commit") @ExcludeMissing fun _commit(): JsonField<String> = commit
+
+    /**
+     * Returns the raw JSON value of [commitMessage].
+     *
+     * Unlike [commitMessage], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("commit_message")
+    @ExcludeMissing
+    fun _commitMessage(): JsonField<String> = commitMessage
+
+    /**
+     * Returns the raw JSON value of [commitTime].
+     *
+     * Unlike [commitTime], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("commit_time") @ExcludeMissing fun _commitTime(): JsonField<String> = commitTime
+
+    /**
+     * Returns the raw JSON value of [dirty].
+     *
+     * Unlike [dirty], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("dirty") @ExcludeMissing fun _dirty(): JsonField<Boolean> = dirty
+
+    /**
+     * Returns the raw JSON value of [gitDiff].
+     *
+     * Unlike [gitDiff], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("git_diff") @ExcludeMissing fun _gitDiff(): JsonField<String> = gitDiff
+
+    /**
+     * Returns the raw JSON value of [tag].
+     *
+     * Unlike [tag], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("tag") @ExcludeMissing fun _tag(): JsonField<String> = tag
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun validate(): RepoInfo = apply {
-        if (!validated) {
-            commit()
-            branch()
-            tag()
-            dirty()
-            authorName()
-            authorEmail()
-            commitMessage()
-            commitTime()
-            gitDiff()
-            validated = true
-        }
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /** Returns a mutable builder for constructing an instance of [RepoInfo]. */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [RepoInfo]. */
+    class Builder internal constructor() {
+
+        private var authorEmail: JsonField<String> = JsonMissing.of()
+        private var authorName: JsonField<String> = JsonMissing.of()
+        private var branch: JsonField<String> = JsonMissing.of()
+        private var commit: JsonField<String> = JsonMissing.of()
+        private var commitMessage: JsonField<String> = JsonMissing.of()
+        private var commitTime: JsonField<String> = JsonMissing.of()
+        private var dirty: JsonField<Boolean> = JsonMissing.of()
+        private var gitDiff: JsonField<String> = JsonMissing.of()
+        private var tag: JsonField<String> = JsonMissing.of()
+        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+        internal fun from(repoInfo: RepoInfo) = apply {
+            authorEmail = repoInfo.authorEmail
+            authorName = repoInfo.authorName
+            branch = repoInfo.branch
+            commit = repoInfo.commit
+            commitMessage = repoInfo.commitMessage
+            commitTime = repoInfo.commitTime
+            dirty = repoInfo.dirty
+            gitDiff = repoInfo.gitDiff
+            tag = repoInfo.tag
+            additionalProperties = repoInfo.additionalProperties.toMutableMap()
+        }
+
+        /** Email of the author of the most recent commit */
+        fun authorEmail(authorEmail: String?) = authorEmail(JsonField.ofNullable(authorEmail))
+
+        /**
+         * Sets [Builder.authorEmail] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.authorEmail] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun authorEmail(authorEmail: JsonField<String>) = apply { this.authorEmail = authorEmail }
+
+        /** Name of the author of the most recent commit */
+        fun authorName(authorName: String?) = authorName(JsonField.ofNullable(authorName))
+
+        /**
+         * Sets [Builder.authorName] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.authorName] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun authorName(authorName: JsonField<String>) = apply { this.authorName = authorName }
+
+        /** Name of the branch the most recent commit belongs to */
+        fun branch(branch: String?) = branch(JsonField.ofNullable(branch))
+
+        /**
+         * Sets [Builder.branch] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.branch] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun branch(branch: JsonField<String>) = apply { this.branch = branch }
+
+        /** SHA of most recent commit */
+        fun commit(commit: String?) = commit(JsonField.ofNullable(commit))
+
+        /**
+         * Sets [Builder.commit] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.commit] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun commit(commit: JsonField<String>) = apply { this.commit = commit }
+
+        /** Most recent commit message */
+        fun commitMessage(commitMessage: String?) =
+            commitMessage(JsonField.ofNullable(commitMessage))
+
+        /**
+         * Sets [Builder.commitMessage] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.commitMessage] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun commitMessage(commitMessage: JsonField<String>) = apply {
+            this.commitMessage = commitMessage
+        }
+
+        /** Time of the most recent commit */
+        fun commitTime(commitTime: String?) = commitTime(JsonField.ofNullable(commitTime))
+
+        /**
+         * Sets [Builder.commitTime] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.commitTime] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun commitTime(commitTime: JsonField<String>) = apply { this.commitTime = commitTime }
+
+        /** Whether or not the repo had uncommitted changes when snapshotted */
+        fun dirty(dirty: Boolean?) = dirty(JsonField.ofNullable(dirty))
+
+        /**
+         * Alias for [Builder.dirty].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun dirty(dirty: Boolean) = dirty(dirty as Boolean?)
+
+        /**
+         * Sets [Builder.dirty] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.dirty] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun dirty(dirty: JsonField<Boolean>) = apply { this.dirty = dirty }
+
+        /**
+         * If the repo was dirty when run, this includes the diff between the current state of the
+         * repo and the most recent commit.
+         */
+        fun gitDiff(gitDiff: String?) = gitDiff(JsonField.ofNullable(gitDiff))
+
+        /**
+         * Sets [Builder.gitDiff] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.gitDiff] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun gitDiff(gitDiff: JsonField<String>) = apply { this.gitDiff = gitDiff }
+
+        /** Name of the tag on the most recent commit */
+        fun tag(tag: String?) = tag(JsonField.ofNullable(tag))
+
+        /**
+         * Sets [Builder.tag] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.tag] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun tag(tag: JsonField<String>) = apply { this.tag = tag }
+
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
+
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
+
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [RepoInfo].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
+        fun build(): RepoInfo =
+            RepoInfo(
+                authorEmail,
+                authorName,
+                branch,
+                commit,
+                commitMessage,
+                commitTime,
+                dirty,
+                gitDiff,
+                tag,
+                additionalProperties.toMutableMap(),
+            )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): RepoInfo = apply {
+        if (validated) {
+            return@apply
+        }
+
+        authorEmail()
+        authorName()
+        branch()
+        commit()
+        commitMessage()
+        commitTime()
+        dirty()
+        gitDiff()
+        tag()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (if (authorEmail.asKnown() == null) 0 else 1) +
+            (if (authorName.asKnown() == null) 0 else 1) +
+            (if (branch.asKnown() == null) 0 else 1) +
+            (if (commit.asKnown() == null) 0 else 1) +
+            (if (commitMessage.asKnown() == null) 0 else 1) +
+            (if (commitTime.asKnown() == null) 0 else 1) +
+            (if (dirty.asKnown() == null) 0 else 1) +
+            (if (gitDiff.asKnown() == null) 0 else 1) +
+            (if (tag.asKnown() == null) 0 else 1)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -122,177 +451,35 @@ private constructor(
         }
 
         return other is RepoInfo &&
-            this.commit == other.commit &&
-            this.branch == other.branch &&
-            this.tag == other.tag &&
-            this.dirty == other.dirty &&
-            this.authorName == other.authorName &&
-            this.authorEmail == other.authorEmail &&
-            this.commitMessage == other.commitMessage &&
-            this.commitTime == other.commitTime &&
-            this.gitDiff == other.gitDiff &&
-            this.additionalProperties == other.additionalProperties
+            authorEmail == other.authorEmail &&
+            authorName == other.authorName &&
+            branch == other.branch &&
+            commit == other.commit &&
+            commitMessage == other.commitMessage &&
+            commitTime == other.commitTime &&
+            dirty == other.dirty &&
+            gitDiff == other.gitDiff &&
+            tag == other.tag &&
+            additionalProperties == other.additionalProperties
     }
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    commit,
-                    branch,
-                    tag,
-                    dirty,
-                    authorName,
-                    authorEmail,
-                    commitMessage,
-                    commitTime,
-                    gitDiff,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            authorEmail,
+            authorName,
+            branch,
+            commit,
+            commitMessage,
+            commitTime,
+            dirty,
+            gitDiff,
+            tag,
+            additionalProperties,
+        )
     }
+
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RepoInfo{commit=$commit, branch=$branch, tag=$tag, dirty=$dirty, authorName=$authorName, authorEmail=$authorEmail, commitMessage=$commitMessage, commitTime=$commitTime, gitDiff=$gitDiff, additionalProperties=$additionalProperties}"
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    class Builder {
-
-        private var commit: JsonField<String> = JsonMissing.of()
-        private var branch: JsonField<String> = JsonMissing.of()
-        private var tag: JsonField<String> = JsonMissing.of()
-        private var dirty: JsonField<Boolean> = JsonMissing.of()
-        private var authorName: JsonField<String> = JsonMissing.of()
-        private var authorEmail: JsonField<String> = JsonMissing.of()
-        private var commitMessage: JsonField<String> = JsonMissing.of()
-        private var commitTime: JsonField<String> = JsonMissing.of()
-        private var gitDiff: JsonField<String> = JsonMissing.of()
-        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(repoInfo: RepoInfo) = apply {
-            this.commit = repoInfo.commit
-            this.branch = repoInfo.branch
-            this.tag = repoInfo.tag
-            this.dirty = repoInfo.dirty
-            this.authorName = repoInfo.authorName
-            this.authorEmail = repoInfo.authorEmail
-            this.commitMessage = repoInfo.commitMessage
-            this.commitTime = repoInfo.commitTime
-            this.gitDiff = repoInfo.gitDiff
-            additionalProperties(repoInfo.additionalProperties)
-        }
-
-        /** SHA of most recent commit */
-        fun commit(commit: String) = commit(JsonField.of(commit))
-
-        /** SHA of most recent commit */
-        @JsonProperty("commit")
-        @ExcludeMissing
-        fun commit(commit: JsonField<String>) = apply { this.commit = commit }
-
-        /** Name of the branch the most recent commit belongs to */
-        fun branch(branch: String) = branch(JsonField.of(branch))
-
-        /** Name of the branch the most recent commit belongs to */
-        @JsonProperty("branch")
-        @ExcludeMissing
-        fun branch(branch: JsonField<String>) = apply { this.branch = branch }
-
-        /** Name of the tag on the most recent commit */
-        fun tag(tag: String) = tag(JsonField.of(tag))
-
-        /** Name of the tag on the most recent commit */
-        @JsonProperty("tag")
-        @ExcludeMissing
-        fun tag(tag: JsonField<String>) = apply { this.tag = tag }
-
-        /** Whether or not the repo had uncommitted changes when snapshotted */
-        fun dirty(dirty: Boolean) = dirty(JsonField.of(dirty))
-
-        /** Whether or not the repo had uncommitted changes when snapshotted */
-        @JsonProperty("dirty")
-        @ExcludeMissing
-        fun dirty(dirty: JsonField<Boolean>) = apply { this.dirty = dirty }
-
-        /** Name of the author of the most recent commit */
-        fun authorName(authorName: String) = authorName(JsonField.of(authorName))
-
-        /** Name of the author of the most recent commit */
-        @JsonProperty("author_name")
-        @ExcludeMissing
-        fun authorName(authorName: JsonField<String>) = apply { this.authorName = authorName }
-
-        /** Email of the author of the most recent commit */
-        fun authorEmail(authorEmail: String) = authorEmail(JsonField.of(authorEmail))
-
-        /** Email of the author of the most recent commit */
-        @JsonProperty("author_email")
-        @ExcludeMissing
-        fun authorEmail(authorEmail: JsonField<String>) = apply { this.authorEmail = authorEmail }
-
-        /** Most recent commit message */
-        fun commitMessage(commitMessage: String) = commitMessage(JsonField.of(commitMessage))
-
-        /** Most recent commit message */
-        @JsonProperty("commit_message")
-        @ExcludeMissing
-        fun commitMessage(commitMessage: JsonField<String>) = apply {
-            this.commitMessage = commitMessage
-        }
-
-        /** Time of the most recent commit */
-        fun commitTime(commitTime: String) = commitTime(JsonField.of(commitTime))
-
-        /** Time of the most recent commit */
-        @JsonProperty("commit_time")
-        @ExcludeMissing
-        fun commitTime(commitTime: JsonField<String>) = apply { this.commitTime = commitTime }
-
-        /**
-         * If the repo was dirty when run, this includes the diff between the current state of the
-         * repo and the most recent commit.
-         */
-        fun gitDiff(gitDiff: String) = gitDiff(JsonField.of(gitDiff))
-
-        /**
-         * If the repo was dirty when run, this includes the diff between the current state of the
-         * repo and the most recent commit.
-         */
-        @JsonProperty("git_diff")
-        @ExcludeMissing
-        fun gitDiff(gitDiff: JsonField<String>) = apply { this.gitDiff = gitDiff }
-
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        @JsonAnySetter
-        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
-        }
-
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        fun build(): RepoInfo =
-            RepoInfo(
-                commit,
-                branch,
-                tag,
-                dirty,
-                authorName,
-                authorEmail,
-                commitMessage,
-                commitTime,
-                gitDiff,
-                additionalProperties.toUnmodifiable(),
-            )
-    }
+        "RepoInfo{authorEmail=$authorEmail, authorName=$authorName, branch=$branch, commit=$commit, commitMessage=$commitMessage, commitTime=$commitTime, dirty=$dirty, gitDiff=$gitDiff, tag=$tag, additionalProperties=$additionalProperties}"
 }

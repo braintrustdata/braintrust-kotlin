@@ -4,76 +4,69 @@ package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
-import com.braintrustdata.api.models.*
-import com.braintrustdata.api.models.ApiKeyListParams
+import com.braintrustdata.api.models.ApiKeyCreateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class ApiKeyServiceTest {
+internal class ApiKeyServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val apiKeyService = client.apiKeys()
+
         val createApiKeyOutput =
             apiKeyService.create(
                 ApiKeyCreateParams.builder().name("name").orgName("org_name").build()
             )
-        println(createApiKeyOutput)
+
         createApiKeyOutput.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val apiKeyService = client.apiKeys()
-        val apiKey =
-            apiKeyService.retrieve(
-                ApiKeyRetrieveParams.builder()
-                    .apiKeyId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
-        println(apiKey)
+
+        val apiKey = apiKeyService.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
         apiKey.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val apiKeyService = client.apiKeys()
-        val response = apiKeyService.list(ApiKeyListParams.builder().build())
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        val page = apiKeyService.list()
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val apiKeyService = client.apiKeys()
-        val apiKey =
-            apiKeyService.delete(
-                ApiKeyDeleteParams.builder()
-                    .apiKeyId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
-        println(apiKey)
+
+        val apiKey = apiKeyService.delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
         apiKey.validate()
     }
 }

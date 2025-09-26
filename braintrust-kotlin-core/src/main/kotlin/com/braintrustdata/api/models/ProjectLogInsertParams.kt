@@ -2,140 +2,444 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.BaseDeserializer
-import com.braintrustdata.api.core.BaseSerializer
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.checkKnown
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
-import com.braintrustdata.api.models.*
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.util.Collections
 import java.util.Objects
 
+/** Insert a set of events into the project logs */
 class ProjectLogInsertParams
-constructor(
-    private val projectId: String,
-    private val events: List<Event>,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+private constructor(
+    private val projectId: String?,
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun projectId(): String = projectId
+    /** Project id */
+    fun projectId(): String? = projectId
 
-    fun events(): List<Event> = events
+    /**
+     * A list of project logs events to insert
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun events(): List<InsertProjectLogsEvent> = body.events()
 
-    internal fun getBody(): ProjectLogInsertBody {
-        return ProjectLogInsertBody(events, additionalBodyProperties)
+    /**
+     * Returns the raw JSON value of [events].
+     *
+     * Unlike [events], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _events(): JsonField<List<InsertProjectLogsEvent>> = body._events()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [ProjectLogInsertParams].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .events()
+         * ```
+         */
+        fun builder() = Builder()
     }
 
-    internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
+    /** A builder for [ProjectLogInsertParams]. */
+    class Builder internal constructor() {
 
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
+        private var projectId: String? = null
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-    fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> projectId
-            else -> ""
+        internal fun from(projectLogInsertParams: ProjectLogInsertParams) = apply {
+            projectId = projectLogInsertParams.projectId
+            body = projectLogInsertParams.body.toBuilder()
+            additionalHeaders = projectLogInsertParams.additionalHeaders.toBuilder()
+            additionalQueryParams = projectLogInsertParams.additionalQueryParams.toBuilder()
         }
-    }
 
-    @JsonDeserialize(builder = ProjectLogInsertBody.Builder::class)
-    @NoAutoDetect
-    class ProjectLogInsertBody
-    internal constructor(
-        private val events: List<Event>?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
+        /** Project id */
+        fun projectId(projectId: String?) = apply { this.projectId = projectId }
 
-        private var hashCode: Int = 0
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [events]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** A list of project logs events to insert */
-        @JsonProperty("events") fun events(): List<Event>? = events
+        fun events(events: List<InsertProjectLogsEvent>) = apply { body.events(events) }
+
+        /**
+         * Sets [Builder.events] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.events] with a well-typed `List<InsertProjectLogsEvent>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun events(events: JsonField<List<InsertProjectLogsEvent>>) = apply { body.events(events) }
+
+        /**
+         * Adds a single [InsertProjectLogsEvent] to [events].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addEvent(event: InsertProjectLogsEvent) = apply { body.addEvent(event) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [ProjectLogInsertParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .events()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): ProjectLogInsertParams =
+            ProjectLogInsertParams(
+                projectId,
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
+    fun _body(): Body = body
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> projectId ?: ""
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val events: JsonField<List<InsertProjectLogsEvent>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("events")
+            @ExcludeMissing
+            events: JsonField<List<InsertProjectLogsEvent>> = JsonMissing.of()
+        ) : this(events, mutableMapOf())
+
+        /**
+         * A list of project logs events to insert
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun events(): List<InsertProjectLogsEvent> = events.getRequired("events")
+
+        /**
+         * Returns the raw JSON value of [events].
+         *
+         * Unlike [events], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("events")
+        @ExcludeMissing
+        fun _events(): JsonField<List<InsertProjectLogsEvent>> = events
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is ProjectLogInsertBody &&
-                this.events == other.events &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(events, additionalProperties)
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "ProjectLogInsertBody{events=$events, additionalProperties=$additionalProperties}"
-
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .events()
+             * ```
+             */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
 
-            private var events: List<Event>? = null
+            private var events: JsonField<MutableList<InsertProjectLogsEvent>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(projectLogInsertBody: ProjectLogInsertBody) = apply {
-                this.events = projectLogInsertBody.events
-                additionalProperties(projectLogInsertBody.additionalProperties)
+            internal fun from(body: Body) = apply {
+                events = body.events.map { it.toMutableList() }
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** A list of project logs events to insert */
-            @JsonProperty("events") fun events(events: List<Event>) = apply { this.events = events }
+            fun events(events: List<InsertProjectLogsEvent>) = events(JsonField.of(events))
+
+            /**
+             * Sets [Builder.events] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.events] with a well-typed
+             * `List<InsertProjectLogsEvent>` value instead. This method is primarily for setting
+             * the field to an undocumented or not yet supported value.
+             */
+            fun events(events: JsonField<List<InsertProjectLogsEvent>>) = apply {
+                this.events = events.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [InsertProjectLogsEvent] to [events].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addEvent(event: InsertProjectLogsEvent) = apply {
+                events =
+                    (events ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("events", it).add(event)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): ProjectLogInsertBody =
-                ProjectLogInsertBody(
-                    checkNotNull(events) { "`events` is required but was not set" }
-                        .toUnmodifiable(),
-                    additionalProperties.toUnmodifiable()
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```kotlin
+             * .events()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("events", events).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
                 )
         }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            events().forEach { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int = (events.asKnown()?.sumOf { it.validity().toInt() } ?: 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Body &&
+                events == other.events &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(events, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Body{events=$events, additionalProperties=$additionalProperties}"
     }
-
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -143,264 +447,15 @@ constructor(
         }
 
         return other is ProjectLogInsertParams &&
-            this.projectId == other.projectId &&
-            this.events == other.events &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
+            projectId == other.projectId &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            projectId,
-            events,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
-    }
+    override fun hashCode(): Int =
+        Objects.hash(projectId, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "ProjectLogInsertParams{projectId=$projectId, events=$events, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
-
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    @NoAutoDetect
-    class Builder {
-
-        private var projectId: String? = null
-        private var events: MutableList<Event> = mutableListOf()
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(projectLogInsertParams: ProjectLogInsertParams) = apply {
-            this.projectId = projectLogInsertParams.projectId
-            this.events(projectLogInsertParams.events)
-            additionalQueryParams(projectLogInsertParams.additionalQueryParams)
-            additionalHeaders(projectLogInsertParams.additionalHeaders)
-            additionalBodyProperties(projectLogInsertParams.additionalBodyProperties)
-        }
-
-        /** Project id */
-        fun projectId(projectId: String) = apply { this.projectId = projectId }
-
-        /** A list of project logs events to insert */
-        fun events(events: List<Event>) = apply {
-            this.events.clear()
-            this.events.addAll(events)
-        }
-
-        /** A list of project logs events to insert */
-        fun addEvent(event: Event) = apply { this.events.add(event) }
-
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
-        }
-
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
-        }
-
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            this.additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
-            }
-
-        fun build(): ProjectLogInsertParams =
-            ProjectLogInsertParams(
-                checkNotNull(projectId) { "`projectId` is required but was not set" },
-                checkNotNull(events) { "`events` is required but was not set" }.toUnmodifiable(),
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
-            )
-    }
-
-    @JsonDeserialize(using = Event.Deserializer::class)
-    @JsonSerialize(using = Event.Serializer::class)
-    class Event
-    private constructor(
-        private val insertProjectLogsEventReplace: InsertProjectLogsEventReplace? = null,
-        private val insertProjectLogsEventMerge: InsertProjectLogsEventMerge? = null,
-        private val _json: JsonValue? = null,
-    ) {
-
-        private var validated: Boolean = false
-
-        fun insertProjectLogsEventReplace(): InsertProjectLogsEventReplace? =
-            insertProjectLogsEventReplace
-
-        fun insertProjectLogsEventMerge(): InsertProjectLogsEventMerge? =
-            insertProjectLogsEventMerge
-
-        fun isInsertProjectLogsEventReplace(): Boolean = insertProjectLogsEventReplace != null
-
-        fun isInsertProjectLogsEventMerge(): Boolean = insertProjectLogsEventMerge != null
-
-        fun asInsertProjectLogsEventReplace(): InsertProjectLogsEventReplace =
-            insertProjectLogsEventReplace.getOrThrow("insertProjectLogsEventReplace")
-
-        fun asInsertProjectLogsEventMerge(): InsertProjectLogsEventMerge =
-            insertProjectLogsEventMerge.getOrThrow("insertProjectLogsEventMerge")
-
-        fun _json(): JsonValue? = _json
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
-                insertProjectLogsEventReplace != null ->
-                    visitor.visitInsertProjectLogsEventReplace(insertProjectLogsEventReplace)
-                insertProjectLogsEventMerge != null ->
-                    visitor.visitInsertProjectLogsEventMerge(insertProjectLogsEventMerge)
-                else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): Event = apply {
-            if (!validated) {
-                if (insertProjectLogsEventReplace == null && insertProjectLogsEventMerge == null) {
-                    throw BraintrustInvalidDataException("Unknown Event: $_json")
-                }
-                insertProjectLogsEventReplace?.validate()
-                insertProjectLogsEventMerge?.validate()
-                validated = true
-            }
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Event &&
-                this.insertProjectLogsEventReplace == other.insertProjectLogsEventReplace &&
-                this.insertProjectLogsEventMerge == other.insertProjectLogsEventMerge
-        }
-
-        override fun hashCode(): Int {
-            return Objects.hash(insertProjectLogsEventReplace, insertProjectLogsEventMerge)
-        }
-
-        override fun toString(): String {
-            return when {
-                insertProjectLogsEventReplace != null ->
-                    "Event{insertProjectLogsEventReplace=$insertProjectLogsEventReplace}"
-                insertProjectLogsEventMerge != null ->
-                    "Event{insertProjectLogsEventMerge=$insertProjectLogsEventMerge}"
-                _json != null -> "Event{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid Event")
-            }
-        }
-
-        companion object {
-
-            fun ofInsertProjectLogsEventReplace(
-                insertProjectLogsEventReplace: InsertProjectLogsEventReplace
-            ) = Event(insertProjectLogsEventReplace = insertProjectLogsEventReplace)
-
-            fun ofInsertProjectLogsEventMerge(
-                insertProjectLogsEventMerge: InsertProjectLogsEventMerge
-            ) = Event(insertProjectLogsEventMerge = insertProjectLogsEventMerge)
-        }
-
-        interface Visitor<out T> {
-
-            fun visitInsertProjectLogsEventReplace(
-                insertProjectLogsEventReplace: InsertProjectLogsEventReplace
-            ): T
-
-            fun visitInsertProjectLogsEventMerge(
-                insertProjectLogsEventMerge: InsertProjectLogsEventMerge
-            ): T
-
-            fun unknown(json: JsonValue?): T {
-                throw BraintrustInvalidDataException("Unknown Event: $json")
-            }
-        }
-
-        class Deserializer : BaseDeserializer<Event>(Event::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): Event {
-                val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<InsertProjectLogsEventReplace>()) {
-                        it.validate()
-                    }
-                    ?.let {
-                        return Event(insertProjectLogsEventReplace = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<InsertProjectLogsEventMerge>()) {
-                        it.validate()
-                    }
-                    ?.let {
-                        return Event(insertProjectLogsEventMerge = it, _json = json)
-                    }
-
-                return Event(_json = json)
-            }
-        }
-
-        class Serializer : BaseSerializer<Event>(Event::class) {
-
-            override fun serialize(
-                value: Event,
-                generator: JsonGenerator,
-                provider: SerializerProvider
-            ) {
-                when {
-                    value.insertProjectLogsEventReplace != null ->
-                        generator.writeObject(value.insertProjectLogsEventReplace)
-                    value.insertProjectLogsEventMerge != null ->
-                        generator.writeObject(value.insertProjectLogsEventMerge)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Event")
-                }
-            }
-        }
-    }
+        "ProjectLogInsertParams{projectId=$projectId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

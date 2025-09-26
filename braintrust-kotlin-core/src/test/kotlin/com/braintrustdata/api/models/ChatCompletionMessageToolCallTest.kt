@@ -2,13 +2,15 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ChatCompletionMessageToolCallTest {
+internal class ChatCompletionMessageToolCallTest {
 
     @Test
-    fun createChatCompletionMessageToolCall() {
+    fun create() {
         val chatCompletionMessageToolCall =
             ChatCompletionMessageToolCall.builder()
                 .id("id")
@@ -20,7 +22,7 @@ class ChatCompletionMessageToolCallTest {
                 )
                 .type(ChatCompletionMessageToolCall.Type.FUNCTION)
                 .build()
-        assertThat(chatCompletionMessageToolCall).isNotNull
+
         assertThat(chatCompletionMessageToolCall.id()).isEqualTo("id")
         assertThat(chatCompletionMessageToolCall.function())
             .isEqualTo(
@@ -31,5 +33,30 @@ class ChatCompletionMessageToolCallTest {
             )
         assertThat(chatCompletionMessageToolCall.type())
             .isEqualTo(ChatCompletionMessageToolCall.Type.FUNCTION)
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val chatCompletionMessageToolCall =
+            ChatCompletionMessageToolCall.builder()
+                .id("id")
+                .function(
+                    ChatCompletionMessageToolCall.Function.builder()
+                        .arguments("arguments")
+                        .name("name")
+                        .build()
+                )
+                .type(ChatCompletionMessageToolCall.Type.FUNCTION)
+                .build()
+
+        val roundtrippedChatCompletionMessageToolCall =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(chatCompletionMessageToolCall),
+                jacksonTypeRef<ChatCompletionMessageToolCall>(),
+            )
+
+        assertThat(roundtrippedChatCompletionMessageToolCall)
+            .isEqualTo(chatCompletionMessageToolCall)
     }
 }

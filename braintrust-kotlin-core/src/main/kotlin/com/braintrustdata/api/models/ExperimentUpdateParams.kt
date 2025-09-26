@@ -3,52 +3,500 @@
 package com.braintrustdata.api.models
 
 import com.braintrustdata.api.core.ExcludeMissing
+import com.braintrustdata.api.core.JsonField
+import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.Params
+import com.braintrustdata.api.core.http.Headers
+import com.braintrustdata.api.core.http.QueryParams
+import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
+/**
+ * Partially update an experiment object. Specify the fields to update in the payload. Any
+ * object-type fields will be deep-merged with existing content. Currently we do not support
+ * removing fields or setting them to null.
+ */
 class ExperimentUpdateParams
-constructor(
-    private val experimentId: String,
-    private val baseExpId: String?,
-    private val datasetId: String?,
-    private val datasetVersion: String?,
-    private val description: String?,
-    private val metadata: Metadata?,
-    private val name: String?,
-    private val public_: Boolean?,
-    private val repoInfo: RepoInfo?,
-    private val additionalQueryParams: Map<String, List<String>>,
-    private val additionalHeaders: Map<String, List<String>>,
-    private val additionalBodyProperties: Map<String, JsonValue>,
-) {
+private constructor(
+    private val experimentId: String?,
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    fun experimentId(): String = experimentId
+    /** Experiment id */
+    fun experimentId(): String? = experimentId
 
-    fun baseExpId(): String? = baseExpId
+    /**
+     * Id of default base experiment to compare against when viewing this experiment
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun baseExpId(): String? = body.baseExpId()
 
-    fun datasetId(): String? = datasetId
+    /**
+     * Identifier of the linked dataset, or null if the experiment is not linked to a dataset
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun datasetId(): String? = body.datasetId()
 
-    fun datasetVersion(): String? = datasetVersion
+    /**
+     * Version number of the linked dataset the experiment was run against. This can be used to
+     * reproduce the experiment after the dataset has been modified.
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun datasetVersion(): String? = body.datasetVersion()
 
-    fun description(): String? = description
+    /**
+     * Textual description of the experiment
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun description(): String? = body.description()
 
-    fun metadata(): Metadata? = metadata
+    /**
+     * User-controlled metadata about the experiment
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun metadata(): Metadata? = body.metadata()
 
-    fun name(): String? = name
+    /**
+     * Name of the experiment. Within a project, experiment names are unique
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun name(): String? = body.name()
 
-    fun public_(): Boolean? = public_
+    /**
+     * Whether or not the experiment is public. Public experiments can be viewed by anybody inside
+     * or outside the organization
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun public_(): Boolean? = body.public_()
 
-    fun repoInfo(): RepoInfo? = repoInfo
+    /**
+     * Metadata about the state of the repo when the experiment was created
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun repoInfo(): RepoInfo? = body.repoInfo()
 
-    internal fun getBody(): ExperimentUpdateBody {
-        return ExperimentUpdateBody(
+    /**
+     * Returns the raw JSON value of [baseExpId].
+     *
+     * Unlike [baseExpId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _baseExpId(): JsonField<String> = body._baseExpId()
+
+    /**
+     * Returns the raw JSON value of [datasetId].
+     *
+     * Unlike [datasetId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _datasetId(): JsonField<String> = body._datasetId()
+
+    /**
+     * Returns the raw JSON value of [datasetVersion].
+     *
+     * Unlike [datasetVersion], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _datasetVersion(): JsonField<String> = body._datasetVersion()
+
+    /**
+     * Returns the raw JSON value of [description].
+     *
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _description(): JsonField<String> = body._description()
+
+    /**
+     * Returns the raw JSON value of [metadata].
+     *
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _metadata(): JsonField<Metadata> = body._metadata()
+
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _name(): JsonField<String> = body._name()
+
+    /**
+     * Returns the raw JSON value of [public_].
+     *
+     * Unlike [public_], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _public_(): JsonField<Boolean> = body._public_()
+
+    /**
+     * Returns the raw JSON value of [repoInfo].
+     *
+     * Unlike [repoInfo], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _repoInfo(): JsonField<RepoInfo> = body._repoInfo()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        fun none(): ExperimentUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ExperimentUpdateParams]. */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [ExperimentUpdateParams]. */
+    class Builder internal constructor() {
+
+        private var experimentId: String? = null
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
+
+        internal fun from(experimentUpdateParams: ExperimentUpdateParams) = apply {
+            experimentId = experimentUpdateParams.experimentId
+            body = experimentUpdateParams.body.toBuilder()
+            additionalHeaders = experimentUpdateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = experimentUpdateParams.additionalQueryParams.toBuilder()
+        }
+
+        /** Experiment id */
+        fun experimentId(experimentId: String?) = apply { this.experimentId = experimentId }
+
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [baseExpId]
+         * - [datasetId]
+         * - [datasetVersion]
+         * - [description]
+         * - [metadata]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /** Id of default base experiment to compare against when viewing this experiment */
+        fun baseExpId(baseExpId: String?) = apply { body.baseExpId(baseExpId) }
+
+        /**
+         * Sets [Builder.baseExpId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.baseExpId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun baseExpId(baseExpId: JsonField<String>) = apply { body.baseExpId(baseExpId) }
+
+        /**
+         * Identifier of the linked dataset, or null if the experiment is not linked to a dataset
+         */
+        fun datasetId(datasetId: String?) = apply { body.datasetId(datasetId) }
+
+        /**
+         * Sets [Builder.datasetId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.datasetId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun datasetId(datasetId: JsonField<String>) = apply { body.datasetId(datasetId) }
+
+        /**
+         * Version number of the linked dataset the experiment was run against. This can be used to
+         * reproduce the experiment after the dataset has been modified.
+         */
+        fun datasetVersion(datasetVersion: String?) = apply { body.datasetVersion(datasetVersion) }
+
+        /**
+         * Sets [Builder.datasetVersion] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.datasetVersion] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun datasetVersion(datasetVersion: JsonField<String>) = apply {
+            body.datasetVersion(datasetVersion)
+        }
+
+        /** Textual description of the experiment */
+        fun description(description: String?) = apply { body.description(description) }
+
+        /**
+         * Sets [Builder.description] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun description(description: JsonField<String>) = apply { body.description(description) }
+
+        /** User-controlled metadata about the experiment */
+        fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
+
+        /**
+         * Sets [Builder.metadata] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
+
+        /** Name of the experiment. Within a project, experiment names are unique */
+        fun name(name: String?) = apply { body.name(name) }
+
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { body.name(name) }
+
+        /**
+         * Whether or not the experiment is public. Public experiments can be viewed by anybody
+         * inside or outside the organization
+         */
+        fun public_(public_: Boolean?) = apply { body.public_(public_) }
+
+        /**
+         * Alias for [Builder.public_].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun public_(public_: Boolean) = public_(public_ as Boolean?)
+
+        /**
+         * Sets [Builder.public_] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.public_] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun public_(public_: JsonField<Boolean>) = apply { body.public_(public_) }
+
+        /** Metadata about the state of the repo when the experiment was created */
+        fun repoInfo(repoInfo: RepoInfo?) = apply { body.repoInfo(repoInfo) }
+
+        /**
+         * Sets [Builder.repoInfo] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.repoInfo] with a well-typed [RepoInfo] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun repoInfo(repoInfo: JsonField<RepoInfo>) = apply { body.repoInfo(repoInfo) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [ExperimentUpdateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
+        fun build(): ExperimentUpdateParams =
+            ExperimentUpdateParams(
+                experimentId,
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
+    fun _body(): Body = body
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> experimentId ?: ""
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val baseExpId: JsonField<String>,
+        private val datasetId: JsonField<String>,
+        private val datasetVersion: JsonField<String>,
+        private val description: JsonField<String>,
+        private val metadata: JsonField<Metadata>,
+        private val name: JsonField<String>,
+        private val public_: JsonField<Boolean>,
+        private val repoInfo: JsonField<RepoInfo>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("base_exp_id")
+            @ExcludeMissing
+            baseExpId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("dataset_id")
+            @ExcludeMissing
+            datasetId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("dataset_version")
+            @ExcludeMissing
+            datasetVersion: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("description")
+            @ExcludeMissing
+            description: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("metadata")
+            @ExcludeMissing
+            metadata: JsonField<Metadata> = JsonMissing.of(),
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("public") @ExcludeMissing public_: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("repo_info")
+            @ExcludeMissing
+            repoInfo: JsonField<RepoInfo> = JsonMissing.of(),
+        ) : this(
             baseExpId,
             datasetId,
             datasetVersion,
@@ -57,200 +505,322 @@ constructor(
             name,
             public_,
             repoInfo,
-            additionalBodyProperties,
+            mutableMapOf(),
         )
-    }
 
-    internal fun getQueryParams(): Map<String, List<String>> = additionalQueryParams
-
-    internal fun getHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> experimentId
-            else -> ""
-        }
-    }
-
-    @JsonDeserialize(builder = ExperimentUpdateBody.Builder::class)
-    @NoAutoDetect
-    class ExperimentUpdateBody
-    internal constructor(
-        private val baseExpId: String?,
-        private val datasetId: String?,
-        private val datasetVersion: String?,
-        private val description: String?,
-        private val metadata: Metadata?,
-        private val name: String?,
-        private val public_: Boolean?,
-        private val repoInfo: RepoInfo?,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
-
-        private var hashCode: Int = 0
-
-        /** Id of default base experiment to compare against when viewing this experiment */
-        @JsonProperty("base_exp_id") fun baseExpId(): String? = baseExpId
+        /**
+         * Id of default base experiment to compare against when viewing this experiment
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun baseExpId(): String? = baseExpId.getNullable("base_exp_id")
 
         /**
          * Identifier of the linked dataset, or null if the experiment is not linked to a dataset
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
-        @JsonProperty("dataset_id") fun datasetId(): String? = datasetId
+        fun datasetId(): String? = datasetId.getNullable("dataset_id")
 
         /**
          * Version number of the linked dataset the experiment was run against. This can be used to
          * reproduce the experiment after the dataset has been modified.
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
-        @JsonProperty("dataset_version") fun datasetVersion(): String? = datasetVersion
+        fun datasetVersion(): String? = datasetVersion.getNullable("dataset_version")
 
-        /** Textual description of the experiment */
-        @JsonProperty("description") fun description(): String? = description
+        /**
+         * Textual description of the experiment
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun description(): String? = description.getNullable("description")
 
-        /** User-controlled metadata about the experiment */
-        @JsonProperty("metadata") fun metadata(): Metadata? = metadata
+        /**
+         * User-controlled metadata about the experiment
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun metadata(): Metadata? = metadata.getNullable("metadata")
 
-        /** Name of the experiment. Within a project, experiment names are unique */
-        @JsonProperty("name") fun name(): String? = name
+        /**
+         * Name of the experiment. Within a project, experiment names are unique
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun name(): String? = name.getNullable("name")
 
         /**
          * Whether or not the experiment is public. Public experiments can be viewed by anybody
          * inside or outside the organization
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
-        @JsonProperty("public") fun public_(): Boolean? = public_
+        fun public_(): Boolean? = public_.getNullable("public")
 
-        /** Metadata about the state of the repo when the experiment was created */
-        @JsonProperty("repo_info") fun repoInfo(): RepoInfo? = repoInfo
+        /**
+         * Metadata about the state of the repo when the experiment was created
+         *
+         * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun repoInfo(): RepoInfo? = repoInfo.getNullable("repo_info")
+
+        /**
+         * Returns the raw JSON value of [baseExpId].
+         *
+         * Unlike [baseExpId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("base_exp_id") @ExcludeMissing fun _baseExpId(): JsonField<String> = baseExpId
+
+        /**
+         * Returns the raw JSON value of [datasetId].
+         *
+         * Unlike [datasetId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("dataset_id") @ExcludeMissing fun _datasetId(): JsonField<String> = datasetId
+
+        /**
+         * Returns the raw JSON value of [datasetVersion].
+         *
+         * Unlike [datasetVersion], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("dataset_version")
+        @ExcludeMissing
+        fun _datasetVersion(): JsonField<String> = datasetVersion
+
+        /**
+         * Returns the raw JSON value of [description].
+         *
+         * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("description")
+        @ExcludeMissing
+        fun _description(): JsonField<String> = description
+
+        /**
+         * Returns the raw JSON value of [metadata].
+         *
+         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+        /**
+         * Returns the raw JSON value of [public_].
+         *
+         * Unlike [public_], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("public") @ExcludeMissing fun _public_(): JsonField<Boolean> = public_
+
+        /**
+         * Returns the raw JSON value of [repoInfo].
+         *
+         * Unlike [repoInfo], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("repo_info") @ExcludeMissing fun _repoInfo(): JsonField<RepoInfo> = repoInfo
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is ExperimentUpdateBody &&
-                this.baseExpId == other.baseExpId &&
-                this.datasetId == other.datasetId &&
-                this.datasetVersion == other.datasetVersion &&
-                this.description == other.description &&
-                this.metadata == other.metadata &&
-                this.name == other.name &&
-                this.public_ == other.public_ &&
-                this.repoInfo == other.repoInfo &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        baseExpId,
-                        datasetId,
-                        datasetVersion,
-                        description,
-                        metadata,
-                        name,
-                        public_,
-                        repoInfo,
-                        additionalProperties,
-                    )
-            }
-            return hashCode
-        }
-
-        override fun toString() =
-            "ExperimentUpdateBody{baseExpId=$baseExpId, datasetId=$datasetId, datasetVersion=$datasetVersion, description=$description, metadata=$metadata, name=$name, public_=$public_, repoInfo=$repoInfo, additionalProperties=$additionalProperties}"
-
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
 
-            private var baseExpId: String? = null
-            private var datasetId: String? = null
-            private var datasetVersion: String? = null
-            private var description: String? = null
-            private var metadata: Metadata? = null
-            private var name: String? = null
-            private var public_: Boolean? = null
-            private var repoInfo: RepoInfo? = null
+            private var baseExpId: JsonField<String> = JsonMissing.of()
+            private var datasetId: JsonField<String> = JsonMissing.of()
+            private var datasetVersion: JsonField<String> = JsonMissing.of()
+            private var description: JsonField<String> = JsonMissing.of()
+            private var metadata: JsonField<Metadata> = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
+            private var public_: JsonField<Boolean> = JsonMissing.of()
+            private var repoInfo: JsonField<RepoInfo> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            internal fun from(experimentUpdateBody: ExperimentUpdateBody) = apply {
-                this.baseExpId = experimentUpdateBody.baseExpId
-                this.datasetId = experimentUpdateBody.datasetId
-                this.datasetVersion = experimentUpdateBody.datasetVersion
-                this.description = experimentUpdateBody.description
-                this.metadata = experimentUpdateBody.metadata
-                this.name = experimentUpdateBody.name
-                this.public_ = experimentUpdateBody.public_
-                this.repoInfo = experimentUpdateBody.repoInfo
-                additionalProperties(experimentUpdateBody.additionalProperties)
+            internal fun from(body: Body) = apply {
+                baseExpId = body.baseExpId
+                datasetId = body.datasetId
+                datasetVersion = body.datasetVersion
+                description = body.description
+                metadata = body.metadata
+                name = body.name
+                public_ = body.public_
+                repoInfo = body.repoInfo
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** Id of default base experiment to compare against when viewing this experiment */
-            @JsonProperty("base_exp_id")
-            fun baseExpId(baseExpId: String) = apply { this.baseExpId = baseExpId }
+            fun baseExpId(baseExpId: String?) = baseExpId(JsonField.ofNullable(baseExpId))
+
+            /**
+             * Sets [Builder.baseExpId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.baseExpId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun baseExpId(baseExpId: JsonField<String>) = apply { this.baseExpId = baseExpId }
 
             /**
              * Identifier of the linked dataset, or null if the experiment is not linked to a
              * dataset
              */
-            @JsonProperty("dataset_id")
-            fun datasetId(datasetId: String) = apply { this.datasetId = datasetId }
+            fun datasetId(datasetId: String?) = datasetId(JsonField.ofNullable(datasetId))
+
+            /**
+             * Sets [Builder.datasetId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.datasetId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun datasetId(datasetId: JsonField<String>) = apply { this.datasetId = datasetId }
 
             /**
              * Version number of the linked dataset the experiment was run against. This can be used
              * to reproduce the experiment after the dataset has been modified.
              */
-            @JsonProperty("dataset_version")
-            fun datasetVersion(datasetVersion: String) = apply {
+            fun datasetVersion(datasetVersion: String?) =
+                datasetVersion(JsonField.ofNullable(datasetVersion))
+
+            /**
+             * Sets [Builder.datasetVersion] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.datasetVersion] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun datasetVersion(datasetVersion: JsonField<String>) = apply {
                 this.datasetVersion = datasetVersion
             }
 
             /** Textual description of the experiment */
-            @JsonProperty("description")
-            fun description(description: String) = apply { this.description = description }
+            fun description(description: String?) = description(JsonField.ofNullable(description))
+
+            /**
+             * Sets [Builder.description] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.description] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun description(description: JsonField<String>) = apply {
+                this.description = description
+            }
 
             /** User-controlled metadata about the experiment */
-            @JsonProperty("metadata")
-            fun metadata(metadata: Metadata) = apply { this.metadata = metadata }
+            fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
+
+            /**
+             * Sets [Builder.metadata] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /** Name of the experiment. Within a project, experiment names are unique */
-            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+            fun name(name: String?) = name(JsonField.ofNullable(name))
+
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /**
              * Whether or not the experiment is public. Public experiments can be viewed by anybody
              * inside or outside the organization
              */
-            @JsonProperty("public") fun public_(public_: Boolean) = apply { this.public_ = public_ }
+            fun public_(public_: Boolean?) = public_(JsonField.ofNullable(public_))
+
+            /**
+             * Alias for [Builder.public_].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun public_(public_: Boolean) = public_(public_ as Boolean?)
+
+            /**
+             * Sets [Builder.public_] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.public_] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun public_(public_: JsonField<Boolean>) = apply { this.public_ = public_ }
 
             /** Metadata about the state of the repo when the experiment was created */
-            @JsonProperty("repo_info")
-            fun repoInfo(repoInfo: RepoInfo) = apply { this.repoInfo = repoInfo }
+            fun repoInfo(repoInfo: RepoInfo?) = repoInfo(JsonField.ofNullable(repoInfo))
+
+            /**
+             * Sets [Builder.repoInfo] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.repoInfo] with a well-typed [RepoInfo] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun repoInfo(repoInfo: JsonField<RepoInfo>) = apply { this.repoInfo = repoInfo }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): ExperimentUpdateBody =
-                ExperimentUpdateBody(
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Body =
+                Body(
                     baseExpId,
                     datasetId,
                     datasetVersion,
@@ -259,187 +829,71 @@ constructor(
                     name,
                     public_,
                     repoInfo,
-                    additionalProperties.toUnmodifiable(),
+                    additionalProperties.toMutableMap(),
                 )
         }
-    }
 
-    fun _additionalQueryParams(): Map<String, List<String>> = additionalQueryParams
+        private var validated: Boolean = false
 
-    fun _additionalHeaders(): Map<String, List<String>> = additionalHeaders
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is ExperimentUpdateParams &&
-            this.experimentId == other.experimentId &&
-            this.baseExpId == other.baseExpId &&
-            this.datasetId == other.datasetId &&
-            this.datasetVersion == other.datasetVersion &&
-            this.description == other.description &&
-            this.metadata == other.metadata &&
-            this.name == other.name &&
-            this.public_ == other.public_ &&
-            this.repoInfo == other.repoInfo &&
-            this.additionalQueryParams == other.additionalQueryParams &&
-            this.additionalHeaders == other.additionalHeaders &&
-            this.additionalBodyProperties == other.additionalBodyProperties
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            experimentId,
-            baseExpId,
-            datasetId,
-            datasetVersion,
-            description,
-            metadata,
-            name,
-            public_,
-            repoInfo,
-            additionalQueryParams,
-            additionalHeaders,
-            additionalBodyProperties,
-        )
-    }
-
-    override fun toString() =
-        "ExperimentUpdateParams{experimentId=$experimentId, baseExpId=$baseExpId, datasetId=$datasetId, datasetVersion=$datasetVersion, description=$description, metadata=$metadata, name=$name, public_=$public_, repoInfo=$repoInfo, additionalQueryParams=$additionalQueryParams, additionalHeaders=$additionalHeaders, additionalBodyProperties=$additionalBodyProperties}"
-
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    @NoAutoDetect
-    class Builder {
-
-        private var experimentId: String? = null
-        private var baseExpId: String? = null
-        private var datasetId: String? = null
-        private var datasetVersion: String? = null
-        private var description: String? = null
-        private var metadata: Metadata? = null
-        private var name: String? = null
-        private var public_: Boolean? = null
-        private var repoInfo: RepoInfo? = null
-        private var additionalQueryParams: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalHeaders: MutableMap<String, MutableList<String>> = mutableMapOf()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(experimentUpdateParams: ExperimentUpdateParams) = apply {
-            this.experimentId = experimentUpdateParams.experimentId
-            this.baseExpId = experimentUpdateParams.baseExpId
-            this.datasetId = experimentUpdateParams.datasetId
-            this.datasetVersion = experimentUpdateParams.datasetVersion
-            this.description = experimentUpdateParams.description
-            this.metadata = experimentUpdateParams.metadata
-            this.name = experimentUpdateParams.name
-            this.public_ = experimentUpdateParams.public_
-            this.repoInfo = experimentUpdateParams.repoInfo
-            additionalQueryParams(experimentUpdateParams.additionalQueryParams)
-            additionalHeaders(experimentUpdateParams.additionalHeaders)
-            additionalBodyProperties(experimentUpdateParams.additionalBodyProperties)
-        }
-
-        /** Experiment id */
-        fun experimentId(experimentId: String) = apply { this.experimentId = experimentId }
-
-        /** Id of default base experiment to compare against when viewing this experiment */
-        fun baseExpId(baseExpId: String) = apply { this.baseExpId = baseExpId }
-
-        /**
-         * Identifier of the linked dataset, or null if the experiment is not linked to a dataset
-         */
-        fun datasetId(datasetId: String) = apply { this.datasetId = datasetId }
-
-        /**
-         * Version number of the linked dataset the experiment was run against. This can be used to
-         * reproduce the experiment after the dataset has been modified.
-         */
-        fun datasetVersion(datasetVersion: String) = apply { this.datasetVersion = datasetVersion }
-
-        /** Textual description of the experiment */
-        fun description(description: String) = apply { this.description = description }
-
-        /** User-controlled metadata about the experiment */
-        fun metadata(metadata: Metadata) = apply { this.metadata = metadata }
-
-        /** Name of the experiment. Within a project, experiment names are unique */
-        fun name(name: String) = apply { this.name = name }
-
-        /**
-         * Whether or not the experiment is public. Public experiments can be viewed by anybody
-         * inside or outside the organization
-         */
-        fun public_(public_: Boolean) = apply { this.public_ = public_ }
-
-        /** Metadata about the state of the repo when the experiment was created */
-        fun repoInfo(repoInfo: RepoInfo) = apply { this.repoInfo = repoInfo }
-
-        fun additionalQueryParams(additionalQueryParams: Map<String, List<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllQueryParams(additionalQueryParams)
-        }
-
-        fun putQueryParam(name: String, value: String) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putQueryParams(name: String, values: Iterable<String>) = apply {
-            this.additionalQueryParams.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            additionalQueryParams.forEach(this::putQueryParams)
-        }
-
-        fun removeQueryParam(name: String) = apply {
-            this.additionalQueryParams.put(name, mutableListOf())
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllHeaders(additionalHeaders)
-        }
-
-        fun putHeader(name: String, value: String) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.add(value)
-        }
-
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            this.additionalHeaders.getOrPut(name) { mutableListOf() }.addAll(values)
-        }
-
-        fun putAllHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            additionalHeaders.forEach(this::putHeaders)
-        }
-
-        fun removeHeader(name: String) = apply { this.additionalHeaders.put(name, mutableListOf()) }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            this.additionalBodyProperties.putAll(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            this.additionalBodyProperties.put(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
             }
 
-        fun build(): ExperimentUpdateParams =
-            ExperimentUpdateParams(
-                checkNotNull(experimentId) { "`experimentId` is required but was not set" },
+            baseExpId()
+            datasetId()
+            datasetVersion()
+            description()
+            metadata()?.validate()
+            name()
+            public_()
+            repoInfo()?.validate()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            (if (baseExpId.asKnown() == null) 0 else 1) +
+                (if (datasetId.asKnown() == null) 0 else 1) +
+                (if (datasetVersion.asKnown() == null) 0 else 1) +
+                (if (description.asKnown() == null) 0 else 1) +
+                (metadata.asKnown()?.validity() ?: 0) +
+                (if (name.asKnown() == null) 0 else 1) +
+                (if (public_.asKnown() == null) 0 else 1) +
+                (repoInfo.asKnown()?.validity() ?: 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Body &&
+                baseExpId == other.baseExpId &&
+                datasetId == other.datasetId &&
+                datasetVersion == other.datasetVersion &&
+                description == other.description &&
+                metadata == other.metadata &&
+                name == other.name &&
+                public_ == other.public_ &&
+                repoInfo == other.repoInfo &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(
                 baseExpId,
                 datasetId,
                 datasetVersion,
@@ -448,21 +902,23 @@ constructor(
                 name,
                 public_,
                 repoInfo,
-                additionalQueryParams.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalHeaders.mapValues { it.value.toUnmodifiable() }.toUnmodifiable(),
-                additionalBodyProperties.toUnmodifiable(),
+                additionalProperties,
             )
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{baseExpId=$baseExpId, datasetId=$datasetId, datasetVersion=$datasetVersion, description=$description, metadata=$metadata, name=$name, public_=$public_, repoInfo=$repoInfo, additionalProperties=$additionalProperties}"
     }
 
     /** User-controlled metadata about the experiment */
-    @JsonDeserialize(builder = Metadata.Builder::class)
-    @NoAutoDetect
     class Metadata
+    @JsonCreator
     private constructor(
-        private val additionalProperties: Map<String, JsonValue>,
+        @com.fasterxml.jackson.annotation.JsonValue
+        private val additionalProperties: Map<String, JsonValue>
     ) {
-
-        private var hashCode: Int = 0
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -470,51 +926,105 @@ constructor(
 
         fun toBuilder() = Builder().from(this)
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Metadata && this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = Objects.hash(additionalProperties)
-            }
-            return hashCode
-        }
-
-        override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
-
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Metadata]. */
             fun builder() = Builder()
         }
 
-        class Builder {
+        /** A builder for [Metadata]. */
+        class Builder internal constructor() {
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             internal fun from(metadata: Metadata) = apply {
-                additionalProperties(metadata.additionalProperties)
+                additionalProperties = metadata.additionalProperties.toMutableMap()
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): Metadata = Metadata(additionalProperties.toUnmodifiable())
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Metadata].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Metadata = Metadata(additionalProperties.toImmutable())
         }
+
+        private var validated: Boolean = false
+
+        fun validate(): Metadata = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Metadata && additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is ExperimentUpdateParams &&
+            experimentId == other.experimentId &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
+    }
+
+    override fun hashCode(): Int =
+        Objects.hash(experimentId, body, additionalHeaders, additionalQueryParams)
+
+    override fun toString() =
+        "ExperimentUpdateParams{experimentId=$experimentId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

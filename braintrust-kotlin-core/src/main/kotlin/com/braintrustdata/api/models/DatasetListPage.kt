@@ -2,29 +2,107 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.ExcludeMissing
-import com.braintrustdata.api.core.JsonField
-import com.braintrustdata.api.core.JsonMissing
-import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.AutoPager
+import com.braintrustdata.api.core.Page
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.services.blocking.DatasetService
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.util.Objects
 
+/** @see DatasetService.list */
 class DatasetListPage
 private constructor(
-    private val datasetsService: DatasetService,
+    private val service: DatasetService,
     private val params: DatasetListParams,
-    private val response: Response,
-) {
+    private val response: DatasetListPageResponse,
+) : Page<Dataset> {
 
-    fun response(): Response = response
+    /**
+     * Delegates to [DatasetListPageResponse], but gracefully handles missing data.
+     *
+     * @see DatasetListPageResponse.objects
+     */
+    fun objects(): List<Dataset> = response._objects().getNullable("objects") ?: emptyList()
 
-    fun objects(): List<Dataset> = response().objects()
+    override fun items(): List<Dataset> = objects()
+
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
+
+    fun nextPageParams(): DatasetListParams =
+        if (params.endingBefore() != null) {
+            params.toBuilder().endingBefore(items().first()._id().getNullable("id")).build()
+        } else {
+            params.toBuilder().startingAfter(items().last()._id().getNullable("id")).build()
+        }
+
+    override fun nextPage(): DatasetListPage = service.list(nextPageParams())
+
+    fun autoPager(): AutoPager<Dataset> = AutoPager.from(this)
+
+    /** The parameters that were used to request this page. */
+    fun params(): DatasetListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): DatasetListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [DatasetListPage].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [DatasetListPage]. */
+    class Builder internal constructor() {
+
+        private var service: DatasetService? = null
+        private var params: DatasetListParams? = null
+        private var response: DatasetListPageResponse? = null
+
+        internal fun from(datasetListPage: DatasetListPage) = apply {
+            service = datasetListPage.service
+            params = datasetListPage.params
+            response = datasetListPage.response
+        }
+
+        fun service(service: DatasetService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: DatasetListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: DatasetListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [DatasetListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): DatasetListPage =
+            DatasetListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -32,142 +110,13 @@ private constructor(
         }
 
         return other is DatasetListPage &&
-            this.datasetsService == other.datasetsService &&
-            this.params == other.params &&
-            this.response == other.response
+            service == other.service &&
+            params == other.params &&
+            response == other.response
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            datasetsService,
-            params,
-            response,
-        )
-    }
+    override fun hashCode(): Int = Objects.hash(service, params, response)
 
     override fun toString() =
-        "DatasetListPage{datasetsService=$datasetsService, params=$params, response=$response}"
-
-    fun hasNextPage(): Boolean {
-        return !objects().isEmpty()
-    }
-
-    fun getNextPageParams(): DatasetListParams? {
-        if (!hasNextPage()) {
-            return null
-        }
-
-        return if (params.endingBefore() != null) {
-            DatasetListParams.builder().from(params).endingBefore(objects().first().id()).build()
-        } else {
-            DatasetListParams.builder().from(params).startingAfter(objects().last().id()).build()
-        }
-    }
-
-    fun getNextPage(): DatasetListPage? {
-        return getNextPageParams()?.let { datasetsService.list(it) }
-    }
-
-    fun autoPager(): AutoPager = AutoPager(this)
-
-    companion object {
-
-        fun of(datasetsService: DatasetService, params: DatasetListParams, response: Response) =
-            DatasetListPage(
-                datasetsService,
-                params,
-                response,
-            )
-    }
-
-    @JsonDeserialize(builder = Response.Builder::class)
-    @NoAutoDetect
-    class Response
-    constructor(
-        private val objects: JsonField<List<Dataset>>,
-        private val additionalProperties: Map<String, JsonValue>,
-    ) {
-
-        private var validated: Boolean = false
-
-        fun objects(): List<Dataset> = objects.getNullable("objects") ?: listOf()
-
-        @JsonProperty("objects") fun _objects(): JsonField<List<Dataset>>? = objects
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun validate(): Response = apply {
-            if (!validated) {
-                objects().map { it.validate() }
-                validated = true
-            }
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Response &&
-                this.objects == other.objects &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        override fun hashCode(): Int {
-            return Objects.hash(objects, additionalProperties)
-        }
-
-        override fun toString() =
-            "DatasetListPage.Response{objects=$objects, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var objects: JsonField<List<Dataset>> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            internal fun from(page: Response) = apply {
-                this.objects = page.objects
-                this.additionalProperties.putAll(page.additionalProperties)
-            }
-
-            fun objects(objects: List<Dataset>) = objects(JsonField.of(objects))
-
-            @JsonProperty("objects")
-            fun objects(objects: JsonField<List<Dataset>>) = apply { this.objects = objects }
-
-            @JsonAnySetter
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            fun build() = Response(objects, additionalProperties.toUnmodifiable())
-        }
-    }
-
-    class AutoPager
-    constructor(
-        private val firstPage: DatasetListPage,
-    ) : Sequence<Dataset> {
-
-        override fun iterator(): Iterator<Dataset> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.objects().size) {
-                    yield(page.objects()[index++])
-                }
-                page = page.getNextPage() ?: break
-                index = 0
-            }
-        }
-    }
+        "DatasetListPage{service=$service, params=$params, response=$response}"
 }

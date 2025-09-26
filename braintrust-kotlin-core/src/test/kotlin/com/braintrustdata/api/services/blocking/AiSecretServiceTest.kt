@@ -4,142 +4,154 @@ package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
-import com.braintrustdata.api.models.*
-import com.braintrustdata.api.models.AiSecretListParams
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.models.AiSecretCreateParams
+import com.braintrustdata.api.models.AiSecretFindAndDeleteParams
+import com.braintrustdata.api.models.AiSecretReplaceParams
+import com.braintrustdata.api.models.AiSecretUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class AiSecretServiceTest {
+internal class AiSecretServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aiSecretService = client.aiSecrets()
+
         val aISecret =
             aiSecretService.create(
                 AiSecretCreateParams.builder()
                     .name("name")
-                    .metadata(AiSecretCreateParams.Metadata.builder().build())
+                    .metadata(
+                        AiSecretCreateParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
                     .orgName("org_name")
                     .secret("secret")
                     .type("type")
                     .build()
             )
-        println(aISecret)
+
         aISecret.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aiSecretService = client.aiSecrets()
-        val aISecret =
-            aiSecretService.retrieve(
-                AiSecretRetrieveParams.builder()
-                    .aiSecretId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
-        println(aISecret)
+
+        val aISecret = aiSecretService.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
         aISecret.validate()
     }
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aiSecretService = client.aiSecrets()
+
         val aISecret =
             aiSecretService.update(
                 AiSecretUpdateParams.builder()
                     .aiSecretId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .metadata(AiSecretUpdateParams.Metadata.builder().build())
+                    .metadata(
+                        AiSecretUpdateParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
                     .name("name")
                     .secret("secret")
                     .type("type")
                     .build()
             )
-        println(aISecret)
+
         aISecret.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aiSecretService = client.aiSecrets()
-        val response = aiSecretService.list(AiSecretListParams.builder().build())
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        val page = aiSecretService.list()
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aiSecretService = client.aiSecrets()
-        val aISecret =
-            aiSecretService.delete(
-                AiSecretDeleteParams.builder()
-                    .aiSecretId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
-        println(aISecret)
+
+        val aISecret = aiSecretService.delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
         aISecret.validate()
     }
 
     @Test
-    fun callFindAndDelete() {
+    fun findAndDelete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aiSecretService = client.aiSecrets()
+
         val aISecret =
             aiSecretService.findAndDelete(
                 AiSecretFindAndDeleteParams.builder().name("name").orgName("org_name").build()
             )
-        println(aISecret)
+
         aISecret.validate()
     }
 
     @Test
-    fun callReplace() {
+    fun replace() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val aiSecretService = client.aiSecrets()
+
         val aISecret =
             aiSecretService.replace(
                 AiSecretReplaceParams.builder()
                     .name("name")
-                    .metadata(AiSecretReplaceParams.Metadata.builder().build())
+                    .metadata(
+                        AiSecretReplaceParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
                     .orgName("org_name")
                     .secret("secret")
                     .type("type")
                     .build()
             )
-        println(aISecret)
+
         aISecret.validate()
     }
 }

@@ -2,34 +2,60 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ViewDataTest {
+internal class ViewDataTest {
 
     @Test
-    fun createViewData() {
+    fun create() {
         val viewData =
             ViewData.builder()
                 .search(
                     ViewDataSearch.builder()
-                        .filter(listOf(JsonNull.of()))
-                        .match(listOf(JsonNull.of()))
-                        .sort(listOf(JsonNull.of()))
-                        .tag(listOf(JsonNull.of()))
+                        .addFilter(JsonValue.from(mapOf<String, Any>()))
+                        .addMatch(JsonValue.from(mapOf<String, Any>()))
+                        .addSort(JsonValue.from(mapOf<String, Any>()))
+                        .addTag(JsonValue.from(mapOf<String, Any>()))
                         .build()
                 )
                 .build()
-        assertThat(viewData).isNotNull
+
         assertThat(viewData.search())
             .isEqualTo(
                 ViewDataSearch.builder()
-                    .filter(listOf(JsonNull.of()))
-                    .match(listOf(JsonNull.of()))
-                    .sort(listOf(JsonNull.of()))
-                    .tag(listOf(JsonNull.of()))
+                    .addFilter(JsonValue.from(mapOf<String, Any>()))
+                    .addMatch(JsonValue.from(mapOf<String, Any>()))
+                    .addSort(JsonValue.from(mapOf<String, Any>()))
+                    .addTag(JsonValue.from(mapOf<String, Any>()))
                     .build()
             )
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val viewData =
+            ViewData.builder()
+                .search(
+                    ViewDataSearch.builder()
+                        .addFilter(JsonValue.from(mapOf<String, Any>()))
+                        .addMatch(JsonValue.from(mapOf<String, Any>()))
+                        .addSort(JsonValue.from(mapOf<String, Any>()))
+                        .addTag(JsonValue.from(mapOf<String, Any>()))
+                        .build()
+                )
+                .build()
+
+        val roundtrippedViewData =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(viewData),
+                jacksonTypeRef<ViewData>(),
+            )
+
+        assertThat(roundtrippedViewData).isEqualTo(viewData)
     }
 }

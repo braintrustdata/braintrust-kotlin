@@ -4,55 +4,52 @@ package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
-import com.braintrustdata.api.models.*
-import com.braintrustdata.api.models.ProjectScoreListParams
+import com.braintrustdata.api.models.OnlineScoreConfig
+import com.braintrustdata.api.models.ProjectScoreCategory
+import com.braintrustdata.api.models.ProjectScoreConfig
+import com.braintrustdata.api.models.ProjectScoreCreateParams
+import com.braintrustdata.api.models.ProjectScoreReplaceParams
+import com.braintrustdata.api.models.ProjectScoreType
+import com.braintrustdata.api.models.ProjectScoreUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class ProjectScoreServiceTest {
+internal class ProjectScoreServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectScoreService = client.projectScores()
+
         val projectScore =
             projectScoreService.create(
                 ProjectScoreCreateParams.builder()
                     .name("name")
                     .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .scoreType(ProjectScoreType.SLIDER)
-                    .categories(
-                        ProjectScoreCreateParams.Categories.ofProjectScoreCategories(
-                            listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
-                        )
+                    .categoriesOfCategorical(
+                        listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                     )
                     .config(
                         ProjectScoreConfig.builder()
-                            .destination(ProjectScoreConfig.Destination.EXPECTED)
+                            .destination("destination")
                             .multiSelect(true)
                             .online(
                                 OnlineScoreConfig.builder()
-                                    .samplingRate(1.0)
-                                    .scorers(
-                                        listOf(
-                                            OnlineScoreConfig.Scorer.ofFunction(
-                                                OnlineScoreConfig.Scorer.Function.builder()
-                                                    .id("id")
-                                                    .type(
-                                                        OnlineScoreConfig.Scorer.Function.Type
-                                                            .FUNCTION
-                                                    )
-                                                    .build()
-                                            )
-                                        )
+                                    .samplingRate(0.0)
+                                    .addScorer(
+                                        OnlineScoreConfig.Scorer.Function.builder()
+                                            .id("id")
+                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                            .build()
                                     )
                                     .applyToRootSpan(true)
-                                    .applyToSpanNames(listOf("string"))
+                                    .addApplyToSpanName("string")
                                     .build()
                             )
                             .build()
@@ -60,67 +57,55 @@ class ProjectScoreServiceTest {
                     .description("description")
                     .build()
             )
-        println(projectScore)
+
         projectScore.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectScoreService = client.projectScores()
-        val projectScore =
-            projectScoreService.retrieve(
-                ProjectScoreRetrieveParams.builder()
-                    .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
-        println(projectScore)
+
+        val projectScore = projectScoreService.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
         projectScore.validate()
     }
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectScoreService = client.projectScores()
+
         val projectScore =
             projectScoreService.update(
                 ProjectScoreUpdateParams.builder()
                     .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .categories(
-                        ProjectScoreUpdateParams.Categories.ofProjectScoreCategories(
-                            listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
-                        )
+                    .categoriesOfCategorical(
+                        listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                     )
                     .config(
                         ProjectScoreConfig.builder()
-                            .destination(ProjectScoreConfig.Destination.EXPECTED)
+                            .destination("destination")
                             .multiSelect(true)
                             .online(
                                 OnlineScoreConfig.builder()
-                                    .samplingRate(1.0)
-                                    .scorers(
-                                        listOf(
-                                            OnlineScoreConfig.Scorer.ofFunction(
-                                                OnlineScoreConfig.Scorer.Function.builder()
-                                                    .id("id")
-                                                    .type(
-                                                        OnlineScoreConfig.Scorer.Function.Type
-                                                            .FUNCTION
-                                                    )
-                                                    .build()
-                                            )
-                                        )
+                                    .samplingRate(0.0)
+                                    .addScorer(
+                                        OnlineScoreConfig.Scorer.Function.builder()
+                                            .id("id")
+                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                            .build()
                                     )
                                     .applyToRootSpan(true)
-                                    .applyToSpanNames(listOf("string"))
+                                    .addApplyToSpanName("string")
                                     .build()
                             )
                             .build()
@@ -130,82 +115,71 @@ class ProjectScoreServiceTest {
                     .scoreType(ProjectScoreType.SLIDER)
                     .build()
             )
-        println(projectScore)
+
         projectScore.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectScoreService = client.projectScores()
-        val response = projectScoreService.list(ProjectScoreListParams.builder().build())
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        val page = projectScoreService.list()
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectScoreService = client.projectScores()
-        val projectScore =
-            projectScoreService.delete(
-                ProjectScoreDeleteParams.builder()
-                    .projectScoreId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
-        println(projectScore)
+
+        val projectScore = projectScoreService.delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
         projectScore.validate()
     }
 
     @Test
-    fun callReplace() {
+    fun replace() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val projectScoreService = client.projectScores()
+
         val projectScore =
             projectScoreService.replace(
                 ProjectScoreReplaceParams.builder()
                     .name("name")
                     .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .scoreType(ProjectScoreType.SLIDER)
-                    .categories(
-                        ProjectScoreReplaceParams.Categories.ofProjectScoreCategories(
-                            listOf(ProjectScoreCategory.builder().name("name").value(42.23).build())
-                        )
+                    .categoriesOfCategorical(
+                        listOf(ProjectScoreCategory.builder().name("name").value(0.0).build())
                     )
                     .config(
                         ProjectScoreConfig.builder()
-                            .destination(ProjectScoreConfig.Destination.EXPECTED)
+                            .destination("destination")
                             .multiSelect(true)
                             .online(
                                 OnlineScoreConfig.builder()
-                                    .samplingRate(1.0)
-                                    .scorers(
-                                        listOf(
-                                            OnlineScoreConfig.Scorer.ofFunction(
-                                                OnlineScoreConfig.Scorer.Function.builder()
-                                                    .id("id")
-                                                    .type(
-                                                        OnlineScoreConfig.Scorer.Function.Type
-                                                            .FUNCTION
-                                                    )
-                                                    .build()
-                                            )
-                                        )
+                                    .samplingRate(0.0)
+                                    .addScorer(
+                                        OnlineScoreConfig.Scorer.Function.builder()
+                                            .id("id")
+                                            .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                                            .build()
                                     )
                                     .applyToRootSpan(true)
-                                    .applyToSpanNames(listOf("string"))
+                                    .addApplyToSpanName("string")
                                     .build()
                             )
                             .build()
@@ -213,7 +187,7 @@ class ProjectScoreServiceTest {
                     .description("description")
                     .build()
             )
-        println(projectScore)
+
         projectScore.validate()
     }
 }

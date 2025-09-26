@@ -2,25 +2,25 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class FunctionTest {
+internal class FunctionTest {
 
     @Test
-    fun createFunction() {
+    fun create() {
         val function =
             Function.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 ._xactId("_xact_id")
                 .functionData(
-                    Function.FunctionData.ofPrompt(
-                        Function.FunctionData.Prompt.builder()
-                            .type(Function.FunctionData.Prompt.Type.PROMPT)
-                            .build()
-                    )
+                    Function.FunctionData.Prompt.builder()
+                        .type(Function.FunctionData.Prompt.Type.PROMPT)
+                        .build()
                 )
                 .logId(Function.LogId.P)
                 .name("name")
@@ -31,60 +31,67 @@ class FunctionTest {
                 .description("description")
                 .functionSchema(
                     Function.FunctionSchema.builder()
-                        .parameters(JsonNull.of())
-                        .returns(JsonNull.of())
+                        .parameters(JsonValue.from(mapOf<String, Any>()))
+                        .returns(JsonValue.from(mapOf<String, Any>()))
                         .build()
                 )
                 .functionType(Function.FunctionType.LLM)
-                .metadata(Function.Metadata.builder().build())
+                .metadata(
+                    Function.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
                 .origin(
                     Function.Origin.builder()
                         .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .objectType(Function.Origin.ObjectType.ORGANIZATION)
+                        .objectType(AclObjectType.ORGANIZATION)
                         .internal_(true)
                         .build()
                 )
                 .promptData(
                     PromptData.builder()
                         .options(
-                            PromptData.Options.builder()
+                            PromptOptions.builder()
                                 .model("model")
                                 .params(
-                                    PromptData.Options.Params.ofOpenAIModelParams(
-                                        PromptData.Options.Params.OpenAIModelParams.builder()
-                                            .frequencyPenalty(42.23)
-                                            .functionCall(
-                                                PromptData.Options.Params.OpenAIModelParams
-                                                    .FunctionCall
-                                                    .ofAuto(
-                                                        PromptData.Options.Params.OpenAIModelParams
-                                                            .FunctionCall
-                                                            .Auto
-                                                            .AUTO
-                                                    )
-                                            )
-                                            .maxTokens(42.23)
-                                            .n(42.23)
-                                            .presencePenalty(42.23)
-                                            .responseFormat(
-                                                PromptData.Options.Params.OpenAIModelParams
-                                                    .ResponseFormat
-                                                    .builder()
-                                                    .type(
-                                                        PromptData.Options.Params.OpenAIModelParams
-                                                            .ResponseFormat
-                                                            .Type
-                                                            .JSON_OBJECT
-                                                    )
-                                                    .build()
-                                            )
-                                            .stop(listOf("string"))
-                                            .temperature(42.23)
-                                            .toolChoice(ToolChoice.ofAuto(ToolChoice.Auto.AUTO))
-                                            .topP(42.23)
-                                            .useCache(true)
-                                            .build()
-                                    )
+                                    PromptOptions.Params.OpenAIModelParams.builder()
+                                        .frequencyPenalty(0.0)
+                                        .functionCall(
+                                            PromptOptions.Params.OpenAIModelParams.FunctionCall
+                                                .UnionMember0
+                                                .AUTO
+                                        )
+                                        .maxCompletionTokens(0.0)
+                                        .maxTokens(0.0)
+                                        .n(0.0)
+                                        .presencePenalty(0.0)
+                                        .reasoningEffort(
+                                            PromptOptions.Params.OpenAIModelParams.ReasoningEffort
+                                                .LOW
+                                        )
+                                        .responseFormat(
+                                            PromptOptions.Params.OpenAIModelParams.ResponseFormat
+                                                .JsonObject
+                                                .builder()
+                                                .type(
+                                                    PromptOptions.Params.OpenAIModelParams
+                                                        .ResponseFormat
+                                                        .JsonObject
+                                                        .Type
+                                                        .JSON_OBJECT
+                                                )
+                                                .build()
+                                        )
+                                        .addStop("string")
+                                        .temperature(0.0)
+                                        .toolChoice(
+                                            PromptOptions.Params.OpenAIModelParams.ToolChoice
+                                                .UnionMember0
+                                                .AUTO
+                                        )
+                                        .topP(0.0)
+                                        .useCache(true)
+                                        .build()
                                 )
                                 .position("position")
                                 .build()
@@ -98,34 +105,32 @@ class FunctionTest {
                         )
                         .parser(
                             PromptData.Parser.builder()
-                                .choiceScores(PromptData.Parser.ChoiceScores.builder().build())
+                                .choiceScores(
+                                    PromptData.Parser.ChoiceScores.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(0))
+                                        .build()
+                                )
                                 .type(PromptData.Parser.Type.LLM_CLASSIFIER)
                                 .useCot(true)
                                 .build()
                         )
                         .prompt(
-                            PromptData.Prompt.ofCompletion(
-                                PromptData.Prompt.Completion.builder()
-                                    .content("content")
-                                    .type(PromptData.Prompt.Completion.Type.COMPLETION)
-                                    .build()
-                            )
+                            PromptData.Prompt.Completion.builder()
+                                .content("content")
+                                .type(PromptData.Prompt.Completion.Type.COMPLETION)
+                                .build()
                         )
-                        .toolFunctions(
-                            listOf(
-                                PromptData.ToolFunction.ofFunction(
-                                    PromptData.ToolFunction.Function.builder()
-                                        .id("id")
-                                        .type(PromptData.ToolFunction.Function.Type.FUNCTION)
-                                        .build()
-                                )
-                            )
+                        .addToolFunction(
+                            PromptData.ToolFunction.Function.builder()
+                                .id("id")
+                                .type(PromptData.ToolFunction.Function.Type.FUNCTION)
+                                .build()
                         )
                         .build()
                 )
-                .tags(listOf("string"))
+                .addTag("string")
                 .build()
-        assertThat(function).isNotNull
+
         assertThat(function.id()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(function._xactId()).isEqualTo("_xact_id")
         assertThat(function.functionData())
@@ -146,17 +151,22 @@ class FunctionTest {
         assertThat(function.functionSchema())
             .isEqualTo(
                 Function.FunctionSchema.builder()
-                    .parameters(JsonNull.of())
-                    .returns(JsonNull.of())
+                    .parameters(JsonValue.from(mapOf<String, Any>()))
+                    .returns(JsonValue.from(mapOf<String, Any>()))
                     .build()
             )
         assertThat(function.functionType()).isEqualTo(Function.FunctionType.LLM)
-        assertThat(function.metadata()).isEqualTo(Function.Metadata.builder().build())
+        assertThat(function.metadata())
+            .isEqualTo(
+                Function.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
         assertThat(function.origin())
             .isEqualTo(
                 Function.Origin.builder()
                     .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .objectType(Function.Origin.ObjectType.ORGANIZATION)
+                    .objectType(AclObjectType.ORGANIZATION)
                     .internal_(true)
                     .build()
             )
@@ -164,43 +174,46 @@ class FunctionTest {
             .isEqualTo(
                 PromptData.builder()
                     .options(
-                        PromptData.Options.builder()
+                        PromptOptions.builder()
                             .model("model")
                             .params(
-                                PromptData.Options.Params.ofOpenAIModelParams(
-                                    PromptData.Options.Params.OpenAIModelParams.builder()
-                                        .frequencyPenalty(42.23)
-                                        .functionCall(
-                                            PromptData.Options.Params.OpenAIModelParams.FunctionCall
-                                                .ofAuto(
-                                                    PromptData.Options.Params.OpenAIModelParams
-                                                        .FunctionCall
-                                                        .Auto
-                                                        .AUTO
-                                                )
-                                        )
-                                        .maxTokens(42.23)
-                                        .n(42.23)
-                                        .presencePenalty(42.23)
-                                        .responseFormat(
-                                            PromptData.Options.Params.OpenAIModelParams
-                                                .ResponseFormat
-                                                .builder()
-                                                .type(
-                                                    PromptData.Options.Params.OpenAIModelParams
-                                                        .ResponseFormat
-                                                        .Type
-                                                        .JSON_OBJECT
-                                                )
-                                                .build()
-                                        )
-                                        .stop(listOf("string"))
-                                        .temperature(42.23)
-                                        .toolChoice(ToolChoice.ofAuto(ToolChoice.Auto.AUTO))
-                                        .topP(42.23)
-                                        .useCache(true)
-                                        .build()
-                                )
+                                PromptOptions.Params.OpenAIModelParams.builder()
+                                    .frequencyPenalty(0.0)
+                                    .functionCall(
+                                        PromptOptions.Params.OpenAIModelParams.FunctionCall
+                                            .UnionMember0
+                                            .AUTO
+                                    )
+                                    .maxCompletionTokens(0.0)
+                                    .maxTokens(0.0)
+                                    .n(0.0)
+                                    .presencePenalty(0.0)
+                                    .reasoningEffort(
+                                        PromptOptions.Params.OpenAIModelParams.ReasoningEffort.LOW
+                                    )
+                                    .responseFormat(
+                                        PromptOptions.Params.OpenAIModelParams.ResponseFormat
+                                            .JsonObject
+                                            .builder()
+                                            .type(
+                                                PromptOptions.Params.OpenAIModelParams
+                                                    .ResponseFormat
+                                                    .JsonObject
+                                                    .Type
+                                                    .JSON_OBJECT
+                                            )
+                                            .build()
+                                    )
+                                    .addStop("string")
+                                    .temperature(0.0)
+                                    .toolChoice(
+                                        PromptOptions.Params.OpenAIModelParams.ToolChoice
+                                            .UnionMember0
+                                            .AUTO
+                                    )
+                                    .topP(0.0)
+                                    .useCache(true)
+                                    .build()
                             )
                             .position("position")
                             .build()
@@ -214,31 +227,159 @@ class FunctionTest {
                     )
                     .parser(
                         PromptData.Parser.builder()
-                            .choiceScores(PromptData.Parser.ChoiceScores.builder().build())
+                            .choiceScores(
+                                PromptData.Parser.ChoiceScores.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                    .build()
+                            )
                             .type(PromptData.Parser.Type.LLM_CLASSIFIER)
                             .useCot(true)
                             .build()
                     )
                     .prompt(
-                        PromptData.Prompt.ofCompletion(
+                        PromptData.Prompt.Completion.builder()
+                            .content("content")
+                            .type(PromptData.Prompt.Completion.Type.COMPLETION)
+                            .build()
+                    )
+                    .addToolFunction(
+                        PromptData.ToolFunction.Function.builder()
+                            .id("id")
+                            .type(PromptData.ToolFunction.Function.Type.FUNCTION)
+                            .build()
+                    )
+                    .build()
+            )
+        assertThat(function.tags()).containsExactly("string")
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val function =
+            Function.builder()
+                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                ._xactId("_xact_id")
+                .functionData(
+                    Function.FunctionData.Prompt.builder()
+                        .type(Function.FunctionData.Prompt.Type.PROMPT)
+                        .build()
+                )
+                .logId(Function.LogId.P)
+                .name("name")
+                .orgId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .slug("slug")
+                .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .description("description")
+                .functionSchema(
+                    Function.FunctionSchema.builder()
+                        .parameters(JsonValue.from(mapOf<String, Any>()))
+                        .returns(JsonValue.from(mapOf<String, Any>()))
+                        .build()
+                )
+                .functionType(Function.FunctionType.LLM)
+                .metadata(
+                    Function.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
+                .origin(
+                    Function.Origin.builder()
+                        .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .objectType(AclObjectType.ORGANIZATION)
+                        .internal_(true)
+                        .build()
+                )
+                .promptData(
+                    PromptData.builder()
+                        .options(
+                            PromptOptions.builder()
+                                .model("model")
+                                .params(
+                                    PromptOptions.Params.OpenAIModelParams.builder()
+                                        .frequencyPenalty(0.0)
+                                        .functionCall(
+                                            PromptOptions.Params.OpenAIModelParams.FunctionCall
+                                                .UnionMember0
+                                                .AUTO
+                                        )
+                                        .maxCompletionTokens(0.0)
+                                        .maxTokens(0.0)
+                                        .n(0.0)
+                                        .presencePenalty(0.0)
+                                        .reasoningEffort(
+                                            PromptOptions.Params.OpenAIModelParams.ReasoningEffort
+                                                .LOW
+                                        )
+                                        .responseFormat(
+                                            PromptOptions.Params.OpenAIModelParams.ResponseFormat
+                                                .JsonObject
+                                                .builder()
+                                                .type(
+                                                    PromptOptions.Params.OpenAIModelParams
+                                                        .ResponseFormat
+                                                        .JsonObject
+                                                        .Type
+                                                        .JSON_OBJECT
+                                                )
+                                                .build()
+                                        )
+                                        .addStop("string")
+                                        .temperature(0.0)
+                                        .toolChoice(
+                                            PromptOptions.Params.OpenAIModelParams.ToolChoice
+                                                .UnionMember0
+                                                .AUTO
+                                        )
+                                        .topP(0.0)
+                                        .useCache(true)
+                                        .build()
+                                )
+                                .position("position")
+                                .build()
+                        )
+                        .origin(
+                            PromptData.Origin.builder()
+                                .projectId("project_id")
+                                .promptId("prompt_id")
+                                .promptVersion("prompt_version")
+                                .build()
+                        )
+                        .parser(
+                            PromptData.Parser.builder()
+                                .choiceScores(
+                                    PromptData.Parser.ChoiceScores.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(0))
+                                        .build()
+                                )
+                                .type(PromptData.Parser.Type.LLM_CLASSIFIER)
+                                .useCot(true)
+                                .build()
+                        )
+                        .prompt(
                             PromptData.Prompt.Completion.builder()
                                 .content("content")
                                 .type(PromptData.Prompt.Completion.Type.COMPLETION)
                                 .build()
                         )
-                    )
-                    .toolFunctions(
-                        listOf(
-                            PromptData.ToolFunction.ofFunction(
-                                PromptData.ToolFunction.Function.builder()
-                                    .id("id")
-                                    .type(PromptData.ToolFunction.Function.Type.FUNCTION)
-                                    .build()
-                            )
+                        .addToolFunction(
+                            PromptData.ToolFunction.Function.builder()
+                                .id("id")
+                                .type(PromptData.ToolFunction.Function.Type.FUNCTION)
+                                .build()
                         )
-                    )
-                    .build()
+                        .build()
+                )
+                .addTag("string")
+                .build()
+
+        val roundtrippedFunction =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(function),
+                jacksonTypeRef<Function>(),
             )
-        assertThat(function.tags()).containsExactly("string")
+
+        assertThat(roundtrippedFunction).isEqualTo(function)
     }
 }

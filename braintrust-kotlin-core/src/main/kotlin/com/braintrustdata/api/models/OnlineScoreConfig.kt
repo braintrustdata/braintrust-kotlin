@@ -9,9 +9,11 @@ import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
+import com.braintrustdata.api.core.allMaxBy
+import com.braintrustdata.api.core.checkKnown
+import com.braintrustdata.api.core.checkRequired
 import com.braintrustdata.api.core.getOrThrow
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.toImmutable
 import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
@@ -24,120 +26,155 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import java.util.Collections
 import java.util.Objects
 
-@JsonDeserialize(builder = OnlineScoreConfig.Builder::class)
-@NoAutoDetect
 class OnlineScoreConfig
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val samplingRate: JsonField<Double>,
     private val scorers: JsonField<List<Scorer>>,
     private val applyToRootSpan: JsonField<Boolean>,
     private val applyToSpanNames: JsonField<List<String>>,
-    private val additionalProperties: Map<String, JsonValue>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
+    @JsonCreator
+    private constructor(
+        @JsonProperty("sampling_rate")
+        @ExcludeMissing
+        samplingRate: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("scorers")
+        @ExcludeMissing
+        scorers: JsonField<List<Scorer>> = JsonMissing.of(),
+        @JsonProperty("apply_to_root_span")
+        @ExcludeMissing
+        applyToRootSpan: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("apply_to_span_names")
+        @ExcludeMissing
+        applyToSpanNames: JsonField<List<String>> = JsonMissing.of(),
+    ) : this(samplingRate, scorers, applyToRootSpan, applyToSpanNames, mutableMapOf())
 
-    private var hashCode: Int = 0
-
-    /** The sampling rate for online scoring */
+    /**
+     * The sampling rate for online scoring
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun samplingRate(): Double = samplingRate.getRequired("sampling_rate")
 
-    /** The list of scorers to use for online scoring */
+    /**
+     * The list of scorers to use for online scoring
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun scorers(): List<Scorer> = scorers.getRequired("scorers")
 
-    /** Whether to trigger online scoring on the root span of each trace */
+    /**
+     * Whether to trigger online scoring on the root span of each trace
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun applyToRootSpan(): Boolean? = applyToRootSpan.getNullable("apply_to_root_span")
 
-    /** Trigger online scoring on any spans with a name in this list */
+    /**
+     * Trigger online scoring on any spans with a name in this list
+     *
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun applyToSpanNames(): List<String>? = applyToSpanNames.getNullable("apply_to_span_names")
 
-    /** The sampling rate for online scoring */
-    @JsonProperty("sampling_rate") @ExcludeMissing fun _samplingRate() = samplingRate
+    /**
+     * Returns the raw JSON value of [samplingRate].
+     *
+     * Unlike [samplingRate], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("sampling_rate")
+    @ExcludeMissing
+    fun _samplingRate(): JsonField<Double> = samplingRate
 
-    /** The list of scorers to use for online scoring */
-    @JsonProperty("scorers") @ExcludeMissing fun _scorers() = scorers
+    /**
+     * Returns the raw JSON value of [scorers].
+     *
+     * Unlike [scorers], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("scorers") @ExcludeMissing fun _scorers(): JsonField<List<Scorer>> = scorers
 
-    /** Whether to trigger online scoring on the root span of each trace */
-    @JsonProperty("apply_to_root_span") @ExcludeMissing fun _applyToRootSpan() = applyToRootSpan
+    /**
+     * Returns the raw JSON value of [applyToRootSpan].
+     *
+     * Unlike [applyToRootSpan], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("apply_to_root_span")
+    @ExcludeMissing
+    fun _applyToRootSpan(): JsonField<Boolean> = applyToRootSpan
 
-    /** Trigger online scoring on any spans with a name in this list */
-    @JsonProperty("apply_to_span_names") @ExcludeMissing fun _applyToSpanNames() = applyToSpanNames
+    /**
+     * Returns the raw JSON value of [applyToSpanNames].
+     *
+     * Unlike [applyToSpanNames], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("apply_to_span_names")
+    @ExcludeMissing
+    fun _applyToSpanNames(): JsonField<List<String>> = applyToSpanNames
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun validate(): OnlineScoreConfig = apply {
-        if (!validated) {
-            samplingRate()
-            scorers()
-            applyToRootSpan()
-            applyToSpanNames()
-            validated = true
-        }
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return other is OnlineScoreConfig &&
-            this.samplingRate == other.samplingRate &&
-            this.scorers == other.scorers &&
-            this.applyToRootSpan == other.applyToRootSpan &&
-            this.applyToSpanNames == other.applyToSpanNames &&
-            this.additionalProperties == other.additionalProperties
-    }
-
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    samplingRate,
-                    scorers,
-                    applyToRootSpan,
-                    applyToSpanNames,
-                    additionalProperties,
-                )
-        }
-        return hashCode
-    }
-
-    override fun toString() =
-        "OnlineScoreConfig{samplingRate=$samplingRate, scorers=$scorers, applyToRootSpan=$applyToRootSpan, applyToSpanNames=$applyToSpanNames, additionalProperties=$additionalProperties}"
-
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [OnlineScoreConfig].
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .samplingRate()
+         * .scorers()
+         * ```
+         */
         fun builder() = Builder()
     }
 
-    class Builder {
+    /** A builder for [OnlineScoreConfig]. */
+    class Builder internal constructor() {
 
-        private var samplingRate: JsonField<Double> = JsonMissing.of()
-        private var scorers: JsonField<List<Scorer>> = JsonMissing.of()
+        private var samplingRate: JsonField<Double>? = null
+        private var scorers: JsonField<MutableList<Scorer>>? = null
         private var applyToRootSpan: JsonField<Boolean> = JsonMissing.of()
-        private var applyToSpanNames: JsonField<List<String>> = JsonMissing.of()
+        private var applyToSpanNames: JsonField<MutableList<String>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         internal fun from(onlineScoreConfig: OnlineScoreConfig) = apply {
-            this.samplingRate = onlineScoreConfig.samplingRate
-            this.scorers = onlineScoreConfig.scorers
-            this.applyToRootSpan = onlineScoreConfig.applyToRootSpan
-            this.applyToSpanNames = onlineScoreConfig.applyToSpanNames
-            additionalProperties(onlineScoreConfig.additionalProperties)
+            samplingRate = onlineScoreConfig.samplingRate
+            scorers = onlineScoreConfig.scorers.map { it.toMutableList() }
+            applyToRootSpan = onlineScoreConfig.applyToRootSpan
+            applyToSpanNames = onlineScoreConfig.applyToSpanNames.map { it.toMutableList() }
+            additionalProperties = onlineScoreConfig.additionalProperties.toMutableMap()
         }
 
         /** The sampling rate for online scoring */
         fun samplingRate(samplingRate: Double) = samplingRate(JsonField.of(samplingRate))
 
-        /** The sampling rate for online scoring */
-        @JsonProperty("sampling_rate")
-        @ExcludeMissing
+        /**
+         * Sets [Builder.samplingRate] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.samplingRate] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun samplingRate(samplingRate: JsonField<Double>) = apply {
             this.samplingRate = samplingRate
         }
@@ -145,56 +182,158 @@ private constructor(
         /** The list of scorers to use for online scoring */
         fun scorers(scorers: List<Scorer>) = scorers(JsonField.of(scorers))
 
-        /** The list of scorers to use for online scoring */
-        @JsonProperty("scorers")
-        @ExcludeMissing
-        fun scorers(scorers: JsonField<List<Scorer>>) = apply { this.scorers = scorers }
+        /**
+         * Sets [Builder.scorers] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.scorers] with a well-typed `List<Scorer>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun scorers(scorers: JsonField<List<Scorer>>) = apply {
+            this.scorers = scorers.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [Scorer] to [scorers].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addScorer(scorer: Scorer) = apply {
+            scorers =
+                (scorers ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("scorers", it).add(scorer)
+                }
+        }
+
+        /** Alias for calling [addScorer] with `Scorer.ofFunction(function)`. */
+        fun addScorer(function: Scorer.Function) = addScorer(Scorer.ofFunction(function))
+
+        /** Alias for calling [addScorer] with `Scorer.ofGlobal(global)`. */
+        fun addScorer(global: Scorer.Global) = addScorer(Scorer.ofGlobal(global))
 
         /** Whether to trigger online scoring on the root span of each trace */
-        fun applyToRootSpan(applyToRootSpan: Boolean) =
-            applyToRootSpan(JsonField.of(applyToRootSpan))
+        fun applyToRootSpan(applyToRootSpan: Boolean?) =
+            applyToRootSpan(JsonField.ofNullable(applyToRootSpan))
 
-        /** Whether to trigger online scoring on the root span of each trace */
-        @JsonProperty("apply_to_root_span")
-        @ExcludeMissing
+        /**
+         * Alias for [Builder.applyToRootSpan].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun applyToRootSpan(applyToRootSpan: Boolean) = applyToRootSpan(applyToRootSpan as Boolean?)
+
+        /**
+         * Sets [Builder.applyToRootSpan] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.applyToRootSpan] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun applyToRootSpan(applyToRootSpan: JsonField<Boolean>) = apply {
             this.applyToRootSpan = applyToRootSpan
         }
 
         /** Trigger online scoring on any spans with a name in this list */
-        fun applyToSpanNames(applyToSpanNames: List<String>) =
-            applyToSpanNames(JsonField.of(applyToSpanNames))
+        fun applyToSpanNames(applyToSpanNames: List<String>?) =
+            applyToSpanNames(JsonField.ofNullable(applyToSpanNames))
 
-        /** Trigger online scoring on any spans with a name in this list */
-        @JsonProperty("apply_to_span_names")
-        @ExcludeMissing
+        /**
+         * Sets [Builder.applyToSpanNames] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.applyToSpanNames] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun applyToSpanNames(applyToSpanNames: JsonField<List<String>>) = apply {
-            this.applyToSpanNames = applyToSpanNames
+            this.applyToSpanNames = applyToSpanNames.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [String] to [applyToSpanNames].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addApplyToSpanName(applyToSpanName: String) = apply {
+            applyToSpanNames =
+                (applyToSpanNames ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("applyToSpanNames", it).add(applyToSpanName)
+                }
         }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
         }
 
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [OnlineScoreConfig].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```kotlin
+         * .samplingRate()
+         * .scorers()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): OnlineScoreConfig =
             OnlineScoreConfig(
-                samplingRate,
-                scorers.map { it.toUnmodifiable() },
+                checkRequired("samplingRate", samplingRate),
+                checkRequired("scorers", scorers).map { it.toImmutable() },
                 applyToRootSpan,
-                applyToSpanNames.map { it.toUnmodifiable() },
-                additionalProperties.toUnmodifiable(),
+                (applyToSpanNames ?: JsonMissing.of()).map { it.toImmutable() },
+                additionalProperties.toMutableMap(),
             )
     }
+
+    private var validated: Boolean = false
+
+    fun validate(): OnlineScoreConfig = apply {
+        if (validated) {
+            return@apply
+        }
+
+        samplingRate()
+        scorers().forEach { it.validate() }
+        applyToRootSpan()
+        applyToSpanNames()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (if (samplingRate.asKnown() == null) 0 else 1) +
+            (scorers.asKnown()?.sumOf { it.validity().toInt() } ?: 0) +
+            (if (applyToRootSpan.asKnown() == null) 0 else 1) +
+            (applyToSpanNames.asKnown()?.size ?: 0)
 
     @JsonDeserialize(using = Scorer.Deserializer::class)
     @JsonSerialize(using = Scorer.Serializer::class)
@@ -204,8 +343,6 @@ private constructor(
         private val global: Global? = null,
         private val _json: JsonValue? = null,
     ) {
-
-        private var validated: Boolean = false
 
         fun function(): Function? = function
 
@@ -221,45 +358,76 @@ private constructor(
 
         fun _json(): JsonValue? = _json
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 function != null -> visitor.visitFunction(function)
                 global != null -> visitor.visitGlobal(global)
                 else -> visitor.unknown(_json)
             }
-        }
+
+        private var validated: Boolean = false
 
         fun validate(): Scorer = apply {
-            if (!validated) {
-                if (function == null && global == null) {
-                    throw BraintrustInvalidDataException("Unknown Scorer: $_json")
-                }
-                function?.validate()
-                global?.validate()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitFunction(function: Function) {
+                        function.validate()
+                    }
+
+                    override fun visitGlobal(global: Global) {
+                        global.validate()
+                    }
+                }
+            )
+            validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: BraintrustInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitFunction(function: Function) = function.validity()
+
+                    override fun visitGlobal(global: Global) = global.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is Scorer && this.function == other.function && this.global == other.global
+            return other is Scorer && function == other.function && global == other.global
         }
 
-        override fun hashCode(): Int {
-            return Objects.hash(function, global)
-        }
+        override fun hashCode(): Int = Objects.hash(function, global)
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 function != null -> "Scorer{function=$function}"
                 global != null -> "Scorer{global=$global}"
                 _json != null -> "Scorer{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Scorer")
             }
-        }
 
         companion object {
 
@@ -268,40 +436,64 @@ private constructor(
             fun ofGlobal(global: Global) = Scorer(global = global)
         }
 
+        /** An interface that defines how to map each variant of [Scorer] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitFunction(function: Function): T
 
             fun visitGlobal(global: Global): T
 
+            /**
+             * Maps an unknown variant of [Scorer] to a value of type [T].
+             *
+             * An instance of [Scorer] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws BraintrustInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw BraintrustInvalidDataException("Unknown Scorer: $json")
             }
         }
 
-        class Deserializer : BaseDeserializer<Scorer>(Scorer::class) {
+        internal class Deserializer : BaseDeserializer<Scorer>(Scorer::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Scorer {
                 val json = JsonValue.fromJsonNode(node)
-                tryDeserialize(node, jacksonTypeRef<Function>()) { it.validate() }
-                    ?.let {
-                        return Scorer(function = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<Global>()) { it.validate() }
-                    ?.let {
-                        return Scorer(global = it, _json = json)
-                    }
 
-                return Scorer(_json = json)
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<Function>())?.let {
+                                Scorer(function = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<Global>())?.let {
+                                Scorer(global = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Scorer(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
             }
         }
 
-        class Serializer : BaseSerializer<Scorer>(Scorer::class) {
+        internal class Serializer : BaseSerializer<Scorer>(Scorer::class) {
 
             override fun serialize(
                 value: Scorer,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.function != null -> generator.writeObject(value.function)
@@ -312,40 +504,303 @@ private constructor(
             }
         }
 
-        @JsonDeserialize(builder = Function.Builder::class)
-        @NoAutoDetect
         class Function
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
-            private val type: JsonField<Type>,
             private val id: JsonField<String>,
-            private val additionalProperties: Map<String, JsonValue>,
+            private val type: JsonField<Type>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
-            private var validated: Boolean = false
+            @JsonCreator
+            private constructor(
+                @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+            ) : this(id, type, mutableMapOf())
 
-            private var hashCode: Int = 0
-
-            fun type(): Type = type.getRequired("type")
-
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun id(): String = id.getRequired("id")
 
-            @JsonProperty("type") @ExcludeMissing fun _type() = type
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun type(): Type = type.getRequired("type")
 
-            @JsonProperty("id") @ExcludeMissing fun _id() = id
+            /**
+             * Returns the raw JSON value of [id].
+             *
+             * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
 
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            fun validate(): Function = apply {
-                if (!validated) {
-                    type()
-                    id()
-                    validated = true
-                }
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Function].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .id()
+                 * .type()
+                 * ```
+                 */
+                fun builder() = Builder()
+            }
+
+            /** A builder for [Function]. */
+            class Builder internal constructor() {
+
+                private var id: JsonField<String>? = null
+                private var type: JsonField<Type>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                internal fun from(function: Function) = apply {
+                    id = function.id
+                    type = function.type
+                    additionalProperties = function.additionalProperties.toMutableMap()
+                }
+
+                fun id(id: String) = id(JsonField.of(id))
+
+                /**
+                 * Sets [Builder.id] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.id] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun id(id: JsonField<String>) = apply { this.id = id }
+
+                fun type(type: Type) = type(JsonField.of(type))
+
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonField<Type>) = apply { this.type = type }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Function].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .id()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Function =
+                    Function(
+                        checkRequired("id", id),
+                        checkRequired("type", type),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Function = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                id()
+                type().validate()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (id.asKnown() == null) 0 else 1) + (type.asKnown()?.validity() ?: 0)
+
+            class Type @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    val FUNCTION = of("function")
+
+                    fun of(value: String) = Type(JsonField.of(value))
+                }
+
+                /** An enum containing [Type]'s known values. */
+                enum class Known {
+                    FUNCTION
+                }
+
+                /**
+                 * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Type] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    FUNCTION,
+                    /**
+                     * An enum member indicating that [Type] was instantiated with an unknown value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        FUNCTION -> Value.FUNCTION
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        FUNCTION -> Known.FUNCTION
+                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
+
+                private var validated: Boolean = false
+
+                fun validate(): Type = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Type && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -353,63 +808,129 @@ private constructor(
                 }
 
                 return other is Function &&
-                    this.type == other.type &&
-                    this.id == other.id &&
-                    this.additionalProperties == other.additionalProperties
+                    id == other.id &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
             }
 
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode =
-                        Objects.hash(
-                            type,
-                            id,
-                            additionalProperties,
-                        )
-                }
-                return hashCode
-            }
+            private val hashCode: Int by lazy { Objects.hash(id, type, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Function{type=$type, id=$id, additionalProperties=$additionalProperties}"
+                "Function{id=$id, type=$type, additionalProperties=$additionalProperties}"
+        }
+
+        class Global
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val name: JsonField<String>,
+            private val type: JsonField<Type>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+            ) : this(name, type, mutableMapOf())
+
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun name(): String = name.getRequired("name")
+
+            /**
+             * @throws BraintrustInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun type(): Type = type.getRequired("type")
+
+            /**
+             * Returns the raw JSON value of [name].
+             *
+             * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Global].
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .name()
+                 * .type()
+                 * ```
+                 */
                 fun builder() = Builder()
             }
 
-            class Builder {
+            /** A builder for [Global]. */
+            class Builder internal constructor() {
 
-                private var type: JsonField<Type> = JsonMissing.of()
-                private var id: JsonField<String> = JsonMissing.of()
+                private var name: JsonField<String>? = null
+                private var type: JsonField<Type>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-                internal fun from(function: Function) = apply {
-                    this.type = function.type
-                    this.id = function.id
-                    additionalProperties(function.additionalProperties)
+                internal fun from(global: Global) = apply {
+                    name = global.name
+                    type = global.type
+                    additionalProperties = global.additionalProperties.toMutableMap()
                 }
+
+                fun name(name: String) = name(JsonField.of(name))
+
+                /**
+                 * Sets [Builder.name] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.name] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun name(name: JsonField<String>) = apply { this.name = name }
 
                 fun type(type: Type) = type(JsonField.of(type))
 
-                @JsonProperty("type")
-                @ExcludeMissing
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
-
-                fun id(id: String) = id(JsonField.of(id))
-
-                @JsonProperty("id")
-                @ExcludeMissing
-                fun id(id: JsonField<String>) = apply { this.id = id }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
+                    putAllAdditionalProperties(additionalProperties)
                 }
 
-                @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
+                    additionalProperties.put(key, value)
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -417,100 +938,186 @@ private constructor(
                         this.additionalProperties.putAll(additionalProperties)
                     }
 
-                fun build(): Function =
-                    Function(
-                        type,
-                        id,
-                        additionalProperties.toUnmodifiable(),
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Global].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```kotlin
+                 * .name()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Global =
+                    Global(
+                        checkRequired("name", name),
+                        checkRequired("type", type),
+                        additionalProperties.toMutableMap(),
                     )
             }
 
-            class Type
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            private var validated: Boolean = false
 
+            fun validate(): Global = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                name()
+                type().validate()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: BraintrustInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            internal fun validity(): Int =
+                (if (name.asKnown() == null) 0 else 1) + (type.asKnown()?.validity() ?: 0)
+
+            class Type @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
                 @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    val GLOBAL = of("global")
+
+                    fun of(value: String) = Type(JsonField.of(value))
+                }
+
+                /** An enum containing [Type]'s known values. */
+                enum class Known {
+                    GLOBAL
+                }
+
+                /**
+                 * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Type] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    GLOBAL,
+                    /**
+                     * An enum member indicating that [Type] was instantiated with an unknown value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        GLOBAL -> Value.GLOBAL
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        GLOBAL -> Known.GLOBAL
+                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws BraintrustInvalidDataException if this class instance's value does not
+                 *   have the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString()
+                        ?: throw BraintrustInvalidDataException("Value is not a String")
+
+                private var validated: Boolean = false
+
+                fun validate(): Type = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: BraintrustInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
                     }
 
-                    return other is Type && this.value == other.value
+                    return other is Type && value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
 
                 override fun toString() = value.toString()
-
-                companion object {
-
-                    val FUNCTION = Type(JsonField.of("function"))
-
-                    fun of(value: String) = Type(JsonField.of(value))
-                }
-
-                enum class Known {
-                    FUNCTION,
-                }
-
-                enum class Value {
-                    FUNCTION,
-                    _UNKNOWN,
-                }
-
-                fun value(): Value =
-                    when (this) {
-                        FUNCTION -> Value.FUNCTION
-                        else -> Value._UNKNOWN
-                    }
-
-                fun known(): Known =
-                    when (this) {
-                        FUNCTION -> Known.FUNCTION
-                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                    }
-
-                fun asString(): String = _value().asStringOrThrow()
             }
-        }
-
-        @JsonDeserialize(builder = Global.Builder::class)
-        @NoAutoDetect
-        class Global
-        private constructor(
-            private val type: JsonField<Type>,
-            private val name: JsonField<String>,
-            private val additionalProperties: Map<String, JsonValue>,
-        ) {
-
-            private var validated: Boolean = false
-
-            private var hashCode: Int = 0
-
-            fun type(): Type = type.getRequired("type")
-
-            fun name(): String = name.getRequired("name")
-
-            @JsonProperty("type") @ExcludeMissing fun _type() = type
-
-            @JsonProperty("name") @ExcludeMissing fun _name() = name
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            fun validate(): Global = apply {
-                if (!validated) {
-                    type()
-                    name()
-                    validated = true
-                }
-            }
-
-            fun toBuilder() = Builder().from(this)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -518,128 +1125,39 @@ private constructor(
                 }
 
                 return other is Global &&
-                    this.type == other.type &&
-                    this.name == other.name &&
-                    this.additionalProperties == other.additionalProperties
+                    name == other.name &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
             }
 
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode =
-                        Objects.hash(
-                            type,
-                            name,
-                            additionalProperties,
-                        )
-                }
-                return hashCode
-            }
+            private val hashCode: Int by lazy { Objects.hash(name, type, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Global{type=$type, name=$name, additionalProperties=$additionalProperties}"
-
-            companion object {
-
-                fun builder() = Builder()
-            }
-
-            class Builder {
-
-                private var type: JsonField<Type> = JsonMissing.of()
-                private var name: JsonField<String> = JsonMissing.of()
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                internal fun from(global: Global) = apply {
-                    this.type = global.type
-                    this.name = global.name
-                    additionalProperties(global.additionalProperties)
-                }
-
-                fun type(type: Type) = type(JsonField.of(type))
-
-                @JsonProperty("type")
-                @ExcludeMissing
-                fun type(type: JsonField<Type>) = apply { this.type = type }
-
-                fun name(name: String) = name(JsonField.of(name))
-
-                @JsonProperty("name")
-                @ExcludeMissing
-                fun name(name: JsonField<String>) = apply { this.name = name }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
-                }
-
-                @JsonAnySetter
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun build(): Global =
-                    Global(
-                        type,
-                        name,
-                        additionalProperties.toUnmodifiable(),
-                    )
-            }
-
-            class Type
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
-
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return other is Type && this.value == other.value
-                }
-
-                override fun hashCode() = value.hashCode()
-
-                override fun toString() = value.toString()
-
-                companion object {
-
-                    val GLOBAL = Type(JsonField.of("global"))
-
-                    fun of(value: String) = Type(JsonField.of(value))
-                }
-
-                enum class Known {
-                    GLOBAL,
-                }
-
-                enum class Value {
-                    GLOBAL,
-                    _UNKNOWN,
-                }
-
-                fun value(): Value =
-                    when (this) {
-                        GLOBAL -> Value.GLOBAL
-                        else -> Value._UNKNOWN
-                    }
-
-                fun known(): Known =
-                    when (this) {
-                        GLOBAL -> Known.GLOBAL
-                        else -> throw BraintrustInvalidDataException("Unknown Type: $value")
-                    }
-
-                fun asString(): String = _value().asStringOrThrow()
-            }
+                "Global{name=$name, type=$type, additionalProperties=$additionalProperties}"
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is OnlineScoreConfig &&
+            samplingRate == other.samplingRate &&
+            scorers == other.scorers &&
+            applyToRootSpan == other.applyToRootSpan &&
+            applyToSpanNames == other.applyToSpanNames &&
+            additionalProperties == other.additionalProperties
+    }
+
+    private val hashCode: Int by lazy {
+        Objects.hash(samplingRate, scorers, applyToRootSpan, applyToSpanNames, additionalProperties)
+    }
+
+    override fun hashCode(): Int = hashCode
+
+    override fun toString() =
+        "OnlineScoreConfig{samplingRate=$samplingRate, scorers=$scorers, applyToRootSpan=$applyToRootSpan, applyToSpanNames=$applyToSpanNames, additionalProperties=$additionalProperties}"
 }

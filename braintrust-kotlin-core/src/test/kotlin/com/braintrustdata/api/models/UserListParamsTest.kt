@@ -2,58 +2,63 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.http.QueryParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class UserListParamsTest {
+internal class UserListParamsTest {
 
     @Test
-    fun createUserListParams() {
+    fun create() {
         UserListParams.builder()
-            .email(UserListParams.Email.ofString("string"))
+            .email("string")
             .endingBefore("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-            .familyName(UserListParams.FamilyName.ofString("string"))
-            .givenName(UserListParams.GivenName.ofString("string"))
-            .ids(UserListParams.Ids.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-            .limit(123L)
+            .familyName("string")
+            .givenName("string")
+            .ids("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .limit(0L)
             .orgName("org_name")
             .startingAfter("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .build()
     }
 
     @Test
-    fun getQueryParams() {
+    fun queryParams() {
         val params =
             UserListParams.builder()
-                .email(UserListParams.Email.ofString("string"))
+                .email("string")
                 .endingBefore("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .familyName(UserListParams.FamilyName.ofString("string"))
-                .givenName(UserListParams.GivenName.ofString("string"))
-                .ids(UserListParams.Ids.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-                .limit(123L)
+                .familyName("string")
+                .givenName("string")
+                .ids("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .limit(0L)
                 .orgName("org_name")
                 .startingAfter("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        val expected = mutableMapOf<String, List<String>>()
-        expected.put("email", listOf(UserListParams.Email.ofString("string").toString()))
-        expected.put("ending_before", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-        expected.put("family_name", listOf(UserListParams.FamilyName.ofString("string").toString()))
-        expected.put("given_name", listOf(UserListParams.GivenName.ofString("string").toString()))
-        expected.put(
-            "ids",
-            listOf(UserListParams.Ids.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").toString())
-        )
-        expected.put("limit", listOf("123"))
-        expected.put("org_name", listOf("org_name"))
-        expected.put("starting_after", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-        assertThat(params.getQueryParams()).isEqualTo(expected)
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams)
+            .isEqualTo(
+                QueryParams.builder()
+                    .put("email", "string")
+                    .put("ending_before", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .put("family_name", "string")
+                    .put("given_name", "string")
+                    .put("ids", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .put("limit", "0")
+                    .put("org_name", "org_name")
+                    .put("starting_after", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .build()
+            )
     }
 
     @Test
-    fun getQueryParamsWithoutOptionalFields() {
+    fun queryParamsWithoutOptionalFields() {
         val params = UserListParams.builder().build()
-        val expected = mutableMapOf<String, List<String>>()
-        assertThat(params.getQueryParams()).isEqualTo(expected)
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams).isEqualTo(QueryParams.builder().build())
     }
 }

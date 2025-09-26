@@ -2,91 +2,112 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ExperimentFeedbackParamsTest {
+internal class ExperimentFeedbackParamsTest {
 
     @Test
-    fun createExperimentFeedbackParams() {
+    fun create() {
         ExperimentFeedbackParams.builder()
             .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-            .feedback(
-                listOf(
-                    FeedbackExperimentItem.builder()
-                        .id("id")
-                        .comment("comment")
-                        .expected(JsonNull.of())
-                        .metadata(FeedbackExperimentItem.Metadata.builder().build())
-                        .scores(FeedbackExperimentItem.Scores.builder().build())
-                        .source(FeedbackExperimentItem.Source.APP)
-                        .build()
-                )
+            .addFeedback(
+                FeedbackExperimentItem.builder()
+                    .id("id")
+                    .comment("comment")
+                    .expected(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        FeedbackExperimentItem.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .scores(
+                        FeedbackExperimentItem.Scores.builder()
+                            .putAdditionalProperty("foo", JsonValue.from(0))
+                            .build()
+                    )
+                    .source(FeedbackExperimentItem.Source.APP)
+                    .addTag("string")
+                    .build()
             )
             .build()
     }
 
     @Test
-    fun getBody() {
+    fun pathParams() {
         val params =
             ExperimentFeedbackParams.builder()
                 .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .feedback(
-                    listOf(
-                        FeedbackExperimentItem.builder()
-                            .id("id")
-                            .comment("comment")
-                            .expected(JsonNull.of())
-                            .metadata(FeedbackExperimentItem.Metadata.builder().build())
-                            .scores(FeedbackExperimentItem.Scores.builder().build())
-                            .source(FeedbackExperimentItem.Source.APP)
-                            .build()
-                    )
-                )
+                .addFeedback(FeedbackExperimentItem.builder().id("id").build())
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
-        assertThat(body.feedback())
-            .isEqualTo(
-                listOf(
+
+        assertThat(params._pathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
+    fun body() {
+        val params =
+            ExperimentFeedbackParams.builder()
+                .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .addFeedback(
                     FeedbackExperimentItem.builder()
                         .id("id")
                         .comment("comment")
-                        .expected(JsonNull.of())
-                        .metadata(FeedbackExperimentItem.Metadata.builder().build())
-                        .scores(FeedbackExperimentItem.Scores.builder().build())
+                        .expected(JsonValue.from(mapOf<String, Any>()))
+                        .metadata(
+                            FeedbackExperimentItem.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
+                        .scores(
+                            FeedbackExperimentItem.Scores.builder()
+                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                .build()
+                        )
                         .source(FeedbackExperimentItem.Source.APP)
+                        .addTag("string")
                         .build()
                 )
+                .build()
+
+        val body = params._body()
+
+        assertThat(body.feedback())
+            .containsExactly(
+                FeedbackExperimentItem.builder()
+                    .id("id")
+                    .comment("comment")
+                    .expected(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        FeedbackExperimentItem.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .scores(
+                        FeedbackExperimentItem.Scores.builder()
+                            .putAdditionalProperty("foo", JsonValue.from(0))
+                            .build()
+                    )
+                    .source(FeedbackExperimentItem.Source.APP)
+                    .addTag("string")
+                    .build()
             )
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             ExperimentFeedbackParams.builder()
                 .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .feedback(listOf(FeedbackExperimentItem.builder().id("id").build()))
+                .addFeedback(FeedbackExperimentItem.builder().id("id").build())
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
-        assertThat(body.feedback())
-            .isEqualTo(listOf(FeedbackExperimentItem.builder().id("id").build()))
-    }
 
-    @Test
-    fun getPathParam() {
-        val params =
-            ExperimentFeedbackParams.builder()
-                .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .feedback(listOf(FeedbackExperimentItem.builder().id("id").build()))
-                .build()
-        assertThat(params).isNotNull
-        // path param "experimentId"
-        assertThat(params.getPathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        val body = params._body()
+
+        assertThat(body.feedback())
+            .containsExactly(FeedbackExperimentItem.builder().id("id").build())
     }
 }

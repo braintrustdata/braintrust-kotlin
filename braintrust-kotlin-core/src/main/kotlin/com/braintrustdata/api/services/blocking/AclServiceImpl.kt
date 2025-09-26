@@ -4,10 +4,18 @@ package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.handlers.errorBodyHandler
+import com.braintrustdata.api.core.handlers.errorHandler
+import com.braintrustdata.api.core.handlers.jsonHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
+import com.braintrustdata.api.core.http.HttpResponse
 import com.braintrustdata.api.core.http.HttpResponse.Handler
-import com.braintrustdata.api.errors.BraintrustError
+import com.braintrustdata.api.core.http.HttpResponseFor
+import com.braintrustdata.api.core.http.json
+import com.braintrustdata.api.core.http.parseable
+import com.braintrustdata.api.core.prepare
 import com.braintrustdata.api.models.Acl
 import com.braintrustdata.api.models.AclBatchUpdateParams
 import com.braintrustdata.api.models.AclBatchUpdateResponse
@@ -15,187 +23,235 @@ import com.braintrustdata.api.models.AclCreateParams
 import com.braintrustdata.api.models.AclDeleteParams
 import com.braintrustdata.api.models.AclFindAndDeleteParams
 import com.braintrustdata.api.models.AclListPage
+import com.braintrustdata.api.models.AclListPageResponse
 import com.braintrustdata.api.models.AclListParams
 import com.braintrustdata.api.models.AclRetrieveParams
-import com.braintrustdata.api.services.errorHandler
-import com.braintrustdata.api.services.json
-import com.braintrustdata.api.services.jsonHandler
-import com.braintrustdata.api.services.withErrorHandler
 
-class AclServiceImpl
-constructor(
-    private val clientOptions: ClientOptions,
-) : AclService {
+class AclServiceImpl internal constructor(private val clientOptions: ClientOptions) : AclService {
 
-    private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
-
-    private val createHandler: Handler<Acl> =
-        jsonHandler<Acl>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Create a new acl. If there is an existing acl with the same contents as the one specified in
-     * the request, will return the existing acl unmodified
-     */
-    override fun create(params: AclCreateParams, requestOptions: RequestOptions): Acl {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("v1", "acl")
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
-                .build()
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { createHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-        }
+    private val withRawResponse: AclService.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
     }
 
-    private val retrieveHandler: Handler<Acl> =
-        jsonHandler<Acl>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override fun withRawResponse(): AclService.WithRawResponse = withRawResponse
 
-    /** Get an acl object by its id */
-    override fun retrieve(params: AclRetrieveParams, requestOptions: RequestOptions): Acl {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("v1", "acl", params.getPathParam(0))
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .build()
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { retrieveHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-        }
-    }
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): AclService =
+        AclServiceImpl(clientOptions.toBuilder().apply(modifier).build())
 
-    private val listHandler: Handler<AclListPage.Response> =
-        jsonHandler<AclListPage.Response>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override fun create(params: AclCreateParams, requestOptions: RequestOptions): Acl =
+        // post /v1/acl
+        withRawResponse().create(params, requestOptions).parse()
 
-    /**
-     * List out all acls. The acls are sorted by creation date, with the most recently-created acls
-     * coming first
-     */
-    override fun list(params: AclListParams, requestOptions: RequestOptions): AclListPage {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("v1", "acl")
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .build()
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { listHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-                .let { AclListPage.of(this, params, it) }
-        }
-    }
+    override fun retrieve(params: AclRetrieveParams, requestOptions: RequestOptions): Acl =
+        // get /v1/acl/{acl_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
 
-    private val deleteHandler: Handler<Acl> =
-        jsonHandler<Acl>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override fun list(params: AclListParams, requestOptions: RequestOptions): AclListPage =
+        // get /v1/acl
+        withRawResponse().list(params, requestOptions).parse()
 
-    /** Delete an acl object by its id */
-    override fun delete(params: AclDeleteParams, requestOptions: RequestOptions): Acl {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.DELETE)
-                .addPathSegments("v1", "acl", params.getPathParam(0))
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .apply { params.getBody()?.also { body(json(clientOptions.jsonMapper, it)) } }
-                .build()
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { deleteHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-        }
-    }
+    override fun delete(params: AclDeleteParams, requestOptions: RequestOptions): Acl =
+        // delete /v1/acl/{acl_id}
+        withRawResponse().delete(params, requestOptions).parse()
 
-    private val batchUpdateHandler: Handler<AclBatchUpdateResponse> =
-        jsonHandler<AclBatchUpdateResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Batch update acls. This operation is idempotent, so adding acls which already exist will have
-     * no effect, and removing acls which do not exist will have no effect.
-     */
     override fun batchUpdate(
         params: AclBatchUpdateParams,
-        requestOptions: RequestOptions
-    ): AclBatchUpdateResponse {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("v1", "acl", "batch-update")
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
-                .build()
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { batchUpdateHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-        }
-    }
+        requestOptions: RequestOptions,
+    ): AclBatchUpdateResponse =
+        // post /v1/acl/batch_update
+        withRawResponse().batchUpdate(params, requestOptions).parse()
 
-    private val findAndDeleteHandler: Handler<Acl> =
-        jsonHandler<Acl>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Delete a single acl */
     override fun findAndDelete(
         params: AclFindAndDeleteParams,
-        requestOptions: RequestOptions
-    ): Acl {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.DELETE)
-                .addPathSegments("v1", "acl")
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
-                .build()
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { findAndDeleteHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
+        requestOptions: RequestOptions,
+    ): Acl =
+        // delete /v1/acl
+        withRawResponse().findAndDelete(params, requestOptions).parse()
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        AclService.WithRawResponse {
+
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): AclService.WithRawResponse =
+            AclServiceImpl.WithRawResponseImpl(clientOptions.toBuilder().apply(modifier).build())
+
+        private val createHandler: Handler<Acl> = jsonHandler<Acl>(clientOptions.jsonMapper)
+
+        override fun create(
+            params: AclCreateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Acl> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "acl")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
                     }
-                }
+            }
+        }
+
+        private val retrieveHandler: Handler<Acl> = jsonHandler<Acl>(clientOptions.jsonMapper)
+
+        override fun retrieve(
+            params: AclRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Acl> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("aclId", params.aclId())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "acl", params._pathParam(0))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val listHandler: Handler<AclListPageResponse> =
+            jsonHandler<AclListPageResponse>(clientOptions.jsonMapper)
+
+        override fun list(
+            params: AclListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<AclListPage> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "acl")
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let {
+                        AclListPage.builder()
+                            .service(AclServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
+            }
+        }
+
+        private val deleteHandler: Handler<Acl> = jsonHandler<Acl>(clientOptions.jsonMapper)
+
+        override fun delete(
+            params: AclDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Acl> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("aclId", params.aclId())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "acl", params._pathParam(0))
+                    .apply { params._body()?.let { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { deleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val batchUpdateHandler: Handler<AclBatchUpdateResponse> =
+            jsonHandler<AclBatchUpdateResponse>(clientOptions.jsonMapper)
+
+        override fun batchUpdate(
+            params: AclBatchUpdateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<AclBatchUpdateResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "acl", "batch_update")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { batchUpdateHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val findAndDeleteHandler: Handler<Acl> = jsonHandler<Acl>(clientOptions.jsonMapper)
+
+        override fun findAndDelete(
+            params: AclFindAndDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Acl> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "acl")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { findAndDeleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
         }
     }
 }

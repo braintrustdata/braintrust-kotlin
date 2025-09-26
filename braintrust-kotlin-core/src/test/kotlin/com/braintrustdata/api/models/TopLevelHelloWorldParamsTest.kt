@@ -2,13 +2,12 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.models.*
 import org.junit.jupiter.api.Test
 
-class TopLevelHelloWorldParamsTest {
+internal class TopLevelHelloWorldParamsTest {
 
     @Test
-    fun createTopLevelHelloWorldParams() {
+    fun create() {
         TopLevelHelloWorldParams.builder().build()
     }
 }

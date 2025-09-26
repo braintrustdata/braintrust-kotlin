@@ -2,28 +2,17 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
-import com.braintrustdata.api.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ExperimentFetchPostParamsTest {
+internal class ExperimentFetchPostParamsTest {
 
     @Test
-    fun createExperimentFetchPostParams() {
+    fun create() {
         ExperimentFetchPostParams.builder()
             .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .cursor("cursor")
-            .filters(
-                listOf(
-                    PathLookupFilter.builder()
-                        .path(listOf("string"))
-                        .type(PathLookupFilter.Type.PATH_LOOKUP)
-                        .value(JsonNull.of())
-                        .build()
-                )
-            )
-            .limit(123L)
+            .limit(0L)
             .maxRootSpanId("max_root_span_id")
             .maxXactId("max_xact_id")
             .version("version")
@@ -31,64 +20,45 @@ class ExperimentFetchPostParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun pathParams() {
+        val params =
+            ExperimentFetchPostParams.builder()
+                .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .build()
+
+        assertThat(params._pathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
+    fun body() {
         val params =
             ExperimentFetchPostParams.builder()
                 .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .cursor("cursor")
-                .filters(
-                    listOf(
-                        PathLookupFilter.builder()
-                            .path(listOf("string"))
-                            .type(PathLookupFilter.Type.PATH_LOOKUP)
-                            .value(JsonNull.of())
-                            .build()
-                    )
-                )
-                .limit(123L)
+                .limit(0L)
                 .maxRootSpanId("max_root_span_id")
                 .maxXactId("max_xact_id")
                 .version("version")
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
+
+        val body = params._body()
+
         assertThat(body.cursor()).isEqualTo("cursor")
-        assertThat(body.filters())
-            .isEqualTo(
-                listOf(
-                    PathLookupFilter.builder()
-                        .path(listOf("string"))
-                        .type(PathLookupFilter.Type.PATH_LOOKUP)
-                        .value(JsonNull.of())
-                        .build()
-                )
-            )
-        assertThat(body.limit()).isEqualTo(123L)
+        assertThat(body.limit()).isEqualTo(0L)
         assertThat(body.maxRootSpanId()).isEqualTo("max_root_span_id")
         assertThat(body.maxXactId()).isEqualTo("max_xact_id")
         assertThat(body.version()).isEqualTo("version")
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             ExperimentFetchPostParams.builder()
                 .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        val body = params.getBody()
-        assertThat(body).isNotNull
-    }
 
-    @Test
-    fun getPathParam() {
-        val params =
-            ExperimentFetchPostParams.builder()
-                .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .build()
-        assertThat(params).isNotNull
-        // path param "experimentId"
-        assertThat(params.getPathParam(0)).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        val body = params._body()
     }
 }

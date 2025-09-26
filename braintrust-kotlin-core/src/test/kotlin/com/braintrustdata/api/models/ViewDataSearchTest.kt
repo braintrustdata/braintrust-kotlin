@@ -2,25 +2,47 @@
 
 package com.braintrustdata.api.models
 
-import com.braintrustdata.api.core.JsonNull
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ViewDataSearchTest {
+internal class ViewDataSearchTest {
 
     @Test
-    fun createViewDataSearch() {
+    fun create() {
         val viewDataSearch =
             ViewDataSearch.builder()
-                .filter(listOf(JsonNull.of()))
-                .match(listOf(JsonNull.of()))
-                .sort(listOf(JsonNull.of()))
-                .tag(listOf(JsonNull.of()))
+                .addFilter(JsonValue.from(mapOf<String, Any>()))
+                .addMatch(JsonValue.from(mapOf<String, Any>()))
+                .addSort(JsonValue.from(mapOf<String, Any>()))
+                .addTag(JsonValue.from(mapOf<String, Any>()))
                 .build()
-        assertThat(viewDataSearch).isNotNull
-        assertThat(viewDataSearch.filter()).containsExactly(JsonNull.of())
-        assertThat(viewDataSearch.match()).containsExactly(JsonNull.of())
-        assertThat(viewDataSearch.sort()).containsExactly(JsonNull.of())
-        assertThat(viewDataSearch.tag()).containsExactly(JsonNull.of())
+
+        assertThat(viewDataSearch.filter()).containsExactly(JsonValue.from(mapOf<String, Any>()))
+        assertThat(viewDataSearch.match()).containsExactly(JsonValue.from(mapOf<String, Any>()))
+        assertThat(viewDataSearch.sort()).containsExactly(JsonValue.from(mapOf<String, Any>()))
+        assertThat(viewDataSearch.tag()).containsExactly(JsonValue.from(mapOf<String, Any>()))
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val viewDataSearch =
+            ViewDataSearch.builder()
+                .addFilter(JsonValue.from(mapOf<String, Any>()))
+                .addMatch(JsonValue.from(mapOf<String, Any>()))
+                .addSort(JsonValue.from(mapOf<String, Any>()))
+                .addTag(JsonValue.from(mapOf<String, Any>()))
+                .build()
+
+        val roundtrippedViewDataSearch =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(viewDataSearch),
+                jacksonTypeRef<ViewDataSearch>(),
+            )
+
+        assertThat(roundtrippedViewDataSearch).isEqualTo(viewDataSearch)
     }
 }

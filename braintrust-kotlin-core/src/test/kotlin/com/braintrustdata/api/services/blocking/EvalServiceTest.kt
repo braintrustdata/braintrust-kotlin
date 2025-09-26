@@ -4,56 +4,106 @@ package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
-import com.braintrustdata.api.models.*
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.models.EvalCreateParams
+import com.braintrustdata.api.models.RepoInfo
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class EvalServiceTest {
+internal class EvalServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val evalService = client.evals()
+
         val summarizeExperimentResponse =
             evalService.create(
                 EvalCreateParams.builder()
                     .data(
-                        EvalCreateParams.Data.ofDatasetId(
-                            EvalCreateParams.Data.DatasetId.builder()
-                                .datasetId("dataset_id")
-                                .build()
-                        )
-                    )
-                    .projectId("project_id")
-                    .scores(
-                        listOf(
-                            EvalCreateParams.Score.ofFunctionId(
-                                EvalCreateParams.Score.FunctionId.builder()
-                                    .functionId("function_id")
-                                    .version("version")
+                        EvalCreateParams.Data.DatasetId.builder()
+                            .datasetId("dataset_id")
+                            ._internalBtql(
+                                EvalCreateParams.Data.DatasetId._InternalBtql
+                                    .builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
                                     .build()
                             )
-                        )
+                            .build()
+                    )
+                    .projectId("project_id")
+                    .addScore(
+                        EvalCreateParams.Score.FunctionId.builder()
+                            .functionId("function_id")
+                            .version("version")
+                            .build()
                     )
                     .task(
-                        EvalCreateParams.Task.ofFunctionId(
-                            EvalCreateParams.Task.FunctionId.builder()
-                                .functionId("function_id")
-                                .version("version")
-                                .build()
-                        )
+                        EvalCreateParams.Task.FunctionId.builder()
+                            .functionId("function_id")
+                            .version("version")
+                            .build()
                     )
+                    .baseExperimentId("base_experiment_id")
+                    .baseExperimentName("base_experiment_name")
                     .experimentName("experiment_name")
-                    .metadata(EvalCreateParams.Metadata.builder().build())
+                    .gitMetadataSettings(
+                        EvalCreateParams.GitMetadataSettings.builder()
+                            .collect(EvalCreateParams.GitMetadataSettings.Collect.ALL)
+                            .addField(EvalCreateParams.GitMetadataSettings.Field.COMMIT)
+                            .build()
+                    )
+                    .isPublic(true)
+                    .maxConcurrency(0.0)
+                    .metadata(
+                        EvalCreateParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .parent(
+                        EvalCreateParams.Parent.SpanParentStruct.builder()
+                            .objectId("object_id")
+                            .objectType(
+                                EvalCreateParams.Parent.SpanParentStruct.ObjectType.PROJECT_LOGS
+                            )
+                            .propagatedEvent(
+                                EvalCreateParams.Parent.SpanParentStruct.PropagatedEvent.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .rowIds(
+                                EvalCreateParams.Parent.SpanParentStruct.RowIds.builder()
+                                    .id("id")
+                                    .rootSpanId("root_span_id")
+                                    .spanId("span_id")
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .repoInfo(
+                        RepoInfo.builder()
+                            .authorEmail("author_email")
+                            .authorName("author_name")
+                            .branch("branch")
+                            .commit("commit")
+                            .commitMessage("commit_message")
+                            .commitTime("commit_time")
+                            .dirty(true)
+                            .gitDiff("git_diff")
+                            .tag("tag")
+                            .build()
+                    )
                     .stream(true)
+                    .timeout(0.0)
+                    .trialCount(0.0)
                     .build()
             )
-        println(summarizeExperimentResponse)
+
         summarizeExperimentResponse.validate()
     }
 }

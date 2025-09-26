@@ -6,60 +6,289 @@ import com.braintrustdata.api.core.ExcludeMissing
 import com.braintrustdata.api.core.JsonField
 import com.braintrustdata.api.core.JsonMissing
 import com.braintrustdata.api.core.JsonValue
-import com.braintrustdata.api.core.NoAutoDetect
-import com.braintrustdata.api.core.toUnmodifiable
+import com.braintrustdata.api.core.checkKnown
+import com.braintrustdata.api.core.toImmutable
+import com.braintrustdata.api.errors.BraintrustInvalidDataException
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import java.util.Collections
 import java.util.Objects
 
-@JsonDeserialize(builder = ViewDataSearch.Builder::class)
-@NoAutoDetect
 class ViewDataSearch
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val filter: JsonField<List<JsonValue?>>,
-    private val tag: JsonField<List<JsonValue?>>,
     private val match: JsonField<List<JsonValue?>>,
     private val sort: JsonField<List<JsonValue?>>,
-    private val additionalProperties: Map<String, JsonValue>,
+    private val tag: JsonField<List<JsonValue?>>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
+    @JsonCreator
+    private constructor(
+        @JsonProperty("filter")
+        @ExcludeMissing
+        filter: JsonField<List<JsonValue?>> = JsonMissing.of(),
+        @JsonProperty("match")
+        @ExcludeMissing
+        match: JsonField<List<JsonValue?>> = JsonMissing.of(),
+        @JsonProperty("sort") @ExcludeMissing sort: JsonField<List<JsonValue?>> = JsonMissing.of(),
+        @JsonProperty("tag") @ExcludeMissing tag: JsonField<List<JsonValue?>> = JsonMissing.of(),
+    ) : this(filter, match, sort, tag, mutableMapOf())
 
-    private var hashCode: Int = 0
-
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun filter(): List<JsonValue?>? = filter.getNullable("filter")
 
-    fun tag(): List<JsonValue?>? = tag.getNullable("tag")
-
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun match(): List<JsonValue?>? = match.getNullable("match")
 
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun sort(): List<JsonValue?>? = sort.getNullable("sort")
 
-    @JsonProperty("filter") @ExcludeMissing fun _filter() = filter
+    /**
+     * @throws BraintrustInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun tag(): List<JsonValue?>? = tag.getNullable("tag")
 
-    @JsonProperty("tag") @ExcludeMissing fun _tag() = tag
+    /**
+     * Returns the raw JSON value of [filter].
+     *
+     * Unlike [filter], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("filter") @ExcludeMissing fun _filter(): JsonField<List<JsonValue?>> = filter
 
-    @JsonProperty("match") @ExcludeMissing fun _match() = match
+    /**
+     * Returns the raw JSON value of [match].
+     *
+     * Unlike [match], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("match") @ExcludeMissing fun _match(): JsonField<List<JsonValue?>> = match
 
-    @JsonProperty("sort") @ExcludeMissing fun _sort() = sort
+    /**
+     * Returns the raw JSON value of [sort].
+     *
+     * Unlike [sort], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("sort") @ExcludeMissing fun _sort(): JsonField<List<JsonValue?>> = sort
+
+    /**
+     * Returns the raw JSON value of [tag].
+     *
+     * Unlike [tag], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("tag") @ExcludeMissing fun _tag(): JsonField<List<JsonValue?>> = tag
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun validate(): ViewDataSearch = apply {
-        if (!validated) {
-            filter()
-            tag()
-            match()
-            sort()
-            validated = true
-        }
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /** Returns a mutable builder for constructing an instance of [ViewDataSearch]. */
+        fun builder() = Builder()
+    }
+
+    /** A builder for [ViewDataSearch]. */
+    class Builder internal constructor() {
+
+        private var filter: JsonField<MutableList<JsonValue?>>? = null
+        private var match: JsonField<MutableList<JsonValue?>>? = null
+        private var sort: JsonField<MutableList<JsonValue?>>? = null
+        private var tag: JsonField<MutableList<JsonValue?>>? = null
+        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+        internal fun from(viewDataSearch: ViewDataSearch) = apply {
+            filter = viewDataSearch.filter.map { it.toMutableList() }
+            match = viewDataSearch.match.map { it.toMutableList() }
+            sort = viewDataSearch.sort.map { it.toMutableList() }
+            tag = viewDataSearch.tag.map { it.toMutableList() }
+            additionalProperties = viewDataSearch.additionalProperties.toMutableMap()
+        }
+
+        fun filter(filter: List<JsonValue?>?) = filter(JsonField.ofNullable(filter))
+
+        /**
+         * Sets [Builder.filter] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.filter] with a well-typed `List<JsonValue?>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun filter(filter: JsonField<List<JsonValue?>>) = apply {
+            this.filter = filter.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [JsonValue] to [Builder.filter].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addFilter(filter: JsonValue) = apply {
+            this.filter =
+                (this.filter ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("filter", it).add(filter)
+                }
+        }
+
+        fun match(match: List<JsonValue?>?) = match(JsonField.ofNullable(match))
+
+        /**
+         * Sets [Builder.match] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.match] with a well-typed `List<JsonValue?>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun match(match: JsonField<List<JsonValue?>>) = apply {
+            this.match = match.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [JsonValue] to [Builder.match].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addMatch(match: JsonValue) = apply {
+            this.match =
+                (this.match ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("match", it).add(match)
+                }
+        }
+
+        fun sort(sort: List<JsonValue?>?) = sort(JsonField.ofNullable(sort))
+
+        /**
+         * Sets [Builder.sort] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sort] with a well-typed `List<JsonValue?>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun sort(sort: JsonField<List<JsonValue?>>) = apply {
+            this.sort = sort.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [JsonValue] to [Builder.sort].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addSort(sort: JsonValue) = apply {
+            this.sort =
+                (this.sort ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("sort", it).add(sort)
+                }
+        }
+
+        fun tag(tag: List<JsonValue?>?) = tag(JsonField.ofNullable(tag))
+
+        /**
+         * Sets [Builder.tag] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.tag] with a well-typed `List<JsonValue?>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun tag(tag: JsonField<List<JsonValue?>>) = apply {
+            this.tag = tag.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [JsonValue] to [Builder.tag].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addTag(tag: JsonValue) = apply {
+            this.tag =
+                (this.tag ?: JsonField.of(mutableListOf())).also { checkKnown("tag", it).add(tag) }
+        }
+
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
+
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
+
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [ViewDataSearch].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
+        fun build(): ViewDataSearch =
+            ViewDataSearch(
+                (filter ?: JsonMissing.of()).map { it.toImmutable() },
+                (match ?: JsonMissing.of()).map { it.toImmutable() },
+                (sort ?: JsonMissing.of()).map { it.toImmutable() },
+                (tag ?: JsonMissing.of()).map { it.toImmutable() },
+                additionalProperties.toMutableMap(),
+            )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ViewDataSearch = apply {
+        if (validated) {
+            return@apply
+        }
+
+        filter()
+        match()
+        sort()
+        tag()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: BraintrustInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    internal fun validity(): Int =
+        (filter.asKnown()?.sumOf { (if (it == null) 0 else 1).toInt() } ?: 0) +
+            (match.asKnown()?.sumOf { (if (it == null) 0 else 1).toInt() } ?: 0) +
+            (sort.asKnown()?.sumOf { (if (it == null) 0 else 1).toInt() } ?: 0) +
+            (tag.asKnown()?.sumOf { (if (it == null) 0 else 1).toInt() } ?: 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -67,96 +296,19 @@ private constructor(
         }
 
         return other is ViewDataSearch &&
-            this.filter == other.filter &&
-            this.tag == other.tag &&
-            this.match == other.match &&
-            this.sort == other.sort &&
-            this.additionalProperties == other.additionalProperties
+            filter == other.filter &&
+            match == other.match &&
+            sort == other.sort &&
+            tag == other.tag &&
+            additionalProperties == other.additionalProperties
     }
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    filter,
-                    tag,
-                    match,
-                    sort,
-                    additionalProperties,
-                )
-        }
-        return hashCode
+    private val hashCode: Int by lazy {
+        Objects.hash(filter, match, sort, tag, additionalProperties)
     }
+
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ViewDataSearch{filter=$filter, tag=$tag, match=$match, sort=$sort, additionalProperties=$additionalProperties}"
-
-    companion object {
-
-        fun builder() = Builder()
-    }
-
-    class Builder {
-
-        private var filter: JsonField<List<JsonValue?>> = JsonMissing.of()
-        private var tag: JsonField<List<JsonValue?>> = JsonMissing.of()
-        private var match: JsonField<List<JsonValue?>> = JsonMissing.of()
-        private var sort: JsonField<List<JsonValue?>> = JsonMissing.of()
-        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        internal fun from(viewDataSearch: ViewDataSearch) = apply {
-            this.filter = viewDataSearch.filter
-            this.tag = viewDataSearch.tag
-            this.match = viewDataSearch.match
-            this.sort = viewDataSearch.sort
-            additionalProperties(viewDataSearch.additionalProperties)
-        }
-
-        fun filter(filter: List<JsonValue?>) = filter(JsonField.of(filter))
-
-        @JsonProperty("filter")
-        @ExcludeMissing
-        fun filter(filter: JsonField<List<JsonValue?>>) = apply { this.filter = filter }
-
-        fun tag(tag: List<JsonValue?>) = tag(JsonField.of(tag))
-
-        @JsonProperty("tag")
-        @ExcludeMissing
-        fun tag(tag: JsonField<List<JsonValue?>>) = apply { this.tag = tag }
-
-        fun match(match: List<JsonValue?>) = match(JsonField.of(match))
-
-        @JsonProperty("match")
-        @ExcludeMissing
-        fun match(match: JsonField<List<JsonValue?>>) = apply { this.match = match }
-
-        fun sort(sort: List<JsonValue?>) = sort(JsonField.of(sort))
-
-        @JsonProperty("sort")
-        @ExcludeMissing
-        fun sort(sort: JsonField<List<JsonValue?>>) = apply { this.sort = sort }
-
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        @JsonAnySetter
-        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
-        }
-
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        fun build(): ViewDataSearch =
-            ViewDataSearch(
-                filter.map { it.toUnmodifiable() },
-                tag.map { it.toUnmodifiable() },
-                match.map { it.toUnmodifiable() },
-                sort.map { it.toUnmodifiable() },
-                additionalProperties.toUnmodifiable(),
-            )
-    }
+        "ViewDataSearch{filter=$filter, match=$match, sort=$sort, tag=$tag, additionalProperties=$additionalProperties}"
 }

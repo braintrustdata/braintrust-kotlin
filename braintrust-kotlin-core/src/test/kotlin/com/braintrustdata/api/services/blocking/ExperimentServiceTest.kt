@@ -4,24 +4,36 @@ package com.braintrustdata.api.services.blocking
 
 import com.braintrustdata.api.TestServerExtension
 import com.braintrustdata.api.client.okhttp.BraintrustOkHttpClient
-import com.braintrustdata.api.core.JsonNull
-import com.braintrustdata.api.models.*
-import com.braintrustdata.api.models.ExperimentListParams
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.models.ExperimentCreateParams
+import com.braintrustdata.api.models.ExperimentFeedbackParams
+import com.braintrustdata.api.models.ExperimentFetchParams
+import com.braintrustdata.api.models.ExperimentFetchPostParams
+import com.braintrustdata.api.models.ExperimentInsertParams
+import com.braintrustdata.api.models.ExperimentSummarizeParams
+import com.braintrustdata.api.models.ExperimentUpdateParams
+import com.braintrustdata.api.models.FeedbackExperimentItem
+import com.braintrustdata.api.models.InsertExperimentEvent
+import com.braintrustdata.api.models.ObjectReference
+import com.braintrustdata.api.models.RepoInfo
+import com.braintrustdata.api.models.SpanAttributes
+import com.braintrustdata.api.models.SpanType
 import java.time.OffsetDateTime
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class ExperimentServiceTest {
+internal class ExperimentServiceTest {
 
     @Test
-    fun callCreate() {
+    fun create() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val experimentService = client.experiments()
+
         val experiment =
             experimentService.create(
                 ExperimentCreateParams.builder()
@@ -31,8 +43,12 @@ class ExperimentServiceTest {
                     .datasetVersion("dataset_version")
                     .description("description")
                     .ensureNew(true)
-                    .metadata(ExperimentCreateParams.Metadata.builder().build())
-                    .name("name")
+                    .metadata(
+                        ExperimentCreateParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .name("x")
                     .public_(true)
                     .repoInfo(
                         RepoInfo.builder()
@@ -49,36 +65,33 @@ class ExperimentServiceTest {
                     )
                     .build()
             )
-        println(experiment)
+
         experiment.validate()
     }
 
     @Test
-    fun callRetrieve() {
+    fun retrieve() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val experimentService = client.experiments()
-        val experiment =
-            experimentService.retrieve(
-                ExperimentRetrieveParams.builder()
-                    .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
-        println(experiment)
+
+        val experiment = experimentService.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
         experiment.validate()
     }
 
     @Test
-    fun callUpdate() {
+    fun update() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val experimentService = client.experiments()
+
         val experiment =
             experimentService.update(
                 ExperimentUpdateParams.builder()
@@ -87,7 +100,11 @@ class ExperimentServiceTest {
                     .datasetId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .datasetVersion("dataset_version")
                     .description("description")
-                    .metadata(ExperimentUpdateParams.Metadata.builder().build())
+                    .metadata(
+                        ExperimentUpdateParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
                     .name("name")
                     .public_(true)
                     .repoInfo(
@@ -105,198 +122,208 @@ class ExperimentServiceTest {
                     )
                     .build()
             )
-        println(experiment)
+
         experiment.validate()
     }
 
     @Test
-    fun callList() {
+    fun list() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val experimentService = client.experiments()
-        val response = experimentService.list(ExperimentListParams.builder().build())
-        println(response)
-        response.objects().forEach { it.validate() }
+
+        val page = experimentService.list()
+
+        page.response().validate()
     }
 
     @Test
-    fun callDelete() {
+    fun delete() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val experimentService = client.experiments()
-        val experiment =
-            experimentService.delete(
-                ExperimentDeleteParams.builder()
-                    .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .build()
-            )
-        println(experiment)
+
+        val experiment = experimentService.delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+
         experiment.validate()
     }
 
     @Test
-    fun callFeedback() {
+    fun feedback() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val experimentService = client.experiments()
+
         val feedbackResponseSchema =
             experimentService.feedback(
                 ExperimentFeedbackParams.builder()
                     .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .feedback(
-                        listOf(
-                            FeedbackExperimentItem.builder()
-                                .id("id")
-                                .comment("comment")
-                                .expected(JsonNull.of())
-                                .metadata(FeedbackExperimentItem.Metadata.builder().build())
-                                .scores(FeedbackExperimentItem.Scores.builder().build())
-                                .source(FeedbackExperimentItem.Source.APP)
-                                .build()
-                        )
+                    .addFeedback(
+                        FeedbackExperimentItem.builder()
+                            .id("id")
+                            .comment("comment")
+                            .expected(JsonValue.from(mapOf<String, Any>()))
+                            .metadata(
+                                FeedbackExperimentItem.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .scores(
+                                FeedbackExperimentItem.Scores.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                    .build()
+                            )
+                            .source(FeedbackExperimentItem.Source.APP)
+                            .addTag("string")
+                            .build()
                     )
                     .build()
             )
-        println(feedbackResponseSchema)
+
         feedbackResponseSchema.validate()
     }
 
     @Test
-    fun callFetch() {
+    fun fetch() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val experimentService = client.experiments()
+
         val fetchExperimentEventsResponse =
             experimentService.fetch(
                 ExperimentFetchParams.builder()
                     .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .limit(123L)
+                    .limit(0L)
                     .maxRootSpanId("max_root_span_id")
                     .maxXactId("max_xact_id")
                     .version("version")
                     .build()
             )
-        println(fetchExperimentEventsResponse)
+
         fetchExperimentEventsResponse.validate()
     }
 
     @Test
-    fun callFetchPost() {
+    fun fetchPost() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val experimentService = client.experiments()
+
         val fetchExperimentEventsResponse =
             experimentService.fetchPost(
                 ExperimentFetchPostParams.builder()
                     .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .cursor("cursor")
-                    .filters(
-                        listOf(
-                            PathLookupFilter.builder()
-                                .path(listOf("string"))
-                                .type(PathLookupFilter.Type.PATH_LOOKUP)
-                                .value(JsonNull.of())
-                                .build()
-                        )
-                    )
-                    .limit(123L)
+                    .limit(0L)
                     .maxRootSpanId("max_root_span_id")
                     .maxXactId("max_xact_id")
                     .version("version")
                     .build()
             )
-        println(fetchExperimentEventsResponse)
+
         fetchExperimentEventsResponse.validate()
     }
 
     @Test
-    fun callInsert() {
+    fun insert() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val experimentService = client.experiments()
+
         val insertEventsResponse =
             experimentService.insert(
                 ExperimentInsertParams.builder()
                     .experimentId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .events(
-                        listOf(
-                            ExperimentInsertParams.Event.ofInsertExperimentEventReplace(
-                                InsertExperimentEventReplace.builder()
-                                    .id("id")
-                                    ._isMerge(true)
-                                    ._objectDelete(true)
-                                    ._parentId("_parent_id")
-                                    .context(
-                                        InsertExperimentEventReplace.Context.builder()
-                                            .callerFilename("caller_filename")
-                                            .callerFunctionname("caller_functionname")
-                                            .callerLineno(123L)
-                                            .build()
-                                    )
-                                    .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                                    .datasetRecordId("dataset_record_id")
-                                    .error(JsonNull.of())
-                                    .expected(JsonNull.of())
-                                    .input(JsonNull.of())
-                                    .metadata(
-                                        InsertExperimentEventReplace.Metadata.builder().build()
-                                    )
-                                    .metrics(
-                                        InsertExperimentEventReplace.Metrics.builder()
-                                            .completionTokens(123L)
-                                            .end(42.23)
-                                            .promptTokens(123L)
-                                            .start(42.23)
-                                            .tokens(123L)
-                                            .build()
-                                    )
-                                    .output(JsonNull.of())
-                                    .scores(InsertExperimentEventReplace.Scores.builder().build())
-                                    .spanAttributes(
-                                        InsertExperimentEventReplace.SpanAttributes.builder()
-                                            .name("name")
-                                            .type(
-                                                InsertExperimentEventReplace.SpanAttributes.Type.LLM
-                                            )
-                                            .build()
-                                    )
-                                    .tags(listOf("string"))
+                    .addEvent(
+                        InsertExperimentEvent.builder()
+                            .id("id")
+                            ._isMerge(true)
+                            .addMergePath(listOf("string"))
+                            ._objectDelete(true)
+                            ._parentId("_parent_id")
+                            .context(
+                                InsertExperimentEvent.Context.builder()
+                                    .callerFilename("caller_filename")
+                                    .callerFunctionname("caller_functionname")
+                                    .callerLineno(0L)
                                     .build()
                             )
-                        )
+                            .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                            .error(JsonValue.from(mapOf<String, Any>()))
+                            .expected(JsonValue.from(mapOf<String, Any>()))
+                            .input(JsonValue.from(mapOf<String, Any>()))
+                            .metadata(
+                                InsertExperimentEvent.Metadata.builder().model("model").build()
+                            )
+                            .metrics(
+                                InsertExperimentEvent.Metrics.builder()
+                                    .callerFilename(JsonValue.from(mapOf<String, Any>()))
+                                    .callerFunctionname(JsonValue.from(mapOf<String, Any>()))
+                                    .callerLineno(JsonValue.from(mapOf<String, Any>()))
+                                    .completionTokens(0L)
+                                    .end(0.0)
+                                    .promptTokens(0L)
+                                    .start(0.0)
+                                    .tokens(0L)
+                                    .build()
+                            )
+                            .origin(
+                                ObjectReference.builder()
+                                    .id("id")
+                                    ._xactId("_xact_id")
+                                    .objectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                    .objectType(ObjectReference.ObjectType.EXPERIMENT)
+                                    .created("created")
+                                    .build()
+                            )
+                            .output(JsonValue.from(mapOf<String, Any>()))
+                            .rootSpanId("root_span_id")
+                            .scores(
+                                InsertExperimentEvent.Scores.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                    .build()
+                            )
+                            .spanAttributes(
+                                SpanAttributes.builder().name("name").type(SpanType.LLM).build()
+                            )
+                            .spanId("span_id")
+                            .addSpanParent("string")
+                            .addTag("string")
+                            .build()
                     )
                     .build()
             )
-        println(insertEventsResponse)
+
         insertEventsResponse.validate()
     }
 
     @Test
-    fun callSummarize() {
+    fun summarize() {
         val client =
             BraintrustOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val experimentService = client.experiments()
+
         val summarizeExperimentResponse =
             experimentService.summarize(
                 ExperimentSummarizeParams.builder()
@@ -305,7 +332,7 @@ class ExperimentServiceTest {
                     .summarizeScores(true)
                     .build()
             )
-        println(summarizeExperimentResponse)
+
         summarizeExperimentResponse.validate()
     }
 }

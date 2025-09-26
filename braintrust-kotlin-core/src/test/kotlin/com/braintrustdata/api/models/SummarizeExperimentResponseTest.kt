@@ -2,13 +2,16 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.JsonValue
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class SummarizeExperimentResponseTest {
+internal class SummarizeExperimentResponseTest {
 
     @Test
-    fun createSummarizeExperimentResponse() {
+    fun create() {
         val summarizeExperimentResponse =
             SummarizeExperimentResponse.builder()
                 .experimentName("experiment_name")
@@ -16,10 +19,41 @@ class SummarizeExperimentResponseTest {
                 .projectName("project_name")
                 .projectUrl("https://example.com")
                 .comparisonExperimentName("comparison_experiment_name")
-                .metrics(SummarizeExperimentResponse.Metrics.builder().build())
-                .scores(SummarizeExperimentResponse.Scores.builder().build())
+                .metrics(
+                    SummarizeExperimentResponse.Metrics.builder()
+                        .putAdditionalProperty(
+                            "foo",
+                            JsonValue.from(
+                                mapOf(
+                                    "improvements" to 0,
+                                    "metric" to 0,
+                                    "name" to "name",
+                                    "regressions" to 0,
+                                    "unit" to "unit",
+                                    "diff" to 0,
+                                )
+                            ),
+                        )
+                        .build()
+                )
+                .scores(
+                    SummarizeExperimentResponse.Scores.builder()
+                        .putAdditionalProperty(
+                            "foo",
+                            JsonValue.from(
+                                mapOf(
+                                    "improvements" to 0,
+                                    "name" to "name",
+                                    "regressions" to 0,
+                                    "score" to 0,
+                                    "diff" to -1,
+                                )
+                            ),
+                        )
+                        .build()
+                )
                 .build()
-        assertThat(summarizeExperimentResponse).isNotNull
+
         assertThat(summarizeExperimentResponse.experimentName()).isEqualTo("experiment_name")
         assertThat(summarizeExperimentResponse.experimentUrl()).isEqualTo("https://example.com")
         assertThat(summarizeExperimentResponse.projectName()).isEqualTo("project_name")
@@ -27,8 +61,93 @@ class SummarizeExperimentResponseTest {
         assertThat(summarizeExperimentResponse.comparisonExperimentName())
             .isEqualTo("comparison_experiment_name")
         assertThat(summarizeExperimentResponse.metrics())
-            .isEqualTo(SummarizeExperimentResponse.Metrics.builder().build())
+            .isEqualTo(
+                SummarizeExperimentResponse.Metrics.builder()
+                    .putAdditionalProperty(
+                        "foo",
+                        JsonValue.from(
+                            mapOf(
+                                "improvements" to 0,
+                                "metric" to 0,
+                                "name" to "name",
+                                "regressions" to 0,
+                                "unit" to "unit",
+                                "diff" to 0,
+                            )
+                        ),
+                    )
+                    .build()
+            )
         assertThat(summarizeExperimentResponse.scores())
-            .isEqualTo(SummarizeExperimentResponse.Scores.builder().build())
+            .isEqualTo(
+                SummarizeExperimentResponse.Scores.builder()
+                    .putAdditionalProperty(
+                        "foo",
+                        JsonValue.from(
+                            mapOf(
+                                "improvements" to 0,
+                                "name" to "name",
+                                "regressions" to 0,
+                                "score" to 0,
+                                "diff" to -1,
+                            )
+                        ),
+                    )
+                    .build()
+            )
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val summarizeExperimentResponse =
+            SummarizeExperimentResponse.builder()
+                .experimentName("experiment_name")
+                .experimentUrl("https://example.com")
+                .projectName("project_name")
+                .projectUrl("https://example.com")
+                .comparisonExperimentName("comparison_experiment_name")
+                .metrics(
+                    SummarizeExperimentResponse.Metrics.builder()
+                        .putAdditionalProperty(
+                            "foo",
+                            JsonValue.from(
+                                mapOf(
+                                    "improvements" to 0,
+                                    "metric" to 0,
+                                    "name" to "name",
+                                    "regressions" to 0,
+                                    "unit" to "unit",
+                                    "diff" to 0,
+                                )
+                            ),
+                        )
+                        .build()
+                )
+                .scores(
+                    SummarizeExperimentResponse.Scores.builder()
+                        .putAdditionalProperty(
+                            "foo",
+                            JsonValue.from(
+                                mapOf(
+                                    "improvements" to 0,
+                                    "name" to "name",
+                                    "regressions" to 0,
+                                    "score" to 0,
+                                    "diff" to -1,
+                                )
+                            ),
+                        )
+                        .build()
+                )
+                .build()
+
+        val roundtrippedSummarizeExperimentResponse =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(summarizeExperimentResponse),
+                jacksonTypeRef<SummarizeExperimentResponse>(),
+            )
+
+        assertThat(roundtrippedSummarizeExperimentResponse).isEqualTo(summarizeExperimentResponse)
     }
 }

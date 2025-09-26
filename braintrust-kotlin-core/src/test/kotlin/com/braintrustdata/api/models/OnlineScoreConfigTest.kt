@@ -2,31 +2,29 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class OnlineScoreConfigTest {
+internal class OnlineScoreConfigTest {
 
     @Test
-    fun createOnlineScoreConfig() {
+    fun create() {
         val onlineScoreConfig =
             OnlineScoreConfig.builder()
-                .samplingRate(1.0)
-                .scorers(
-                    listOf(
-                        OnlineScoreConfig.Scorer.ofFunction(
-                            OnlineScoreConfig.Scorer.Function.builder()
-                                .id("id")
-                                .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
-                                .build()
-                        )
-                    )
+                .samplingRate(0.0)
+                .addScorer(
+                    OnlineScoreConfig.Scorer.Function.builder()
+                        .id("id")
+                        .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                        .build()
                 )
                 .applyToRootSpan(true)
-                .applyToSpanNames(listOf("string"))
+                .addApplyToSpanName("string")
                 .build()
-        assertThat(onlineScoreConfig).isNotNull
-        assertThat(onlineScoreConfig.samplingRate()).isEqualTo(1.0)
+
+        assertThat(onlineScoreConfig.samplingRate()).isEqualTo(0.0)
         assertThat(onlineScoreConfig.scorers())
             .containsExactly(
                 OnlineScoreConfig.Scorer.ofFunction(
@@ -38,5 +36,30 @@ class OnlineScoreConfigTest {
             )
         assertThat(onlineScoreConfig.applyToRootSpan()).isEqualTo(true)
         assertThat(onlineScoreConfig.applyToSpanNames()).containsExactly("string")
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val onlineScoreConfig =
+            OnlineScoreConfig.builder()
+                .samplingRate(0.0)
+                .addScorer(
+                    OnlineScoreConfig.Scorer.Function.builder()
+                        .id("id")
+                        .type(OnlineScoreConfig.Scorer.Function.Type.FUNCTION)
+                        .build()
+                )
+                .applyToRootSpan(true)
+                .addApplyToSpanName("string")
+                .build()
+
+        val roundtrippedOnlineScoreConfig =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(onlineScoreConfig),
+                jacksonTypeRef<OnlineScoreConfig>(),
+            )
+
+        assertThat(roundtrippedOnlineScoreConfig).isEqualTo(onlineScoreConfig)
     }
 }

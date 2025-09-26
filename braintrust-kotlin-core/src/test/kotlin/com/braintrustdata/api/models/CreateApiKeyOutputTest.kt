@@ -2,14 +2,16 @@
 
 package com.braintrustdata.api.models
 
+import com.braintrustdata.api.core.jsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class CreateApiKeyOutputTest {
+internal class CreateApiKeyOutputTest {
 
     @Test
-    fun createCreateApiKeyOutput() {
+    fun create() {
         val createApiKeyOutput =
             CreateApiKeyOutput.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -20,7 +22,7 @@ class CreateApiKeyOutputTest {
                 .orgId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
-        assertThat(createApiKeyOutput).isNotNull
+
         assertThat(createApiKeyOutput.id()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(createApiKeyOutput.key()).isEqualTo("key")
         assertThat(createApiKeyOutput.name()).isEqualTo("name")
@@ -29,5 +31,28 @@ class CreateApiKeyOutputTest {
             .isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(createApiKeyOutput.orgId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
         assertThat(createApiKeyOutput.userId()).isEqualTo("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val createApiKeyOutput =
+            CreateApiKeyOutput.builder()
+                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .key("key")
+                .name("name")
+                .previewName("preview_name")
+                .created(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .orgId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .userId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .build()
+
+        val roundtrippedCreateApiKeyOutput =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(createApiKeyOutput),
+                jacksonTypeRef<CreateApiKeyOutput>(),
+            )
+
+        assertThat(roundtrippedCreateApiKeyOutput).isEqualTo(createApiKeyOutput)
     }
 }

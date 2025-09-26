@@ -1,10 +1,10 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.braintrustdata.api.services.blocking
 
+import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.http.HttpResponseFor
 import com.braintrustdata.api.models.View
 import com.braintrustdata.api.models.ViewCreateParams
 import com.braintrustdata.api.models.ViewDeleteParams
@@ -13,8 +13,21 @@ import com.braintrustdata.api.models.ViewListParams
 import com.braintrustdata.api.models.ViewReplaceParams
 import com.braintrustdata.api.models.ViewRetrieveParams
 import com.braintrustdata.api.models.ViewUpdateParams
+import com.google.errorprone.annotations.MustBeClosed
 
 interface ViewService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ViewService
 
     /**
      * Create a new view. If there is an existing view with the same name as the one specified in
@@ -22,13 +35,20 @@ interface ViewService {
      */
     fun create(
         params: ViewCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 
     /** Get a view object by its id */
     fun retrieve(
+        viewId: String,
         params: ViewRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): View = retrieve(params.toBuilder().viewId(viewId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(
+        params: ViewRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 
     /**
@@ -37,8 +57,15 @@ interface ViewService {
      * or setting them to null.
      */
     fun update(
+        viewId: String,
         params: ViewUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): View = update(params.toBuilder().viewId(viewId).build(), requestOptions)
+
+    /** @see update */
+    fun update(
+        params: ViewUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 
     /**
@@ -47,13 +74,20 @@ interface ViewService {
      */
     fun list(
         params: ViewListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ViewListPage
 
     /** Delete a view object by its id */
     fun delete(
+        viewId: String,
         params: ViewDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): View = delete(params.toBuilder().viewId(viewId).build(), requestOptions)
+
+    /** @see delete */
+    fun delete(
+        params: ViewDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
 
     /**
@@ -62,6 +96,102 @@ interface ViewService {
      */
     fun replace(
         params: ViewReplaceParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): View
+
+    /** A view of [ViewService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: (ClientOptions.Builder) -> Unit): ViewService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /v1/view`, but is otherwise the same as
+         * [ViewService.create].
+         */
+        @MustBeClosed
+        fun create(
+            params: ViewCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<View>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/view/{view_id}`, but is otherwise the same as
+         * [ViewService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(
+            viewId: String,
+            params: ViewRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<View> =
+            retrieve(params.toBuilder().viewId(viewId).build(), requestOptions)
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            params: ViewRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<View>
+
+        /**
+         * Returns a raw HTTP response for `patch /v1/view/{view_id}`, but is otherwise the same as
+         * [ViewService.update].
+         */
+        @MustBeClosed
+        fun update(
+            viewId: String,
+            params: ViewUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<View> = update(params.toBuilder().viewId(viewId).build(), requestOptions)
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            params: ViewUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<View>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/view`, but is otherwise the same as
+         * [ViewService.list].
+         */
+        @MustBeClosed
+        fun list(
+            params: ViewListParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ViewListPage>
+
+        /**
+         * Returns a raw HTTP response for `delete /v1/view/{view_id}`, but is otherwise the same as
+         * [ViewService.delete].
+         */
+        @MustBeClosed
+        fun delete(
+            viewId: String,
+            params: ViewDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<View> = delete(params.toBuilder().viewId(viewId).build(), requestOptions)
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(
+            params: ViewDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<View>
+
+        /**
+         * Returns a raw HTTP response for `put /v1/view`, but is otherwise the same as
+         * [ViewService.replace].
+         */
+        @MustBeClosed
+        fun replace(
+            params: ViewReplaceParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<View>
+    }
 }

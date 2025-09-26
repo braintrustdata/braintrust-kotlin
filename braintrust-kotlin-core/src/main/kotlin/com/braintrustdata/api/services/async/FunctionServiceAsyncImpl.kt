@@ -4,240 +4,315 @@ package com.braintrustdata.api.services.async
 
 import com.braintrustdata.api.core.ClientOptions
 import com.braintrustdata.api.core.RequestOptions
+import com.braintrustdata.api.core.checkRequired
+import com.braintrustdata.api.core.handlers.errorBodyHandler
+import com.braintrustdata.api.core.handlers.errorHandler
+import com.braintrustdata.api.core.handlers.jsonHandler
 import com.braintrustdata.api.core.http.HttpMethod
 import com.braintrustdata.api.core.http.HttpRequest
+import com.braintrustdata.api.core.http.HttpResponse
 import com.braintrustdata.api.core.http.HttpResponse.Handler
-import com.braintrustdata.api.errors.BraintrustError
+import com.braintrustdata.api.core.http.HttpResponseFor
+import com.braintrustdata.api.core.http.json
+import com.braintrustdata.api.core.http.parseable
+import com.braintrustdata.api.core.prepareAsync
 import com.braintrustdata.api.models.Function
 import com.braintrustdata.api.models.FunctionCreateParams
 import com.braintrustdata.api.models.FunctionDeleteParams
 import com.braintrustdata.api.models.FunctionInvokeParams
 import com.braintrustdata.api.models.FunctionInvokeResponse
 import com.braintrustdata.api.models.FunctionListPageAsync
+import com.braintrustdata.api.models.FunctionListPageResponse
 import com.braintrustdata.api.models.FunctionListParams
 import com.braintrustdata.api.models.FunctionReplaceParams
 import com.braintrustdata.api.models.FunctionRetrieveParams
 import com.braintrustdata.api.models.FunctionUpdateParams
-import com.braintrustdata.api.services.errorHandler
-import com.braintrustdata.api.services.json
-import com.braintrustdata.api.services.jsonHandler
-import com.braintrustdata.api.services.withErrorHandler
 
-class FunctionServiceAsyncImpl
-constructor(
-    private val clientOptions: ClientOptions,
-) : FunctionServiceAsync {
+class FunctionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    FunctionServiceAsync {
 
-    private val errorHandler: Handler<BraintrustError> = errorHandler(clientOptions.jsonMapper)
+    private val withRawResponse: FunctionServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
-    private val createHandler: Handler<Function> =
-        jsonHandler<Function>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override fun withRawResponse(): FunctionServiceAsync.WithRawResponse = withRawResponse
 
-    /**
-     * Create a new function. If there is an existing function in the project with the same slug as
-     * the one specified in the request, will return the existing function unmodified
-     */
+    override fun withOptions(modifier: (ClientOptions.Builder) -> Unit): FunctionServiceAsync =
+        FunctionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier).build())
+
     override suspend fun create(
         params: FunctionCreateParams,
-        requestOptions: RequestOptions
-    ): Function {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("v1", "function")
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
-                .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
-            response
-                .use { createHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-        }
-    }
+        requestOptions: RequestOptions,
+    ): Function =
+        // post /v1/function
+        withRawResponse().create(params, requestOptions).parse()
 
-    private val retrieveHandler: Handler<Function> =
-        jsonHandler<Function>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Get a function object by its id */
     override suspend fun retrieve(
         params: FunctionRetrieveParams,
-        requestOptions: RequestOptions
-    ): Function {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("v1", "function", params.getPathParam(0))
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
-            response
-                .use { retrieveHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-        }
-    }
+        requestOptions: RequestOptions,
+    ): Function =
+        // get /v1/function/{function_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
 
-    private val updateHandler: Handler<Function> =
-        jsonHandler<Function>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Partially update a function object. Specify the fields to update in the payload. Any
-     * object-type fields will be deep-merged with existing content. Currently we do not support
-     * removing fields or setting them to null.
-     */
     override suspend fun update(
         params: FunctionUpdateParams,
-        requestOptions: RequestOptions
-    ): Function {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.PATCH)
-                .addPathSegments("v1", "function", params.getPathParam(0))
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
-                .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
-            response
-                .use { updateHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-        }
-    }
+        requestOptions: RequestOptions,
+    ): Function =
+        // patch /v1/function/{function_id}
+        withRawResponse().update(params, requestOptions).parse()
 
-    private val listHandler: Handler<FunctionListPageAsync.Response> =
-        jsonHandler<FunctionListPageAsync.Response>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
-
-    /**
-     * List out all functions. The functions are sorted by creation date, with the most
-     * recently-created functions coming first
-     */
     override suspend fun list(
         params: FunctionListParams,
-        requestOptions: RequestOptions
-    ): FunctionListPageAsync {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("v1", "function")
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
-            response
-                .use { listHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-                .let { FunctionListPageAsync.of(this, params, it) }
-        }
-    }
+        requestOptions: RequestOptions,
+    ): FunctionListPageAsync =
+        // get /v1/function
+        withRawResponse().list(params, requestOptions).parse()
 
-    private val deleteHandler: Handler<Function> =
-        jsonHandler<Function>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Delete a function object by its id */
     override suspend fun delete(
         params: FunctionDeleteParams,
-        requestOptions: RequestOptions
-    ): Function {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.DELETE)
-                .addPathSegments("v1", "function", params.getPathParam(0))
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .apply { params.getBody()?.also { body(json(clientOptions.jsonMapper, it)) } }
-                .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
-            response
-                .use { deleteHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
-                }
-        }
-    }
+        requestOptions: RequestOptions,
+    ): Function =
+        // delete /v1/function/{function_id}
+        withRawResponse().delete(params, requestOptions).parse()
 
-    private val invokeHandler: Handler<FunctionInvokeResponse> =
-        jsonHandler<FunctionInvokeResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Invoke a function. */
     override suspend fun invoke(
         params: FunctionInvokeParams,
-        requestOptions: RequestOptions
-    ): FunctionInvokeResponse {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("v1", "function", params.getPathParam(0), "invoke")
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
-                .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
-            response.use { invokeHandler.handle(it) }
-        }
-    }
+        requestOptions: RequestOptions,
+    ): FunctionInvokeResponse? =
+        // post /v1/function/{function_id}/invoke
+        withRawResponse().invoke(params, requestOptions).parse()
 
-    private val replaceHandler: Handler<Function> =
-        jsonHandler<Function>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Create or replace function. If there is an existing function in the project with the same
-     * slug as the one specified in the request, will replace the existing function with the
-     * provided fields
-     */
     override suspend fun replace(
         params: FunctionReplaceParams,
-        requestOptions: RequestOptions
-    ): Function {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.PUT)
-                .addPathSegments("v1", "function")
-                .putAllQueryParams(clientOptions.queryParams)
-                .putAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .putAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
-                .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).let { response ->
-            response
-                .use { replaceHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
+        requestOptions: RequestOptions,
+    ): Function =
+        // put /v1/function
+        withRawResponse().replace(params, requestOptions).parse()
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        FunctionServiceAsync.WithRawResponse {
+
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
+
+        override fun withOptions(
+            modifier: (ClientOptions.Builder) -> Unit
+        ): FunctionServiceAsync.WithRawResponse =
+            FunctionServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier).build()
+            )
+
+        private val createHandler: Handler<Function> =
+            jsonHandler<Function>(clientOptions.jsonMapper)
+
+        override suspend fun create(
+            params: FunctionCreateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Function> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "function")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
                     }
-                }
+            }
+        }
+
+        private val retrieveHandler: Handler<Function> =
+            jsonHandler<Function>(clientOptions.jsonMapper)
+
+        override suspend fun retrieve(
+            params: FunctionRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Function> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("functionId", params.functionId())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "function", params._pathParam(0))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val updateHandler: Handler<Function> =
+            jsonHandler<Function>(clientOptions.jsonMapper)
+
+        override suspend fun update(
+            params: FunctionUpdateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Function> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("functionId", params.functionId())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PATCH)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "function", params._pathParam(0))
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { updateHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val listHandler: Handler<FunctionListPageResponse> =
+            jsonHandler<FunctionListPageResponse>(clientOptions.jsonMapper)
+
+        override suspend fun list(
+            params: FunctionListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<FunctionListPageAsync> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "function")
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let {
+                        FunctionListPageAsync.builder()
+                            .service(FunctionServiceAsyncImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
+            }
+        }
+
+        private val deleteHandler: Handler<Function> =
+            jsonHandler<Function>(clientOptions.jsonMapper)
+
+        override suspend fun delete(
+            params: FunctionDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Function> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("functionId", params.functionId())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "function", params._pathParam(0))
+                    .apply { params._body()?.let { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { deleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val invokeHandler: Handler<FunctionInvokeResponse?> =
+            jsonHandler<FunctionInvokeResponse?>(clientOptions.jsonMapper)
+
+        override suspend fun invoke(
+            params: FunctionInvokeParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<FunctionInvokeResponse?> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("functionId", params.functionId())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "function", params._pathParam(0), "invoke")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { invokeHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it?.validate()
+                        }
+                    }
+            }
+        }
+
+        private val replaceHandler: Handler<Function> =
+            jsonHandler<Function>(clientOptions.jsonMapper)
+
+        override suspend fun replace(
+            params: FunctionReplaceParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Function> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PUT)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "function")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.executeAsync(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { replaceHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
         }
     }
 }
