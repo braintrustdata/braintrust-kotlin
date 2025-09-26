@@ -16,6 +16,7 @@ import java.util.Collections
 import java.util.Objects
 
 class CrossObjectInsertResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val dataset: JsonField<Dataset>,
     private val experiment: JsonField<Experiment>,

@@ -28,6 +28,7 @@ import java.util.Collections
 import java.util.Objects
 
 class CodeBundle
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val bundleId: JsonField<String>,
     private val location: JsonField<Location>,
@@ -446,6 +447,7 @@ private constructor(
         }
 
         class Experiment
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val evalName: JsonField<String>,
             private val position: JsonField<Position>,
@@ -842,6 +844,7 @@ private constructor(
                 }
 
                 class Type
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val type: JsonField<InnerType>,
                     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1132,6 +1135,7 @@ private constructor(
                 }
 
                 class Scorer
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val index: JsonField<Long>,
                     private val type: JsonField<Type>,
@@ -1607,6 +1611,7 @@ private constructor(
         }
 
         class Function
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val index: JsonField<Long>,
             private val type: JsonField<Type>,
@@ -1924,6 +1929,7 @@ private constructor(
     }
 
     class RuntimeContext
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val runtime: JsonField<Runtime>,
         private val version: JsonField<String>,

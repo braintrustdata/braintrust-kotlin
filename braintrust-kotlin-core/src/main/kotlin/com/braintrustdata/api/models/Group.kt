@@ -24,6 +24,7 @@ import java.util.Objects
  * Groups can consist of individual users, as well as a set of groups they inherit from
  */
 class Group
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val name: JsonField<String>,

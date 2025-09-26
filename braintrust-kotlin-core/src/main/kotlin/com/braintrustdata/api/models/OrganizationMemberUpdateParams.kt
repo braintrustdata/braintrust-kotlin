@@ -332,6 +332,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val inviteUsers: JsonField<InviteUsers>,
         private val orgId: JsonField<String>,
@@ -606,6 +607,7 @@ private constructor(
 
     /** Users to invite to the organization */
     class InviteUsers
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val emails: JsonField<List<String>>,
         private val groupId: JsonField<String>,
@@ -1062,6 +1064,7 @@ private constructor(
 
     /** Users to remove from the organization */
     class RemoveUsers
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val emails: JsonField<List<String>>,
         private val ids: JsonField<List<String>>,

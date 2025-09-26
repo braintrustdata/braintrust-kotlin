@@ -18,6 +18,7 @@ import java.util.Collections
 import java.util.Objects
 
 class ProjectScoreListPageResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val objects: JsonField<List<ProjectScore>>,
     private val additionalProperties: MutableMap<String, JsonValue>,

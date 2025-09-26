@@ -18,6 +18,7 @@ import java.util.Collections
 import java.util.Objects
 
 class AclBatchUpdateResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val addedAcls: JsonField<List<Acl>>,
     private val removedAcls: JsonField<List<Acl>>,

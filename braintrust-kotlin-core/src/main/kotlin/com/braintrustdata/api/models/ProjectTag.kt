@@ -21,6 +21,7 @@ import java.util.Objects
  * other data
  */
 class ProjectTag
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val name: JsonField<String>,

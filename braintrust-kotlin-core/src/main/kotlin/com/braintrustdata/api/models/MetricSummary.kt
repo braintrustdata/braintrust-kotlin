@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Summary of a metric's performance */
 class MetricSummary
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val improvements: JsonField<Long>,
     private val metric: JsonField<Double>,

@@ -447,6 +447,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val addMemberPermissions: JsonField<List<AddMemberPermission>>,
         private val addMemberRoles: JsonField<List<String>>,
@@ -878,6 +879,7 @@ private constructor(
     }
 
     class AddMemberPermission
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val permission: JsonField<Permission>,
         private val restrictObjectType: JsonField<AclObjectType>,
@@ -1095,6 +1097,7 @@ private constructor(
     }
 
     class RemoveMemberPermission
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val permission: JsonField<Permission>,
         private val restrictObjectType: JsonField<AclObjectType>,

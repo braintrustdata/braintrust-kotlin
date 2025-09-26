@@ -18,6 +18,7 @@ import java.util.Collections
 import java.util.Objects
 
 class AclListPageResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val objects: JsonField<List<Acl>>,
     private val additionalProperties: MutableMap<String, JsonValue>,

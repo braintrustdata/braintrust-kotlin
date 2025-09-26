@@ -18,6 +18,7 @@ import java.util.Collections
 import java.util.Objects
 
 class EnvVarListResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val objects: JsonField<List<EnvVar>>,
     private val additionalProperties: MutableMap<String, JsonValue>,

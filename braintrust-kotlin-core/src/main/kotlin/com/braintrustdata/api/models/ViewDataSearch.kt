@@ -17,6 +17,7 @@ import java.util.Collections
 import java.util.Objects
 
 class ViewDataSearch
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val filter: JsonField<List<JsonValue?>>,
     private val match: JsonField<List<JsonValue?>>,

@@ -24,6 +24,7 @@ import java.util.Objects
  * Roles can consist of individual permissions, as well as a set of roles they inherit from
  */
 class Role
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val name: JsonField<String>,
@@ -511,6 +512,7 @@ private constructor(
             (if (userId.asKnown() == null) 0 else 1)
 
     class MemberPermission
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val permission: JsonField<Permission>,
         private val restrictObjectType: JsonField<AclObjectType>,

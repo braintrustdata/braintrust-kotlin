@@ -19,6 +19,7 @@ import java.util.Collections
 import java.util.Objects
 
 class ExperimentEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val _xactId: JsonField<String>,
@@ -891,6 +892,7 @@ private constructor(
      * location in code which produced the experiment event
      */
     class Context
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val callerFilename: JsonField<String>,
         private val callerFunctionname: JsonField<String>,
@@ -1144,6 +1146,7 @@ private constructor(
      * must be strings
      */
     class Metadata
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val model: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1288,6 +1291,7 @@ private constructor(
      * event was produced
      */
     class Metrics
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val callerFilename: JsonValue,
         private val callerFunctionname: JsonValue,

@@ -18,6 +18,7 @@ import java.util.Collections
 import java.util.Objects
 
 class FetchProjectLogsEventsResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val events: JsonField<List<ProjectLogsEvent>>,
     private val cursor: JsonField<String>,

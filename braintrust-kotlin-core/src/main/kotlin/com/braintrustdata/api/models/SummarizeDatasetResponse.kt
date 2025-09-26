@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Summary of a dataset */
 class SummarizeDatasetResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val datasetName: JsonField<String>,
     private val datasetUrl: JsonField<String>,

@@ -18,6 +18,7 @@ import java.util.Objects
 
 /** Summary of an experiment */
 class SummarizeExperimentResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val experimentName: JsonField<String>,
     private val experimentUrl: JsonField<String>,

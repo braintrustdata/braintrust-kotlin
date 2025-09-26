@@ -15,6 +15,7 @@ import java.util.Collections
 import java.util.Objects
 
 class ProjectScoreConfig
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val destination: JsonField<String>,
     private val multiSelect: JsonField<Boolean>,
