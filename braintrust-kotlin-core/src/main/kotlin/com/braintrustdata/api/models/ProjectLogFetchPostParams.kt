@@ -90,7 +90,7 @@ constructor(
 
         /**
          * NOTE: This parameter is deprecated and will be removed in a future revision. Consider
-         * using the `/btql` endpoint (https://www.braintrust.dev/docs/reference/btql) for more
+         * using the `/btql` endpoint (https://www.braintrust.dev/docs/reference/sql) for more
          * advanced filtering.
          *
          * A list of filters on the events to fetch. Currently, only path-lookup type filters are
@@ -227,7 +227,7 @@ constructor(
 
             /**
              * NOTE: This parameter is deprecated and will be removed in a future revision. Consider
-             * using the `/btql` endpoint (https://www.braintrust.dev/docs/reference/btql) for more
+             * using the `/btql` endpoint (https://www.braintrust.dev/docs/reference/sql) for more
              * advanced filtering.
              *
              * A list of filters on the events to fetch. Currently, only path-lookup type filters
@@ -409,7 +409,7 @@ constructor(
 
         /**
          * NOTE: This parameter is deprecated and will be removed in a future revision. Consider
-         * using the `/btql` endpoint (https://www.braintrust.dev/docs/reference/btql) for more
+         * using the `/btql` endpoint (https://www.braintrust.dev/docs/reference/sql) for more
          * advanced filtering.
          *
          * A list of filters on the events to fetch. Currently, only path-lookup type filters are
@@ -422,7 +422,7 @@ constructor(
 
         /**
          * NOTE: This parameter is deprecated and will be removed in a future revision. Consider
-         * using the `/btql` endpoint (https://www.braintrust.dev/docs/reference/btql) for more
+         * using the `/btql` endpoint (https://www.braintrust.dev/docs/reference/sql) for more
          * advanced filtering.
          *
          * A list of filters on the events to fetch. Currently, only path-lookup type filters are

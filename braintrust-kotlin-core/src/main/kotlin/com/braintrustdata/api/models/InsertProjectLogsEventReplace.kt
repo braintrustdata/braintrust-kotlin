@@ -140,7 +140,7 @@ private constructor(
     /**
      * Use the `_parent_id` field to create this row as a subspan of an existing row. It cannot be
      * specified alongside `_is_merge=true`. Tracking hierarchical relationships are important for
-     * tracing (see the [guide](https://www.braintrust.dev/docs/guides/tracing) for full details).
+     * tracing (see the [guide](https://www.braintrust.dev/docs/instrument) for full details).
      *
      * For example, say we have logged a row `{"id": "abc", "input": "foo", "output": "bar",
      * "expected": "boo", "scores": {"correctness": 0.33}}`. We can create a sub-span of the parent
@@ -247,7 +247,7 @@ private constructor(
     /**
      * Use the `_parent_id` field to create this row as a subspan of an existing row. It cannot be
      * specified alongside `_is_merge=true`. Tracking hierarchical relationships are important for
-     * tracing (see the [guide](https://www.braintrust.dev/docs/guides/tracing) for full details).
+     * tracing (see the [guide](https://www.braintrust.dev/docs/instrument) for full details).
      *
      * For example, say we have logged a row `{"id": "abc", "input": "foo", "output": "bar",
      * "expected": "boo", "scores": {"correctness": 0.33}}`. We can create a sub-span of the parent
@@ -579,7 +579,7 @@ private constructor(
         /**
          * Use the `_parent_id` field to create this row as a subspan of an existing row. It cannot
          * be specified alongside `_is_merge=true`. Tracking hierarchical relationships are
-         * important for tracing (see the [guide](https://www.braintrust.dev/docs/guides/tracing)
+         * important for tracing (see the [guide](https://www.braintrust.dev/docs/instrument)
          * for full details).
          *
          * For example, say we have logged a row `{"id": "abc", "input": "foo", "output": "bar",
@@ -594,7 +594,7 @@ private constructor(
         /**
          * Use the `_parent_id` field to create this row as a subspan of an existing row. It cannot
          * be specified alongside `_is_merge=true`. Tracking hierarchical relationships are
-         * important for tracing (see the [guide](https://www.braintrust.dev/docs/guides/tracing)
+         * important for tracing (see the [guide](https://www.braintrust.dev/docs/instrument)
          * for full details).
          *
          * For example, say we have logged a row `{"id": "abc", "input": "foo", "output": "bar",

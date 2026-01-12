@@ -137,7 +137,7 @@ private constructor(
 
     /**
      * A unique identifier used to link different project logs events together as part of a full
-     * trace. See the [tracing guide](https://www.braintrust.dev/docs/guides/tracing) for full
+     * trace. See the [tracing guide](https://www.braintrust.dev/docs/instrument) for full
      * details on tracing
      */
     fun spanId(): String = spanId.getRequired("span_id")
@@ -243,7 +243,7 @@ private constructor(
 
     /**
      * A unique identifier used to link different project logs events together as part of a full
-     * trace. See the [tracing guide](https://www.braintrust.dev/docs/guides/tracing) for full
+     * trace. See the [tracing guide](https://www.braintrust.dev/docs/instrument) for full
      * details on tracing
      */
     @JsonProperty("span_id") @ExcludeMissing fun _spanId() = spanId
@@ -583,14 +583,14 @@ private constructor(
 
         /**
          * A unique identifier used to link different project logs events together as part of a full
-         * trace. See the [tracing guide](https://www.braintrust.dev/docs/guides/tracing) for full
+         * trace. See the [tracing guide](https://www.braintrust.dev/docs/instrument) for full
          * details on tracing
          */
         fun spanId(spanId: String) = spanId(JsonField.of(spanId))
 
         /**
          * A unique identifier used to link different project logs events together as part of a full
-         * trace. See the [tracing guide](https://www.braintrust.dev/docs/guides/tracing) for full
+         * trace. See the [tracing guide](https://www.braintrust.dev/docs/instrument) for full
          * details on tracing
          */
         @JsonProperty("span_id")
