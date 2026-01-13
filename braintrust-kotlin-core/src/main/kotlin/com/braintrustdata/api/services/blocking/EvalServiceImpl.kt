@@ -31,7 +31,7 @@ constructor(
      * the Braintrust SDK. In the Eval API, you provide pointers to a dataset, task function, and
      * scoring functions. The API will then run the evaluation, create an experiment, and return the
      * results along with a link to the experiment. To learn more about evals, see the
-     * [Evals guide](https://www.braintrust.dev/docs/guides/evals).
+     * [Evals guide](https://www.braintrust.dev/docs/evaluate/run-evaluations).
      */
     override fun create(
         params: EvalCreateParams,
