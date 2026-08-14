@@ -1,3 +1,9 @@
+# Deprecation Notice
+
+This client is no longer maintained. Please use the Braintrust Java SDK api client instead.
+
+https://github.com/braintrustdata/braintrust-sdk-java/blob/main/docs/api-client.md
+
 # Braintrust Kotlin API Library
 
 NOTE: This repo is a Kotlin client for the Braintrust REST API. If you wish to trace and write evals, see the [Braintrust Java SDK](https://github.com/braintrustdata/braintrust-sdk-java)
